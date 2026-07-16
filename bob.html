@@ -8,7 +8,7 @@
     content="width=device-width, initial-scale=1, viewport-fit=cover"
   >
 
-  <title></title>
+  <title>Bob</title>
 
   <style>
     * {
@@ -21,296 +21,253 @@
       height: 100%;
       margin: 0;
       overflow: hidden;
-      background: #080806;
+      background: #050504;
     }
 
     body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: grid;
+      place-items: center;
     }
 
-    .room {
+    /*
+      The whole scene always keeps the same 3:2 shape as the artwork.
+      On a tall phone, black space appears above and below instead of
+      zooming into Bob's face.
+    */
+
+    .scene {
       position: relative;
-      width: 100vw;
-      height: 100vh;
+      width: min(100vw, 150vh);
+      aspect-ratio: 3 / 2;
       overflow: hidden;
-      background: #080806;
+      background: #050504;
     }
 
     .room-image {
-      position: absolute;
-      inset: 0;
+      display: block;
       width: 100%;
       height: 100%;
       object-fit: contain;
-      object-position: center;
       user-select: none;
       -webkit-user-drag: none;
     }
 
     /*
-      This dark layer briefly appears when the ceiling light flickers.
+      Subtle ceiling-light flicker.
     */
 
-    .room-flicker {
+    .flicker-layer {
       position: absolute;
       inset: 0;
-      z-index: 2;
       pointer-events: none;
       background: rgba(0, 0, 0, 0);
-      transition: background 80ms linear;
+      transition: background 70ms linear;
+      z-index: 4;
     }
 
-    .room-flicker.dim {
-      background: rgba(0, 0, 0, 0.13);
-    }
-
-    /*
-      These clean eye shapes cover the pupils painted into the original
-      artwork. The new pupils move independently inside them.
-
-      The positions assume bob-room.png is the generated 3:2 room image.
-    */
-
-    .eye {
-      position: absolute;
-      top: 48.8%;
-      width: 5.05%;
-      height: 3.2%;
-      z-index: 5;
-      overflow: hidden;
-
-      background: #eee9dc;
-      border: clamp(2px, 0.28vw, 5px) solid #11110e;
-      border-top-width: clamp(3px, 0.39vw, 7px);
-      border-radius: 45% 45% 55% 55%;
-    }
-
-    .eye-left {
-      left: 45.45%;
-      transform: rotate(1deg);
-    }
-
-    .eye-right {
-      left: 53.03%;
-      transform: rotate(-1deg);
-    }
-
-    .pupil {
-      position: absolute;
-      top: 38%;
-      left: 41%;
-      width: 19%;
-      aspect-ratio: 1;
-      border-radius: 50%;
-      background: #11110e;
-
-      transition: transform 75ms linear;
+    .flicker-layer.dim {
+      background: rgba(0, 0, 0, 0.12);
     }
 
     /*
-      1990s CD/cassette boombox.
+      A cleaner hand-drawn-looking boombox.
     */
 
     .boombox {
       position: absolute;
-      left: 6%;
-      bottom: 8%;
-      width: 19%;
-      aspect-ratio: 1.78 / 1;
-      z-index: 7;
+      left: 7%;
+      bottom: 7%;
+      width: 18%;
+      aspect-ratio: 1.85 / 1;
+      z-index: 6;
 
-      border: clamp(2px, 0.3vw, 5px) solid #141412;
-      border-radius: 7px;
-      background: linear-gradient(#64635b, #34342f);
+      border: clamp(2px, 0.22vw, 4px) solid #161613;
+      border-radius: 4px;
 
-      box-shadow:
-        inset 0 0 0 2px rgba(255, 255, 255, 0.07),
-        0 12px 20px rgba(0, 0, 0, 0.48);
+      background:
+        repeating-linear-gradient(
+          -8deg,
+          rgba(255,255,255,0.035) 0 1px,
+          transparent 1px 7px
+        ),
+        #5b5a52;
 
-      transform: rotate(-1deg);
+      box-shadow: 0 8px 14px rgba(0,0,0,0.4);
+      transform: rotate(-1.5deg);
     }
 
-    .boombox-handle {
+    .handle {
       position: absolute;
-      left: 22%;
-      right: 22%;
+      left: 23%;
+      right: 23%;
       top: -20%;
-      height: 27%;
+      height: 24%;
 
-      border: clamp(2px, 0.35vw, 5px) solid #141412;
+      border: clamp(2px, 0.22vw, 4px) solid #161613;
       border-bottom: 0;
-      border-radius: 7px 7px 0 0;
+      border-radius: 5px 5px 0 0;
     }
 
     .speaker {
       position: absolute;
-      top: 29%;
+      top: 27%;
       width: 31%;
       aspect-ratio: 1;
       border-radius: 50%;
 
-      border: clamp(2px, 0.28vw, 5px) solid #141412;
+      border: clamp(2px, 0.2vw, 4px) solid #161613;
 
       background:
         repeating-radial-gradient(
           circle,
-          #171715 0 2px,
-          #4b4a43 3px 5px
+          #181816 0 1px,
+          #4b4a43 2px 4px
         );
     }
 
-    .speaker-left {
+    .speaker.left {
       left: 5%;
     }
 
-    .speaker-right {
+    .speaker.right {
       right: 5%;
     }
 
-    .radio-screen {
+    .display {
       position: absolute;
-      left: 39%;
-      top: 18%;
-      width: 22%;
+      left: 40%;
+      top: 17%;
+      width: 20%;
       height: 17%;
 
-      border: clamp(1px, 0.2vw, 3px) solid #111;
-      border-radius: 2px;
-      background: #10140e;
+      border: clamp(1px, 0.14vw, 3px) solid #161613;
+      background: #11150f;
     }
 
-    .radio-light {
+    .display-light {
       position: absolute;
-      left: 48.7%;
-      top: 23.5%;
-      width: 2.4%;
+      left: 48.6%;
+      top: 22%;
+      width: 2.8%;
       aspect-ratio: 1;
-      z-index: 8;
-
       border-radius: 50%;
-      background: #293123;
-      opacity: 0.18;
+
+      background: #303729;
+      opacity: 0.15;
+      z-index: 8;
     }
 
-    .radio-light.on {
-      background: #a7b55e;
+    .display-light.on {
+      background: #a7b25e;
       opacity: 0.95;
 
       box-shadow:
-        0 0 5px rgba(187, 201, 98, 0.9),
-        0 0 12px rgba(187, 201, 98, 0.5);
+        0 0 5px rgba(180,194,96,0.9),
+        0 0 12px rgba(180,194,96,0.45);
     }
 
-    .radio-light.blink {
-      opacity: 0.2;
+    .display-light.blink {
+      opacity: 0.18;
     }
 
-    .cassette-door {
+    .cassette {
       position: absolute;
-      left: 39%;
+      left: 40%;
       top: 42%;
-      width: 22%;
-      height: 32%;
+      width: 20%;
+      height: 31%;
 
-      border: clamp(1px, 0.2vw, 3px) solid #111;
-      background: #262620;
+      border: clamp(1px, 0.14vw, 3px) solid #161613;
+      background: #282821;
     }
 
-    .cassette-door::before,
-    .cassette-door::after {
+    .cassette::before,
+    .cassette::after {
       content: "";
       position: absolute;
-      top: 35%;
-      width: 24%;
+      top: 36%;
+      width: 23%;
       aspect-ratio: 1;
       border-radius: 50%;
 
-      border: 2px solid #141412;
-      background: #4c4b43;
+      border: 1px solid #161613;
+      background: #55534b;
     }
 
-    .cassette-door::before {
-      left: 12%;
+    .cassette::before {
+      left: 13%;
     }
 
-    .cassette-door::after {
-      right: 12%;
+    .cassette::after {
+      right: 13%;
     }
 
     .play-button {
       position: absolute;
-      right: 7%;
-      top: 6%;
-      width: 15%;
+      right: 6%;
+      top: 5%;
+      width: 17%;
       aspect-ratio: 1;
       padding: 0;
+
+      border: clamp(1px, 0.15vw, 3px) solid #161613;
+      border-radius: 3px;
+      background: #7a786f;
 
       cursor: pointer;
       appearance: none;
       -webkit-appearance: none;
       -webkit-tap-highlight-color: transparent;
-
-      border: clamp(1px, 0.2vw, 3px) solid #111;
-      border-radius: 3px;
-      background: #76756d;
     }
 
     .play-button::before {
       content: "";
       position: absolute;
-      left: 37%;
+      left: 38%;
       top: 27%;
 
-      border-left: clamp(7px, 0.72vw, 13px) solid #151513;
-      border-top: clamp(5px, 0.47vw, 9px) solid transparent;
-      border-bottom: clamp(5px, 0.47vw, 9px) solid transparent;
+      border-left: clamp(6px, 0.65vw, 12px) solid #171714;
+      border-top: clamp(4px, 0.42vw, 8px) solid transparent;
+      border-bottom: clamp(4px, 0.42vw, 8px) solid transparent;
     }
 
     .play-button.playing {
       transform: translateY(2px);
-      background: #4d4c46;
-    }
-
-    .play-button:focus-visible {
-      outline: 3px solid #eee9dc;
-      outline-offset: 4px;
+      background: #4b4a44;
     }
 
     /*
-      Invisible return area in the lower-right corner.
-      This gives us an escape without adding visible explanation.
+      Visible enough to leave, but still quiet.
     */
 
-    .secret-return {
+    .return-button {
       position: absolute;
-      right: 0;
-      bottom: 0;
-      width: 70px;
-      height: 70px;
+      right: 2.5%;
+      bottom: 3%;
       z-index: 10;
+
+      width: 34px;
+      height: 34px;
+
+      display: grid;
+      place-items: center;
+
+      color: rgba(235, 228, 207, 0.35);
+      text-decoration: none;
+      font-family: Georgia, serif;
+      font-size: 22px;
+
+      border: 1px solid rgba(235, 228, 207, 0.12);
+      border-radius: 50%;
+      background: rgba(0,0,0,0.12);
     }
 
-    @media (orientation: portrait) {
-      .room-image {
-        object-fit: cover;
-      }
-
-      .eye {
-        top: 48.9%;
-      }
-
-      .boombox {
-        width: 23%;
-        left: 4%;
-        bottom: 9%;
-      }
+    .return-button:active {
+      color: rgba(235, 228, 207, 0.8);
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .pupil,
-      .room-flicker {
+      .flicker-layer {
         transition: none;
       }
     }
@@ -318,61 +275,45 @@
 </head>
 
 <body>
-  <main class="room">
-
-    <!--
-      We will upload this exact approved Bob room image to GitHub
-      using the filename bob-room.png.
-    -->
+  <main class="scene">
 
     <img
       class="room-image"
       src="bob-room.png"
-      alt="Bob sits silently in a dim room beneath one hanging light."
+      alt="Bob sits silently beneath a hanging light in a dark room."
     >
 
     <div
-      id="roomFlicker"
-      class="room-flicker"
+      id="flickerLayer"
+      class="flicker-layer"
       aria-hidden="true"
     ></div>
-
-    <div class="eye eye-left" aria-hidden="true">
-      <span class="pupil"></span>
-    </div>
-
-    <div class="eye eye-right" aria-hidden="true">
-      <span class="pupil"></span>
-    </div>
 
     <section
       class="boombox"
       aria-label="A 1990s boombox"
     >
-      <div class="boombox-handle" aria-hidden="true"></div>
+      <div class="handle" aria-hidden="true"></div>
 
       <div
-        class="speaker speaker-left"
+        class="speaker left"
         aria-hidden="true"
       ></div>
 
       <div
-        class="speaker speaker-right"
+        class="speaker right"
         aria-hidden="true"
       ></div>
 
-      <div class="radio-screen" aria-hidden="true"></div>
-
-      <div
-        id="radioLight"
-        class="radio-light"
-        aria-hidden="true"
-      ></div>
+      <div class="display" aria-hidden="true"></div>
 
       <div
-        class="cassette-door"
+        id="displayLight"
+        class="display-light"
         aria-hidden="true"
       ></div>
+
+      <div class="cassette" aria-hidden="true"></div>
 
       <button
         id="playButton"
@@ -383,18 +324,24 @@
     </section>
 
     <a
-      class="secret-return"
+      class="return-button"
       href="workshop.html"
-      aria-label="Return"
-    ></a>
+      aria-label="Return to the workshop"
+    >
+      ‹
+    </a>
 
   </main>
 
   <script>
-    const playButton = document.getElementById("playButton");
-    const radioLight = document.getElementById("radioLight");
-    const roomFlicker = document.getElementById("roomFlicker");
-    const pupils = [...document.querySelectorAll(".pupil")];
+    const playButton =
+      document.getElementById("playButton");
+
+    const displayLight =
+      document.getElementById("displayLight");
+
+    const flickerLayer =
+      document.getElementById("flickerLayer");
 
     let playing = false;
 
@@ -402,19 +349,10 @@
     let masterGain = null;
 
     let musicTimer = null;
-    let eyeTimer = null;
     let bulbTimer = null;
-    let radioTimer = null;
-    let directLookTimer = null;
+    let displayTimer = null;
 
     let noteIndex = 0;
-
-    /*
-      Original browser-generated tune.
-
-      There is no borrowed song or audio recording.
-      These tones are produced live by the visitor's browser.
-    */
 
     const notes = [
       110.00,
@@ -439,9 +377,14 @@
 
       const now = audioContext.currentTime;
 
-      const oscillator = audioContext.createOscillator();
-      const toneGain = audioContext.createGain();
-      const filter = audioContext.createBiquadFilter();
+      const oscillator =
+        audioContext.createOscillator();
+
+      const gain =
+        audioContext.createGain();
+
+      const filter =
+        audioContext.createBiquadFilter();
 
       oscillator.type = waveType;
       oscillator.frequency.value = frequency;
@@ -449,21 +392,24 @@
       filter.type = "lowpass";
       filter.frequency.value = 620;
 
-      toneGain.gain.setValueAtTime(0.0001, now);
-
-      toneGain.gain.exponentialRampToValueAtTime(
-        volume,
-        now + 0.055
+      gain.gain.setValueAtTime(
+        0.0001,
+        now
       );
 
-      toneGain.gain.exponentialRampToValueAtTime(
+      gain.gain.exponentialRampToValueAtTime(
+        volume,
+        now + 0.05
+      );
+
+      gain.gain.exponentialRampToValueAtTime(
         0.0001,
         now + duration
       );
 
       oscillator.connect(filter);
-      filter.connect(toneGain);
-      toneGain.connect(masterGain);
+      filter.connect(gain);
+      gain.connect(masterGain);
 
       oscillator.start(now);
       oscillator.stop(now + duration + 0.1);
@@ -474,24 +420,20 @@
         return;
       }
 
-      const frequency = notes[noteIndex % notes.length];
-
       createTone(
-        frequency,
+        notes[noteIndex % notes.length],
         1.35,
         0.28,
-        noteIndex % 3 === 0 ? "triangle" : "sine"
+        noteIndex % 3 === 0
+          ? "triangle"
+          : "sine"
       );
-
-      /*
-        Occasional low unresolved note.
-      */
 
       if (noteIndex % 4 === 0) {
         createTone(
           55,
           1.7,
-          0.15,
+          0.14,
           "sine"
         );
       }
@@ -505,7 +447,9 @@
         window.webkitAudioContext
       )();
 
-      masterGain = audioContext.createGain();
+      masterGain =
+        audioContext.createGain();
+
       masterGain.gain.value = 0.08;
       masterGain.connect(audioContext.destination);
 
@@ -528,66 +472,6 @@
       }
     }
 
-    function setEyePosition(position) {
-      pupils.forEach((pupil) => {
-        pupil.style.transform =
-          `translateX(${position}%)`;
-      });
-    }
-
-    function scheduleEyeMovement() {
-      window.clearTimeout(eyeTimer);
-
-      if (!playing) {
-        return;
-      }
-
-      const positions = [
-        -64,
-        -64,
-        0,
-        64,
-        64
-      ];
-
-      const randomPosition =
-        positions[
-          Math.floor(Math.random() * positions.length)
-        ];
-
-      setEyePosition(randomPosition);
-
-      eyeTimer = window.setTimeout(
-        scheduleEyeMovement,
-        2800 + Math.random() * 6500
-      );
-    }
-
-    /*
-      Very rare straight-ahead stare.
-    */
-
-    function scheduleDirectLook() {
-      window.clearTimeout(directLookTimer);
-
-      if (!playing) {
-        return;
-      }
-
-      directLookTimer = window.setTimeout(() => {
-        setEyePosition(0);
-
-        window.setTimeout(() => {
-          if (playing) {
-            scheduleEyeMovement();
-          }
-        }, 900);
-
-        scheduleDirectLook();
-
-      }, 90000 + Math.random() * 210000);
-    }
-
     function scheduleBulbFlicker() {
       window.clearTimeout(bulbTimer);
 
@@ -596,81 +480,62 @@
       }
 
       bulbTimer = window.setTimeout(() => {
-        roomFlicker.classList.add("dim");
+        flickerLayer.classList.add("dim");
 
         window.setTimeout(() => {
-          roomFlicker.classList.remove("dim");
-        }, 55 + Math.random() * 120);
+          flickerLayer.classList.remove("dim");
+        }, 60 + Math.random() * 100);
 
         scheduleBulbFlicker();
 
-      }, 4200 + Math.random() * 10000);
+      }, 3500 + Math.random() * 8500);
     }
 
-    function scheduleRadioFlicker() {
-      window.clearTimeout(radioTimer);
+    function scheduleDisplayFlicker() {
+      window.clearTimeout(displayTimer);
 
       if (!playing) {
         return;
       }
 
-      radioTimer = window.setTimeout(() => {
-        radioLight.classList.add("blink");
+      displayTimer = window.setTimeout(() => {
+        displayLight.classList.add("blink");
 
         window.setTimeout(() => {
-          radioLight.classList.remove("blink");
-        }, 65 + Math.random() * 160);
+          displayLight.classList.remove("blink");
+        }, 70 + Math.random() * 130);
 
-        scheduleRadioFlicker();
+        scheduleDisplayFlicker();
 
-      }, 1700 + Math.random() * 5300);
+      }, 1600 + Math.random() * 4800);
     }
 
     function startRoom() {
       playing = true;
 
       playButton.classList.add("playing");
-      playButton.setAttribute(
-        "aria-label",
-        "Stop the boombox"
-      );
-
-      radioLight.classList.add("on");
+      displayLight.classList.add("on");
 
       startMusic();
-
-      eyeTimer = window.setTimeout(
-        scheduleEyeMovement,
-        700
-      );
-
       scheduleBulbFlicker();
-      scheduleRadioFlicker();
-      scheduleDirectLook();
+      scheduleDisplayFlicker();
     }
 
     function stopRoom() {
       playing = false;
 
       playButton.classList.remove("playing");
-      playButton.setAttribute(
-        "aria-label",
-        "Play the boombox"
-      );
 
-      radioLight.classList.remove(
+      displayLight.classList.remove(
         "on",
         "blink"
       );
 
-      roomFlicker.classList.remove("dim");
+      flickerLayer.classList.remove("dim");
 
-      window.clearTimeout(eyeTimer);
       window.clearTimeout(bulbTimer);
-      window.clearTimeout(radioTimer);
-      window.clearTimeout(directLookTimer);
+      window.clearTimeout(displayTimer);
 
-      setEyePosition(0);
       stopMusic();
     }
 
