@@ -307,19 +307,26 @@
   animation: bobEyes 7s ease-in-out infinite;
 }
 @keyframes bobLookAround {
-  0%, 20%, 100% {
-    transform: translateX(-50%) translateX(0);
+  0%, 15%, 100% {
+    transform: translateX(-50%) translate(0px, -2px);
   }
 
-  35%, 45% {
-    transform: translateX(-50%) translateX(-2px);
+  25%, 35% {
+    transform: translateX(-50%) translate(-5px, -2px);
+  }
+
+  45%, 55% {
+    transform: translateX(-50%) translate(5px, -2px);
   }
 
   65%, 75% {
-    transform: translateX(-50%) translateX(2px);
+    transform: translateX(-50%) translate(0px, -5px);
+  }
+
+  85%, 92% {
+    transform: translateX(-50%) translate(3px, -4px);
   }
 }
-
 .pupils {
   animation: bobLookAround 9s ease-in-out infinite;
 }
