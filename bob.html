@@ -230,43 +230,27 @@
       right: 13%;
     }
 
-   .play-button {
+ .play-button {
     position: absolute;
     left: 24.5%;
     top: 65.8%;
     width: 6%;
     height: 4%;
-    opacity: .35;   /* temporary so we can see it */
-    background: red;
+    background: rgba(255,0,0,.35);
     border: 2px solid yellow;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
     z-index: 20;
 }
 
-      border: clamp(1px, 0.15vw, 3px) solid #161613;
-      border-radius: 3px;
-      background: #7a786f;
+.play-button::before{
+    display:none;
+}
 
-      cursor: pointer;
-      appearance: none;
-      -webkit-appearance: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .play-button::before {
-      content: "";
-      position: absolute;
-      left: 38%;
-      top: 27%;
-
-      border-left: clamp(6px, 0.65vw, 12px) solid #171714;
-      border-top: clamp(4px, 0.42vw, 8px) solid transparent;
-      border-bottom: clamp(4px, 0.42vw, 8px) solid transparent;
-    }
-
-    .play-button.playing {
-      transform: translateY(2px);
-      background: #4b4a44;
-    }
+.play-button.playing{
+    background: rgba(0,255,0,.35);
+}
 
     /*
       Visible enough to leave, but still quiet.
