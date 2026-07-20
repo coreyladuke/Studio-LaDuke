@@ -9,7 +9,34 @@
   >
 
   <title>Bob</title>
+.pupils {
+  position: absolute;
+  left: 50%;
+  top: 46.3%;
+  width: 18%;
+  height: 6%;
+  transform: translateX(-50%);
+  z-index: 5;
+  pointer-events: none;
+}
 
+.pupil {
+  position: absolute;
+  top: 50%;
+  width: 10%;
+  aspect-ratio: 1;
+  background: #111;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.pupil-left {
+  left: 33%;
+}
+
+.pupil-right {
+  left: 67%;
+}
   <style>
     * {
       box-sizing: border-box;
@@ -282,7 +309,10 @@
       src="E956061E-F579-4116-BB39-58CB7C272AD3.png"
       alt="Bob sits silently beneath a hanging light in a dark room."
     >
-
+<div class="pupils" aria-hidden="true">
+  <span class="pupil pupil-left"></span>
+  <span class="pupil pupil-right"></span>
+</div>
     <div
       id="flickerLayer"
       class="flicker-layer"
