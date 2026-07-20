@@ -305,21 +305,25 @@
 .pupil {
   animation: bobEyes 7s ease-in-out infinite;
 }
-  @keyframes bobLookAround {
-  0%, 25%, 100% {
-    transform: translateX(-50%) translate(0, 0);
+ @keyframes bobLookAround {
+  0%, 20% {
+    transform: translateX(-50%) translate(0px, 0px);
   }
 
-  35%, 45% {
-    transform: translateX(-50%) translate(-2px, 0);
+  30%, 40% {
+    transform: translateX(-50%) translate(-2px, 0px);
   }
 
-  55%, 65% {
-    transform: translateX(-50%) translate(2px, 0);
+  50%, 60% {
+    transform: translateX(-50%) translate(2px, 0px);
   }
 
-  75%, 85% {
-    transform: translateX(-50%) translate(0, -1px);
+  70%, 80% {
+    transform: translateX(-50%) translate(0px, -1px);
+  }
+
+  90%, 100% {
+    transform: translateX(-50%) translate(0px, 0px);
   }
 }
 
