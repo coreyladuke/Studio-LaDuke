@@ -307,20 +307,16 @@
   animation: bobEyes 7s ease-in-out infinite;
 }
 @keyframes bobLookAround {
-  0%, 25%, 100% {
-    transform: translateX(-50%) translate(0, 0);
+  0%, 20%, 100% {
+    transform: translateX(-50%) translateX(0);
   }
 
   35%, 45% {
-    transform: translateX(-50%) translate(-2px, 0);
+    transform: translateX(-50%) translateX(-2px);
   }
 
-  55%, 65% {
-    transform: translateX(-50%) translate(2px, 0);
-  }
-
-  75%, 85% {
-    transform: translateX(-50%) translate(0, -1px);
+  65%, 75% {
+    transform: translateX(-50%) translateX(2px);
   }
 }
 
