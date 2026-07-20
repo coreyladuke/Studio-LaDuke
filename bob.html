@@ -150,48 +150,14 @@
   background: transparent;
 }
 
-    /*
-      Visible enough to leave, but still quiet.
-    */
-
-    .return-button {
-      position: absolute;
-      right: 2.5%;
-      bottom: 3%;
-      z-index: 10;
-
-      width: 34px;
-      height: 34px;
-
-      display: grid;
-      place-items: center;
-
-      color: rgba(235, 228, 207, 0.35);
-      text-decoration: none;
-      font-family: Georgia, serif;
-      font-size: 22px;
-
-      border: 1px solid rgba(235, 228, 207, 0.12);
-      border-radius: 50%;
-      background: rgba(0,0,0,0.12);
-    }
-
-    .return-button:active {
-      color: rgba(235, 228, 207, 0.8);
-    }
+ 
 
     @media (prefers-reduced-motion: reduce) {
       .flicker-layer {
         transition: none;
       }
     }
-  @keyframes bobEyes {
  
-}
-
-.pupil {
-  animation: bobEyes 7s ease-in-out infinite;
-}
 @keyframes bobLookAround {
   0%, 15%, 100% {
     transform: translateX(-50%) translate(0px, -2px);
