@@ -97,80 +97,7 @@
       background: rgba(0, 0, 0, 0.12);
     }
 
-    /*
-      A cleaner hand-drawn-looking boombox.
-    */
-
-    .boombox {
-      position: absolute;
-      left: 7%;
-      bottom: 7%;
-      width: 18%;
-      aspect-ratio: 1.85 / 1;
-      z-index: 6;
-
-      border: clamp(2px, 0.22vw, 4px) solid #161613;
-      border-radius: 4px;
-
-      background:
-        repeating-linear-gradient(
-          -8deg,
-          rgba(255,255,255,0.035) 0 1px,
-          transparent 1px 7px
-        ),
-        #5b5a52;
-
-      box-shadow: 0 8px 14px rgba(0,0,0,0.4);
-      transform: rotate(-1.5deg);
-    }
-
-    .handle {
-      position: absolute;
-      left: 23%;
-      right: 23%;
-      top: -20%;
-      height: 24%;
-
-      border: clamp(2px, 0.22vw, 4px) solid #161613;
-      border-bottom: 0;
-      border-radius: 5px 5px 0 0;
-    }
-
-    .speaker {
-      position: absolute;
-      top: 27%;
-      width: 31%;
-      aspect-ratio: 1;
-      border-radius: 50%;
-
-      border: clamp(2px, 0.2vw, 4px) solid #161613;
-
-      background:
-        repeating-radial-gradient(
-          circle,
-          #181816 0 1px,
-          #4b4a43 2px 4px
-        );
-    }
-
-    .speaker.left {
-      left: 5%;
-    }
-
-    .speaker.right {
-      right: 5%;
-    }
-
-    .display {
-      position: absolute;
-      left: 40%;
-      top: 17%;
-      width: 20%;
-      height: 17%;
-
-      border: clamp(1px, 0.14vw, 3px) solid #161613;
-      background: #11150f;
-    }
+    
 
   .display-light {
   position: absolute;
@@ -198,37 +125,7 @@
       opacity: 0.18;
     }
 
-    .cassette {
-      position: absolute;
-      left: 40%;
-      top: 42%;
-      width: 20%;
-      height: 31%;
 
-      border: clamp(1px, 0.14vw, 3px) solid #161613;
-      background: #282821;
-    }
-
-    .cassette::before,
-    .cassette::after {
-      content: "";
-      position: absolute;
-      top: 36%;
-      width: 23%;
-      aspect-ratio: 1;
-      border-radius: 50%;
-
-      border: 1px solid #161613;
-      background: #55534b;
-    }
-
-    .cassette::before {
-      left: 13%;
-    }
-
-    .cassette::after {
-      right: 13%;
-    }
 
 .play-button {
   position: absolute;
