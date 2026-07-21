@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Books | Studio LaDuke</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+}
+
+body{
+
+background:
+radial-gradient(circle at center,#2d241d,#080706);
+
+color:#f2eadc;
+
+font-family:Georgia,serif;
+
+min-height:100vh;
+
+overflow-x:hidden;
+
+}
+
+header{
+
+text-align:center;
+
+padding:60px 20px 40px;
+
+}
+
+h1{
+
+font-size:clamp(3rem,9vw,5rem);
+
+}
+
+header p{
+
+margin-top:15px;
+
+color:#b7ada0;
+
+}
+
+.room{
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+padding:60px 20px;
+
+}
+
+.book{
+
+width:240px;
+
+height:340px;
+
+background:
+linear-gradient(90deg,#3f1e1b 0 10%,#8f4337 11%);
+
+border-radius:4px 10px 10px 4px;
+
+box-shadow:
+0 20px 60px rgba(0,0,0,.6);
+
+padding:30px;
+
+display:flex;
+
+flex-direction:column;
+
+justify-content:space-between;
+
+transition:.3s;
+
+text-decoration:none;
+
+color:#f7e6c8;
+
+}
+
+.book:hover{
+
+transform:translateY(-8px) rotate(-2deg);
+
+}
+
+.book h2{
+
+font-size:2rem;
+
+line-height:1.05;
+
+}
+
+.book small{
+
+letter-spacing:.2em;
+
+text-transform:uppercase;
+
+color:#d9c4a3;
+
+}
+
+.shelf{
+
+text-align:center;
+
+margin-top:40px;
+
+color:#867d73;
+
+}
+
+footer{
+
+text-align:center;
+
+padding:50px 20px;
+
+}
+
+footer a{
+
+color:#ddd;
+
+text-decoration:none;
+
+padding:12px 20px;
+
+border:1px solid rgba(255,255,255,.25);
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>Books</h1>
+
+<p>
+Stories that survived becoming real.
+</p>
+
+</header>
+
+<section class="room">
+
+<a class="book" href="#">
+
+<small>Memoir</small>
+
+<h2>
+Everybody
+Deserves
+to Go Home
+</h2>
+
+<div>
+
+First Edition<br>
+
+Coming Soon
+
+</div>
+
+</a>
+
+</section>
+
+<div class="shelf">
+
+More books are already making noise in the workshop.
+
+</div>
+
+<footer>
+
+<a href="directory.html">
+Back to Directory
+</a>
+
+</footer>
+
+</body>
+</html>
