@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <title>Studio LaDuke</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100svh;
+      background:
+        radial-gradient(circle at 50% 30%, #28211f 0, #151313 42%, #080808 100%);
+      color: #f5f1e8;
+      font-family: Georgia, serif;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 28px 18px;
+    }
+
+    .container {
+      width: min(680px, 100%);
+      padding: 42px 26px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(8, 8, 8, 0.48);
+      box-shadow: 0 26px 90px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(3px);
+    }
+
+    h1 {
+      margin: 0 0 18px;
+      font-size: clamp(2.7rem, 10vw, 5rem);
+      letter-spacing: 0.04em;
+      line-height: 0.95;
+    }
+
+    .intro {
+      margin: 0 auto;
+      max-width: 520px;
+      color: #d1cbc2;
+      font-size: clamp(1rem, 4vw, 1.22rem);
+      line-height: 1.7;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 34px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 50px;
+      padding: 13px 24px;
+      border: 2px solid #f5f1e8;
+      color: #f5f1e8;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition:
+        background 180ms ease,
+        color 180ms ease,
+        transform 180ms ease;
+    }
+
+    .button:hover,
+    .button:focus-visible {
+      background: #f5f1e8;
+      color: #111;
+      transform: translateY(-2px);
+    }
+
+    .button.secondary {
+      border-color: #777;
+      color: #aaa;
+    }
+
+    .button.secondary:hover,
+    .button.secondary:focus-visible {
+      background: #aaa;
+      color: #111;
+    }
+
+    .warning {
+      margin-top: 22px;
+      color: #8e877e;
+      font-size: 0.88rem;
+    }
+
+    footer {
+      margin-top: 38px;
+      color: #777;
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+
+    <h1>Studio LaDuke</h1>
+
+    <div class="intro">
+      <p>I make things.</p>
+
+      <p>
+        Some become art.<br>
+        Some become stories.<br>
+        Some become businesses.<br>
+        Some become reasons to keep going.
+      </p>
+
+      <p>
+        This place is still under construction.<br>
+        Fortunately, so is its creator.
+      </p>
+    </div>
+
+    <div class="buttons">
+      <a class="button" href="workshop.html">
+        Come on in.
+      </a>
+
+      <a class="button secondary" href="directory.html">
+        Use normal navigation.
+      </a>
+    </div>
+
+    <p class="warning">
+      The first door may contain thoughts, plants, and unlabeled switches.
+    </p>
+
+    <footer>
+      Made in Ketchikan, Alaska.<br>
+      With curiosity, coffee, and a little sawdust.
+    </footer>
+
+  </main>
+</body>
+</html>
