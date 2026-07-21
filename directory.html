@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <title>Directory | Studio LaDuke</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100svh;
+      padding: 30px 18px;
+      background:
+        linear-gradient(
+          145deg,
+          #f0eadf,
+          #d8d0c3
+        );
+      color: #171717;
+      font-family: Georgia, serif;
+    }
+
+    main {
+      width: min(760px, 100%);
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 28px 0 32px;
+      border-bottom: 3px solid #171717;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.6rem, 10vw, 5rem);
+      line-height: 0.95;
+      letter-spacing: 0.02em;
+    }
+
+    .subtitle {
+      margin: 16px 0 0;
+      color: #54504a;
+      font-size: 1.05rem;
+      line-height: 1.55;
+    }
+
+    nav {
+      margin-top: 25px;
+      border-top: 1px solid #171717;
+    }
+
+    nav a {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+
+      padding: 19px 7px;
+
+      border-bottom:
+        1px solid #171717;
+
+      color: #171717;
+      text-decoration: none;
+      font-size: clamp(1.15rem, 4vw, 1.55rem);
+
+      transition:
+        padding 0.18s,
+        background 0.18s;
+    }
+
+    nav a:hover,
+    nav a:focus-visible {
+      padding-left: 17px;
+      background: rgba(0, 0, 0, 0.07);
+    }
+
+    .status {
+      color: #77716a;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+    }
+
+    .bob-note {
+      margin-top: 36px;
+      padding: 18px 20px;
+
+      border-left:
+        5px solid #171717;
+
+      background:
+        rgba(255, 255, 255, 0.42);
+
+      line-height: 1.55;
+    }
+
+    .return-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .return-links a {
+      display: inline-block;
+      padding: 11px 16px;
+      border: 1px solid #171717;
+      color: #171717;
+      text-decoration: none;
+    }
+
+    .return-links a:hover,
+    .return-links a:focus-visible {
+      background: #171717;
+      color: #f0eadf;
+    }
+
+    footer {
+      margin-top: 48px;
+      padding-top: 18px;
+      border-top: 1px solid #9c958b;
+      color: #69635c;
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main>
+
+    <header>
+      <h1>Studio LaDuke</h1>
+
+      <p class="subtitle">
+        Everything in one plainly labeled place.<br>
+        No puzzles. Almost no suspicious floor panels.
+      </p>
+    </header>
+
+    <nav aria-label="Studio LaDuke directory">
+
+      <a href="about.html">
+        <span>About Corey</span>
+        <span class="status">Coming soon</span>
+      </a>
+
+      <a href="art.html">
+        <span>Artwork</span>
+        <span class="status">Coming soon</span>
+      </a>
+
+      <a href="books.html">
+        <span>Books</span>
+        <span class="status">Coming soon</span>
+      </a>
+
+      <a href="bob.html">
+        <span>Bob’s World</span>
+        <span class="status">Coming soon</span>
+      </a>
+
+      <a href="music.html">
+        <span>Music</span>
+        <span class="status">Coming soon</span>
+      </a>
+
+      <a href="projects.html">
+        <span>Projects</span>
+        <span class="status">Coming soon</span>
+      </a>
+
+      <a href="shop.html">
+        <span>Shop</span>
+        <span class="status">Coming soon</span>
+      </a>
+
+      <a href="contact.html">
+        <span>Contact</span>
+        <span class="status">Coming soon</span>
+      </a>
+
+    </nav>
+
+    <aside class="bob-note">
+      <strong>Bob:</strong>
+      “This is apparently easier.”
+    </aside>
+
+    <div class="return-links">
+
+      <a href="workshop.html">
+        Return to the workshop
+      </a>
+
+      <a href="brain.html">
+        Enter the brain room
+      </a>
+
+      <a href="index.html">
+        Go back outside
+      </a>
+
+    </div>
+
+    <footer>
+      Made in Ketchikan, Alaska.<br>
+      Studio LaDuke is still becoming.
+    </footer>
+
+  </main>
+
+</body>
+</html>
