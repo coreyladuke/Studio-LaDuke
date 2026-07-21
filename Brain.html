@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <title>The Room Inside My Head</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+      overflow: hidden;
+      background: #050505;
+      color: #f4ecd9;
+      font-family: Georgia, serif;
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    .room {
+      position: relative;
+      width: 100vw;
+      height: 100svh;
+      min-height: 580px;
+      overflow: hidden;
+
+      background:
+        radial-gradient(
+          ellipse at 25% 20%,
+          rgba(130, 54, 75, 0.45),
+          transparent 35%
+        ),
+        radial-gradient(
+          ellipse at 75% 35%,
+          rgba(89, 45, 83, 0.5),
+          transparent 34%
+        ),
+        repeating-radial-gradient(
+          ellipse at 50% 15%,
+          #4c2737 0 16px,
+          #66354a 17px 30px,
+          #351b29 31px 45px
+        );
+    }
+
+    .room::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 30;
+
+      background:
+        radial-gradient(
+          circle at 50% 42%,
+          transparent 0 34%,
+          rgba(0, 0, 0, 0.48) 68%,
+          rgba(0, 0, 0, 0.92) 100%
+        );
+    }
+
+    .title {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      z-index: 40;
+      width: 92%;
+      transform: translateX(-50%);
+      text-align: center;
+      pointer-events: none;
+      text-shadow: 0 3px 15px black;
+    }
+
+    .title h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 6vw, 2.6rem);
+      letter-spacing: 0.05em;
+    }
+
+    .title p {
+      margin: 7px 0 0;
+      color: #c7b7bd;
+      font-size: 0.85rem;
+    }
+
+    .cord {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      z-index: 8;
+      width: 3px;
+      height: 20%;
+      transform: translateX(-50%);
+      background: #111;
+    }
+
+    .light-button {
+      position: absolute;
+      top: 18%;
+      left: 50%;
+      z-index: 18;
+      width: 70px;
+      height: 90px;
+      padding: 0;
+      transform: translate(-50%, -10%);
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .bulb {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 48px;
+      height: 58px;
+      transform: translateX(-50%);
+      border: 3px solid #252525;
+      border-radius: 50%;
+      background: #373229;
+      transition: 0.25s;
+    }
+
+    .bulb::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -18px;
+      width: 25px;
+      height: 19px;
+      transform: translateX(-50%);
+
+      background:
+        repeating-linear-gradient(
+          #555 0 3px,
+          #222 4px 6px
+        );
+    }
+
+    .room.light-on .bulb {
+      background: #ffe7a0;
+      border-color: #927741;
+
+      box-shadow:
+        0 0 25px #ffd36f,
+        0 0 90px rgba(255, 211, 111, 0.75),
+        0 0 180px rgba(255, 211, 111, 0.35);
+    }
+
+    .window {
+      position: absolute;
+      top: 28%;
+      left: 6%;
+      z-index: 10;
+      width: min(29vw, 250px);
+      height: min(25vh, 210px);
+      padding: 0;
+      border: 8px solid #281812;
+
+      background:
+        radial-gradient(
+          circle at 72% 24%,
+          #dedbc8 0 5%,
+          transparent 6%
+        ),
+        linear-gradient(
+          #111a2a 0 65%,
+          #071018 66%
+        );
+
+      box-shadow:
+        inset 0 0 28px black,
+        0 15px 35px rgba(0, 0, 0, 0.55);
+
+      cursor: pointer;
+    }
+
+    .window::before,
+    .window::after {
+      content: "";
+      position: absolute;
+      background: #281812;
+    }
+
+    .window::before {
+      top: 0;
+      left: 50%;
+      width: 6px;
+      height: 100%;
+      transform: translateX(-50%);
+    }
+
+    .window::after {
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      transform: translateY(-50%);
+    }
+
+    .window-text {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 15px;
+      color: transparent;
+      text-align: center;
+      font-size: clamp(0.7rem, 2.7vw, 1rem);
+      line-height: 1.35;
+      transition: 0.2s;
+    }
+
+    .room.light-on .window-text {
+      color: #eee4c6;
+      text-shadow: 0 2px 8px black;
+    }
+
+    .floor {
+      position: absolute;
+      left: -10%;
+      bottom: -5%;
+      z-index: 5;
+      width: 120%;
+      height: 38%;
+      transform: perspective(600px) rotateX(55deg);
+      transform-origin: bottom;
+
+      background:
+        repeating-linear-gradient(
+          90deg,
+          #2f1c13 0 47px,
+          #1e120d 48px 52px,
+          #3a2418 53px 99px
+        );
+
+      box-shadow: inset 0 20px 45px black;
+    }
+
+    .table {
+      position: absolute;
+      left: 50%;
+      bottom: 20%;
+      z-index: 14;
+      width: min(60vw, 520px);
+      height: 25px;
+      transform: translateX(-50%);
+      border-radius: 5px;
+
+      background:
+        linear-gradient(
+          #795039,
+          #3e261a
+        );
+
+      box-shadow:
+        0 10px 22px rgba(0, 0, 0, 0.7);
+    }
+
+    .table::before,
+    .table::after {
+      content: "";
+      position: absolute;
+      top: 22px;
+      width: 18px;
+      height: 155px;
+
+      background:
+        linear-gradient(
+          90deg,
+          #26160f,
+          #593622,
+          #24140e
+        );
+    }
+
+    .table::before {
+      left: 10%;
+    }
+
+    .table::after {
+      right: 10%;
+    }
+
+    .bob {
+      position: absolute;
+      left: 50%;
+      bottom: calc(20% + 23px);
+      z-index: 20;
+      width: 125px;
+      height: 185px;
+      transform: translateX(-50%);
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .plant {
+      position: absolute;
+      left: 50%;
+      bottom: 64px;
+      width: 110px;
+      height: 120px;
+      transform: translateX(-50%);
+    }
+
+    .leaf {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 24px;
+      height: 110px;
+      border-radius: 70% 15% 70% 18%;
+      transform-origin: bottom center;
+
+      background:
+        linear-gradient(
+          90deg,
+          #172817,
+          #416932,
+          #1b341b
+        );
+    }
+
+    .leaf:nth-child(1) {
+      transform: translateX(-50%) rotate(-38deg) scale(0.8);
+    }
+
+    .leaf:nth-child(2) {
+      transform: translateX(-50%) rotate(-19deg) scale(0.92);
+    }
+
+    .leaf:nth-child(3) {
+      transform: translateX(-50%);
+    }
+
+    .leaf:nth-child(4) {
+      transform: translateX(-50%) rotate(19deg) scale(0.92);
+    }
+
+    .leaf:nth-child(5) {
+      transform: translateX(-50%) rotate(38deg) scale(0.8);
+    }
+
+    .pot {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 92px;
+      height: 72px;
+      transform: translateX(-50%);
+      border-radius: 7px 7px 27px 27px;
+
+      background:
+        linear-gradient(
+          110deg,
+          #34302b 0 44%,
+          #191816 45% 49%,
+          #4a443d 50%
+        );
+
+      box-shadow:
+        inset 0 7px #1a1917,
+        0 9px 14px rgba(0, 0, 0, 0.55);
+    }
+
+    .pot::after {
+      content: "";
+      position: absolute;
+      top: 14px;
+      left: 30px;
+      width: 5px;
+      height: 47px;
+      border-radius: 4px;
+      background: #d3a54a;
+      transform: rotate(-12deg);
+
+      box-shadow:
+        11px 17px 0 -1px #d3a54a,
+        22px 2px 0 -1px #d3a54a;
+    }
+
+    .eyes {
+      position: absolute;
+      left: 50%;
+      bottom: 32px;
+      width: 52px;
+      height: 12px;
+      transform: translateX(-50%);
+      z-index: 3;
+    }
+
+    .eye {
+      position: absolute;
+      top: 0;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #080808;
+      transition: 0.2s;
+    }
+
+    .eye:first-child {
+      left: 7px;
+    }
+
+    .eye:last-child {
+      right: 7px;
+    }
+
+    .bob.look-up .eye {
+      transform: translateY(-4px);
+    }
+
+    .book {
+      position: absolute;
+      left: 11%;
+      bottom: 24%;
+      z-index: 18;
+      width: min(23vw, 155px);
+      min-height: 68px;
+      padding: 10px;
+      transform: rotate(-6deg);
+      border: 0;
+      border-radius: 3px 8px 8px 3px;
+
+      background:
+        linear-gradient(
+          90deg,
+          #2d1713 0 12%,
+          #773b2d 13%
+        );
+
+      color: #e6cfa7;
+      font-size: clamp(0.58rem, 2vw, 0.86rem);
+      letter-spacing: 0.06em;
+      box-shadow: 8px 10px 18px rgba(0, 0, 0, 0.55);
+      cursor: pointer;
+    }
+
+    .book.open {
+      color: transparent;
+    }
+
+    .book.open::after {
+      content: "LOOK UP";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: #f0d78d;
+      font-weight: bold;
+      text-shadow: 0 2px 6px black;
+    }
+
+    .crack {
+      position: absolute;
+      top: 24%;
+      right: 3%;
+      z-index: 16;
+      width: 90px;
+      height: 230px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      opacity: 0.25;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .crack span {
+      position: absolute;
+      width: 7px;
+      height: 74px;
+      border-radius: 8px;
+      background: #d3a54a;
+      transform-origin: bottom center;
+    }
+
+    .crack span:nth-child(1) {
+      top: 0;
+      left: 48px;
+      transform: rotate(18deg);
+    }
+
+    .crack span:nth-child(2) {
+      top: 58px;
+      left: 34px;
+      transform: rotate(-22deg);
+    }
+
+    .crack span:nth-child(3) {
+      top: 113px;
+      left: 53px;
+      transform: rotate(26deg);
+    }
+
+    .crack span:nth-child(4) {
+      top: 165px;
+      left: 34px;
+      transform: rotate(-18deg);
+    }
+
+    .room.crack-awake .crack {
+      opacity: 1;
+
+      filter:
+        drop-shadow(0 0 8px #d3a54a)
+        drop-shadow(0 0 20px rgba(211, 165, 74, 0.8));
+    }
+
+    .message {
+      position: absolute;
+      left: 50%;
+      bottom: 4%;
+      z-index: 50;
+      width: min(90vw, 670px);
+      min-height: 58px;
+      transform: translateX(-50%);
+      display: grid;
+      place-items: center;
+      padding: 13px 17px;
+
+      border:
+        1px solid rgba(255, 255, 255, 0.18);
+
+      background:
+        rgba(0, 0, 0, 0.74);
+
+      color: #e7dfd1;
+      text-align: center;
+      line-height: 1.35;
+
+      box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.45);
+    }
+
+    .door {
+      position: absolute;
+      top: 48%;
+      left: 50%;
+      z-index: 60;
+      width: min(88vw, 430px);
+      padding: 27px 22px;
+      transform: translate(-50%, -50%) scale(0.92);
+
+      border: 2px solid #d3a54a;
+      background: rgba(8, 7, 6, 0.95);
+      text-align: center;
+
+      box-shadow:
+        0 0 30px rgba(211, 165, 74, 0.3),
+        0 25px 70px rgba(0, 0, 0, 0.8);
+
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.22s;
+    }
+
+    .door.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .door h2 {
+      margin-top: 0;
+      font-size: clamp(1.6rem, 6vw, 2.4rem);
+    }
+
+    .door p {
+      color: #c9c0b2;
+      line-height: 1.5;
+    }
+
+    .door a {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 12px 22px;
+      border: 2px solid #f4ecd9;
+      color: #f4ecd9;
+      text-decoration: none;
+    }
+
+    .back {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      z-index: 70;
+      padding: 9px 11px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.4);
+      color: rgba(255, 255, 255, 0.65);
+      text-decoration: none;
+      font-size: 0.76rem;
+    }
+
+    @media (max-width: 620px) {
+      .window {
+        top: 29%;
+        left: 3%;
+        width: 30vw;
+        height: 19vh;
+        border-width: 6px;
+      }
+
+      .table {
+        width: 65vw;
+      }
+
+      .book {
+        left: 4%;
+        bottom: 25%;
+        width: 25vw;
+      }
+
+      .crack {
+        right: -8px;
+        transform: scale(0.75);
+      }
+
+      .message {
+        bottom: 2%;
+        font-size: 0.84rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="room" id="room">
+
+    <a class="back" href="workshop.html">
+      Back to the workshop
+    </a>
+
+    <div class="title">
+      <h1>The Room Inside My Head</h1>
+      <p>There is a way through. Bob appears unhelpful.</p>
+    </div>
+
+    <div class="cord"></div>
+
+    <button
+      class="light-button"
+      id="lightButton"
+      type="button"
+      aria-label="Turn on the hanging light"
+    >
+      <span class="bulb"></span>
+    </button>
+
+    <button
+      class="window"
+      id="windowButton"
+      type="button"
+      aria-label="Look through the window"
+    >
+      <span class="window-text">
+        THE CRACK REMEMBERS
+      </span>
+    </button>
+
+    <div class="floor"></div>
+    <div class="table"></div>
+
+    <button
+      class="bob"
+      id="bobButton"
+      type="button"
+      aria-label="Talk to Bob"
+    >
+      <span class="plant">
+        <span class="leaf"></span>
+        <span class="leaf"></span>
+        <span class="leaf"></span>
+        <span class="leaf"></span>
+        <span class="leaf"></span>
+      </span>
+
+      <span class="pot"></span>
+
+      <span class="eyes">
+        <span class="eye"></span>
+        <span class="eye"></span>
+      </span>
+    </button>
+
+    <button
+      class="book"
+      id="bookButton"
+      type="button"
+      aria-label="Open the book"
+    >
+      EVERYBODY<br>
+      DESERVES<br>
+      TO GO HOME
+    </button>
+
+    <button
+      class="crack"
+      id="crackButton"
+      type="button"
+      aria-label="Touch the gold crack"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <div
+      class="message"
+      id="message"
+      aria-live="polite"
+    >
+      The room is waiting for you to touch something.
+    </div>
+
+    <section
+      class="door"
+      id="door"
+      aria-hidden="true"
+    >
+      <h2>You found the door.</h2>
+
+      <p>
+        Unfortunately, it leads farther inside.
+      </p>
+
+      <a href="workshop.html">
+        Return to Studio LaDuke
+      </a>
+    </section>
+
+  </main>
+
+  <script>
+    const room = document.getElementById("room");
+    const message = document.getElementById("message");
+    const bobButton = document.getElementById("bobButton");
+    const lightButton = document.getElementById("lightButton");
+    const windowButton = document.getElementById("windowButton");
+    const bookButton = document.getElementById("bookButton");
+    const crackButton = document.getElementById("crackButton");
+    const door = document.getElementById("door");
+
+    let lightOn = false;
+    let bookOpen = false;
+    let crackAwake = false;
+
+    function say(words) {
+      message.textContent = words;
+    }
+
+    bobButton.addEventListener("click", function () {
+      bobButton.classList.add("look-up");
+
+      say(
+        'Bob: “There is a light directly above you. This seems relevant.”'
+      );
+    });
+
+    lightButton.addEventListener("click", function () {
+      lightOn = !lightOn;
+
+      room.classList.toggle("light-on", lightOn);
+
+      if (lightOn) {
+        say("Something appeared in the window.");
+      } else {
+        say("The room folds back into shadow.");
+      }
+    });
+
+    bookButton.addEventListener("click", function () {
+      bookOpen = true;
+      bookButton.classList.add("open");
+
+      say("The book contains two words: LOOK UP.");
+    });
+
+    windowButton.addEventListener("click", function () {
+      if (!lightOn) {
+        say(
+          "The window shows almost nothing. Light may help."
+        );
+
+        return;
+      }
+
+      crackAwake = true;
+      room.classList.add("crack-awake");
+
+      say("THE CRACK REMEMBERS.");
+    });
+
+    crackButton.addEventListener("click", function () {
+      if (!crackAwake) {
+        say(
+          "A dull seam in the wall. It is not ready to become important."
+        );
+
+        return;
+      }
+
+      if (!bookOpen) {
+        say(
+          "The gold warms beneath your hand. Somewhere, a closed book objects."
+        );
+
+        return;
+      }
+
+      door.classList.add("open");
+      door.setAttribute("aria-hidden", "false");
+
+      say("A hidden doorway opens inside the wall.");
+    });
+  </script>
+
+</body>
+</html>
