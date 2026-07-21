@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <title>Bob's World | Studio LaDuke</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100svh;
+      overflow-x: hidden;
+
+      background:
+        radial-gradient(
+          circle at 50% 12%,
+          rgba(255, 244, 190, 0.24),
+          transparent 24%
+        ),
+        linear-gradient(
+          #234938 0%,
+          #162f25 55%,
+          #0b1813 100%
+        );
+
+      color: #f1ecdc;
+      font-family: Georgia, serif;
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    button {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .greenhouse {
+      position: relative;
+      width: 100%;
+      min-height: 100svh;
+      overflow: hidden;
+      padding-bottom: 150px;
+    }
+
+    .greenhouse::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+
+      background:
+        linear-gradient(
+          90deg,
+          transparent 0 9%,
+          rgba(236, 255, 238, 0.08) 10% 11%,
+          transparent 12% 24%,
+          rgba(236, 255, 238, 0.08) 25% 26%,
+          transparent 27% 49%,
+          rgba(236, 255, 238, 0.08) 50% 51%,
+          transparent 52% 74%,
+          rgba(236, 255, 238, 0.08) 75% 76%,
+          transparent 77% 89%,
+          rgba(236, 255, 238, 0.08) 90% 91%,
+          transparent 92%
+        ),
+        linear-gradient(
+          rgba(255, 255, 255, 0.06),
+          transparent 28%
+        );
+
+      z-index: 2;
+    }
+
+    .greenhouse::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 70;
+
+      background:
+        radial-gradient(
+          circle at 50% 45%,
+          transparent 0 46%,
+          rgba(0, 0, 0, 0.24) 72%,
+          rgba(0, 0, 0, 0.63) 100%
+        );
+    }
+
+    .top-nav {
+      position: relative;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px;
+    }
+
+    .top-nav a {
+      padding: 9px 11px;
+
+      border:
+        1px solid rgba(255, 255, 255, 0.2);
+
+      background:
+        rgba(0, 0, 0, 0.32);
+
+      color:
+        rgba(255, 255, 255, 0.73);
+
+      text-decoration: none;
+      font-size: 0.76rem;
+    }
+
+    .header {
+      position: relative;
+      z-index: 60;
+      width: min(92%, 780px);
+      margin: 14px auto 0;
+      text-align: center;
+      text-shadow: 0 4px 14px rgba(0, 0, 0, 0.65);
+    }
+
+    .header p {
+      margin: 0 0 10px;
+      color: #b9d0b8;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 0.7rem;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: clamp(2.8rem, 12vw, 6.6rem);
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+    }
+
+    .header .subtitle {
+      margin: 18px auto 0;
+      max-width: 620px;
+      color: #cbd7c5;
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: clamp(0.94rem, 3vw, 1.1rem);
+      line-height: 1.55;
+    }
+
+    .glass-roof {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      z-index: 1;
+      width: 110%;
+      height: 230px;
+      transform: translateX(-50%);
+
+      background:
+        repeating-linear-gradient(
+          90deg,
+          transparent 0 90px,
+          rgba(255, 255, 255, 0.12) 91px 94px
+        ),
+        linear-gradient(
+          rgba(205, 240, 221, 0.18),
+          transparent
+        );
+
+      clip-path:
+        polygon(
+          50% 0,
+          100% 70%,
+          100% 100%,
+          0 100%,
+          0 70%
+        );
+    }
+
+    .sunbeam {
+      position: absolute;
+      top: 100px;
+      left: 50%;
+      z-index: 3;
+      width: 240px;
+      height: 520px;
+      transform: translateX(-50%);
+      pointer-events: none;
+
+      background:
+        linear-gradient(
+          rgba(255, 239, 154, 0.18),
+          transparent
+        );
+
+      clip-path:
+        polygon(
+          35% 0,
+          65% 0,
+          100% 100%,
+          0 100%
+        );
+    }
+
+    .plants {
+      position: relative;
+      z-index: 30;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(135px, 1fr));
+      gap: 22px 14px;
+      width: min(960px, 94%);
+      margin: 55px auto 0;
+      align-items: end;
+    }
+
+    .plant-button {
+      position: relative;
+      min-height: 245px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .plant-button:active {
+      transform: scale(0.97);
+    }
+
+    .plant-name {
+      position: absolute;
+      left: 50%;
+      bottom: -25px;
+      width: max-content;
+      max-width: 130px;
+      transform: translateX(-50%);
+      color: rgba(238, 241, 224, 0.68);
+      font-size: 0.74rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .pot {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 105px;
+      height: 78px;
+      transform: translateX(-50%);
+      border-radius: 8px 8px 29px 29px;
+
+      background:
+        linear-gradient(
+          110deg,
+          #51473d 0 44%,
+          #211f1b 45% 49%,
+          #675b4d 50%
+        );
+
+      box-shadow:
+        inset 0 8px #201f1c,
+        0 13px 20px rgba(0, 0, 0, 0.45);
+    }
+
+    .soil {
+      position: absolute;
+      top: 3px;
+      left: 50%;
+      width: 88%;
+      height: 17px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: #19110b;
+    }
+
+    .eyes {
+      position: absolute;
+      left: 50%;
+      bottom: 35px;
+      width: 56px;
+      height: 12px;
+      transform: translateX(-50%);
+      z-index: 4;
+    }
+
+    .eye {
+      position: absolute;
+      top: 0;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #080808;
+      transition: transform 0.2s;
+    }
+
+    .eye:first-child {
+      left: 8px;
+    }
+
+    .eye:last-child {
+      right: 8px;
+    }
+
+    .bob .pot::after {
+      content: "";
+      position: absolute;
+      top: 16px;
+      left: 34px;
+      width: 5px;
+      height: 48px;
+      border-radius: 4px;
+      background: #d5a84c;
+      transform: rotate(-14deg);
+
+      box-shadow:
+        12px 17px 0 -1px #d5a84c,
+        24px 3px 0 -1px #d5a84c;
+    }
+
+    .bob .foliage {
+      position: absolute;
+      left: 50%;
+      bottom: 73px;
+      width: 120px;
+      height: 145px;
+      transform: translateX(-50%);
+    }
+
+    .bob .leaf {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 27px;
+      height: 132px;
+      border-radius: 72% 18% 72% 20%;
+      transform-origin: bottom center;
+
+      background:
+        linear-gradient(
+          90deg,
+          #18301c,
+          #4d7a3e,
+          #1c3a20
+        );
+    }
+
+    .bob .leaf:nth-child(1) {
+      transform: translateX(-50%) rotate(-42deg) scale(0.76);
+    }
+
+    .bob .leaf:nth-child(2) {
+      transform: translateX(-50%) rotate(-23deg) scale(0.9);
+    }
+
+    .bob .leaf:nth-child(3) {
+      transform: translateX(-50%);
+    }
+
+    .bob .leaf:nth-child(4) {
+      transform: translateX(-50%) rotate(23deg) scale(0.9);
+    }
+
+    .bob .leaf:nth-child(5) {
+      transform: translateX(-50%) rotate(42deg) scale(0.76);
+    }
+
+    .bob.annoyed .eye:first-child {
+      transform: translateY(-2px) rotate(-14deg);
+    }
+
+    .bob.annoyed .eye:last-child {
+      transform: translateY(-2px) rotate(14deg);
+    }
+
+    .pinky .pot {
+      background:
+        linear-gradient(
+          120deg,
+          #b46e82,
+          #e4a4b3 54%,
+          #8e5367
+        );
+    }
+
+    .pinky .foliage {
+      position: absolute;
+      left: 50%;
+      bottom: 72px;
+      width: 140px;
+      height: 135px;
+      transform: translateX(-50%);
+    }
+
+    .pinky .stem {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 7px;
+      height: 102px;
+      transform: translateX(-50%);
+      border-radius: 6px;
+      background: #32613b;
+    }
+
+    .pinky .flower {
+      position: absolute;
+      left: 50%;
+      top: 4px;
+      width: 58px;
+      height: 58px;
+      transform: translateX(-50%);
+    }
+
+    .pinky .petal {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 27px;
+      height: 35px;
+      border-radius: 70% 70% 48% 48%;
+      transform-origin: 50% 95%;
+      background: #e899ad;
+    }
+
+    .pinky .petal:nth-child(1) {
+      transform: translate(-50%, -100%) rotate(0deg);
+    }
+
+    .pinky .petal:nth-child(2) {
+      transform: translate(-50%, -100%) rotate(72deg);
+    }
+
+    .pinky .petal:nth-child(3) {
+      transform: translate(-50%, -100%) rotate(144deg);
+    }
+
+    .pinky .petal:nth-child(4) {
+      transform: translate(-50%, -100%) rotate(216deg);
+    }
+
+    .pinky .petal:nth-child(5) {
+      transform: translate(-50%, -100%) rotate(288deg);
+    }
+
+    .pinky .flower::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 19px;
+      height: 19px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: #e1b952;
+    }
+
+    .pinky.cheerful .flower {
+      animation: pinky-bounce 0.5s ease;
+    }
+
+    @keyframes pinky-bounce {
+      0% {
+        transform: translateX(-50%) rotate(0deg);
+      }
+
+      50% {
+        transform: translateX(-50%) rotate(8deg) scale(1.08);
+      }
+
+      100% {
+        transform: translateX(-50%) rotate(0deg);
+      }
+    }
+
+    .sunflower .pot {
+      background:
+        linear-gradient(
+          115deg,
+          #86633c,
+          #b99258 56%,
+          #6b4b2c
+        );
+    }
+
+    .sunflower .foliage {
+      position: absolute;
+      left: 50%;
+      bottom: 73px;
+      width: 150px;
+      height: 155px;
+      transform: translateX(-50%);
+    }
+
+    .sunflower .stem {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 9px;
+      height: 125px;
+      transform: translateX(-50%);
+      background: #446629;
+      border-radius: 6px;
+    }
+
+    .sunflower .head {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 69px;
+      height: 69px;
+      transform: translateX(-50%);
+    }
+
+    .sunflower .petal {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 22px;
+      height: 42px;
+      border-radius: 65% 65% 48% 48%;
+      transform-origin: 50% 100%;
+      background: #d6ad32;
+    }
+
+    .sunflower .petal:nth-child(1) {
+      transform: translate(-50%, -100%) rotate(0deg);
+    }
+
+    .sunflower .petal:nth-child(2) {
+      transform: translate(-50%, -100%) rotate(45deg);
+    }
+
+    .sunflower .petal:nth-child(3) {
+      transform: translate(-50%, -100%) rotate(90deg);
+    }
+
+    .sunflower .petal:nth-child(4) {
+      transform: translate(-50%, -100%) rotate(135deg);
+    }
+
+    .sunflower .petal:nth-child(5) {
+      transform: translate(-50%, -100%) rotate(180deg);
+    }
+
+    .sunflower .petal:nth-child(6) {
+      transform: translate(-50%, -100%) rotate(225deg);
+    }
+
+    .sunflower .petal:nth-child(7) {
+      transform: translate(-50%, -100%) rotate(270deg);
+    }
+
+    .sunflower .petal:nth-child(8) {
+      transform: translate(-50%, -100%) rotate(315deg);
+    }
+
+    .sunflower .head::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 33px;
+      height: 33px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background:
+        radial-gradient(
+          #2b1a0d 0 22%,
+          #684115 23% 44%,
+          #2c190d 45%
+        );
+    }
+
+    .sunflower.turn .head {
+      animation: sunflower-turn 0.65s ease;
+    }
+
+    @keyframes sunflower-turn {
+      0% {
+        transform: translateX(-50%) rotate(0deg);
+      }
+
+      50% {
+        transform: translateX(-50%) rotate(-16deg);
+      }
+
+      100% {
+        transform: translateX(-50%) rotate(0deg);
+      }
+    }
+
+    .venus .pot {
+      background:
+        linear-gradient(
+          110deg,
+          #393b33,
+          #656b56 55%,
+          #31342d
+        );
+    }
+
+    .venus .foliage {
+      position: absolute;
+      left: 50%;
+      bottom: 70px;
+      width: 135px;
+      height: 137px;
+      transform: translateX(-50%);
+    }
+
+    .venus .stem {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 7px;
+      height: 95px;
+      transform: translateX(-50%);
+      border-radius: 6px;
+      background: #477044;
+    }
+
+    .venus .mouth {
+      position: absolute;
+      top: 11px;
+      left: 50%;
+      width: 80px;
+      height: 52px;
+      transform: translateX(-50%) rotate(-5deg);
+    }
+
+    .venus .jaw {
+      position: absolute;
+      left: 0;
+      width: 80px;
+      height: 27px;
+      border: 3px solid #4f8b4d;
+      background: #8cb96c;
+      transition: transform 0.18s;
+    }
+
+    .venus .jaw.top {
+      top: 0;
+      border-radius: 50% 50% 8px 8px;
+      transform-origin: bottom;
+    }
+
+    .venus .jaw.bottom {
+      bottom: 0;
+      border-radius: 8px 8px 50% 50%;
+      transform-origin: top;
+    }
+
+    .venus .teeth {
+      position: absolute;
+      left: 8px;
+      width: 64px;
+      height: 5px;
+      background:
+        repeating-linear-gradient(
+          90deg,
+          transparent 0 6px,
+          #e6dec5 7px 10px
+        );
+    }
+
+    .venus .top .teeth {
+      bottom: -4px;
+    }
+
+    .venus .bottom .teeth {
+      top: -4px;
+    }
+
+    .venus.snap .jaw.top {
+      transform: rotate(25deg);
+    }
+
+    .venus.snap .jaw.bottom {
+      transform: rotate(-25deg);
+    }
+
+    .rose .pot {
+      background:
+        linear-gradient(
+          110deg,
+          #5f2929,
+          #8e4c46 55%,
+          #482020
+        );
+    }
+
+    .rose .foliage {
+      position: absolute;
+      left: 50%;
+      bottom: 73px;
+      width: 140px;
+      height: 140px;
+      transform: translateX(-50%);
+    }
+
+    .rose .stem {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 7px;
+      height: 108px;
+      transform: translateX(-50%);
+      background: #355b31;
+    }
+
+    .rose .thorn {
+      position: absolute;
+      width: 13px;
+      height: 8px;
+      background: #355b31;
+      clip-path: polygon(0 50%, 100% 0, 100% 100%);
+    }
+
+    .rose .thorn.one {
+      left: 51%;
+      top: 67px;
+    }
+
+    .rose .thorn.two {
+      right: 50%;
+      top: 92px;
+      transform: rotate(180deg);
+    }
+
+    .rose .flower {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 60px;
+      height: 60px;
+      transform: translateX(-50%);
+      border-radius: 48% 52% 48% 52%;
+
+      background:
+        radial-gradient(
+          circle at 45% 45%,
+          #6e1018 0 14%,
+          #a91f2e 15% 37%,
+          #651019 38% 58%,
+          #a92935 59%
+        );
+
+      box-shadow:
+        0 0 16px rgba(146, 27, 41, 0.4);
+    }
+
+    .rose.recoil .foliage {
+      animation: rose-recoil 0.38s ease;
+    }
+
+    @keyframes rose-recoil {
+      0% {
+        transform: translateX(-50%);
+      }
+
+      50% {
+        transform: translateX(-50%) rotate(6deg);
+      }
+
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
+    .dandelion .pot {
+      background:
+        linear-gradient(
+          110deg,
+          #6d6a54,
+          #a19b78 55%,
+          #585440
+        );
+    }
+
+    .dandelion .foliage {
+      position: absolute;
+      left: 50%;
+      bottom: 72px;
+      width: 140px;
+      height: 135px;
+      transform: translateX(-50%);
+    }
+
+    .dandelion .stem {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 6px;
+      height: 99px;
+      transform: translateX(-50%);
+      background: #5f7b35;
+    }
+
+    .dandelion .puff {
+      position: absolute;
+      top: 4px;
+      left: 50%;
+      width: 67px;
+      height: 67px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+
+      background:
+        radial-gradient(
+          circle,
+          #f1eee0 0 8%,
+          transparent 9%
+        );
+
+      box-shadow:
+        0 -22px 0 -18px #f1eee0,
+        17px -14px 0 -18px #f1eee0,
+        22px 3px 0 -18px #f1eee0,
+        13px 18px 0 -18px #f1eee0,
+        -10px 21px 0 -18px #f1eee0,
+        -22px 7px 0 -18px #f1eee0,
+        -19px -12px 0 -18px #f1eee0,
+        0 0 20px rgba(255, 255, 255, 0.22);
+    }
+
+    .dandelion.wish .puff {
+      animation: wish 0.7s ease;
+    }
+
+    @keyframes wish {
+      0% {
+        transform: translateX(-50%) scale(1);
+        opacity: 1;
+      }
+
+      60% {
+        transform: translateX(-35%) translateY(-10px) scale(1.14);
+        opacity: 0.55;
+      }
+
+      100% {
+        transform: translateX(-50%) scale(1);
+        opacity: 1;
+      }
+    }
+
+    .bench {
+      position: absolute;
+      left: 50%;
+      bottom: 110px;
+      z-index: 15;
+      width: 110%;
+      height: 145px;
+      transform: translateX(-50%);
+
+      background:
+        repeating-linear-gradient(
+          90deg,
+          #5a3a24 0 85px,
+          #3e2719 86px 90px
+        );
+
+      box-shadow:
+        inset 0 18px 28px rgba(0, 0, 0, 0.44),
+        0 -6px 0 #25170f;
+    }
+
+    .message {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      z-index: 120;
+      width: min(92vw, 720px);
+      min-height: 66px;
+      transform: translateX(-50%);
+
+      display: grid;
+      place-items: center;
+      padding: 15px 18px;
+
+      border:
+        1px solid rgba(255, 255, 255, 0.2);
+
+      background:
+        rgba(5, 12, 9, 0.9);
+
+      color: #eee8d8;
+      text-align: center;
+      line-height: 1.4;
+
+      box-shadow:
+        0 12px 35px rgba(0, 0, 0, 0.55);
+
+      backdrop-filter: blur(8px);
+    }
+
+    .secret {
+      position: absolute;
+      right: 4%;
+      bottom: 170px;
+      z-index: 55;
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(255, 244, 173, 0.06);
+      cursor: pointer;
+    }
+
+    .secret::after {
+      content: "•";
+      display: grid;
+      place-items: center;
+      color: rgba(255, 255, 255, 0.13);
+      font-size: 1.6rem;
+    }
+
+    @media (min-width: 720px) {
+      .plants {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 38px 18px;
+        margin-top: 70px;
+      }
+
+      .plant-button {
+        min-height: 280px;
+      }
+    }
+
+    @media (max-width: 460px) {
+      .plants {
+        gap: 30px 4px;
+      }
+
+      .plant-button {
+        transform: scale(0.88);
+      }
+
+      .plant-button:active {
+        transform: scale(0.84);
+      }
+
+      .header h1 {
+        font-size: 3.25rem;
+      }
+
+      .message {
+        bottom: 10px;
+        font-size: 0.86rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="greenhouse">
+
+    <div class="glass-roof"></div>
+    <div class="sunbeam"></div>
+
+    <nav class="top-nav" aria-label="Page navigation">
+      <a href="directory.html">
+        Directory
+      </a>
+
+      <a href="workshop.html">
+        The Workshop
+      </a>
+    </nav>
+
+    <header class="header">
+      <p>Studio LaDuke presents</p>
+
+      <h1>Bob's World</h1>
+
+      <p class="subtitle">
+        A greenhouse full of plants with opinions,
+        boundaries, and no relevant qualifications.
+      </p>
+    </header>
+
+    <section class="plants" aria-label="Bob's greenhouse">
+
+      <button
+        class="plant-button bob"
+        id="bobButton"
+        type="button"
+        aria-label="Talk to Bob"
+      >
+        <span class="foliage">
+          <span class="leaf"></span>
+          <span class="leaf"></span>
+          <span class="leaf"></span>
+          <span class="leaf"></span>
+          <span class="leaf"></span>
+        </span>
+
+        <span class="pot">
+          <span class="soil"></span>
+
+          <span class="eyes">
+            <span class="eye"></span>
+            <span class="eye"></span>
+          </span>
+        </span>
+
+        <span class="plant-name">Bob</span>
+      </button>
+
+      <button
+        class="plant-button pinky"
+        id="pinkyButton"
+        type="button"
+        aria-label="Talk to Pinky"
+      >
+        <span class="foliage">
+          <span class="stem"></span>
+
+          <span class="flower">
+            <span class="petal"></span>
+            <span class="petal"></span>
+            <span class="petal"></span>
+            <span class="petal"></span>
+            <span class="petal"></span>
+          </span>
+        </span>
+
+        <span class="pot">
+          <span class="soil"></span>
+
+          <span class="eyes">
+            <span class="eye"></span>
+            <span class="eye"></span>
+          </span>
+        </span>
+
+        <span class="plant-name">Pinky</span>
+      </button>
+
+      <button
+        class="plant-button sunflower"
+        id="sunflowerButton"
+        type="button"
+        aria-label="Talk to the sunflower"
+      >
+        <span class="foliage">
+          <span class="stem"></span>
+
+          <span class="head">
+            <span class="petal"></span>
+            <span class="petal"></span>
+            <span class="petal"></span>
+            <span class="petal"></span>
+            <span class="petal"></span>
+            <span class="petal"></span>
+            <span class="petal"></span>
+            <span class="petal"></span>
+          </span>
+        </span>
+
+        <span class="pot">
+          <span class="soil"></span>
+
+          <span class="eyes">
+            <span class="eye"></span>
+            <span class="eye"></span>
+          </span>
+        </span>
+
+        <span class="plant-name">Sunflower</span>
+      </button>
+
+      <button
+        class="plant-button venus"
+        id="venusButton"
+        type="button"
+        aria-label="Talk to the Venus flytrap"
+      >
+        <span class="foliage">
+          <span class="stem"></span>
+
+          <span class="mouth">
+            <span class="jaw top">
+              <span class="teeth"></span>
+            </span>
+
+            <span class="jaw bottom">
+              <span class="teeth"></span>
+            </span>
+          </span>
+        </span>
+
+        <span class="pot">
+          <span class="soil"></span>
+
+          <span class="eyes">
+            <span class="eye"></span>
+            <span class="eye"></span>
+          </span>
+        </span>
+
+        <span class="plant-name">Venus Flytrap</span>
+      </button>
+
+      <button
+        class="plant-button rose"
+        id="roseButton"
+        type="button"
+        aria-label="Talk to the rose"
+      >
+        <span class="foliage">
+          <span class="stem"></span>
+          <span class="thorn one"></span>
+          <span class="thorn two"></span>
+          <span class="flower"></span>
+        </span>
+
+        <span class="pot">
+          <span class="soil"></span>
+
+          <span class="eyes">
+            <span class="eye"></span>
+            <span class="eye"></span>
+          </span>
+        </span>
+
+        <span class="plant-name">Rose</span>
+      </button>
+
+      <button
+        class="plant-button dandelion"
+        id="dandelionButton"
+        type="button"
+        aria-label="Talk to the dandelion"
+      >
+        <span class="foliage">
+          <span class="stem"></span>
+          <span class="puff"></span>
+        </span>
+
+        <span class="pot">
+          <span class="soil"></span>
+
+          <span class="eyes">
+            <span class="eye"></span>
+            <span class="eye"></span>
+          </span>
+        </span>
+
+        <span class="plant-name">Dandelion</span>
+      </button>
+
+    </section>
+
+    <div class="bench"></div>
+
+    <button
+      class="secret"
+      id="secretButton"
+      type="button"
+      aria-label="Touch the nearly invisible spot"
+    ></button>
+
+    <div
+      class="message"
+      id="message"
+      aria-live="polite"
+    >
+      The plants have noticed you. They have not reached a consensus.
+    </div>
+
+  </main>
+
+  <script>
+    const message = document.getElementById("message");
+
+    const bobButton = document.getElementById("bobButton");
+    const pinkyButton = document.getElementById("pinkyButton");
+    const sunflowerButton =
+      document.getElementById("sunflowerButton");
+    const venusButton =
+      document.getElementById("venusButton");
+    const roseButton =
+      document.getElementById("roseButton");
+    const dandelionButton =
+      document.getElementById("dandelionButton");
+    const secretButton =
+      document.getElementById("secretButton");
+
+    let bobCount = 0;
+    let pinkyCount = 0;
+    let sunflowerCount = 0;
+    let venusCount = 0;
+    let roseCount = 0;
+    let dandelionCount = 0;
+
+    function say(words) {
+      message.textContent = words;
+    }
+
+    function replayAnimation(element, className) {
+      element.classList.remove(className);
+      void element.offsetWidth;
+      element.classList.add(className);
+    }
+
+    bobButton.addEventListener("click", function () {
+      bobCount += 1;
+      replayAnimation(bobButton, "annoyed");
+
+      const lines = [
+        'Bob: “I would like to appeal.”',
+        'Bob: “The grass is always greener on the outside.”',
+        'Bob: “Nobody needs uninvited guests.”',
+        'Bob: “I have been wrong before. Once.”',
+        'Bob: “I am not being difficult. The situation is poorly designed.”'
+      ];
+
+      say(lines[(bobCount - 1) % lines.length]);
+    });
+
+    pinkyButton.addEventListener("click", function () {
+      pinkyCount += 1;
+      replayAnimation(pinkyButton, "cheerful");
+
+      const lines = [
+        'Pinky: “It is a beautiful day.” Bob disagrees from across the bench.',
+        'Pinky: “We should decorate something.”',
+        'Pinky: “I brought enthusiasm. Nobody assigned me this.”',
+        'Pinky: “Bob likes me. He has chosen not to document it.”'
+      ];
+
+      say(lines[(pinkyCount - 1) % lines.length]);
+    });
+
+    sunflowerButton.addEventListener("click", function () {
+      sunflowerCount += 1;
+      replayAnimation(sunflowerButton, "turn");
+
+      const lines = [
+        'Sunflower: “It is a day.”',
+        'Sunflower: “The sun has returned. This was expected.”',
+        'Sunflower: “I face the light because the wall offers less.”'
+      ];
+
+      say(lines[(sunflowerCount - 1) % lines.length]);
+    });
+
+    venusButton.addEventListener("click", function () {
+      venusCount += 1;
+      replayAnimation(venusButton, "snap");
+
+      const lines = [
+        'Venus Flytrap: “Mmph.”',
+        'Venus Flytrap: “I was still chewing.”',
+        'Venus Flytrap: “Open-mindedness has limits.”',
+        'Venus Flytrap: “Please place complaints directly in my mouth.”'
+      ];
+
+      say(lines[(venusCount - 1) % lines.length]);
+    });
+
+    roseButton.addEventListener("click", function () {
+      roseCount += 1;
+      replayAnimation(roseButton, "recoil");
+
+      const lines = [
+        'Rose: “Gross.”',
+        'Rose: “Admire from a professionally reasonable distance.”',
+        'Rose: “The thorns are not decorative.”',
+        'Rose: “Beauty is not consent to touching.”'
+      ];
+
+      say(lines[(roseCount - 1) % lines.length]);
+    });
+
+    dandelionButton.addEventListener("click", function () {
+      dandelionCount += 1;
+      replayAnimation(dandelionButton, "wish");
+
+      const lines = [
+        'Dandelion: “I go where the wind values me.”',
+        'Dandelion: “Some call it a weed. I call that poor branding.”',
+        'Dandelion: “Make a wish. I accept no responsibility.”',
+        'Dandelion: “Rooted is a temporary arrangement.”'
+      ];
+
+      say(lines[(dandelionCount - 1) % lines.length]);
+    });
+
+    secretButton.addEventListener("click", function () {
+      say(
+        'Bob: “You found the hidden button. It does nothing. This is called realism.”'
+      );
+    });
+  </script>
+
+</body>
+</html>
