@@ -73,9 +73,7 @@
       z-index: 5;
 
       overflow: hidden;
-
       border-radius: 2.4%;
-
       background: #010201;
 
       box-shadow:
@@ -87,10 +85,8 @@
 
     .game-screen {
       display: block;
-
       width: 100%;
       height: 100%;
-
       border: 0;
       background: #010201;
     }
@@ -101,9 +97,7 @@
       z-index: 8;
 
       pointer-events: none;
-
       border-radius: inherit;
-
       opacity: 0.22;
 
       background:
@@ -126,24 +120,53 @@
         inset 0 0 28px rgba(0, 0, 0, 0.92);
     }
 
+    .screen-blackout {
+      position: absolute;
+      inset: 0;
+      z-index: 7;
+
+      pointer-events: none;
+      background: #000;
+
+      opacity: 0;
+      visibility: hidden;
+
+      transition:
+        opacity 170ms ease,
+        visibility 170ms ease;
+    }
+
+    .screen-blackout.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
     .screen-frame.powering-on {
-      animation: screenPower 700ms ease;
+      animation: screenPower 760ms ease;
     }
 
     @keyframes screenPower {
       0% {
         filter: brightness(0);
-        transform: scaleY(0.015);
+        transform: scaleY(0.01);
       }
 
-      35% {
-        filter: brightness(3);
-        transform: scaleY(0.025);
+      24% {
+        filter: brightness(3.5);
+        transform: scaleY(0.018);
       }
 
-      55% {
-        filter: brightness(1.8);
+      43% {
+        filter: brightness(1.9);
         transform: scaleY(1);
+      }
+
+      62% {
+        filter: brightness(0.72);
+      }
+
+      78% {
+        filter: brightness(1.25);
       }
 
       100% {
@@ -152,7 +175,28 @@
       }
     }
 
-    /* PHYSICAL BUTTON HOTSPOTS */
+    .screen-frame.powering-off {
+      animation: screenOff 300ms ease forwards;
+    }
+
+    @keyframes screenOff {
+      0% {
+        filter: brightness(1);
+        transform: scaleY(1);
+      }
+
+      55% {
+        filter: brightness(2.5);
+        transform: scaleY(0.025);
+      }
+
+      100% {
+        filter: brightness(0);
+        transform: scaleY(0.005);
+      }
+    }
+
+    /* PHYSICAL ATTACK BUTTONS */
 
     .cabinet-control {
       position: absolute;
@@ -160,7 +204,6 @@
 
       border: 0;
       border-radius: 50%;
-
       background: transparent;
       cursor: pointer;
 
@@ -174,7 +217,6 @@
       inset: 7%;
 
       border-radius: inherit;
-
       background: transparent;
 
       transition:
@@ -186,7 +228,6 @@
     .cabinet-control.pressed::after,
     .cabinet-control:active::after {
       transform: translateY(6%) scale(0.95);
-
       background: rgba(0, 0, 0, 0.2);
 
       box-shadow:
@@ -197,7 +238,6 @@
     .pot-shot {
       left: 43.1%;
       top: 68.55%;
-
       width: 10%;
       height: 6.6%;
     }
@@ -205,7 +245,6 @@
     .leaf-slap {
       left: 53.8%;
       top: 68.55%;
-
       width: 10%;
       height: 6.6%;
     }
@@ -213,7 +252,6 @@
     .root-problem {
       left: 65.1%;
       top: 68.55%;
-
       width: 10%;
       height: 6.6%;
     }
@@ -221,7 +259,6 @@
     .block {
       left: 76%;
       top: 68.55%;
-
       width: 10%;
       height: 6.6%;
     }
@@ -240,7 +277,6 @@
       z-index: 22;
 
       border-radius: 50%;
-
       touch-action: none;
       cursor: grab;
     }
@@ -248,13 +284,6 @@
     .joystick-zone:active {
       cursor: grabbing;
     }
-
-    /*
-      This invisible puck tracks the player’s finger.
-
-      The real joystick remains visible in the cabinet image,
-      while this adds light and motion over it.
-    */
 
     .joystick-motion {
       position: absolute;
@@ -268,7 +297,6 @@
       transform: translate(-50%, -50%);
 
       pointer-events: none;
-
       border-radius: 50%;
 
       background:
@@ -319,7 +347,6 @@
       inset: 2%;
 
       pointer-events: none;
-
       border-radius: 50%;
 
       opacity: 0;
@@ -335,6 +362,7 @@
 
     .direction-indicator {
       position: absolute;
+
       left: 50%;
       top: -17%;
 
@@ -354,7 +382,6 @@
       letter-spacing: 0.08em;
 
       opacity: 0;
-
       pointer-events: none;
 
       transition: opacity 100ms ease;
@@ -390,6 +417,7 @@
       content: "";
 
       position: absolute;
+
       left: 23%;
       right: 23%;
       top: 5%;
@@ -406,17 +434,39 @@
         transform 100ms ease;
     }
 
+    .coin-button.ready::after {
+      background: rgba(255, 49, 18, 0.24);
+
+      box-shadow:
+        0 0 9px rgba(255, 53, 20, 0.72);
+
+      animation: coinGlow 760ms ease-in-out infinite alternate;
+    }
+
+    @keyframes coinGlow {
+      from {
+        filter: brightness(0.8);
+      }
+
+      to {
+        filter: brightness(1.8);
+
+        box-shadow:
+          0 0 18px rgba(255, 53, 20, 1);
+      }
+    }
+
     .coin-button.pressed::after,
     .coin-button:active::after {
       transform: translateY(3px);
 
-      background: rgba(255, 64, 25, 0.36);
+      background: rgba(255, 64, 25, 0.4);
 
       box-shadow:
         0 0 15px rgba(255, 53, 20, 0.95);
     }
 
-    /* NAVIGATION */
+    /* NAVIGATION AND HINTS */
 
     .back-home {
       position: fixed;
@@ -561,6 +611,11 @@
         allow="autoplay"
       ></iframe>
 
+      <div
+        class="screen-blackout"
+        id="screenBlackout"
+      ></div>
+
       <div class="screen-glass"></div>
     </div>
 
@@ -594,7 +649,7 @@
       aria-label="Block"
     ></button>
 
-    <!-- DRAGGABLE JOYSTICK -->
+    <!-- JOYSTICK -->
 
     <div
       class="joystick-zone"
@@ -617,7 +672,7 @@
     <!-- COIN SLOT -->
 
     <button
-      class="coin-button"
+      class="coin-button ready"
       id="coinButton"
       type="button"
       aria-label="Insert coin and start game"
@@ -643,11 +698,16 @@
   <script>
     "use strict";
 
+    const GAME_FILE = "mortal-komplant.html";
+
     const iframe =
       document.getElementById("gameScreen");
 
     const screenFrame =
       document.getElementById("screenFrame");
+
+    const screenBlackout =
+      document.getElementById("screenBlackout");
 
     const coinButton =
       document.getElementById("coinButton");
@@ -671,11 +731,12 @@
     let gameReady = false;
     let gameStarted = false;
 
-    let joystickActive = false;
-    let currentDirection = "";
-    let lastSentDirection = "";
+    let machineRebooting = false;
+    let startAfterReload = false;
 
+    let joystickActive = false;
     let joystickPointerId = null;
+    let lastSentDirection = "";
 
     function getGameDocument() {
       try {
@@ -792,7 +853,7 @@
     function sendGameCommand(command) {
       const gameWindow = getGameWindow();
 
-      if (!gameWindow) {
+      if (!gameWindow || !gameReady) {
         return;
       }
 
@@ -806,7 +867,11 @@
     }
 
     function sendMove(moveName) {
-      if (!gameStarted || !gameReady) {
+      if (
+        !gameStarted ||
+        !gameReady ||
+        machineRebooting
+      ) {
         return;
       }
 
@@ -820,6 +885,7 @@
       if (
         !gameStarted ||
         !gameReady ||
+        machineRebooting ||
         !direction
       ) {
         return;
@@ -833,28 +899,158 @@
       showComboHint(direction);
     }
 
-    function startOrRestartGame() {
-      if (!gameReady) {
-        return;
+    function gameIsWaitingForQuarter() {
+      const gameDocument = getGameDocument();
+
+      if (!gameDocument) {
+        return false;
       }
 
-      pressVisual(coinButton);
+      const restartButton =
+        gameDocument.getElementById(
+          "restartButton"
+        );
 
-      instruction.classList.add("hidden");
+      const victoryScreen =
+        gameDocument.getElementById(
+          "victoryScreen"
+        );
 
-      screenFrame.classList.remove("powering-on");
+      const restartVisible =
+        restartButton &&
+        restartButton.classList.contains("show");
+
+      const victoryVisible =
+        victoryScreen &&
+        victoryScreen.classList.contains("show");
+
+      return restartVisible || victoryVisible;
+    }
+
+    function gameIsOnStartScreen() {
+      const gameDocument = getGameDocument();
+
+      if (!gameDocument) {
+        return false;
+      }
+
+      const startScreen =
+        gameDocument.getElementById(
+          "startScreen"
+        );
+
+      return (
+        startScreen &&
+        !startScreen.classList.contains("hidden")
+      );
+    }
+
+    function animatePowerOn() {
+      screenBlackout.classList.remove("show");
+
+      screenFrame.classList.remove(
+        "powering-off",
+        "powering-on"
+      );
 
       void screenFrame.offsetWidth;
 
       screenFrame.classList.add("powering-on");
 
       window.setTimeout(() => {
-        sendGameCommand({
-          type: "start"
-        });
+        screenFrame.classList.remove(
+          "powering-on"
+        );
+      }, 800);
+    }
 
-        gameStarted = true;
-      }, 310);
+    function startLoadedGame() {
+      if (!gameReady) {
+        return;
+      }
+
+      gameStarted = true;
+      coinButton.classList.remove("ready");
+
+      sendGameCommand({
+        type: "start"
+      });
+    }
+
+    function rebootMachine() {
+      if (machineRebooting) {
+        return;
+      }
+
+      machineRebooting = true;
+      gameReady = false;
+      gameStarted = false;
+      startAfterReload = true;
+
+      coinButton.classList.remove("ready");
+
+      releaseJoystick();
+
+      screenFrame.classList.remove(
+        "powering-on",
+        "powering-off"
+      );
+
+      void screenFrame.offsetWidth;
+
+      screenFrame.classList.add("powering-off");
+
+      window.setTimeout(() => {
+        screenBlackout.classList.add("show");
+
+        /*
+          The timestamp forces Safari and GitHub Pages
+          to load a completely fresh game document.
+        */
+
+        iframe.src =
+          GAME_FILE +
+          "?reboot=" +
+          Date.now();
+      }, 300);
+    }
+
+    function useCoinSlot() {
+      if (!gameReady || machineRebooting) {
+        return;
+      }
+
+      pressVisual(coinButton);
+      instruction.classList.add("hidden");
+
+      if (gameIsWaitingForQuarter()) {
+        rebootMachine();
+        return;
+      }
+
+      if (gameIsOnStartScreen()) {
+        animatePowerOn();
+
+        window.setTimeout(() => {
+          startLoadedGame();
+        }, 320);
+
+        return;
+      }
+
+      /*
+        Pressing the coin slot during an active fight
+        does not erase the current match.
+      */
+
+      comboHint.textContent =
+        "Finish the fight first.";
+
+      comboHint.classList.add("show");
+
+      window.setTimeout(() => {
+        comboHint.classList.remove("show");
+      }, 1100);
     }
 
     function showComboHint(direction) {
@@ -891,11 +1087,17 @@
       const centerY =
         rect.top + rect.height / 2;
 
-      const deltaX = clientX - centerX;
-      const deltaY = clientY - centerY;
+      const deltaX =
+        clientX - centerX;
+
+      const deltaY =
+        clientY - centerY;
 
       const deadZone =
-        Math.min(rect.width, rect.height) * 0.16;
+        Math.min(
+          rect.width,
+          rect.height
+        ) * 0.16;
 
       if (
         Math.abs(deltaX) < deadZone &&
@@ -943,15 +1145,7 @@
       const direction =
         findDirection(clientX, clientY);
 
-      currentDirection = direction;
-
       displayJoystickDirection(direction);
-
-      /*
-        Send each direction only once until the
-        stick enters another direction or returns
-        to the center.
-      */
 
       if (
         direction &&
@@ -969,8 +1163,6 @@
     function releaseJoystick() {
       joystickActive = false;
       joystickPointerId = null;
-
-      currentDirection = "";
       lastSentDirection = "";
 
       joystickZone.classList.remove(
@@ -988,24 +1180,50 @@
     iframe.addEventListener("load", () => {
       window.setTimeout(() => {
         addCabinetModeStyles();
-      }, 140);
+
+        if (startAfterReload) {
+          startAfterReload = false;
+
+          /*
+            The newly loaded iframe is now completely fresh.
+          */
+
+          screenBlackout.classList.remove("show");
+
+          animatePowerOn();
+
+          window.setTimeout(() => {
+            startLoadedGame();
+
+            machineRebooting = false;
+          }, 420);
+        } else {
+          machineRebooting = false;
+          coinButton.classList.add("ready");
+        }
+      }, 170);
     });
 
     cabinetButtons.forEach((button) => {
-      button.addEventListener("pointerdown", event => {
-        event.preventDefault();
+      button.addEventListener(
+        "pointerdown",
+        event => {
+          event.preventDefault();
 
-        pressVisual(button);
+          pressVisual(button);
 
-        sendMove(button.dataset.move);
-      });
+          sendMove(
+            button.dataset.move
+          );
+        }
+      );
     });
 
     coinButton.addEventListener(
       "pointerdown",
       event => {
         event.preventDefault();
-        startOrRestartGame();
+        useCoinSlot();
       }
     );
 
@@ -1014,7 +1232,10 @@
       event => {
         event.preventDefault();
 
-        if (!gameStarted) {
+        if (
+          !gameStarted ||
+          machineRebooting
+        ) {
           return;
         }
 
@@ -1078,7 +1299,7 @@
     );
 
     /*
-      Keyboard support for desktop testing.
+      Desktop keyboard testing.
     */
 
     document.addEventListener(
@@ -1117,6 +1338,10 @@
 
         if (event.key === "4") {
           sendMove("block");
+        }
+
+        if (event.key === "Enter") {
+          useCoinSlot();
         }
       }
     );
