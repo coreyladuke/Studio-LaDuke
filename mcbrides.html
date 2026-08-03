@@ -30,14 +30,14 @@
       display: grid;
       place-items: center;
       font-family: Arial, sans-serif;
-      touch-action: manipulation;
+      touch-action: none;
+      overscroll-behavior: none;
     }
 
-    /*
-      The cabinet image is 2:3.
-      Everything interactive is positioned as a percentage
-      of this single cabinet frame.
-    */
+    button,
+    a {
+      font: inherit;
+    }
 
     .cabinet {
       position: relative;
@@ -47,21 +47,19 @@
 
       aspect-ratio: 2 / 3;
 
+      overflow: hidden;
+      isolation: isolate;
+
       background:
         url("35611351-2494-4554-9670-224D87D732C8.png")
         center center / 100% 100% no-repeat;
-
-      overflow: hidden;
-      isolation: isolate;
 
       box-shadow:
         0 0 50px rgba(0, 0, 0, 0.95),
         0 0 30px rgba(70, 255, 100, 0.08);
     }
 
-    /*
-      Actual playable game inside the cabinet monitor.
-    */
+    /* GAME MONITOR */
 
     .screen-frame {
       position: absolute;
@@ -84,26 +82,18 @@
         inset 0 0 25px rgba(0, 0, 0, 0.95),
         0 0 9px rgba(90, 255, 110, 0.1);
 
-      transform:
-        perspective(900px)
-        rotateX(0.4deg);
-
       transform-origin: center center;
     }
 
     .game-screen {
+      display: block;
+
       width: 100%;
       height: 100%;
-
-      display: block;
 
       border: 0;
       background: #010201;
     }
-
-    /*
-      CRT glass and scanlines over the iframe.
-    */
 
     .screen-glass {
       position: absolute;
@@ -113,6 +103,8 @@
       pointer-events: none;
 
       border-radius: inherit;
+
+      opacity: 0.22;
 
       background:
         linear-gradient(
@@ -129,8 +121,6 @@
           transparent 1px,
           transparent 4px
         );
-
-      opacity: 0.22;
 
       box-shadow:
         inset 0 0 28px rgba(0, 0, 0, 0.92);
@@ -162,10 +152,7 @@
       }
     }
 
-    /*
-      Invisible physical controls positioned directly
-      over the painted cabinet controls.
-    */
+    /* PHYSICAL BUTTON HOTSPOTS */
 
     .cabinet-control {
       position: absolute;
@@ -180,15 +167,6 @@
       touch-action: manipulation;
     }
 
-    .cabinet-control:focus-visible {
-      outline: 3px solid rgba(255, 240, 150, 0.9);
-      outline-offset: 3px;
-    }
-
-    /*
-      Visible pressed effect layered over the painted buttons.
-    */
-
     .cabinet-control::after {
       content: "";
 
@@ -197,8 +175,7 @@
 
       border-radius: inherit;
 
-      background: rgba(0, 0, 0, 0);
-      box-shadow: none;
+      background: transparent;
 
       transition:
         transform 80ms ease,
@@ -208,17 +185,14 @@
 
     .cabinet-control.pressed::after,
     .cabinet-control:active::after {
-      transform: translateY(5%);
-      background: rgba(0, 0, 0, 0.18);
+      transform: translateY(6%) scale(0.95);
+
+      background: rgba(0, 0, 0, 0.2);
 
       box-shadow:
-        inset 0 6px 9px rgba(0, 0, 0, 0.55),
-        0 0 16px rgba(255, 225, 90, 0.22);
+        inset 0 6px 9px rgba(0, 0, 0, 0.6),
+        0 0 17px rgba(255, 225, 90, 0.28);
     }
-
-    /*
-      Red, blue, yellow and green cabinet buttons.
-    */
 
     .pot-shot {
       left: 43.1%;
@@ -252,64 +226,145 @@
       height: 6.6%;
     }
 
-    /*
-      Joystick area.
-      It triggers Bob’s quickest attack and visibly tilts.
-    */
+    /* JOYSTICK */
 
-    .joystick-hotspot {
+    .joystick-zone {
       position: absolute;
 
-      left: 14.3%;
-      top: 64%;
+      left: 11.5%;
+      top: 62.1%;
 
-      width: 17%;
-      height: 12%;
+      width: 22%;
+      height: 15%;
 
-      z-index: 20;
+      z-index: 22;
 
-      border: 0;
       border-radius: 50%;
 
-      background: transparent;
-      cursor: pointer;
-
-      touch-action: manipulation;
+      touch-action: none;
+      cursor: grab;
     }
 
-    .joystick-knob {
+    .joystick-zone:active {
+      cursor: grabbing;
+    }
+
+    /*
+      This invisible puck tracks the player’s finger.
+
+      The real joystick remains visible in the cabinet image,
+      while this adds light and motion over it.
+    */
+
+    .joystick-motion {
       position: absolute;
 
-      left: 17.9%;
-      top: 64.2%;
+      left: 50%;
+      top: 44%;
 
-      width: 9.5%;
-      height: 6.4%;
+      width: 43%;
+      height: 43%;
 
-      z-index: 18;
+      transform: translate(-50%, -50%);
 
       pointer-events: none;
 
       border-radius: 50%;
 
-      transition: transform 120ms ease;
+      background:
+        radial-gradient(
+          circle at 38% 28%,
+          rgba(255, 255, 255, 0.23),
+          transparent 30%
+        );
+
+      opacity: 0;
+
+      box-shadow:
+        0 0 20px rgba(255, 45, 20, 0.36);
+
+      transition:
+        transform 90ms ease,
+        opacity 120ms ease;
     }
 
-    .joystick-knob.move-right {
+    .joystick-zone.active .joystick-motion {
+      opacity: 1;
+    }
+
+    .joystick-zone.direction-left .joystick-motion {
       transform:
-        translate(19%, 5%)
-        rotate(9deg);
+        translate(-78%, -50%)
+        rotate(-10deg);
     }
 
-    .joystick-knob.move-left {
+    .joystick-zone.direction-right .joystick-motion {
       transform:
-        translate(-19%, 5%)
-        rotate(-9deg);
+        translate(-22%, -50%)
+        rotate(10deg);
     }
 
-    /*
-      Coin slot acts as INSERT COIN / START.
-    */
+    .joystick-zone.direction-up .joystick-motion {
+      transform:
+        translate(-50%, -80%);
+    }
+
+    .joystick-zone.direction-down .joystick-motion {
+      transform:
+        translate(-50%, -18%);
+    }
+
+    .joystick-guide {
+      position: absolute;
+      inset: 2%;
+
+      pointer-events: none;
+
+      border-radius: 50%;
+
+      opacity: 0;
+
+      border: 1px solid rgba(234, 192, 90, 0.35);
+
+      transition: opacity 130ms ease;
+    }
+
+    .joystick-zone.active .joystick-guide {
+      opacity: 1;
+    }
+
+    .direction-indicator {
+      position: absolute;
+      left: 50%;
+      top: -17%;
+
+      transform: translateX(-50%);
+
+      min-width: 62px;
+      padding: 4px 7px;
+
+      color: #f2d58d;
+      background: rgba(10, 8, 6, 0.78);
+
+      border: 1px solid rgba(224, 174, 72, 0.5);
+      border-radius: 4px;
+
+      text-align: center;
+      font-size: clamp(0.48rem, 1.9vw, 0.67rem);
+      letter-spacing: 0.08em;
+
+      opacity: 0;
+
+      pointer-events: none;
+
+      transition: opacity 100ms ease;
+    }
+
+    .joystick-zone.active .direction-indicator {
+      opacity: 1;
+    }
+
+    /* COIN SLOT */
 
     .coin-button {
       position: absolute;
@@ -338,6 +393,7 @@
       left: 23%;
       right: 23%;
       top: 5%;
+
       height: 25%;
 
       border-radius: 4px;
@@ -354,15 +410,13 @@
     .coin-button:active::after {
       transform: translateY(3px);
 
-      background: rgba(255, 64, 25, 0.35);
+      background: rgba(255, 64, 25, 0.36);
 
       box-shadow:
-        0 0 15px rgba(255, 53, 20, 0.9);
+        0 0 15px rgba(255, 53, 20, 0.95);
     }
 
-    /*
-      Small home control that does not cover cabinet artwork.
-    */
+    /* NAVIGATION */
 
     .back-home {
       position: fixed;
@@ -389,11 +443,6 @@
       box-shadow:
         0 4px 12px rgba(0, 0, 0, 0.45);
     }
-
-    /*
-      Temporary instruction.
-      It disappears after the first coin press.
-    */
 
     .instruction {
       position: absolute;
@@ -429,10 +478,42 @@
       visibility: hidden;
     }
 
-    /*
-      On wide desktop screens, preserve the full cabinet
-      instead of stretching it sideways.
-    */
+    .combo-hint {
+      position: absolute;
+
+      left: 50%;
+      top: 77.3%;
+      z-index: 25;
+
+      transform: translateX(-50%);
+
+      width: 78%;
+      padding: 5px 7px;
+
+      color: #b8ed70;
+      background: rgba(4, 10, 4, 0.76);
+
+      border: 1px solid rgba(122, 193, 67, 0.42);
+      border-radius: 4px;
+
+      text-align: center;
+      font-size: clamp(0.45rem, 1.7vw, 0.61rem);
+      letter-spacing: 0.04em;
+
+      opacity: 0;
+      visibility: hidden;
+
+      pointer-events: none;
+
+      transition:
+        opacity 180ms ease,
+        visibility 180ms ease;
+    }
+
+    .combo-hint.show {
+      opacity: 1;
+      visibility: visible;
+    }
 
     @media (min-aspect-ratio: 2 / 3) {
       .cabinet {
@@ -443,7 +524,7 @@
 
     @media (prefers-reduced-motion: reduce) {
       .screen-frame,
-      .joystick-knob,
+      .joystick-motion,
       .cabinet-control::after,
       .coin-button::after {
         animation: none;
@@ -464,6 +545,7 @@
 
   <main
     class="cabinet"
+    id="cabinet"
     aria-label="Mortal KomPlant arcade cabinet"
   >
 
@@ -482,7 +564,7 @@
       <div class="screen-glass"></div>
     </div>
 
-    <!-- Invisible controls over the painted cabinet buttons -->
+    <!-- CABINET ATTACK BUTTONS -->
 
     <button
       class="cabinet-control pot-shot"
@@ -512,22 +594,27 @@
       aria-label="Block"
     ></button>
 
-    <!-- Joystick -->
+    <!-- DRAGGABLE JOYSTICK -->
 
     <div
-      class="joystick-knob"
-      id="joystickKnob"
-      aria-hidden="true"
-    ></div>
+      class="joystick-zone"
+      id="joystickZone"
+      role="button"
+      tabindex="0"
+      aria-label="Directional joystick"
+    >
+      <div class="joystick-guide"></div>
+      <div class="joystick-motion"></div>
 
-    <button
-      class="joystick-hotspot"
-      id="joystick"
-      type="button"
-      aria-label="Move joystick"
-    ></button>
+      <div
+        class="direction-indicator"
+        id="directionIndicator"
+      >
+        JOYSTICK
+      </div>
+    </div>
 
-    <!-- Coin slot -->
+    <!-- COIN SLOT -->
 
     <button
       class="coin-button"
@@ -537,11 +624,18 @@
     ></button>
 
     <div
+      class="combo-hint"
+      id="comboHint"
+    >
+      Power move: UP → POT SHOT
+    </div>
+
+    <div
       class="instruction"
       id="instruction"
     >
       Tap the glowing 25¢ coin slot to start.
-      Then use the cabinet buttons.
+      Drag the joystick and use the colored buttons.
     </div>
 
   </main>
@@ -549,14 +643,26 @@
   <script>
     "use strict";
 
-    const iframe = document.getElementById("gameScreen");
-    const screenFrame = document.getElementById("screenFrame");
+    const iframe =
+      document.getElementById("gameScreen");
 
-    const coinButton = document.getElementById("coinButton");
-    const joystick = document.getElementById("joystick");
-    const joystickKnob = document.getElementById("joystickKnob");
+    const screenFrame =
+      document.getElementById("screenFrame");
 
-    const instruction = document.getElementById("instruction");
+    const coinButton =
+      document.getElementById("coinButton");
+
+    const instruction =
+      document.getElementById("instruction");
+
+    const comboHint =
+      document.getElementById("comboHint");
+
+    const joystickZone =
+      document.getElementById("joystickZone");
+
+    const directionIndicator =
+      document.getElementById("directionIndicator");
 
     const cabinetButtons = Array.from(
       document.querySelectorAll(".cabinet-control")
@@ -565,17 +671,32 @@
     let gameReady = false;
     let gameStarted = false;
 
-    /*
-      Because both pages live on studioladuke.com,
-      the cabinet is allowed to control the game iframe.
-    */
+    let joystickActive = false;
+    let currentDirection = "";
+    let lastSentDirection = "";
+
+    let joystickPointerId = null;
 
     function getGameDocument() {
       try {
-        return iframe.contentDocument ||
-          iframe.contentWindow.document;
+        return (
+          iframe.contentDocument ||
+          iframe.contentWindow.document
+        );
       } catch (error) {
-        console.error("Could not access game screen:", error);
+        console.error(
+          "Unable to access game iframe:",
+          error
+        );
+
+        return null;
+      }
+    }
+
+    function getGameWindow() {
+      try {
+        return iframe.contentWindow;
+      } catch (error) {
         return null;
       }
     }
@@ -587,15 +708,20 @@
         return;
       }
 
-      /*
-        Hide the webpage control buttons inside the monitor.
-        The physical cabinet controls replace them.
+      const existingStyle =
+        gameDocument.getElementById(
+          "cabinetModeStyles"
+        );
 
-        The fight stage is stretched downward to use
-        all of the available monitor space.
-      */
+      if (existingStyle) {
+        gameReady = true;
+        return;
+      }
 
-      const style = gameDocument.createElement("style");
+      const style =
+        gameDocument.createElement("style");
+
+      style.id = "cabinetModeStyles";
 
       style.textContent = `
         .controls,
@@ -616,20 +742,29 @@
         }
 
         .start-screen {
-          padding: 6px !important;
+          padding: 5px !important;
         }
 
         .start-card {
-          transform: scale(0.88);
+          transform: scale(0.86);
         }
 
         .title {
-          font-size: clamp(1.8rem, 10vw, 4rem) !important;
+          font-size: clamp(
+            1.7rem,
+            10vw,
+            4rem
+          ) !important;
         }
 
         .subtitle {
           margin-top: 7px !important;
-          font-size: clamp(0.9rem, 4vw, 1.7rem) !important;
+
+          font-size: clamp(
+            0.85rem,
+            4vw,
+            1.6rem
+          ) !important;
         }
 
         .insert {
@@ -654,26 +789,52 @@
       }, 150);
     }
 
-    function clickGameMove(moveName) {
-      const gameDocument = getGameDocument();
+    function sendGameCommand(command) {
+      const gameWindow = getGameWindow();
 
-      if (!gameDocument || !gameReady) {
+      if (!gameWindow) {
         return;
       }
 
-      const button = gameDocument.querySelector(
-        `.move[data-move="${moveName}"]`
+      gameWindow.postMessage(
+        {
+          game: "mortal-komplant",
+          ...command
+        },
+        "*"
       );
+    }
 
-      if (button && !button.disabled) {
-        button.click();
+    function sendMove(moveName) {
+      if (!gameStarted || !gameReady) {
+        return;
       }
+
+      sendGameCommand({
+        type: "move",
+        move: moveName
+      });
+    }
+
+    function sendJoystick(direction) {
+      if (
+        !gameStarted ||
+        !gameReady ||
+        !direction
+      ) {
+        return;
+      }
+
+      sendGameCommand({
+        type: "joystick",
+        direction
+      });
+
+      showComboHint(direction);
     }
 
     function startOrRestartGame() {
-      const gameDocument = getGameDocument();
-
-      if (!gameDocument || !gameReady) {
+      if (!gameReady) {
         return;
       }
 
@@ -681,108 +842,294 @@
 
       instruction.classList.add("hidden");
 
-      /*
-        First coin press starts the attract screen.
-      */
+      screenFrame.classList.remove("powering-on");
 
-      const startButton =
-        gameDocument.getElementById("startButton");
+      void screenFrame.offsetWidth;
 
-      const startScreen =
-        gameDocument.getElementById("startScreen");
+      screenFrame.classList.add("powering-on");
 
-      if (
-        startButton &&
-        startScreen &&
-        !startScreen.classList.contains("hidden")
-      ) {
-        screenFrame.classList.remove("powering-on");
+      window.setTimeout(() => {
+        sendGameCommand({
+          type: "start"
+        });
 
-        void screenFrame.offsetWidth;
+        gameStarted = true;
+      }, 310);
+    }
 
-        screenFrame.classList.add("powering-on");
+    function showComboHint(direction) {
+      if (direction === "up") {
+        comboHint.textContent =
+          "RAZOR ALOE: now press POT SHOT";
+
+        comboHint.classList.add("show");
 
         window.setTimeout(() => {
-          startButton.click();
-        }, 310);
-
-        gameStarted = true;
-        return;
+          comboHint.classList.remove("show");
+        }, 1400);
       }
 
-      /*
-        After a completed match, the same coin slot
-        presses Fight Again.
-      */
+      if (direction === "down") {
+        comboHint.textContent =
+          "FINISHER: DOWN → RIGHT → ROOT";
 
-      const restartButton =
-        gameDocument.getElementById("restartButton");
+        comboHint.classList.add("show");
 
-      if (
-        restartButton &&
-        restartButton.classList.contains("show")
-      ) {
-        restartButton.click();
-        gameStarted = true;
+        window.setTimeout(() => {
+          comboHint.classList.remove("show");
+        }, 1600);
       }
     }
 
-    iframe.addEventListener("load", () => {
+    function findDirection(clientX, clientY) {
+      const rect =
+        joystickZone.getBoundingClientRect();
+
+      const centerX =
+        rect.left + rect.width / 2;
+
+      const centerY =
+        rect.top + rect.height / 2;
+
+      const deltaX = clientX - centerX;
+      const deltaY = clientY - centerY;
+
+      const deadZone =
+        Math.min(rect.width, rect.height) * 0.16;
+
+      if (
+        Math.abs(deltaX) < deadZone &&
+        Math.abs(deltaY) < deadZone
+      ) {
+        return "";
+      }
+
+      if (
+        Math.abs(deltaX) >
+        Math.abs(deltaY)
+      ) {
+        return deltaX < 0
+          ? "left"
+          : "right";
+      }
+
+      return deltaY < 0
+        ? "up"
+        : "down";
+    }
+
+    function displayJoystickDirection(direction) {
+      joystickZone.classList.remove(
+        "direction-left",
+        "direction-right",
+        "direction-up",
+        "direction-down"
+      );
+
+      if (direction) {
+        joystickZone.classList.add(
+          "direction-" + direction
+        );
+
+        directionIndicator.textContent =
+          direction.toUpperCase();
+      } else {
+        directionIndicator.textContent =
+          "JOYSTICK";
+      }
+    }
+
+    function updateJoystick(clientX, clientY) {
+      const direction =
+        findDirection(clientX, clientY);
+
+      currentDirection = direction;
+
+      displayJoystickDirection(direction);
+
       /*
-        A brief delay lets the game finish building its DOM.
+        Send each direction only once until the
+        stick enters another direction or returns
+        to the center.
       */
 
+      if (
+        direction &&
+        direction !== lastSentDirection
+      ) {
+        sendJoystick(direction);
+        lastSentDirection = direction;
+      }
+
+      if (!direction) {
+        lastSentDirection = "";
+      }
+    }
+
+    function releaseJoystick() {
+      joystickActive = false;
+      joystickPointerId = null;
+
+      currentDirection = "";
+      lastSentDirection = "";
+
+      joystickZone.classList.remove(
+        "active",
+        "direction-left",
+        "direction-right",
+        "direction-up",
+        "direction-down"
+      );
+
+      directionIndicator.textContent =
+        "JOYSTICK";
+    }
+
+    iframe.addEventListener("load", () => {
       window.setTimeout(() => {
         addCabinetModeStyles();
-      }, 120);
+      }, 140);
     });
 
     cabinetButtons.forEach((button) => {
-      button.addEventListener("click", () => {
+      button.addEventListener("pointerdown", event => {
+        event.preventDefault();
+
         pressVisual(button);
+
+        sendMove(button.dataset.move);
+      });
+    });
+
+    coinButton.addEventListener(
+      "pointerdown",
+      event => {
+        event.preventDefault();
+        startOrRestartGame();
+      }
+    );
+
+    joystickZone.addEventListener(
+      "pointerdown",
+      event => {
+        event.preventDefault();
 
         if (!gameStarted) {
           return;
         }
 
-        clickGameMove(button.dataset.move);
-      });
-    });
+        joystickActive = true;
+        joystickPointerId = event.pointerId;
 
-    joystick.addEventListener("click", () => {
-      if (!gameStarted) {
-        return;
-      }
+        joystickZone.classList.add("active");
 
-      const moveRight = Math.random() > 0.5;
-
-      joystickKnob.classList.remove(
-        "move-left",
-        "move-right"
-      );
-
-      joystickKnob.classList.add(
-        moveRight ? "move-right" : "move-left"
-      );
-
-      /*
-        The joystick currently triggers Bob’s quickest move.
-        Later it can handle actual walking and crouching.
-      */
-
-      clickGameMove("pot");
-
-      window.setTimeout(() => {
-        joystickKnob.classList.remove(
-          "move-left",
-          "move-right"
+        joystickZone.setPointerCapture(
+          event.pointerId
         );
-      }, 260);
-    });
 
-    coinButton.addEventListener(
-      "click",
-      startOrRestartGame
+        updateJoystick(
+          event.clientX,
+          event.clientY
+        );
+      }
+    );
+
+    joystickZone.addEventListener(
+      "pointermove",
+      event => {
+        if (
+          !joystickActive ||
+          event.pointerId !== joystickPointerId
+        ) {
+          return;
+        }
+
+        event.preventDefault();
+
+        updateJoystick(
+          event.clientX,
+          event.clientY
+        );
+      }
+    );
+
+    joystickZone.addEventListener(
+      "pointerup",
+      event => {
+        if (
+          event.pointerId !== joystickPointerId
+        ) {
+          return;
+        }
+
+        event.preventDefault();
+        releaseJoystick();
+      }
+    );
+
+    joystickZone.addEventListener(
+      "pointercancel",
+      releaseJoystick
+    );
+
+    joystickZone.addEventListener(
+      "lostpointercapture",
+      releaseJoystick
+    );
+
+    /*
+      Keyboard support for desktop testing.
+    */
+
+    document.addEventListener(
+      "keydown",
+      event => {
+        const keyMap = {
+          ArrowLeft: "left",
+          ArrowRight: "right",
+          ArrowUp: "up",
+          ArrowDown: "down"
+        };
+
+        const direction =
+          keyMap[event.key];
+
+        if (direction) {
+          event.preventDefault();
+
+          joystickZone.classList.add("active");
+
+          displayJoystickDirection(direction);
+          sendJoystick(direction);
+        }
+
+        if (event.key === "1") {
+          sendMove("pot");
+        }
+
+        if (event.key === "2") {
+          sendMove("leaf");
+        }
+
+        if (event.key === "3") {
+          sendMove("root");
+        }
+
+        if (event.key === "4") {
+          sendMove("block");
+        }
+      }
+    );
+
+    document.addEventListener(
+      "keyup",
+      event => {
+        if (
+          event.key.startsWith("Arrow")
+        ) {
+          releaseJoystick();
+        }
+      }
     );
   </script>
 
