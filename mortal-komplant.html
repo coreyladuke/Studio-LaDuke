@@ -15,9 +15,8 @@
       --gold: #e4b554;
       --cream: #f2dfb2;
       --green: #78b83d;
-      --bright-green: #b9ff55;
+      --bright-green: #c6ff65;
       --red: #cc382d;
-      --dark: #050806;
     }
 
     * {
@@ -75,12 +74,7 @@
         radial-gradient(circle at 32% 27%, #66d33c 0 3px, transparent 5px),
         radial-gradient(circle at 68% 29%, #f3cb38 0 3px, transparent 5px),
         radial-gradient(circle at 82% 47%, #9a45ff 0 3px, transparent 5px),
-        radial-gradient(circle at 94% 31%, #19dec3 0 3px, transparent 5px),
-        repeating-linear-gradient(
-          90deg,
-          rgba(255,255,255,0.025) 0 2px,
-          transparent 2px 90px
-        );
+        radial-gradient(circle at 94% 31%, #19dec3 0 3px, transparent 5px);
     }
 
     .floor {
@@ -159,12 +153,13 @@
       position: relative;
       height: clamp(17px, 3.5vw, 25px);
       overflow: hidden;
+
       background: #310b09;
       border: 2px solid #0b0b09;
 
       box-shadow:
         0 0 0 1px rgba(228, 181, 84, 0.75),
-        inset 0 2px 4px rgba(0,0,0,0.8);
+        inset 0 2px 4px rgba(0, 0, 0, 0.8);
     }
 
     .health {
@@ -196,8 +191,10 @@
     .health-number {
       position: absolute;
       inset: 0;
+
       display: grid;
       place-items: center;
+
       font-family: Arial, sans-serif;
       font-size: clamp(0.55rem, 2vw, 0.75rem);
       font-weight: 900;
@@ -208,8 +205,9 @@
       height: 7px;
       margin-top: 4px;
       overflow: hidden;
+
       background: #141819;
-      border: 1px solid rgba(228,181,84,0.65);
+      border: 1px solid rgba(228, 181, 84, 0.65);
     }
 
     .power {
@@ -224,6 +222,11 @@
       background: linear-gradient(90deg, #6dff1f, #e7ff66);
     }
 
+    .enemy .power {
+      margin-left: auto;
+      background: linear-gradient(90deg, #ff7b28, #ffe05a);
+    }
+
     @keyframes powerPulse {
       from {
         filter: brightness(1);
@@ -234,11 +237,6 @@
         filter: brightness(1.8);
         box-shadow: 0 0 16px #caff55;
       }
-    }
-
-    .enemy .power {
-      margin-left: auto;
-      background: linear-gradient(90deg, #ff7b28, #ffe05a);
     }
 
     .center-hud {
@@ -253,7 +251,7 @@
 
       text-shadow:
         2px 2px 0 #000,
-        0 0 10px rgba(228,181,84,0.42);
+        0 0 10px rgba(228, 181, 84, 0.42);
     }
 
     .round-text {
@@ -275,6 +273,7 @@
     .round-dot {
       width: 9px;
       height: 9px;
+
       border-radius: 50%;
       border: 1px solid var(--gold);
       background: #171717;
@@ -282,7 +281,7 @@
 
     .round-dot.won {
       background: var(--gold);
-      box-shadow: 0 0 8px rgba(228,181,84,0.8);
+      box-shadow: 0 0 8px rgba(228, 181, 84, 0.8);
     }
 
     /* FIGHTERS */
@@ -297,6 +296,7 @@
       display: flex;
       align-items: end;
       justify-content: space-between;
+
       padding: 0 3% 1%;
     }
 
@@ -308,7 +308,7 @@
       transform-origin: center bottom;
 
       filter:
-        drop-shadow(0 14px 12px rgba(0,0,0,0.75))
+        drop-shadow(0 14px 12px rgba(0, 0, 0, 0.75))
         saturate(1.08)
         contrast(1.05);
 
@@ -346,9 +346,9 @@
       background:
         linear-gradient(
           to bottom,
-          rgba(5,8,5,0.02),
-          rgba(5,8,5,0.07) 58%,
-          rgba(5,8,5,0.52) 100%
+          transparent,
+          rgba(5, 8, 5, 0.06) 58%,
+          rgba(5, 8, 5, 0.5)
         );
 
       mix-blend-mode: multiply;
@@ -382,12 +382,85 @@
       }
     }
 
+    /* UNIQUE BOB MOVE ANIMATIONS */
+
+    .bob.pot-shot-animation {
+      animation: potShotBob 440ms ease !important;
+    }
+
+    @keyframes potShotBob {
+      0%, 100% {
+        transform: translateX(0) rotate(0);
+      }
+
+      25% {
+        transform: translateX(-15px) rotate(-8deg);
+      }
+
+      55% {
+        transform: translateX(22px) rotate(7deg);
+      }
+    }
+
+    .bob.leaf-slap-animation {
+      animation: leafSlapBob 520ms ease !important;
+    }
+
+    @keyframes leafSlapBob {
+      0%, 100% {
+        transform: rotate(0) scale(1);
+      }
+
+      25% {
+        transform: rotate(-13deg) scale(0.96);
+      }
+
+      60% {
+        transform:
+          translateX(45px)
+          rotate(17deg)
+          scale(1.08);
+      }
+    }
+
+    .bob.root-animation {
+      animation: rootBob 650ms ease !important;
+    }
+
+    @keyframes rootBob {
+      0%, 100% {
+        transform: translateY(0);
+      }
+
+      28% {
+        transform:
+          translateY(18px)
+          scaleY(0.88);
+      }
+
+      55% {
+        transform:
+          translateY(-8px)
+          scaleY(1.05);
+      }
+    }
+
+    .bob.blocking {
+      transform:
+        translateY(18px)
+        scale(0.91);
+
+      filter:
+        drop-shadow(0 0 24px rgba(255, 212, 83, 0.95))
+        brightness(1.15);
+    }
+
     .bob.dodge-left {
-      animation: dodgeLeft 360ms ease;
+      animation: dodgeLeft 360ms ease !important;
     }
 
     .bob.dodge-right {
-      animation: dodgeRight 360ms ease;
+      animation: dodgeRight 360ms ease !important;
     }
 
     @keyframes dodgeLeft {
@@ -402,15 +475,9 @@
       }
     }
 
-    .bob.crouching {
-      transform: translateY(24px) scaleY(0.84);
-      filter:
-        drop-shadow(0 0 22px rgba(80, 180, 255, 0.85))
-        brightness(1.1);
-    }
-
     .bob.charging {
-      animation: chargePower 520ms ease;
+      animation: chargePower 520ms ease !important;
+
       filter:
         drop-shadow(0 0 25px #aaff45)
         brightness(1.5);
@@ -418,27 +485,77 @@
 
     @keyframes chargePower {
       50% {
-        transform: translateY(-10px) scale(1.06);
+        transform:
+          translateY(-10px)
+          scale(1.06);
       }
     }
 
-    .attack-left {
-      animation: attackLeft 300ms ease !important;
+    /* UNIQUE FLYTRAP MOVE ANIMATIONS */
+
+    .flytrap.bite-animation {
+      animation: flyBite 500ms ease !important;
     }
 
-    .attack-right {
-      animation: attackRight 300ms ease !important;
-    }
+    @keyframes flyBite {
+      0%, 100% {
+        transform: translateX(0) scale(1);
+      }
 
-    @keyframes attackLeft {
-      48% {
-        transform: translateX(55px) scale(1.06);
+      32% {
+        transform:
+          translateX(-18px)
+          scale(0.93);
+      }
+
+      62% {
+        transform:
+          translateX(-58px)
+          scale(1.13, 0.94);
       }
     }
 
-    @keyframes attackRight {
-      48% {
-        transform: translateX(-55px) scale(1.06);
+    .flytrap.acid-animation {
+      animation: flyAcid 640ms ease !important;
+    }
+
+    @keyframes flyAcid {
+      0%, 100% {
+        transform: rotate(0);
+      }
+
+      30% {
+        transform:
+          translateY(12px)
+          rotate(8deg);
+      }
+
+      55% {
+        transform:
+          translateY(-10px)
+          rotate(-11deg);
+      }
+    }
+
+    .flytrap.vine-animation {
+      animation: flyVine 540ms ease !important;
+    }
+
+    @keyframes flyVine {
+      0%, 100% {
+        transform: rotate(0);
+      }
+
+      35% {
+        transform:
+          translateX(18px)
+          rotate(12deg);
+      }
+
+      65% {
+        transform:
+          translateX(-38px)
+          rotate(-14deg);
       }
     }
 
@@ -465,14 +582,6 @@
       }
     }
 
-    .fighter.blocking {
-      filter:
-        drop-shadow(0 0 24px rgba(70, 180, 255, 0.95))
-        brightness(1.1);
-
-      transform: scale(0.94);
-    }
-
     .fighter.defeated {
       animation: fall 700ms ease forwards !important;
     }
@@ -490,13 +599,268 @@
       }
     }
 
+    /* EFFECT OBJECTS */
+
+    .projectile,
+    .leaf-arc,
+    .root-spike,
+    .acid-drop,
+    .vine-whip,
+    .shield {
+      position: absolute;
+      z-index: 55;
+      pointer-events: none;
+    }
+
+    .projectile {
+      left: 28%;
+      top: 53%;
+
+      width: 35px;
+      height: 27px;
+
+      border-radius: 48% 52% 42% 58%;
+
+      background:
+        radial-gradient(
+          circle at 30% 25%,
+          #b6955b,
+          #644124 65%,
+          #25170d
+        );
+
+      box-shadow:
+        0 0 12px rgba(226, 182, 96, 0.65);
+
+      animation: projectileFly 420ms linear forwards;
+    }
+
+    @keyframes projectileFly {
+      to {
+        transform:
+          translateX(760%)
+          rotate(760deg);
+
+        opacity: 0;
+      }
+    }
+
+    .leaf-arc {
+      left: 24%;
+      top: 39%;
+
+      width: 42%;
+      height: 34%;
+
+      border-top: 10px solid #aaff55;
+      border-right: 5px solid transparent;
+      border-radius: 50%;
+
+      filter:
+        drop-shadow(0 0 8px #76e33e);
+
+      transform: rotate(-18deg);
+      animation: leafArc 460ms ease forwards;
+    }
+
+    @keyframes leafArc {
+      from {
+        opacity: 0;
+        transform:
+          rotate(-75deg)
+          scale(0.3);
+      }
+
+      35% {
+        opacity: 1;
+      }
+
+      to {
+        opacity: 0;
+        transform:
+          translateX(85%)
+          rotate(28deg)
+          scale(1.25);
+      }
+    }
+
+    .root-spike {
+      bottom: 21%;
+      width: 20px;
+      height: 90px;
+
+      border-radius: 80% 20% 10% 10%;
+
+      background:
+        linear-gradient(
+          90deg,
+          #392314,
+          #98704a,
+          #28170d
+        );
+
+      transform-origin: bottom center;
+      animation: rootBurst 520ms ease forwards;
+    }
+
+    @keyframes rootBurst {
+      from {
+        transform:
+          translateY(100%)
+          scaleY(0.1);
+      }
+
+      48% {
+        transform:
+          translateY(0)
+          scaleY(1.15);
+      }
+
+      to {
+        transform:
+          translateY(110%)
+          scaleY(0.1);
+
+        opacity: 0;
+      }
+    }
+
+    .shield {
+      left: 12%;
+      top: 31%;
+
+      width: 38%;
+      height: 54%;
+
+      border: 7px solid rgba(238, 192, 82, 0.88);
+      border-radius: 50%;
+
+      box-shadow:
+        0 0 18px rgba(255, 211, 88, 0.92),
+        inset 0 0 20px rgba(255, 211, 88, 0.2);
+
+      animation: shieldFlash 650ms ease forwards;
+    }
+
+    .shield::before,
+    .shield::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 8%;
+      width: 4px;
+      height: 84%;
+
+      background: rgba(255, 219, 112, 0.75);
+      transform: rotate(22deg);
+    }
+
+    .shield::after {
+      transform: rotate(-29deg);
+    }
+
+    @keyframes shieldFlash {
+      from {
+        opacity: 0;
+        transform: scale(0.7);
+      }
+
+      30% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      to {
+        opacity: 0;
+        transform: scale(1.12);
+      }
+    }
+
+    .acid-drop {
+      right: 29%;
+      top: 45%;
+
+      width: 25px;
+      height: 18px;
+
+      border-radius: 50%;
+
+      background:
+        radial-gradient(
+          circle at 35% 30%,
+          #e8ff74,
+          #52d52d 60%,
+          #176419
+        );
+
+      box-shadow:
+        0 0 13px #5aff38;
+
+      animation: acidFly 480ms linear forwards;
+    }
+
+    @keyframes acidFly {
+      to {
+        transform:
+          translateX(-760%)
+          translateY(85px)
+          scale(1.4);
+
+        opacity: 0;
+      }
+    }
+
+    .vine-whip {
+      right: 28%;
+      top: 52%;
+
+      width: 48%;
+      height: 18px;
+
+      border-radius: 999px;
+
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          #315f27,
+          #83be4c
+        );
+
+      transform-origin: right center;
+      animation: vineWhip 470ms ease forwards;
+    }
+
+    @keyframes vineWhip {
+      from {
+        transform:
+          rotate(35deg)
+          scaleX(0);
+      }
+
+      50% {
+        transform:
+          rotate(-8deg)
+          scaleX(1);
+      }
+
+      to {
+        transform:
+          rotate(-30deg)
+          scaleX(0);
+
+        opacity: 0;
+      }
+    }
+
     /* TEXT */
 
     .announcement {
       position: absolute;
       left: 50%;
       top: 45%;
-      z-index: 40;
+      z-index: 80;
+
       width: 94%;
 
       transform:
@@ -515,7 +879,7 @@
       text-shadow:
         5px 5px 0 #56110d,
         -2px -2px 0 black,
-        0 0 24px rgba(255,64,32,0.76);
+        0 0 24px rgba(255, 64, 32, 0.76);
     }
 
     .announcement.show {
@@ -530,34 +894,46 @@
     @keyframes announcement {
       0% {
         opacity: 0;
-        transform: translate(-50%, -50%) scale(2);
+        transform:
+          translate(-50%, -50%)
+          scale(2);
       }
 
       18% {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(0.85);
+        transform:
+          translate(-50%, -50%)
+          scale(0.85);
       }
 
       72% {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
+        transform:
+          translate(-50%, -50%)
+          scale(1);
       }
 
       100% {
         opacity: 0;
-        transform: translate(-50%, -50%) scale(1.08);
+        transform:
+          translate(-50%, -50%)
+          scale(1.08);
       }
     }
 
     @keyframes finishPulse {
       from {
         opacity: 0.72;
-        transform: translate(-50%, -50%) scale(0.96);
+        transform:
+          translate(-50%, -50%)
+          scale(0.96);
       }
 
       to {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1.08);
+        transform:
+          translate(-50%, -50%)
+          scale(1.08);
       }
     }
 
@@ -569,57 +945,14 @@
       z-index: 20;
 
       min-height: 1.2em;
+
       color: #f6e8c7;
       text-align: center;
       font-family: Arial, sans-serif;
       font-weight: 900;
       font-size: clamp(0.7rem, 2.7vw, 0.95rem);
+
       text-shadow: 2px 2px 3px black;
-    }
-
-    /* IMPACT */
-
-    .impact {
-      position: absolute;
-      z-index: 45;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: #fff1a0;
-
-      box-shadow:
-        0 0 14px #ffbe27,
-        0 0 34px #ff3b20;
-
-      animation: impact 500ms ease forwards;
-    }
-
-    @keyframes impact {
-      to {
-        opacity: 0;
-        transform: scale(8);
-      }
-    }
-
-    .damage {
-      position: absolute;
-      z-index: 46;
-      color: #ffe15c;
-      font-size: clamp(1.2rem, 6vw, 2.5rem);
-      pointer-events: none;
-
-      text-shadow:
-        3px 3px 0 #79170d,
-        0 0 8px black;
-
-      animation: damageFloat 700ms ease forwards;
-    }
-
-    @keyframes damageFloat {
-      to {
-        opacity: 0;
-        transform: translateY(-75px) scale(1.2);
-      }
     }
 
     .screen-shake {
@@ -639,7 +972,7 @@
       position: absolute;
       left: 22%;
       top: 42%;
-      z-index: 52;
+      z-index: 62;
 
       width: 24%;
       height: 7px;
@@ -656,9 +989,8 @@
 
       box-shadow:
         0 0 12px #aaff55,
-        0 0 25px rgba(83,255,50,0.65);
+        0 0 25px rgba(83, 255, 50, 0.65);
 
-      transform-origin: right center;
       animation: razorFly 440ms linear forwards;
     }
 
@@ -694,7 +1026,7 @@
           rgba(72, 255, 42, 0.22),
           transparent 25%
         ),
-        rgba(0,0,0,0.88);
+        rgba(0, 0, 0, 0.88);
 
       opacity: 0;
       transition: opacity 250ms ease;
@@ -737,13 +1069,6 @@
     }
 
     @keyframes slashCut {
-      0% {
-        opacity: 0;
-        transform:
-          rotate(var(--slash-angle))
-          scaleX(0);
-      }
-
       15% {
         opacity: 1;
       }
@@ -763,14 +1088,19 @@
       }
     }
 
-    .sap-drop {
+    .sap-drop,
+    .plant-chunk,
+    .pot-fragment {
       position: absolute;
       z-index: 75;
+      pointer-events: none;
+    }
 
+    .sap-drop {
       width: var(--sap-size);
       height: calc(var(--sap-size) * 1.35);
 
-      border-radius: 50% 50% 55% 45%;
+      border-radius: 50%;
 
       background:
         radial-gradient(
@@ -780,21 +1110,10 @@
           #176d14
         );
 
-      box-shadow:
-        0 0 8px rgba(75,255,44,0.7);
-
       animation: sapSpray 920ms ease-out forwards;
     }
 
     @keyframes sapSpray {
-      from {
-        transform:
-          translate(0, 0)
-          scale(0.3);
-
-        opacity: 1;
-      }
-
       to {
         transform:
           translate(
@@ -807,10 +1126,40 @@
       }
     }
 
-    .pot-fragment {
-      position: absolute;
-      z-index: 74;
+    .plant-chunk {
+      width: var(--chunk-size);
+      height: var(--chunk-size);
 
+      border-radius: 48% 52% 38% 62%;
+
+      background:
+        radial-gradient(
+          circle at 35% 30%,
+          #b1d65b,
+          #397a27 48%,
+          #163716
+        );
+
+      border: 2px solid #0b180b;
+
+      animation: chunkFly 1050ms ease-out forwards;
+    }
+
+    @keyframes chunkFly {
+      to {
+        transform:
+          translate(
+            var(--chunk-x),
+            var(--chunk-y)
+          )
+          rotate(var(--chunk-spin))
+          scale(0.7);
+
+        opacity: 0;
+      }
+    }
+
+    .pot-fragment {
       width: var(--fragment-width);
       height: var(--fragment-height);
 
@@ -842,46 +1191,6 @@
             var(--frag-y)
           )
           rotate(var(--frag-spin));
-
-        opacity: 0;
-      }
-    }
-
-    .plant-chunk {
-      position: absolute;
-      z-index: 76;
-
-      width: var(--chunk-size);
-      height: var(--chunk-size);
-
-      border-radius: 48% 52% 38% 62%;
-
-      background:
-        radial-gradient(
-          circle at 35% 30%,
-          #b1d65b,
-          #397a27 48%,
-          #163716
-        );
-
-      border: 2px solid #0b180b;
-
-      box-shadow:
-        inset 0 0 8px rgba(220,255,125,0.25),
-        0 0 10px rgba(71,255,47,0.35);
-
-      animation: chunkFly 1050ms ease-out forwards;
-    }
-
-    @keyframes chunkFly {
-      to {
-        transform:
-          translate(
-            var(--chunk-x),
-            var(--chunk-y)
-          )
-          rotate(var(--chunk-spin))
-          scale(0.7);
 
         opacity: 0;
       }
@@ -927,7 +1236,7 @@
 
       text-shadow:
         4px 4px 0 #332208,
-        0 0 22px rgba(255,220,86,0.55);
+        0 0 22px rgba(255, 220, 86, 0.55);
     }
 
     .victory-title span {
@@ -941,11 +1250,13 @@
 
     .victory-quarter {
       margin-top: 28px;
+
       color: #f2dfae;
       font-family: Arial, sans-serif;
       font-weight: 900;
       font-size: clamp(0.7rem, 3vw, 1rem);
       letter-spacing: 0.08em;
+
       animation: quarterBlink 850ms steps(2) infinite;
     }
 
@@ -955,7 +1266,7 @@
       }
     }
 
-    /* CONTROLS */
+    /* NORMAL PAGE CONTROLS */
 
     .controls {
       position: absolute;
@@ -1001,7 +1312,8 @@
     .small {
       display: block;
       margin-top: 3px;
-      color: rgba(255,255,255,0.58);
+
+      color: rgba(255, 255, 255, 0.58);
       font-family: Arial, sans-serif;
       font-size: clamp(0.45rem, 1.7vw, 0.58rem);
       text-transform: none;
@@ -1040,7 +1352,7 @@
       display: none;
       color: var(--cream);
       background: #281714;
-      border: 1px solid rgba(228,181,84,0.7);
+      border: 1px solid rgba(228, 181, 84, 0.7);
     }
 
     .restart.show {
@@ -1061,10 +1373,10 @@
       background:
         radial-gradient(
           circle at center,
-          rgba(59,100,28,0.25),
+          rgba(59, 100, 28, 0.25),
           transparent 45%
         ),
-        rgba(1,3,1,0.96);
+        rgba(1, 3, 1, 0.96);
     }
 
     .start-screen.hidden {
@@ -1083,7 +1395,7 @@
 
       text-shadow:
         4px 4px 0 #3f160d,
-        0 0 18px rgba(113,177,59,0.45);
+        0 0 18px rgba(113, 177, 59, 0.45);
     }
 
     .title span {
@@ -1131,7 +1443,7 @@
       background:
         repeating-linear-gradient(
           to bottom,
-          rgba(255,255,255,0.18) 0 1px,
+          rgba(255, 255, 255, 0.18) 0 1px,
           transparent 1px 4px
         );
     }
@@ -1145,13 +1457,13 @@
       background:
         linear-gradient(
           115deg,
-          rgba(255,255,255,0.07),
+          rgba(255, 255, 255, 0.07),
           transparent 22% 70%,
-          rgba(255,255,255,0.025)
+          rgba(255, 255, 255, 0.025)
         );
 
       box-shadow:
-        inset 0 0 35px rgba(0,0,0,0.9);
+        inset 0 0 35px rgba(0, 0, 0, 0.9);
     }
   </style>
 </head>
@@ -1187,13 +1499,11 @@
       </div>
 
       <div class="center-hud">
-
         <div class="timer" id="timer">60</div>
 
         <div class="round-text">
           ROUND <span id="roundNumber">1</span>
         </div>
-
       </div>
 
       <div class="hud-side enemy">
@@ -1261,22 +1571,22 @@
 
       <button class="move" data-move="pot">
         Pot Shot
-        <span class="small">Fast strike</span>
+        <span class="small">Projectile</span>
       </button>
 
       <button class="move" data-move="leaf">
         Leaf Slap
-        <span class="small">Heavy damage</span>
+        <span class="small">Wide strike</span>
       </button>
 
       <button class="move" data-move="root">
         Root Problem
-        <span class="small">Builds power</span>
+        <span class="small">Ground attack</span>
       </button>
 
       <button class="move" data-move="block">
         Block
-        <span class="small">Reduce damage</span>
+        <span class="small">Gold shield</span>
       </button>
 
     </section>
@@ -1392,59 +1702,6 @@
       document.getElementById("flyDot2")
     ];
 
-    const moves = {
-      pot: {
-        name: "Pot Shot",
-        min: 7,
-        max: 12,
-        accuracy: 0.94,
-        power: 11,
-        text: "Bob launches a handful of soil."
-      },
-
-      leaf: {
-        name: "Leaf Slap",
-        min: 11,
-        max: 18,
-        accuracy: 0.79,
-        power: 8,
-        text: "Bob delivers photosynthetic disrespect."
-      },
-
-      root: {
-        name: "Root of the Problem",
-        min: 8,
-        max: 15,
-        accuracy: 0.84,
-        power: 20,
-        text: "Roots burst through the arcade floor."
-      }
-    };
-
-    const enemyMoves = [
-      {
-        name: "Snap Attack",
-        min: 7,
-        max: 13,
-        accuracy: 0.9,
-        power: 9
-      },
-      {
-        name: "Acid Spit",
-        min: 10,
-        max: 17,
-        accuracy: 0.78,
-        power: 12
-      },
-      {
-        name: "Chomp Chomp",
-        min: 12,
-        max: 20,
-        accuracy: 0.7,
-        power: 8
-      }
-    ];
-
     let bobHealth = 100;
     let flyHealth = 100;
 
@@ -1481,12 +1738,6 @@
       return Math.max(min, Math.min(max, value));
     }
 
-    function vibrate(pattern) {
-      if ("vibrate" in navigator) {
-        navigator.vibrate(pattern);
-      }
-    }
-
     function announce(text, persistent = false) {
       announcement.textContent = text;
 
@@ -1506,6 +1757,19 @@
 
     function setMessage(text) {
       message.textContent = text;
+    }
+
+    function createEffect(className) {
+      const effect = document.createElement("div");
+      effect.className = className;
+      game.appendChild(effect);
+      return effect;
+    }
+
+    function removeLater(element, delay) {
+      window.setTimeout(() => {
+        element.remove();
+      }, delay);
     }
 
     function update() {
@@ -1556,75 +1820,58 @@
         bobPower < 100;
     }
 
-    function createImpact(target, damage) {
-      const gameRect = game.getBoundingClientRect();
-      const targetRect = target.getBoundingClientRect();
+    function shakeTarget(target) {
+      target.classList.add("hit");
+      game.classList.add("screen-shake");
 
-      const burst = document.createElement("div");
-      burst.className = "impact";
-
-      burst.style.left =
-        targetRect.left -
-        gameRect.left +
-        targetRect.width * 0.5 +
-        "px";
-
-      burst.style.top =
-        targetRect.top -
-        gameRect.top +
-        targetRect.height * 0.45 +
-        "px";
-
-      game.appendChild(burst);
-
-      const number = document.createElement("div");
-      number.className = "damage";
-      number.textContent = "-" + damage;
-
-      number.style.left =
-        targetRect.left -
-        gameRect.left +
-        targetRect.width * 0.48 +
-        "px";
-
-      number.style.top =
-        targetRect.top -
-        gameRect.top +
-        targetRect.height * 0.32 +
-        "px";
-
-      game.appendChild(number);
-
-      setTimeout(() => burst.remove(), 520);
-      setTimeout(() => number.remove(), 730);
+      window.setTimeout(() => {
+        target.classList.remove("hit");
+        game.classList.remove("screen-shake");
+      }, 360);
     }
 
-    function animateAttack(
-      attacker,
-      defender,
-      direction,
-      damage,
-      blocked = false
-    ) {
-      attacker.classList.add(direction);
+    function createPotProjectile() {
+      const projectile = createEffect("projectile");
+      removeLater(projectile, 460);
+    }
 
-      setTimeout(() => {
-        if (blocked) {
-          defender.classList.add("blocking");
-        } else {
-          defender.classList.add("hit");
-          createImpact(defender, damage);
-          game.classList.add("screen-shake");
-          vibrate([25, 20, 40]);
-        }
-      }, 110);
+    function createLeafArc() {
+      const arc = createEffect("leaf-arc");
+      removeLater(arc, 500);
+    }
 
-      setTimeout(() => {
-        attacker.classList.remove(direction);
-        defender.classList.remove("hit");
-        defender.classList.remove("blocking");
-        game.classList.remove("screen-shake");
-      }, 430);
+    function createRoots() {
+      for (let index = 0; index < 7; index += 1) {
+        const root = createEffect("root-spike");
+
+        root.style.left =
+          58 + index * 4 + "%";
+
+        root.style.animationDelay =
+          index * 35 + "ms";
+
+        root.style.transform =
+          "rotate(" +
+          random(-16, 16) +
+          "deg)";
+
+        removeLater(root, 780);
+      }
+    }
+
+    function createShield() {
+      const shield = createEffect("shield");
+      removeLater(shield, 700);
+    }
+
+    function createAcid() {
+      const acid = createEffect("acid-drop");
+      removeLater(acid, 520);
+    }
+
+    function createVine() {
+      const vine = createEffect("vine-whip");
+      removeLater(vine, 520);
     }
 
     function rememberDirection(direction) {
@@ -1637,12 +1884,17 @@
 
       directionSequence =
         directionSequence.filter(
-          item => Date.now() - item.time < 2600
+          item =>
+            Date.now() - item.time < 2600
         );
     }
 
     function joystick(direction) {
-      if (!active || locked || finisherRunning) {
+      if (
+        !active ||
+        locked ||
+        finisherRunning
+      ) {
         return;
       }
 
@@ -1650,12 +1902,11 @@
 
       if (direction === "left") {
         dodging = true;
-
         bob.classList.add("dodge-left");
 
         setMessage("Bob dodges left.");
 
-        setTimeout(() => {
+        window.setTimeout(() => {
           bob.classList.remove("dodge-left");
           dodging = false;
         }, 370);
@@ -1663,12 +1914,11 @@
 
       if (direction === "right") {
         dodging = true;
-
         bob.classList.add("dodge-right");
 
         setMessage("Bob dodges right.");
 
-        setTimeout(() => {
+        window.setTimeout(() => {
           bob.classList.remove("dodge-right");
           dodging = false;
         }, 370);
@@ -1681,10 +1931,9 @@
         bobPower += 15;
 
         setMessage("Bob absorbs suspicious arcade light.");
-
         update();
 
-        setTimeout(() => {
+        window.setTimeout(() => {
           bob.classList.remove("charging");
           locked = false;
           update();
@@ -1693,12 +1942,13 @@
 
       if (direction === "down") {
         bobBlocking = true;
-        bob.classList.add("crouching");
+        bob.classList.add("blocking");
+        createShield();
 
         setMessage("Bob crouch-blocks.");
 
-        setTimeout(() => {
-          bob.classList.remove("crouching");
+        window.setTimeout(() => {
+          bob.classList.remove("blocking");
         }, 650);
       }
     }
@@ -1724,10 +1974,8 @@
       bob.classList.add("charging");
 
       for (let index = 0; index < 10; index += 1) {
-        setTimeout(() => {
-          const leaf = document.createElement("div");
-
-          leaf.className = "razor-leaf";
+        window.setTimeout(() => {
+          const leaf = createEffect("razor-leaf");
 
           leaf.style.setProperty(
             "--angle",
@@ -1737,34 +1985,23 @@
           leaf.style.top =
             random(35, 68) + "%";
 
-          game.appendChild(leaf);
-
-          setTimeout(() => leaf.remove(), 470);
+          removeLater(leaf, 470);
         }, index * 52);
       }
 
-      setTimeout(() => {
+      window.setTimeout(() => {
         const damage = random(24, 34);
 
         flyHealth -= damage;
-
-        flytrap.classList.add("hit");
-        game.classList.add("screen-shake");
-
-        createImpact(flytrap, damage);
-
-        vibrate([60,30,70,30,100]);
-
+        shakeTarget(flytrap);
         update();
       }, 340);
 
-      setTimeout(() => {
+      window.setTimeout(() => {
         bob.classList.remove("charging");
-        flytrap.classList.remove("hit");
-        game.classList.remove("screen-shake");
 
         if (flyHealth <= 0) {
-          enterFinisherState();
+          handleBobKnockout();
         } else {
           enemyTurn();
         }
@@ -1772,7 +2009,11 @@
     }
 
     function playerMove(key) {
-      if (!active || locked || finisherRunning) {
+      if (
+        !active ||
+        locked ||
+        finisherRunning
+      ) {
         return;
       }
 
@@ -1799,59 +2040,117 @@
         locked = true;
 
         bob.classList.add("blocking");
+        createShield();
 
-        setMessage("Bob braces his pot.");
+        setMessage("Bob braces behind a cracked-gold shield.");
 
-        setTimeout(enemyTurn, 500);
-        return;
-      }
-
-      const move = moves[key];
-
-      if (!move) {
+        window.setTimeout(enemyTurn, 580);
         return;
       }
 
       locked = true;
       update();
 
-      if (Math.random() > move.accuracy) {
-        bob.classList.add("attack-left");
+      if (key === "pot") {
+        bob.classList.add("pot-shot-animation");
+        createPotProjectile();
 
-        setMessage(
-          move.name +
-          " misses. Bob looks personally offended."
-        );
+        setMessage("Bob fires a spinning clod of soil.");
 
-        setTimeout(() => {
-          bob.classList.remove("attack-left");
-          enemyTurn();
-        }, 580);
+        window.setTimeout(() => {
+          const damage = random(7, 12);
+
+          flyHealth -= damage;
+          bobPower += 11;
+
+          shakeTarget(flytrap);
+          update();
+        }, 310);
+
+        window.setTimeout(() => {
+          bob.classList.remove("pot-shot-animation");
+          afterPlayerAttack();
+        }, 650);
 
         return;
       }
 
-      const damage = random(move.min, move.max);
+      if (key === "leaf") {
+        bob.classList.add("leaf-slap-animation");
+        createLeafArc();
 
-      flyHealth -= damage;
-      bobPower += move.power;
+        setMessage("Bob swings his entire aloe crown.");
 
-      animateAttack(
-        bob,
-        flytrap,
-        "attack-left",
-        damage
-      );
+        window.setTimeout(() => {
+          if (Math.random() < 0.82) {
+            const damage = random(11, 18);
 
-      setMessage(move.text);
-      update();
+            flyHealth -= damage;
+            bobPower += 8;
 
+            shakeTarget(flytrap);
+          } else {
+            setMessage(
+              "Leaf Slap misses. Flytrap remains offensively smug."
+            );
+          }
+
+          update();
+        }, 330);
+
+        window.setTimeout(() => {
+          bob.classList.remove("leaf-slap-animation");
+          afterPlayerAttack();
+        }, 720);
+
+        return;
+      }
+
+      if (key === "root") {
+        bob.classList.add("root-animation");
+        createRoots();
+
+        setMessage("Roots erupt underneath Flytrap.");
+
+        window.setTimeout(() => {
+          const damage = random(8, 15);
+
+          flyHealth -= damage;
+          bobPower += 20;
+
+          flytrap.style.transform =
+            "translateY(-38px) rotate(-6deg)";
+
+          shakeTarget(flytrap);
+          update();
+        }, 370);
+
+        window.setTimeout(() => {
+          flytrap.style.transform = "";
+          bob.classList.remove("root-animation");
+
+          afterPlayerAttack();
+        }, 790);
+      }
+    }
+
+    function afterPlayerAttack() {
       if (flyHealth <= 0) {
-        setTimeout(enterFinisherState, 650);
-        return;
+        handleBobKnockout();
+      } else {
+        enemyTurn();
       }
+    }
 
-      setTimeout(enemyTurn, 720);
+    function handleBobKnockout() {
+      const bobWouldWinMatch =
+        bobRounds + 1 >= 2;
+
+      if (bobWouldWinMatch) {
+        enterFinisherState();
+      } else {
+        endRound("bob");
+      }
     }
 
     function enemyTurn() {
@@ -1867,86 +2166,82 @@
       locked = true;
       update();
 
-      const move =
-        enemyMoves[
-          Math.floor(Math.random() * enemyMoves.length)
+      const enemyMove =
+        ["bite", "acid", "vine"][
+          Math.floor(Math.random() * 3)
         ];
 
-      setTimeout(() => {
-        if (Math.random() > move.accuracy) {
-          flytrap.classList.add("attack-right");
+      window.setTimeout(() => {
+        let damage = 0;
 
-          setMessage(
-            "Flytrap uses " +
-            move.name +
-            " and bites absolutely nothing."
+        if (enemyMove === "bite") {
+          flytrap.classList.add("bite-animation");
+
+          setMessage("Flytrap lunges with Snap Attack.");
+
+          damage = random(7, 13);
+        }
+
+        if (enemyMove === "acid") {
+          flytrap.classList.add("acid-animation");
+          createAcid();
+
+          setMessage("Flytrap spits corrosive plant juice.");
+
+          damage = random(10, 17);
+        }
+
+        if (enemyMove === "vine") {
+          flytrap.classList.add("vine-animation");
+          createVine();
+
+          setMessage("Flytrap lashes Bob with a vine whip.");
+
+          damage = random(8, 15);
+        }
+
+        window.setTimeout(() => {
+          if (dodging && Math.random() < 0.75) {
+            damage = 0;
+            setMessage("Bob dodges the attack.");
+          }
+
+          if (bobBlocking) {
+            damage = Math.max(
+              1,
+              Math.floor(damage * 0.28)
+            );
+          }
+
+          if (damage > 0) {
+            bobHealth -= damage;
+            shakeTarget(bob);
+          }
+
+          flyPower += 10;
+          update();
+        }, 280);
+
+        window.setTimeout(() => {
+          flytrap.classList.remove(
+            "bite-animation",
+            "acid-animation",
+            "vine-animation"
           );
 
-          setTimeout(() => {
-            flytrap.classList.remove("attack-right");
+          if (bobHealth <= 0) {
+            endRound("fly");
+          } else {
             endEnemyTurn();
-          }, 550);
-
-          return;
-        }
-
-        let damage = random(move.min, move.max);
-
-        if (bobBlocking) {
-          damage = Math.max(
-            1,
-            Math.floor(damage * 0.28)
-          );
-        }
-
-        if (dodging && Math.random() < 0.75) {
-          damage = 0;
-
-          setMessage(
-            "Bob dodges " +
-            move.name +
-            "."
-          );
-        } else {
-          bobHealth -= damage;
-
-          animateAttack(
-            flytrap,
-            bob,
-            "attack-right",
-            damage,
-            bobBlocking
-          );
-
-          setMessage(
-            "Flytrap uses " +
-            move.name +
-            (bobBlocking
-              ? ". Bob blocks most of it."
-              : ".")
-          );
-        }
-
-        flyPower += move.power;
-
-        update();
-
-        if (bobHealth <= 0) {
-          setTimeout(() => endRound("fly"), 650);
-          return;
-        }
-
-        setTimeout(endEnemyTurn, 650);
-      }, random(350, 650));
+          }
+        }, 720);
+      }, random(330, 620));
     }
 
     function endEnemyTurn() {
       bobBlocking = false;
 
-      bob.classList.remove(
-        "blocking",
-        "crouching"
-      );
+      bob.classList.remove("blocking");
 
       locked = false;
 
@@ -1963,8 +2258,6 @@
 
       flyHealth = 1;
       update();
-
-      flytrap.classList.add("blocking");
 
       announcement.classList.remove("show");
 
@@ -1995,10 +2288,8 @@
     }
 
     function createSlash(angle, delay) {
-      setTimeout(() => {
-        const slash = document.createElement("div");
-
-        slash.className = "slash";
+      window.setTimeout(() => {
+        const slash = createEffect("slash");
 
         slash.style.setProperty(
           "--slash-angle",
@@ -2008,17 +2299,13 @@
         slash.style.top =
           random(34, 72) + "%";
 
-        game.appendChild(slash);
-
-        setTimeout(() => slash.remove(), 310);
+        removeLater(slash, 310);
       }, delay);
     }
 
-    function createSapBurst(amount = 38) {
+    function createSapBurst(amount) {
       for (let index = 0; index < amount; index += 1) {
-        const drop = document.createElement("div");
-
-        drop.className = "sap-drop";
+        const drop = createEffect("sap-drop");
 
         drop.style.left =
           random(58, 78) + "%";
@@ -2041,18 +2328,13 @@
           random(-250, 210) + "px"
         );
 
-        game.appendChild(drop);
-
-        setTimeout(() => drop.remove(), 1000);
+        removeLater(drop, 1000);
       }
     }
 
-    function createFragments(amount = 18) {
+    function createFragments(amount) {
       for (let index = 0; index < amount; index += 1) {
-        const fragment =
-          document.createElement("div");
-
-        fragment.className = "pot-fragment";
+        const fragment = createEffect("pot-fragment");
 
         fragment.style.left =
           random(61, 77) + "%";
@@ -2085,18 +2367,13 @@
           random(320, 850) + "deg"
         );
 
-        game.appendChild(fragment);
-
-        setTimeout(() => fragment.remove(), 1100);
+        removeLater(fragment, 1100);
       }
     }
 
-    function createPlantChunks(amount = 20) {
+    function createPlantChunks(amount) {
       for (let index = 0; index < amount; index += 1) {
-        const chunk =
-          document.createElement("div");
-
-        chunk.className = "plant-chunk";
+        const chunk = createEffect("plant-chunk");
 
         chunk.style.left =
           random(60, 78) + "%";
@@ -2124,9 +2401,7 @@
           random(300, 950) + "deg"
         );
 
-        game.appendChild(chunk);
-
-        setTimeout(() => chunk.remove(), 1120);
+        removeLater(chunk, 1120);
       }
     }
 
@@ -2167,49 +2442,38 @@
         );
       });
 
-      setTimeout(() => {
-        createSapBurst(42);
-        createSapBurst(36);
-
-        createFragments(20);
-        createFragments(16);
-
-        createPlantChunks(24);
+      window.setTimeout(() => {
+        createSapBurst(78);
+        createFragments(36);
+        createPlantChunks(28);
 
         flytrap.classList.add("hit");
         game.classList.add("screen-shake");
-
-        vibrate([
-          100, 35, 110, 40,
-          130, 45, 170, 60, 230
-        ]);
       }, 610);
 
-      setTimeout(() => {
+      window.setTimeout(() => {
         flytrap.style.opacity = "0";
+
         flytrap.style.transform =
           "scale(1.55) rotate(18deg)";
 
-        createSapBurst(28);
-        createFragments(14);
-        createPlantChunks(15);
+        createSapBurst(30);
+        createFragments(16);
+        createPlantChunks(18);
 
         flyHealth = 0;
         update();
       }, 980);
 
-      setTimeout(() => {
-        flytrap.classList.remove(
-          "hit",
-          "blocking"
-        );
-
+      window.setTimeout(() => {
+        flytrap.classList.remove("hit");
         game.classList.remove("screen-shake");
-
         bob.classList.remove("charging");
       }, 1350);
 
-      setTimeout(() => {
+      window.setTimeout(() => {
+        bobRounds = 2;
+
         victoryScreen.classList.add("show");
 
         setMessage(
@@ -2217,17 +2481,15 @@
         );
       }, 1750);
 
-      setTimeout(() => {
+      window.setTimeout(() => {
         finisherDarkness.classList.remove("show");
-
-        bobRounds = 2;
 
         active = false;
         locked = true;
+
         finisherReady = false;
 
         restartButton.classList.add("show");
-        restartButton.textContent = "Insert Coin";
 
         setMessage(
           "Insert another quarter to fight again."
@@ -2251,11 +2513,19 @@
           time = 0;
           update();
 
-          endRound(
+          const winner =
             bobHealth >= flyHealth
               ? "bob"
-              : "fly"
-          );
+              : "fly";
+
+          if (
+            winner === "bob" &&
+            bobRounds + 1 >= 2
+          ) {
+            enterFinisherState();
+          } else {
+            endRound(winner);
+          }
 
           return;
         }
@@ -2314,11 +2584,11 @@
 
       announce("ROUND " + currentRound);
 
-      setTimeout(() => {
+      window.setTimeout(() => {
         announce("FIGHT!");
       }, 900);
 
-      setTimeout(() => {
+      window.setTimeout(() => {
         active = true;
         locked = false;
 
@@ -2341,22 +2611,33 @@
 
       if (winner === "bob") {
         bobRounds += 1;
+
         flytrap.classList.add("defeated");
+
         announce("BOB WINS");
+
+        setMessage(
+          "Round won. Flytrap will return with fewer manners."
+        );
       } else {
         flyRounds += 1;
+
         bob.classList.add("defeated");
+
         announce("FLYTRAP WINS");
+
+        setMessage(
+          "Bob has been temporarily composted."
+        );
       }
 
       update();
 
-      setTimeout(() => {
-        if (
-          bobRounds >= 2 ||
-          flyRounds >= 2
-        ) {
+      window.setTimeout(() => {
+        if (flyRounds >= 2) {
           restartButton.classList.add("show");
+
+          announce("GAME OVER");
 
           setMessage(
             "Insert another quarter to fight again."
@@ -2371,6 +2652,7 @@
     function restart() {
       bobRounds = 0;
       flyRounds = 0;
+
       currentRound = 1;
 
       victoryScreen.classList.remove("show");
@@ -2399,14 +2681,17 @@
       "click",
       () => {
         startScreen.classList.add("hidden");
-        setTimeout(startRound, 350);
+        window.setTimeout(startRound, 350);
       }
     );
 
     window.addEventListener("message", event => {
       const data = event.data;
 
-      if (!data || data.game !== "mortal-komplant") {
+      if (
+        !data ||
+        data.game !== "mortal-komplant"
+      ) {
         return;
       }
 
@@ -2419,7 +2704,9 @@
       }
 
       if (data.type === "start") {
-        if (!startScreen.classList.contains("hidden")) {
+        if (
+          !startScreen.classList.contains("hidden")
+        ) {
           startButton.click();
         } else if (
           restartButton.classList.contains("show")
@@ -2434,7 +2721,9 @@
       joystick,
 
       start() {
-        if (!startScreen.classList.contains("hidden")) {
+        if (
+          !startScreen.classList.contains("hidden")
+        ) {
           startButton.click();
         } else if (
           restartButton.classList.contains("show")
