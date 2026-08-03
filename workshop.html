@@ -12,16 +12,15 @@
 
   <style>
     :root {
-      --gold: #d9aa58;
-      --cream: #f5dfb0;
-      --brown: #321d12;
-      --dark: #080807;
+      --gold: #d5a752;
+      --cream: #f5dfb2;
+      --panel: rgba(35, 20, 13, 0.97);
     }
 
     * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -30,7 +29,7 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #070706;
+      background: #050504;
     }
 
     body {
@@ -41,13 +40,9 @@
 
     button,
     a {
+      color: inherit;
       font: inherit;
     }
-
-    /*
-      Blurred background fills any unused space on tall phones
-      while the complete workshop image remains visible.
-    */
 
     .background-fill {
       position: fixed;
@@ -56,20 +51,15 @@
 
       background:
         linear-gradient(
-          rgba(0, 0, 0, 0.28),
-          rgba(0, 0, 0, 0.45)
+          rgba(0, 0, 0, 0.42),
+          rgba(0, 0, 0, 0.62)
         ),
-        url("5DA875F9-89D7-4B0A-849D-B25BD3EBBE47.png")
+        url("7B84A8A4-56B8-4572-ABA7-FA9FFD983B3F.png")
         center center / cover no-repeat;
 
-      filter: blur(18px) brightness(0.55);
+      filter: blur(20px) brightness(0.52);
       transform: scale(1.08);
     }
-
-    /*
-      The actual workshop scene keeps its original 3:2 ratio.
-      Nothing is cropped.
-    */
 
     .scene-shell {
       position: fixed;
@@ -89,56 +79,168 @@
     .workshop {
       position: relative;
 
-      width: min(
-        100vw,
-        calc(100svh * 1.5)
-      );
-
-      height: min(
-        100svh,
-        calc(100vw / 1.5)
-      );
+      width: min(100vw, calc(100svh * 1.5));
+      height: min(100svh, calc(100vw / 1.5));
 
       aspect-ratio: 3 / 2;
-
       overflow: hidden;
 
       background:
-        url("5DA875F9-89D7-4B0A-849D-B25BD3EBBE47.png")
+        url("7B84A8A4-56B8-4572-ABA7-FA9FFD983B3F.png")
         center center / 100% 100% no-repeat;
 
       box-shadow:
-        0 0 50px rgba(0, 0, 0, 0.88),
-        0 0 20px rgba(219, 170, 81, 0.08);
+        0 0 55px rgba(0, 0, 0, 0.94),
+        0 0 25px rgba(218, 166, 77, 0.08);
     }
 
-    /*
-      Arcade cabinet hotspot.
+    /* REAL ARTWORK OVERLAYS */
 
-      This sits over the Mortal KomPlant machine
-      in the workshop artwork.
-    */
-
-    .arcade-hotspot {
+    .art-frame {
       position: absolute;
-
-      left: 57.9%;
-      top: 13.8%;
-
-      width: 18.4%;
-      height: 46%;
-
       z-index: 8;
 
       display: block;
+      overflow: hidden;
 
-      border-radius: 8px;
+      border: 0;
+      background: #15110d;
 
-      text-decoration: none;
       cursor: pointer;
+
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 227, 178, 0.08);
+
+      transition:
+        filter 160ms ease,
+        transform 160ms ease;
     }
 
-    .arcade-hotspot::before {
+    .art-frame img {
+      width: 100%;
+      height: 100%;
+      display: block;
+
+      object-fit: cover;
+      object-position: center;
+
+      transition:
+        transform 220ms ease,
+        filter 220ms ease;
+    }
+
+    .art-frame:hover img,
+    .art-frame:focus-visible img {
+      transform: scale(1.035);
+      filter: brightness(1.08);
+    }
+
+    .art-frame:focus-visible {
+      outline: 2px solid rgba(255, 213, 119, 0.85);
+      outline-offset: 2px;
+    }
+
+    /*
+      Frame positions match the clean workshop image.
+
+      All measurements are percentages of the original
+      3:2 workshop composition.
+    */
+
+    .frame-1 {
+      left: 4.6%;
+      top: 7.2%;
+      width: 10.3%;
+      height: 10.2%;
+    }
+
+    .frame-2 {
+      left: 18.2%;
+      top: 9.4%;
+      width: 10.9%;
+      height: 9%;
+    }
+
+    .frame-3 {
+      left: 49.7%;
+      top: 7.7%;
+      width: 9.1%;
+      height: 17.7%;
+    }
+
+    .frame-4 {
+      left: 76.4%;
+      top: 13.1%;
+      width: 8.3%;
+      height: 15.3%;
+    }
+
+    .frame-5 {
+      left: 84.1%;
+      top: 16.1%;
+      width: 5.5%;
+      height: 13.4%;
+    }
+
+    .frame-6 {
+      left: 90.2%;
+      top: 15.5%;
+      width: 6.1%;
+      height: 14.8%;
+    }
+
+    .frame-7 {
+      left: 83.3%;
+      top: 31.7%;
+      width: 6.4%;
+      height: 12.5%;
+    }
+
+    .frame-8 {
+      left: 90.2%;
+      top: 31.3%;
+      width: 6.2%;
+      height: 13%;
+    }
+
+    .frame-9 {
+      left: 67.5%;
+      top: 28.4%;
+      width: 11.5%;
+      height: 22.5%;
+
+      transform: rotate(3.2deg);
+      transform-origin: center;
+    }
+
+    .frame-9:hover,
+    .frame-9:focus-visible {
+      transform: rotate(3.2deg) scale(1.018);
+    }
+
+    .frame-10 {
+      left: 46.9%;
+      top: 44.2%;
+      width: 6.3%;
+      height: 13.3%;
+    }
+
+    /* INTERACTIVE OBJECTS */
+
+    .hotspot {
+      position: absolute;
+      z-index: 12;
+
+      display: block;
+
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+
+      text-decoration: none;
+    }
+
+    .hotspot::after {
       content: "";
 
       position: absolute;
@@ -148,155 +250,152 @@
       border-radius: 8px;
 
       transition:
-        border-color 180ms ease,
-        background 180ms ease,
-        box-shadow 180ms ease,
-        transform 180ms ease;
+        border-color 160ms ease,
+        background 160ms ease,
+        box-shadow 160ms ease;
     }
 
-    .arcade-hotspot:hover::before,
-    .arcade-hotspot:focus-visible::before {
-      border-color: rgba(170, 255, 85, 0.78);
+    .hotspot:hover::after,
+    .hotspot:focus-visible::after {
+      border-color: rgba(189, 255, 103, 0.7);
 
       background:
         radial-gradient(
-          circle at 50% 28%,
-          rgba(126, 255, 73, 0.13),
-          transparent 55%
+          circle at center,
+          rgba(124, 255, 77, 0.1),
+          transparent 65%
         );
 
       box-shadow:
-        0 0 18px rgba(101, 255, 66, 0.35),
-        inset 0 0 16px rgba(101, 255, 66, 0.08);
-
-      transform: scale(1.015);
+        0 0 18px rgba(95, 255, 65, 0.28);
     }
 
-    .arcade-hotspot:active::before {
-      transform: scale(0.98);
+    .arcade-hotspot {
+      left: 58.7%;
+      top: 26%;
+      width: 10.5%;
+      height: 34%;
     }
 
-    /*
-      Small label appears only while hovering,
-      focusing, or pressing the cabinet.
-    */
-
-    .arcade-label {
-      position: absolute;
-
-      left: 50%;
-      bottom: 6%;
-
-      transform: translateX(-50%);
-
-      width: max-content;
-      max-width: 94%;
-
-      padding: 6px 9px;
-
-      color: #dfffaa;
-      background: rgba(5, 10, 4, 0.86);
-
-      border: 1px solid rgba(147, 222, 76, 0.65);
-      border-radius: 5px;
-
-      font-family: Arial, sans-serif;
-      font-size: clamp(8px, 1.2vw, 13px);
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      text-align: center;
-      text-transform: uppercase;
-
-      opacity: 0;
-
-      box-shadow:
-        0 0 12px rgba(105, 235, 61, 0.28);
-
-      transition: opacity 160ms ease;
+    .pool-hotspot {
+      left: 0;
+      top: 46%;
+      width: 29%;
+      height: 29%;
     }
 
-    .arcade-hotspot:hover .arcade-label,
-    .arcade-hotspot:focus-visible .arcade-label,
-    .arcade-hotspot:active .arcade-label {
-      opacity: 1;
+    .sewing-hotspot {
+      left: 72.5%;
+      top: 47%;
+      width: 27%;
+      height: 30%;
     }
 
-    /* FRONT ROOM BUTTON */
+    .dog-hotspot {
+      left: 8.8%;
+      top: 70%;
+      width: 22%;
+      height: 24%;
+    }
 
-    .back-home {
+    .forest-hotspot {
+      left: 3%;
+      top: 17%;
+      width: 14%;
+      height: 43%;
+    }
+
+    /* TOAST MESSAGE */
+
+    .toast {
       position: fixed;
 
-      left: calc(14px + env(safe-area-inset-left));
-      bottom: calc(14px + env(safe-area-inset-bottom));
+      left: 50%;
+      bottom: calc(24px + env(safe-area-inset-bottom));
+      z-index: 150;
 
-      z-index: 40;
+      transform:
+        translateX(-50%)
+        translateY(20px);
 
-      padding: 11px 15px;
+      width: max-content;
+      max-width: calc(100vw - 40px);
 
-      color: var(--cream);
-      background: rgba(12, 10, 8, 0.84);
+      padding: 10px 15px;
 
-      border: 1px solid rgba(224, 181, 102, 0.72);
-      border-radius: 8px;
+      color: #f6e6c4;
+      background: rgba(18, 14, 10, 0.93);
 
-      text-decoration: none;
-      font-size: 0.82rem;
-      letter-spacing: 0.035em;
+      border: 1px solid rgba(225, 183, 100, 0.58);
+      border-radius: 7px;
+
+      text-align: center;
+      font-family: Arial, sans-serif;
+      font-size: 0.83rem;
+
+      opacity: 0;
+      visibility: hidden;
 
       box-shadow:
-        0 0 16px rgba(220, 169, 75, 0.2),
-        0 4px 14px rgba(0, 0, 0, 0.55);
+        0 8px 25px rgba(0, 0, 0, 0.48);
 
-      backdrop-filter: blur(7px);
+      transition:
+        opacity 180ms ease,
+        transform 180ms ease,
+        visibility 180ms ease;
     }
 
-    .back-home:active {
-      transform: scale(0.97);
+    .toast.show {
+      opacity: 1;
+      visibility: visible;
+
+      transform:
+        translateX(-50%)
+        translateY(0);
     }
 
-    /* HAMBURGER BUTTON */
+    /* MENU BUTTON */
 
     .menu-button {
       position: fixed;
 
-      top: calc(14px + env(safe-area-inset-top));
-      left: calc(14px + env(safe-area-inset-left));
+      top: calc(13px + env(safe-area-inset-top));
+      left: calc(13px + env(safe-area-inset-left));
 
-      z-index: 60;
+      z-index: 90;
 
-      width: 52px;
-      height: 52px;
+      width: 50px;
+      height: 50px;
 
       display: grid;
       place-items: center;
 
       color: var(--cream);
-      background: rgba(11, 9, 7, 0.84);
+      background: rgba(12, 10, 8, 0.88);
 
-      border: 1px solid rgba(224, 181, 102, 0.72);
+      border: 1px solid rgba(224, 181, 102, 0.7);
       border-radius: 9px;
 
       cursor: pointer;
 
       box-shadow:
-        0 4px 15px rgba(0, 0, 0, 0.55),
-        0 0 13px rgba(220, 169, 75, 0.15);
+        0 5px 18px rgba(0, 0, 0, 0.55);
 
-      backdrop-filter: blur(7px);
+      backdrop-filter: blur(8px);
     }
 
     .menu-lines,
     .menu-lines::before,
     .menu-lines::after {
-      width: 24px;
+      width: 23px;
       height: 2px;
 
       background: currentColor;
-      border-radius: 999px;
+      border-radius: 99px;
 
       transition:
-        transform 200ms ease,
-        opacity 200ms ease;
+        transform 180ms ease,
+        opacity 180ms ease;
     }
 
     .menu-lines {
@@ -332,23 +431,21 @@
       transform: rotate(-45deg);
     }
 
-    /* MENU OVERLAY */
-
     .menu-overlay {
       position: fixed;
       inset: 0;
-      z-index: 50;
+      z-index: 70;
 
-      background: rgba(0, 0, 0, 0.58);
+      background: rgba(0, 0, 0, 0.64);
 
       opacity: 0;
       visibility: hidden;
 
-      transition:
-        opacity 220ms ease,
-        visibility 220ms ease;
+      backdrop-filter: blur(5px);
 
-      backdrop-filter: blur(4px);
+      transition:
+        opacity 200ms ease,
+        visibility 200ms ease;
     }
 
     .menu-overlay.open {
@@ -363,32 +460,32 @@
       left: 0;
       bottom: 0;
 
-      z-index: 55;
+      z-index: 80;
 
-      width: min(82vw, 410px);
+      width: min(84vw, 420px);
 
       padding:
         calc(88px + env(safe-area-inset-top))
-        28px
+        27px
         calc(28px + env(safe-area-inset-bottom));
 
       overflow-y: auto;
 
       background:
         linear-gradient(
-          145deg,
-          rgba(91, 48, 27, 0.98),
-          rgba(38, 21, 14, 0.99)
+          150deg,
+          rgba(86, 45, 25, 0.99),
+          rgba(34, 19, 13, 0.995)
         );
 
-      border-right: 1px solid rgba(222, 174, 89, 0.65);
+      border-right: 1px solid rgba(220, 173, 91, 0.6);
 
       box-shadow:
-        16px 0 40px rgba(0, 0, 0, 0.62);
+        18px 0 45px rgba(0, 0, 0, 0.68);
 
       transform: translateX(-104%);
 
-      transition: transform 260ms ease;
+      transition: transform 240ms ease;
     }
 
     .menu-panel.open {
@@ -399,37 +496,35 @@
       margin-bottom: 8px;
 
       color: #f5dca6;
-      font-size: clamp(1.7rem, 7vw, 2.5rem);
-      line-height: 1;
+      font-size: clamp(1.8rem, 7vw, 2.6rem);
     }
 
     .menu-subtitle {
-      margin-bottom: 28px;
+      margin-bottom: 26px;
 
-      color: rgba(244, 224, 188, 0.72);
-      font-size: 0.92rem;
+      color: rgba(245, 225, 190, 0.7);
       line-height: 1.5;
+      font-size: 0.91rem;
     }
 
     .menu-links {
       display: grid;
-      gap: 12px;
+      gap: 11px;
     }
 
     .menu-link {
       display: block;
 
-      padding: 15px 17px;
+      padding: 14px 16px;
 
-      color: #f4e4c5;
+      color: #f5e4c4;
       background: rgba(255, 255, 255, 0.035);
 
-      border: 1px solid rgba(237, 199, 137, 0.22);
+      border: 1px solid rgba(239, 202, 142, 0.22);
       border-radius: 7px;
 
       text-decoration: none;
-      font-size: 1.04rem;
-      letter-spacing: 0.025em;
+      font-size: 1.02rem;
 
       transition:
         background 150ms ease,
@@ -444,77 +539,197 @@
       transform: translateX(3px);
     }
 
-    .menu-link.arcade-link {
-      color: #cfff86;
+    .gallery-link {
+      color: #ffd887;
+
+      border-color: rgba(231, 181, 84, 0.48);
 
       background:
         linear-gradient(
           90deg,
-          rgba(71, 128, 34, 0.2),
-          rgba(35, 60, 19, 0.14)
+          rgba(125, 78, 27, 0.26),
+          rgba(69, 38, 17, 0.16)
         );
-
-      border-color: rgba(145, 213, 75, 0.48);
-
-      box-shadow:
-        inset 0 0 12px rgba(105, 235, 61, 0.04);
     }
 
-    .menu-link.arcade-link::before {
+    .gallery-link::before {
+      content: "🖼️";
+      margin-right: 9px;
+    }
+
+    .arcade-link {
+      color: #ceff8c;
+
+      border-color: rgba(145, 213, 75, 0.42);
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(65, 120, 31, 0.2),
+          rgba(28, 54, 15, 0.13)
+        );
+    }
+
+    .arcade-link::before {
       content: "🎮";
-      margin-right: 10px;
+      margin-right: 9px;
     }
 
     .menu-footer {
-      margin-top: 40px;
+      margin-top: 38px;
 
       color: rgba(244, 224, 188, 0.5);
-      font-size: 0.8rem;
+      font-size: 0.79rem;
       line-height: 1.5;
     }
 
-    /*
-      Phone layout:
-      keep the complete image visible and make controls compact.
-    */
+    /* FULLSCREEN ART VIEWER */
+
+    .viewer {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+
+      display: grid;
+      place-items: center;
+
+      padding:
+        calc(20px + env(safe-area-inset-top))
+        calc(18px + env(safe-area-inset-right))
+        calc(20px + env(safe-area-inset-bottom))
+        calc(18px + env(safe-area-inset-left));
+
+      background: rgba(3, 3, 3, 0.96);
+
+      opacity: 0;
+      visibility: hidden;
+
+      transition:
+        opacity 220ms ease,
+        visibility 220ms ease;
+    }
+
+    .viewer.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .viewer-image {
+      display: block;
+
+      max-width: 92vw;
+      max-height: 82svh;
+
+      object-fit: contain;
+
+      border-radius: 3px;
+
+      box-shadow:
+        0 20px 70px rgba(0, 0, 0, 0.75),
+        0 0 0 1px rgba(255, 226, 167, 0.18);
+    }
+
+    .viewer-close {
+      position: fixed;
+
+      left: calc(17px + env(safe-area-inset-left));
+      bottom: calc(17px + env(safe-area-inset-bottom));
+
+      z-index: 210;
+
+      padding: 11px 15px;
+
+      color: #f3ddb1;
+      background: rgba(30, 20, 13, 0.94);
+
+      border: 1px solid rgba(224, 181, 102, 0.7);
+      border-radius: 7px;
+
+      cursor: pointer;
+    }
+
+    .viewer-gallery {
+      position: fixed;
+
+      right: calc(17px + env(safe-area-inset-right));
+      bottom: calc(17px + env(safe-area-inset-bottom));
+
+      z-index: 210;
+
+      padding: 11px 15px;
+
+      color: #f3ddb1;
+      background: rgba(30, 20, 13, 0.94);
+
+      border: 1px solid rgba(224, 181, 102, 0.7);
+      border-radius: 7px;
+
+      text-decoration: none;
+    }
+
+    .viewer-arrow {
+      position: fixed;
+      top: 50%;
+      z-index: 210;
+
+      transform: translateY(-50%);
+
+      width: 52px;
+      height: 78px;
+
+      color: #f5dca6;
+      background: rgba(22, 16, 12, 0.72);
+
+      border: 1px solid rgba(225, 183, 100, 0.43);
+      border-radius: 8px;
+
+      cursor: pointer;
+
+      font-family: Arial, sans-serif;
+      font-size: 2.2rem;
+
+      backdrop-filter: blur(5px);
+    }
+
+    .viewer-previous {
+      left: max(7px, env(safe-area-inset-left));
+    }
+
+    .viewer-next {
+      right: max(7px, env(safe-area-inset-right));
+    }
 
     @media (max-width: 650px) {
-      .scene-shell {
-        padding-top: env(safe-area-inset-top);
-        padding-bottom: env(safe-area-inset-bottom);
-      }
-
       .menu-button {
-        width: 48px;
-        height: 48px;
+        width: 47px;
+        height: 47px;
       }
 
-      .back-home {
-        padding: 10px 13px;
+      .viewer-image {
+        max-width: 90vw;
+        max-height: 76svh;
+      }
+
+      .viewer-arrow {
+        width: 43px;
+        height: 66px;
+
+        font-size: 1.8rem;
+      }
+
+      .viewer-close,
+      .viewer-gallery {
+        padding: 9px 11px;
         font-size: 0.76rem;
-      }
-
-      .arcade-hotspot {
-        /*
-          The scene itself is still 3:2, so the same percentages
-          remain aligned on phones.
-        */
-        left: 57.9%;
-        top: 13.8%;
-        width: 18.4%;
-        height: 46%;
       }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .arcade-hotspot::before,
-      .arcade-label,
-      .menu-panel,
-      .menu-overlay,
-      .menu-lines,
-      .menu-lines::before,
-      .menu-lines::after {
-        transition: none;
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
       }
     }
   </style>
@@ -528,18 +743,83 @@
 
     <main
       class="workshop"
+      id="workshop"
       aria-label="Studio LaDuke creative workshop"
     >
 
+      <button class="art-frame frame-1" type="button">
+        <img alt="Studio LaDuke artwork">
+      </button>
+
+      <button class="art-frame frame-2" type="button">
+        <img alt="Studio LaDuke artwork">
+      </button>
+
+      <button class="art-frame frame-3" type="button">
+        <img alt="Studio LaDuke artwork">
+      </button>
+
+      <button class="art-frame frame-4" type="button">
+        <img alt="Studio LaDuke artwork">
+      </button>
+
+      <button class="art-frame frame-5" type="button">
+        <img alt="Studio LaDuke artwork">
+      </button>
+
+      <button class="art-frame frame-6" type="button">
+        <img alt="Studio LaDuke artwork">
+      </button>
+
+      <button class="art-frame frame-7" type="button">
+        <img alt="Studio LaDuke artwork">
+      </button>
+
+      <button class="art-frame frame-8" type="button">
+        <img alt="Studio LaDuke artwork">
+      </button>
+
+      <button class="art-frame frame-9" type="button">
+        <img alt="Studio LaDuke artwork">
+      </button>
+
+      <button class="art-frame frame-10" type="button">
+        <img alt="Studio LaDuke artwork">
+      </button>
+
       <a
-        class="arcade-hotspot"
+        class="hotspot arcade-hotspot"
         href="mcbrides.html"
-        aria-label="Play Mortal KomPlant in McBride’s Arcade"
-      >
-        <span class="arcade-label">
-          Enter McBride’s Arcade
-        </span>
-      </a>
+        aria-label="Enter McBride’s Arcade"
+      ></a>
+
+      <button
+        class="hotspot pool-hotspot"
+        id="poolHotspot"
+        type="button"
+        aria-label="Pool table"
+      ></button>
+
+      <button
+        class="hotspot sewing-hotspot"
+        id="sewingHotspot"
+        type="button"
+        aria-label="Sewing machine"
+      ></button>
+
+      <button
+        class="hotspot dog-hotspot"
+        id="dogHotspot"
+        type="button"
+        aria-label="Fin"
+      ></button>
+
+      <button
+        class="hotspot forest-hotspot"
+        id="forestHotspot"
+        type="button"
+        aria-label="Forest doorway"
+      ></button>
 
     </main>
 
@@ -584,15 +864,12 @@
         Workshop
       </a>
 
-      <a
-        class="menu-link arcade-link"
-        href="mcbrides.html"
-      >
-        McBride’s Arcade
+      <a class="menu-link gallery-link" href="gallery.html">
+        Gallery
       </a>
 
-      <a class="menu-link" href="directory.html">
-        Directory
+      <a class="menu-link arcade-link" href="mcbrides.html">
+        McBride’s Arcade
       </a>
 
       <a class="menu-link" href="books.html">
@@ -616,12 +893,87 @@
 
   </aside>
 
-  <a class="back-home" href="index.html">
-    ← Front Room
-  </a>
+  <div
+    class="viewer"
+    id="viewer"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Artwork viewer"
+  >
+
+    <button
+      class="viewer-arrow viewer-previous"
+      id="viewerPrevious"
+      type="button"
+      aria-label="Previous artwork"
+    >
+      ‹
+    </button>
+
+    <img
+      class="viewer-image"
+      id="viewerImage"
+      alt="Studio LaDuke artwork"
+    >
+
+    <button
+      class="viewer-arrow viewer-next"
+      id="viewerNext"
+      type="button"
+      aria-label="Next artwork"
+    >
+      ›
+    </button>
+
+    <button
+      class="viewer-close"
+      id="viewerClose"
+      type="button"
+    >
+      ← Back to Workshop
+    </button>
+
+    <a
+      class="viewer-gallery"
+      id="viewerGallery"
+      href="gallery.html"
+    >
+      Full Gallery
+    </a>
+
+  </div>
+
+  <div
+    class="toast"
+    id="toast"
+    aria-live="polite"
+  ></div>
 
   <script>
     "use strict";
+
+    const artwork = [
+      "IMG_3211.jpeg",
+      "9EAA20AB-901D-41E1-AC98-64455D1A291D.png",
+      "8E115567-F28C-456A-8E51-6EB4BA67B0A3.png",
+      "5009BA2B-780C-4A6C-A6AA-4B5CDD3174C6.png",
+      "03DE2160-F40A-4D77-BA2F-030FAC8C7AE7.png",
+      "650B0A6A-1B85-4665-82D7-95FF79C8761E.png",
+      "D649A1E7-F73A-4529-8F41-05A5524C4C8E.png",
+      "7528563F-9204-4651-A65A-2A7450DCE740.png",
+      "193005A4-396A-42B8-895F-3D32037BB744.png",
+      "650E29C5-1949-4A2D-9B0C-9F2B31BB3934.png",
+      "3ABA2FB4-184C-4FB1-8D85-4118FA503931.png",
+      "4F9C4F6E-34A2-494D-847B-AB3DDA3E75AA.png",
+      "52095D7B-9D55-4D6C-A87C-DA519D179B9A.png",
+      "IMG_0082.jpeg",
+      "IMG_0014.jpeg",
+      "9F7F0E8D-FD9F-43F4-863E-308974B7AD58.jpeg"
+    ];
+
+    const frames = Array.from(
+      document.querySelectorAll(".art-frame")
+    );
 
     const menuButton =
       document.getElementById("menuButton");
@@ -632,6 +984,126 @@
     const menuOverlay =
       document.getElementById("menuOverlay");
 
+    const viewer =
+      document.getElementById("viewer");
+
+    const viewerImage =
+      document.getElementById("viewerImage");
+
+    const viewerPrevious =
+      document.getElementById("viewerPrevious");
+
+    const viewerNext =
+      document.getElementById("viewerNext");
+
+    const viewerClose =
+      document.getElementById("viewerClose");
+
+    const viewerGallery =
+      document.getElementById("viewerGallery");
+
+    const toast =
+      document.getElementById("toast");
+
+    let shuffledArtwork = [];
+    let activeArtworkIndex = 0;
+    let toastTimer = null;
+
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    function shuffle(items) {
+      const copy = [...items];
+
+      for (
+        let index = copy.length - 1;
+        index > 0;
+        index -= 1
+      ) {
+        const randomIndex =
+          Math.floor(Math.random() * (index + 1));
+
+        [copy[index], copy[randomIndex]] =
+          [copy[randomIndex], copy[index]];
+      }
+
+      return copy;
+    }
+
+    function populateFrames() {
+      shuffledArtwork = shuffle(artwork);
+
+      frames.forEach((frame, index) => {
+        const filename =
+          shuffledArtwork[index % shuffledArtwork.length];
+
+        const image = frame.querySelector("img");
+
+        image.src = filename;
+        image.alt =
+          "Studio LaDuke artwork " + (index + 1);
+
+        frame.dataset.filename = filename;
+
+        frame.addEventListener("click", () => {
+          openViewer(filename);
+        });
+      });
+    }
+
+    function openViewer(filename) {
+      activeArtworkIndex =
+        artwork.indexOf(filename);
+
+      if (activeArtworkIndex < 0) {
+        activeArtworkIndex = 0;
+      }
+
+      updateViewer();
+
+      viewer.classList.add("open");
+
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeViewer() {
+      viewer.classList.remove("open");
+
+      document.body.style.overflow = "";
+    }
+
+    function updateViewer() {
+      const filename =
+        artwork[activeArtworkIndex];
+
+      viewerImage.src = filename;
+
+      viewerGallery.href =
+        "gallery.html?art=" +
+        encodeURIComponent(filename);
+    }
+
+    function showPreviousArtwork() {
+      activeArtworkIndex =
+        (
+          activeArtworkIndex -
+          1 +
+          artwork.length
+        ) % artwork.length;
+
+      updateViewer();
+    }
+
+    function showNextArtwork() {
+      activeArtworkIndex =
+        (
+          activeArtworkIndex +
+          1
+        ) % artwork.length;
+
+      updateViewer();
+    }
+
     function openMenu() {
       menuButton.classList.add("open");
       menuPanel.classList.add("open");
@@ -640,11 +1112,6 @@
       menuButton.setAttribute(
         "aria-expanded",
         "true"
-      );
-
-      menuButton.setAttribute(
-        "aria-label",
-        "Close navigation menu"
       );
     }
 
@@ -657,11 +1124,6 @@
         "aria-expanded",
         "false"
       );
-
-      menuButton.setAttribute(
-        "aria-label",
-        "Open navigation menu"
-      );
     }
 
     function toggleMenu() {
@@ -670,6 +1132,17 @@
       } else {
         openMenu();
       }
+    }
+
+    function showToast(text) {
+      window.clearTimeout(toastTimer);
+
+      toast.textContent = text;
+      toast.classList.add("show");
+
+      toastTimer = window.setTimeout(() => {
+        toast.classList.remove("show");
+      }, 1800);
     }
 
     menuButton.addEventListener(
@@ -682,11 +1155,84 @@
       closeMenu
     );
 
+    viewerClose.addEventListener(
+      "click",
+      closeViewer
+    );
+
+    viewerPrevious.addEventListener(
+      "click",
+      showPreviousArtwork
+    );
+
+    viewerNext.addEventListener(
+      "click",
+      showNextArtwork
+    );
+
+    viewer.addEventListener(
+      "click",
+      event => {
+        if (event.target === viewer) {
+          closeViewer();
+        }
+      }
+    );
+
+    viewer.addEventListener(
+      "touchstart",
+      event => {
+        touchStartX =
+          event.changedTouches[0].screenX;
+      },
+      { passive: true }
+    );
+
+    viewer.addEventListener(
+      "touchend",
+      event => {
+        touchEndX =
+          event.changedTouches[0].screenX;
+
+        const distance =
+          touchEndX - touchStartX;
+
+        if (Math.abs(distance) < 55) {
+          return;
+        }
+
+        if (distance < 0) {
+          showNextArtwork();
+        } else {
+          showPreviousArtwork();
+        }
+      },
+      { passive: true }
+    );
+
     document.addEventListener(
       "keydown",
       event => {
         if (event.key === "Escape") {
-          closeMenu();
+          if (viewer.classList.contains("open")) {
+            closeViewer();
+          } else {
+            closeMenu();
+          }
+        }
+
+        if (
+          event.key === "ArrowLeft" &&
+          viewer.classList.contains("open")
+        ) {
+          showPreviousArtwork();
+        }
+
+        if (
+          event.key === "ArrowRight" &&
+          viewer.classList.contains("open")
+        ) {
+          showNextArtwork();
         }
       }
     );
@@ -699,6 +1245,40 @@
           closeMenu
         );
       });
+
+    document
+      .getElementById("poolHotspot")
+      .addEventListener("click", () => {
+        showToast(
+          "Studio Pool is being racked up."
+        );
+      });
+
+    document
+      .getElementById("sewingHotspot")
+      .addEventListener("click", () => {
+        showToast(
+          "The upholstery room is coming soon."
+        );
+      });
+
+    document
+      .getElementById("dogHotspot")
+      .addEventListener("click", () => {
+        showToast(
+          "Fin’s tail thumps against the bed."
+        );
+      });
+
+    document
+      .getElementById("forestHotspot")
+      .addEventListener("click", () => {
+        showToast(
+          "The forest path is not open yet."
+        );
+      });
+
+    populateFrames();
   </script>
 
 </body>
