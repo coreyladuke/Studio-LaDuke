@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <title>Studio LaDuke Gallery</title>
+
+  <style>
+    :root {
+      --gold: #d6a851;
+      --cream: #f4dfb5;
+      --dark: #050504;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--dark);
+    }
+
+    body {
+      color: var(--cream);
+      font-family: Georgia, "Times New Roman", serif;
+      touch-action: pan-y;
+    }
+
+    button,
+    a {
+      color: inherit;
+      font: inherit;
+    }
+
+    .gallery {
+      position: fixed;
+      inset: 0;
+
+      display: grid;
+      place-items: center;
+
+      overflow: hidden;
+
+      background:
+        radial-gradient(
+          circle at center,
+          rgba(101, 72, 38, 0.2),
+          transparent 48%
+        ),
+        linear-gradient(
+          145deg,
+          #15100c,
+          #030303 68%
+        );
+    }
+
+    .gallery::before {
+      content: "";
+
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+
+      opacity: 0.16;
+
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.035) 0,
+          rgba(255, 255, 255, 0.035) 1px,
+          transparent 1px,
+          transparent 4px
+        );
+    }
+
+    .gallery-title {
+      position: fixed;
+
+      top: calc(18px + env(safe-area-inset-top));
+      left: 50%;
+      z-index: 20;
+
+      transform: translateX(-50%);
+
+      width: max-content;
+
+      color: rgba(246, 223, 181, 0.84);
+
+      font-size: clamp(0.85rem, 3vw, 1.05rem);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .art-stage {
+      position: relative;
+      z-index: 5;
+
+      width: min(82vw, 1100px);
+      height: min(78svh, 850px);
+
+      display: grid;
+      place-items: center;
+    }
+
+    .artwork {
+      display: block;
+
+      max-width: 100%;
+      max-height: 100%;
+
+      object-fit: contain;
+
+      border-radius: 3px;
+
+      box-shadow:
+        0 24px 80px rgba(0, 0, 0, 0.82),
+        0 0 0 1px rgba(247, 221, 170, 0.14);
+
+      transition:
+        opacity 170ms ease,
+        transform 170ms ease;
+    }
+
+    .artwork.changing {
+      opacity: 0;
+      transform: scale(0.985);
+    }
+
+    .arrow {
+      position: fixed;
+      top: 50%;
+      z-index: 30;
+
+      transform: translateY(-50%);
+
+      width: clamp(48px, 8vw, 72px);
+      height: clamp(78px, 14vw, 116px);
+
+      display: grid;
+      place-items: center;
+
+      color: #f5dba5;
+      background: rgba(23, 16, 11, 0.72);
+
+      border: 1px solid rgba(222, 177, 91, 0.5);
+      border-radius: 9px;
+
+      cursor: pointer;
+
+      font-family: Arial, sans-serif;
+      font-size: clamp(2rem, 7vw, 3.5rem);
+
+      backdrop-filter: blur(6px);
+
+      transition:
+        background 150ms ease,
+        transform 150ms ease;
+    }
+
+    .arrow:hover,
+    .arrow:focus-visible {
+      background: rgba(63, 39, 22, 0.93);
+    }
+
+    .arrow:active {
+      transform:
+        translateY(-50%)
+        scale(0.94);
+    }
+
+    .previous {
+      left: max(8px, env(safe-area-inset-left));
+    }
+
+    .next {
+      right: max(8px, env(safe-area-inset-right));
+    }
+
+    .return-button {
+      position: fixed;
+
+      left: calc(16px + env(safe-area-inset-left));
+      bottom: calc(16px + env(safe-area-inset-bottom));
+
+      z-index: 40;
+
+      padding: 11px 15px;
+
+      color: #f3ddb1;
+      background: rgba(31, 20, 13, 0.93);
+
+      border: 1px solid rgba(224, 181, 102, 0.7);
+      border-radius: 7px;
+
+      text-decoration: none;
+
+      box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.48);
+    }
+
+    .counter {
+      position: fixed;
+
+      right: calc(17px + env(safe-area-inset-right));
+      bottom: calc(19px + env(safe-area-inset-bottom));
+
+      z-index: 30;
+
+      color: rgba(243, 220, 177, 0.68);
+
+      font-family: Arial, sans-serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+    }
+
+    .loading-error {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+
+      transform: translate(-50%, -50%);
+
+      width: min(80vw, 470px);
+
+      color: rgba(245, 223, 181, 0.8);
+
+      text-align: center;
+      font-family: Arial, sans-serif;
+      line-height: 1.5;
+
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-error.show {
+      opacity: 1;
+    }
+
+    @media (max-width: 650px) {
+      .art-stage {
+        width: 86vw;
+        height: 74svh;
+      }
+
+      .arrow {
+        width: 43px;
+        height: 72px;
+      }
+
+      .return-button {
+        padding: 9px 12px;
+        font-size: 0.76rem;
+      }
+
+      .counter {
+        font-size: 0.69rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main
+    class="gallery"
+    id="gallery"
+    aria-label="Studio LaDuke full artwork gallery"
+  >
+
+    <div class="gallery-title">
+      Studio LaDuke Gallery
+    </div>
+
+    <button
+      class="arrow previous"
+      id="previous"
+      type="button"
+      aria-label="Previous artwork"
+    >
+      ‹
+    </button>
+
+    <section class="art-stage">
+
+      <img
+        class="artwork"
+        id="artwork"
+        alt="Studio LaDuke artwork"
+      >
+
+      <div
+        class="loading-error"
+        id="loadingError"
+      >
+        This image could not be loaded.
+      </div>
+
+    </section>
+
+    <button
+      class="arrow next"
+      id="next"
+      type="button"
+      aria-label="Next artwork"
+    >
+      ›
+    </button>
+
+    <a
+      class="return-button"
+      href="workshop.html"
+    >
+      ← Return to Menu
+    </a>
+
+    <div
+      class="counter"
+      id="counter"
+      aria-live="polite"
+    ></div>
+
+  </main>
+
+  <script>
+    "use strict";
+
+    const artworkFiles = [
+      "IMG_3211.jpeg",
+      "9EAA20AB-901D-41E1-AC98-64455D1A291D.png",
+      "8E115567-F28C-456A-8E51-6EB4BA67B0A3.png",
+      "5009BA2B-780C-4A6C-A6AA-4B5CDD3174C6.png",
+      "03DE2160-F40A-4D77-BA2F-030FAC8C7AE7.png",
+      "650B0A6A-1B85-4665-82D7-95FF79C8761E.png",
+      "D649A1E7-F73A-4529-8F41-05A5524C4C8E.png",
+      "7528563F-9204-4651-A65A-2A7450DCE740.png",
+      "193005A4-396A-42B8-895F-3D32037BB744.png",
+      "650E29C5-1949-4A2D-9B0C-9F2B31BB3934.png",
+      "3ABA2FB4-184C-4FB1-8D85-4118FA503931.png",
+      "4F9C4F6E-34A2-494D-847B-AB3DDA3E75AA.png",
+      "52095D7B-9D55-4D6C-A87C-DA519D179B9A.png",
+      "IMG_0082.jpeg",
+      "IMG_0014.jpeg",
+      "9F7F0E8D-FD9F-43F4-863E-308974B7AD58.jpeg"
+    ];
+
+    const artwork =
+      document.getElementById("artwork");
+
+    const previous =
+      document.getElementById("previous");
+
+    const next =
+      document.getElementById("next");
+
+    const counter =
+      document.getElementById("counter");
+
+    const loadingError =
+      document.getElementById("loadingError");
+
+    const gallery =
+      document.getElementById("gallery");
+
+    let currentIndex = 0;
+
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    function findRequestedArtwork() {
+      const parameters =
+        new URLSearchParams(window.location.search);
+
+      const requested =
+        parameters.get("art");
+
+      const requestedIndex =
+        artworkFiles.indexOf(requested);
+
+      if (requestedIndex >= 0) {
+        currentIndex = requestedIndex;
+      }
+    }
+
+    function displayArtwork() {
+      artwork.classList.add("changing");
+      loadingError.classList.remove("show");
+
+      const filename =
+        artworkFiles[currentIndex];
+
+      window.setTimeout(() => {
+        artwork.src = filename;
+
+        artwork.alt =
+          "Studio LaDuke artwork " +
+          (currentIndex + 1);
+
+        counter.textContent =
+          (currentIndex + 1) +
+          " / " +
+          artworkFiles.length;
+      }, 100);
+    }
+
+    function showPrevious() {
+      currentIndex =
+        (
+          currentIndex -
+          1 +
+          artworkFiles.length
+        ) % artworkFiles.length;
+
+      displayArtwork();
+    }
+
+    function showNext() {
+      currentIndex =
+        (
+          currentIndex +
+          1
+        ) % artworkFiles.length;
+
+      displayArtwork();
+    }
+
+    artwork.addEventListener(
+      "load",
+      () => {
+        artwork.classList.remove("changing");
+        loadingError.classList.remove("show");
+      }
+    );
+
+    artwork.addEventListener(
+      "error",
+      () => {
+        artwork.classList.remove("changing");
+        loadingError.classList.add("show");
+      }
+    );
+
+    previous.addEventListener(
+      "click",
+      showPrevious
+    );
+
+    next.addEventListener(
+      "click",
+      showNext
+    );
+
+    document.addEventListener(
+      "keydown",
+      event => {
+        if (event.key === "ArrowLeft") {
+          showPrevious();
+        }
+
+        if (event.key === "ArrowRight") {
+          showNext();
+        }
+
+        if (event.key === "Escape") {
+          window.location.href =
+            "workshop.html";
+        }
+      }
+    );
+
+    gallery.addEventListener(
+      "touchstart",
+      event => {
+        touchStartX =
+          event.changedTouches[0].screenX;
+      },
+      { passive: true }
+    );
+
+    gallery.addEventListener(
+      "touchend",
+      event => {
+        touchEndX =
+          event.changedTouches[0].screenX;
+
+        const distance =
+          touchEndX - touchStartX;
+
+        if (Math.abs(distance) < 55) {
+          return;
+        }
+
+        if (distance < 0) {
+          showNext();
+        } else {
+          showPrevious();
+        }
+      },
+      { passive: true }
+    );
+
+    findRequestedArtwork();
+    displayArtwork();
+  </script>
+
+</body>
+</html>
