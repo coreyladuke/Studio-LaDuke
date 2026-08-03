@@ -35,12 +35,17 @@
       background-size: cover;
       background-position: center center;
       background-repeat: no-repeat;
+
+      font-family: Georgia, "Times New Roman", serif;
     }
 
-    /*
-      Invisible clickable area positioned only over
-      the COME IN button baked into the image.
-    */
+    button,
+    a {
+      font: inherit;
+    }
+
+    /* COME IN hotspot over the button inside the artwork */
+
     .enter {
       position: fixed;
       left: 50%;
@@ -60,12 +65,214 @@
 
     .enter:hover,
     .enter:focus-visible {
-      outline: 2px solid rgba(245, 205, 125, 0.75);
+      outline: 2px solid rgba(245, 205, 125, 0.8);
       outline-offset: 3px;
       background: rgba(255, 210, 120, 0.08);
     }
 
+    /* Real hamburger button */
+
+    .menu-button {
+      position: fixed;
+      top: calc(15px + env(safe-area-inset-top));
+      left: calc(15px + env(safe-area-inset-left));
+      z-index: 60;
+
+      width: 54px;
+      height: 54px;
+
+      display: grid;
+      place-items: center;
+
+      color: #f3d59a;
+      background: rgba(16, 13, 10, 0.82);
+
+      border: 1px solid rgba(230, 188, 108, 0.8);
+      border-radius: 8px;
+
+      box-shadow:
+        0 5px 18px rgba(0, 0, 0, 0.5),
+        0 0 14px rgba(221, 167, 70, 0.18);
+
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .menu-button:active {
+      transform: scale(0.96);
+    }
+
+    .menu-lines,
+    .menu-lines::before,
+    .menu-lines::after {
+      display: block;
+      width: 25px;
+      height: 2px;
+      border-radius: 999px;
+      background: currentColor;
+      transition:
+        transform 220ms ease,
+        opacity 180ms ease;
+    }
+
+    .menu-lines {
+      position: relative;
+    }
+
+    .menu-lines::before,
+    .menu-lines::after {
+      content: "";
+      position: absolute;
+      left: 0;
+    }
+
+    .menu-lines::before {
+      top: -8px;
+    }
+
+    .menu-lines::after {
+      top: 8px;
+    }
+
+    .menu-button.open .menu-lines {
+      background: transparent;
+    }
+
+    .menu-button.open .menu-lines::before {
+      top: 0;
+      transform: rotate(45deg);
+    }
+
+    .menu-button.open .menu-lines::after {
+      top: 0;
+      transform: rotate(-45deg);
+    }
+
+    /* Dark screen behind open menu */
+
+    .menu-shade {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+
+      background: rgba(0, 0, 0, 0.48);
+
+      opacity: 0;
+      visibility: hidden;
+
+      transition:
+        opacity 220ms ease,
+        visibility 220ms ease;
+
+      backdrop-filter: blur(2px);
+    }
+
+    .menu-shade.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Sliding navigation panel */
+
+    .menu-panel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 50;
+
+      width: min(310px, 84vw);
+      padding:
+        calc(88px + env(safe-area-inset-top))
+        24px
+        calc(26px + env(safe-area-inset-bottom));
+
+      color: #f5ead7;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(85, 48, 27, 0.98),
+          rgba(28, 20, 15, 0.99)
+        );
+
+      border-right: 1px solid rgba(225, 182, 108, 0.45);
+
+      box-shadow: 18px 0 45px rgba(0, 0, 0, 0.55);
+
+      transform: translateX(-105%);
+      transition: transform 260ms ease;
+    }
+
+    .menu-panel.open {
+      transform: translateX(0);
+    }
+
+    .menu-title {
+      margin-bottom: 6px;
+
+      color: #f3d391;
+      font-size: 1.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    .menu-subtitle {
+      margin-bottom: 28px;
+
+      color: rgba(245, 234, 215, 0.65);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .menu-links {
+      display: grid;
+      gap: 10px;
+    }
+
+    .menu-link {
+      display: block;
+      padding: 13px 14px;
+
+      color: #f5ead7;
+      background: rgba(255, 255, 255, 0.035);
+
+      border: 1px solid rgba(238, 207, 157, 0.18);
+      border-radius: 6px;
+
+      text-decoration: none;
+      letter-spacing: 0.035em;
+
+      transition:
+        background 160ms ease,
+        border-color 160ms ease,
+        transform 160ms ease;
+    }
+
+    .menu-link:hover,
+    .menu-link:focus-visible {
+      background: rgba(226, 177, 96, 0.14);
+      border-color: rgba(238, 207, 157, 0.48);
+      transform: translateX(3px);
+    }
+
+    .menu-link.current {
+      color: #f1d08b;
+      border-color: rgba(231, 181, 96, 0.55);
+    }
+
+    .menu-footer {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: calc(22px + env(safe-area-inset-bottom));
+
+      color: rgba(245, 234, 215, 0.48);
+      font-size: 0.78rem;
+      line-height: 1.5;
+    }
+
     /* Vertical front room for phones */
+
     @media (max-width: 650px) {
       body {
         background-image:
@@ -80,15 +287,142 @@
         width: 170px;
         height: 62px;
       }
+
+      .menu-button {
+        width: 50px;
+        height: 50px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .menu-panel,
+      .menu-shade,
+      .menu-lines,
+      .menu-lines::before,
+      .menu-lines::after,
+      .menu-link {
+        transition: none;
+      }
     }
   </style>
 </head>
 
 <body>
+
   <a
     class="enter"
     href="workshop.html"
     aria-label="Come into Studio LaDuke"
   ></a>
+
+  <button
+    class="menu-button"
+    id="menuButton"
+    type="button"
+    aria-label="Open navigation menu"
+    aria-controls="menuPanel"
+    aria-expanded="false"
+  >
+    <span class="menu-lines" aria-hidden="true"></span>
+  </button>
+
+  <div
+    class="menu-shade"
+    id="menuShade"
+    aria-hidden="true"
+  ></div>
+
+  <nav
+    class="menu-panel"
+    id="menuPanel"
+    aria-label="Studio LaDuke navigation"
+  >
+    <h2 class="menu-title">Studio LaDuke</h2>
+
+    <p class="menu-subtitle">
+      Art, stories, music, and things still becoming.
+    </p>
+
+    <div class="menu-links">
+      <a class="menu-link current" href="index.html">
+        Front Room
+      </a>
+
+      <a class="menu-link" href="workshop.html">
+        Workshop
+      </a>
+
+      <a class="menu-link" href="directory.html">
+        Directory
+      </a>
+
+      <a class="menu-link" href="books.html">
+        Books
+      </a>
+
+      <a class="menu-link" href="bob.html">
+        Bob’s Room
+      </a>
+
+      <a class="menu-link" href="about.html">
+        About Corey
+      </a>
+    </div>
+
+    <div class="menu-footer">
+      Made in Ketchikan, Alaska.<br>
+      Pull up a chair.
+    </div>
+  </nav>
+
+  <script>
+    const menuButton = document.getElementById("menuButton");
+    const menuPanel = document.getElementById("menuPanel");
+    const menuShade = document.getElementById("menuShade");
+
+    function openMenu() {
+      menuButton.classList.add("open");
+      menuPanel.classList.add("open");
+      menuShade.classList.add("open");
+
+      menuButton.setAttribute("aria-expanded", "true");
+      menuButton.setAttribute("aria-label", "Close navigation menu");
+      menuShade.setAttribute("aria-hidden", "false");
+    }
+
+    function closeMenu() {
+      menuButton.classList.remove("open");
+      menuPanel.classList.remove("open");
+      menuShade.classList.remove("open");
+
+      menuButton.setAttribute("aria-expanded", "false");
+      menuButton.setAttribute("aria-label", "Open navigation menu");
+      menuShade.setAttribute("aria-hidden", "true");
+    }
+
+    function toggleMenu() {
+      const isOpen = menuPanel.classList.contains("open");
+
+      if (isOpen) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    }
+
+    menuButton.addEventListener("click", toggleMenu);
+    menuShade.addEventListener("click", closeMenu);
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeMenu();
+      }
+    });
+
+    document.querySelectorAll(".menu-link").forEach((link) => {
+      link.addEventListener("click", closeMenu);
+    });
+  </script>
+
 </body>
 </html>
