@@ -8,20 +8,9 @@
     content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
   >
 
-  <title>Mortal KomPlant | McBride’s Arcade</title>
+  <title>McBride’s Arcade | Mortal KomPlant</title>
 
   <style>
-    :root {
-      --gold: #e5b85f;
-      --green: #7fbc3b;
-      --deep-green: #213617;
-      --red: #c8332d;
-      --pink: #e4598e;
-      --cream: #f4e4b8;
-      --black: #090b09;
-      --panel: rgba(10, 12, 10, 0.88);
-    }
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -32,2320 +21,770 @@
     html,
     body {
       width: 100%;
-      min-height: 100%;
-      background: #050605;
-      color: white;
-      font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
-      overflow-x: hidden;
-      overscroll-behavior: none;
-    }
-
-    button,
-    a {
-      font: inherit;
-    }
-
-    button {
-      touch-action: manipulation;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-
-    .game-shell {
-      min-height: 100svh;
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      background:
-        radial-gradient(circle at 50% 15%, rgba(87, 19, 23, 0.36), transparent 35%),
-        linear-gradient(#0b0c0b, #030403);
+      height: 100%;
       overflow: hidden;
+      background: #030303;
     }
 
-    /* HEADER */
+    body {
+      display: grid;
+      place-items: center;
+      font-family: Arial, sans-serif;
+      touch-action: manipulation;
+    }
 
-    .arcade-header {
+    /*
+      The cabinet image is 2:3.
+      Everything interactive is positioned as a percentage
+      of this single cabinet frame.
+    */
+
+    .cabinet {
       position: relative;
-      z-index: 30;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding:
-        calc(10px + env(safe-area-inset-top))
-        12px
-        9px;
+
+      width: min(100vw, calc(100svh * 0.666667));
+      height: min(100svh, 150vw);
+
+      aspect-ratio: 2 / 3;
+
       background:
-        linear-gradient(
-          to bottom,
-          rgba(20, 10, 10, 0.98),
-          rgba(8, 8, 8, 0.92)
-        );
-      border-bottom: 2px solid rgba(229, 184, 95, 0.48);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.58);
-    }
+        url("35611351-2494-4554-9670-224D87D732C8.png")
+        center center / 100% 100% no-repeat;
 
-    .arcade-name {
-      color: #ff4a36;
-      font-size: clamp(1rem, 4.5vw, 1.7rem);
-      letter-spacing: 0.07em;
-      text-shadow:
-        0 0 8px rgba(255, 56, 35, 0.65),
-        2px 2px 0 #3a0805;
-    }
-
-    .game-name {
-      color: var(--green);
-      font-size: clamp(0.82rem, 3.6vw, 1.35rem);
-      letter-spacing: 0.05em;
-      text-align: right;
-      text-shadow:
-        0 0 8px rgba(127, 188, 59, 0.45),
-        2px 2px 0 #102207;
-    }
-
-    .back-link {
-      color: var(--cream);
-      text-decoration: none;
-      font-family: Georgia, serif;
-      font-size: 0.82rem;
-      white-space: nowrap;
-      padding: 9px 11px;
-      border: 1px solid rgba(229, 184, 95, 0.55);
-      border-radius: 5px;
-      background: rgba(36, 24, 16, 0.72);
-    }
-
-    /* MAIN ARENA */
-
-    .arena {
-      position: relative;
-      min-height: 520px;
       overflow: hidden;
       isolation: isolate;
-      background:
-        linear-gradient(
-          to bottom,
-          rgba(10, 15, 10, 0.22),
-          rgba(4, 5, 4, 0.82)
-        ),
-        radial-gradient(
-          ellipse at center bottom,
-          rgba(85, 58, 28, 0.7),
-          transparent 58%
-        ),
-        linear-gradient(
-          155deg,
-          #141d17 0%,
-          #080b09 48%,
-          #16100d 100%
-        );
-    }
 
-    .arena::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: -3;
-      opacity: 0.28;
-      background:
-        repeating-linear-gradient(
-          90deg,
-          transparent 0,
-          transparent 72px,
-          rgba(111, 54, 31, 0.32) 73px,
-          rgba(111, 54, 31, 0.32) 76px
-        ),
-        repeating-linear-gradient(
-          0deg,
-          transparent 0,
-          transparent 56px,
-          rgba(255, 255, 255, 0.025) 57px,
-          rgba(255, 255, 255, 0.025) 60px
-        );
-    }
-
-    .neon-sign {
-      position: absolute;
-      top: 84px;
-      left: 50%;
-      z-index: -1;
-      transform: translateX(-50%);
-      color: #ff3e31;
-      font-size: clamp(1.7rem, 7vw, 4rem);
-      letter-spacing: 0.08em;
-      white-space: nowrap;
-      opacity: 0.85;
-      text-shadow:
-        0 0 5px #ff3427,
-        0 0 14px #ff3427,
-        0 0 32px rgba(255, 52, 39, 0.7);
-    }
-
-    .cabinet-lights {
-      position: absolute;
-      inset: 150px 0 auto;
-      height: 120px;
-      z-index: -2;
-      opacity: 0.28;
-      background:
-        radial-gradient(circle at 8% 20%, #32adff 0 4px, transparent 5px),
-        radial-gradient(circle at 18% 55%, #ff396e 0 4px, transparent 5px),
-        radial-gradient(circle at 31% 30%, #9aff35 0 4px, transparent 5px),
-        radial-gradient(circle at 69% 28%, #ffde3c 0 4px, transparent 5px),
-        radial-gradient(circle at 82% 54%, #a946ff 0 4px, transparent 5px),
-        radial-gradient(circle at 93% 22%, #29e4d1 0 4px, transparent 5px);
-      filter: blur(1px);
-    }
-
-    .floor {
-      position: absolute;
-      left: -15%;
-      right: -15%;
-      bottom: -25%;
-      height: 54%;
-      z-index: -1;
-      transform: perspective(500px) rotateX(62deg);
-      transform-origin: center top;
-      background:
-        linear-gradient(rgba(16, 24, 15, 0.8), rgba(4, 5, 4, 0.96)),
-        repeating-linear-gradient(
-          90deg,
-          transparent 0 74px,
-          rgba(131, 181, 74, 0.12) 75px 77px
-        ),
-        repeating-linear-gradient(
-          0deg,
-          transparent 0 74px,
-          rgba(131, 181, 74, 0.12) 75px 77px
-        );
-      border-top: 2px solid rgba(175, 122, 66, 0.4);
-    }
-
-    /* HUD */
-
-    .hud {
-      position: relative;
-      z-index: 10;
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      gap: 8px;
-      align-items: start;
-      padding: 12px 10px 0;
-    }
-
-    .fighter-hud {
-      min-width: 0;
-    }
-
-    .fighter-hud.enemy {
-      text-align: right;
-    }
-
-    .fighter-name {
-      margin-bottom: 4px;
-      color: var(--cream);
-      font-size: clamp(0.85rem, 3.5vw, 1.25rem);
-      letter-spacing: 0.06em;
-      text-shadow: 2px 2px 0 #000;
-    }
-
-    .health-frame,
-    .power-frame {
-      position: relative;
-      width: 100%;
-      overflow: hidden;
-      border: 2px solid #111;
-      background: #2a0b0a;
       box-shadow:
-        0 0 0 1px rgba(229, 184, 95, 0.68),
-        inset 0 2px 4px rgba(0, 0, 0, 0.8);
+        0 0 50px rgba(0, 0, 0, 0.95),
+        0 0 30px rgba(70, 255, 100, 0.08);
     }
 
-    .health-frame {
-      height: 24px;
-    }
+    /*
+      Actual playable game inside the cabinet monitor.
+    */
 
-    .power-frame {
-      height: 9px;
-      margin-top: 5px;
-      background: #101719;
-    }
-
-    .health-bar,
-    .power-bar {
-      height: 100%;
-      width: 100%;
-      transform-origin: left center;
-      transition: width 300ms ease;
-    }
-
-    .health-bar {
-      background:
-        linear-gradient(
-          to bottom,
-          #a8e95b,
-          #5f9f2a 55%,
-          #345b18
-        );
-    }
-
-    .enemy .health-bar,
-    .enemy .power-bar {
-      margin-left: auto;
-    }
-
-    .enemy .health-bar {
-      background:
-        linear-gradient(
-          to bottom,
-          #f35d4c,
-          #bb2d29 55%,
-          #6e1716
-        );
-    }
-
-    .power-bar {
-      background:
-        linear-gradient(
-          90deg,
-          #2d97ff,
-          #58e9ff
-        );
-    }
-
-    .enemy .power-bar {
-      background:
-        linear-gradient(
-          90deg,
-          #ff8f32,
-          #ffd24a
-        );
-    }
-
-    .health-number {
+    .screen-frame {
       position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      color: white;
-      font-family: Arial, sans-serif;
-      font-weight: 900;
-      font-size: 0.7rem;
-      text-shadow: 1px 1px 2px black;
-    }
 
-    .round-box {
-      min-width: 58px;
-      text-align: center;
-      padding-top: 2px;
-    }
+      left: 15.7%;
+      top: 26.15%;
 
-    .timer {
-      color: var(--gold);
-      font-size: clamp(1.7rem, 7vw, 2.8rem);
-      line-height: 0.9;
-      text-shadow:
-        2px 2px 0 #000,
-        0 0 10px rgba(229, 184, 95, 0.45);
-    }
+      width: 68.5%;
+      height: 34.25%;
 
-    .round-dots {
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-      margin-top: 7px;
-    }
-
-    .round-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      border: 1px solid rgba(229, 184, 95, 0.8);
-      background: #191919;
-    }
-
-    .round-dot.won {
-      background: var(--gold);
-      box-shadow: 0 0 8px rgba(229, 184, 95, 0.8);
-    }
-
-    /* FIGHTERS */
-
-    .fighters {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 88px;
-      height: min(56vh, 440px);
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      padding: 0 clamp(18px, 7vw, 110px);
-      pointer-events: none;
-    }
-
-    .fighter {
-      position: relative;
-      width: clamp(135px, 34vw, 330px);
-      height: clamp(235px, 48vh, 420px);
-      display: flex;
-      align-items: end;
-      justify-content: center;
-      transform-origin: center bottom;
-      transition:
-        filter 100ms ease,
-        transform 120ms ease;
-    }
-
-    .fighter.enemy {
-      transform: scaleX(-1);
-    }
-
-    /* BOB */
-
-    .bob-body {
-      position: relative;
-      width: 66%;
-      aspect-ratio: 0.82;
-      margin-bottom: 6px;
-      border-radius: 44% 44% 35% 35%;
-      background:
-        radial-gradient(circle at 35% 26%, rgba(255,255,255,0.12), transparent 22%),
-        linear-gradient(135deg, #283a2d, #0e1512 72%);
-      border: 4px solid #070908;
-      box-shadow:
-        inset 0 0 0 4px rgba(159, 110, 56, 0.12),
-        0 14px 20px rgba(0, 0, 0, 0.52);
-    }
-
-    .bob-body::before {
-      content: "";
-      position: absolute;
-      inset: 8% 10% 10%;
-      border-radius: 42%;
-      opacity: 0.7;
-      background:
-        linear-gradient(32deg, transparent 46%, #ba8740 47% 49%, transparent 50%),
-        linear-gradient(125deg, transparent 46%, #ba8740 47% 49%, transparent 50%),
-        linear-gradient(75deg, transparent 46%, #ba8740 47% 49%, transparent 50%);
-    }
-
-    .bob-leaves {
-      position: absolute;
-      left: 50%;
-      bottom: 64%;
-      width: 94%;
-      height: 55%;
-      transform: translateX(-50%);
-    }
-
-    .leaf {
-      position: absolute;
-      left: 50%;
-      bottom: 0;
-      width: 22%;
-      height: 100%;
-      transform-origin: bottom center;
-      border-radius: 58% 42% 22% 22%;
-      background:
-        linear-gradient(
-          90deg,
-          #284829,
-          #69874a 45%,
-          #233b23
-        );
-      border: 3px solid #101a10;
-      box-shadow: inset 0 0 8px rgba(255,255,255,0.08);
-    }
-
-    .leaf::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: 10%;
-      bottom: 8%;
-      width: 2px;
-      background: rgba(190, 213, 116, 0.45);
-    }
-
-    .leaf:nth-child(1) { transform: translateX(-50%) rotate(-43deg) scale(0.82); }
-    .leaf:nth-child(2) { transform: translateX(-50%) rotate(-25deg) scale(0.95); }
-    .leaf:nth-child(3) { transform: translateX(-50%) rotate(-9deg) scale(1.06); }
-    .leaf:nth-child(4) { transform: translateX(-50%) rotate(9deg) scale(1.08); }
-    .leaf:nth-child(5) { transform: translateX(-50%) rotate(27deg) scale(0.95); }
-    .leaf:nth-child(6) { transform: translateX(-50%) rotate(45deg) scale(0.82); }
-
-    .headband {
-      position: absolute;
-      left: 5%;
-      right: 5%;
-      top: 4%;
-      z-index: 4;
-      height: 16%;
-      border-radius: 12px;
-      background:
-        repeating-linear-gradient(
-          90deg,
-          transparent 0 13px,
-          rgba(229, 184, 95, 0.92) 14px 17px,
-          transparent 18px 28px
-        ),
-        #080908;
-      border: 2px solid #d3a553;
-      box-shadow: 0 3px 7px rgba(0,0,0,0.6);
-    }
-
-    .headband::after {
-      content: "△  ·  ∧  ·  ▽";
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      color: #e5b85f;
-      font-size: clamp(0.5rem, 1.8vw, 0.9rem);
-      letter-spacing: 0.05em;
-      white-space: nowrap;
-    }
-
-    .face {
-      position: absolute;
-      left: 13%;
-      right: 13%;
-      top: 25%;
-      bottom: 17%;
-      z-index: 3;
-    }
-
-    .eye {
-      position: absolute;
-      top: 19%;
-      width: 28%;
-      height: 17%;
-      overflow: hidden;
-      border-radius: 48%;
-      background: #b6c880;
-      border: 2px solid #071007;
-    }
-
-    .eye.left { left: 8%; }
-    .eye.right { right: 8%; }
-
-    .eye::after {
-      content: "";
-      position: absolute;
-      top: 7%;
-      left: 45%;
-      width: 22%;
-      height: 88%;
-      border-radius: 50%;
-      background: #071008;
-    }
-
-    .brow {
-      position: absolute;
-      top: 11%;
-      width: 32%;
-      height: 7%;
-      border-radius: 999px;
-      background: #091009;
-    }
-
-    .brow.left {
-      left: 6%;
-      transform: rotate(10deg);
-    }
-
-    .brow.right {
-      right: 6%;
-      transform: rotate(-10deg);
-    }
-
-    .mouth {
-      position: absolute;
-      left: 35%;
-      bottom: 13%;
-      width: 31%;
-      height: 13%;
-      border-bottom: 5px solid #080b08;
-      border-radius: 50%;
-    }
-
-    .belt {
-      position: absolute;
-      left: 2%;
-      right: 2%;
-      bottom: 8%;
-      height: 15%;
-      z-index: 4;
-      border-radius: 9px;
-      border: 2px solid #d3a553;
-      background:
-        repeating-linear-gradient(
-          90deg,
-          transparent 0 16px,
-          rgba(229, 184, 95, 0.9) 17px 20px,
-          transparent 21px 34px
-        ),
-        #080908;
-    }
-
-    .arm {
-      position: absolute;
-      top: 46%;
-      width: 34%;
-      height: 20%;
-      z-index: 6;
-      border-radius: 50%;
-      background: linear-gradient(#3d5840, #1a271d);
-      border: 3px solid #0a0d0a;
-    }
-
-    .arm.left {
-      left: -19%;
-      transform: rotate(18deg);
-    }
-
-    .arm.right {
-      right: -19%;
-      transform: rotate(-18deg);
-    }
-
-    .fist {
-      position: absolute;
-      top: 48%;
-      width: 22%;
-      aspect-ratio: 1;
-      z-index: 7;
-      border-radius: 44%;
-      background: #38513b;
-      border: 3px solid #0b0e0b;
-    }
-
-    .fist.left { left: -27%; }
-    .fist.right { right: -27%; }
-
-    /* FLYTRAP */
-
-    .flytrap-body {
-      position: relative;
-      width: 76%;
-      height: 78%;
-      margin-bottom: 4px;
-    }
-
-    .flytrap-pot {
-      position: absolute;
-      left: 20%;
-      right: 20%;
-      bottom: 0;
-      height: 34%;
-      border-radius: 13% 13% 38% 38%;
-      background: linear-gradient(135deg, #40541c, #18220e);
-      border: 4px solid #0b0f07;
-      box-shadow: 0 14px 20px rgba(0,0,0,0.5);
-    }
-
-    .flytrap-pot::after {
-      content: "△ · ∧ · ▽";
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 36%;
-      text-align: center;
-      color: #d3a553;
-      font-size: clamp(0.55rem, 2vw, 0.95rem);
-      white-space: nowrap;
-    }
-
-    .stem {
-      position: absolute;
-      left: 43%;
-      bottom: 25%;
-      width: 15%;
-      height: 40%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #1b3f18, #4e7c2d, #183515);
-      border: 3px solid #0a1008;
-    }
-
-    .trap {
-      position: absolute;
-      left: 3%;
-      right: 3%;
-      top: 3%;
-      height: 49%;
-      transform: rotate(-5deg);
-    }
-
-    .jaw {
-      position: absolute;
-      left: 8%;
-      right: 8%;
-      height: 52%;
-      border: 4px solid #101409;
-      background:
-        radial-gradient(circle at 30% 25%, rgba(255,255,255,0.13), transparent 22%),
-        linear-gradient(135deg, #618b28, #283c14);
-      overflow: hidden;
-    }
-
-    .jaw.top {
-      top: 0;
-      border-radius: 70% 70% 18% 18%;
-      transform: rotate(-6deg);
-    }
-
-    .jaw.bottom {
-      bottom: 0;
-      border-radius: 18% 18% 70% 70%;
-      transform: rotate(8deg);
-    }
-
-    .jaw::after {
-      content: "";
-      position: absolute;
-      inset: 23% 10%;
-      background:
-        repeating-linear-gradient(
-          90deg,
-          transparent 0 16px,
-          #efe1b7 17px 22px,
-          transparent 23px 31px
-        );
-    }
-
-    .jaw.top::after {
-      clip-path: polygon(0 100%, 8% 0, 16% 100%, 24% 0, 32% 100%, 40% 0, 48% 100%, 56% 0, 64% 100%, 72% 0, 80% 100%, 88% 0, 100% 100%);
-    }
-
-    .jaw.bottom::after {
-      clip-path: polygon(0 0, 8% 100%, 16% 0, 24% 100%, 32% 0, 40% 100%, 48% 0, 56% 100%, 64% 0, 72% 100%, 80% 0, 88% 100%, 100% 0);
-    }
-
-    .tongue {
-      position: absolute;
-      left: 35%;
-      bottom: 23%;
-      width: 46%;
-      height: 16%;
-      border-radius: 50%;
-      background: #a63c3c;
-      transform: rotate(12deg);
-      border: 2px solid #401212;
-      z-index: 3;
-    }
-
-    .trap-eye {
-      position: absolute;
-      top: 8%;
-      left: 25%;
-      width: 12%;
-      aspect-ratio: 1;
       z-index: 5;
-      border-radius: 50%;
-      background: #dbe179;
-      border: 2px solid #0a0d08;
-    }
 
-    .trap-eye::after {
-      content: "";
-      position: absolute;
-      inset: 29%;
-      border-radius: 50%;
-      background: #060806;
-    }
-
-    .enemy-arm {
-      position: absolute;
-      bottom: 25%;
-      width: 24%;
-      height: 22%;
-      border: 3px solid #0a1008;
-      border-radius: 55%;
-      background: linear-gradient(#446f25, #172a12);
-    }
-
-    .enemy-arm.left {
-      left: 2%;
-      transform: rotate(27deg);
-    }
-
-    .enemy-arm.right {
-      right: 2%;
-      transform: rotate(-27deg);
-    }
-
-    /* ANNOUNCER */
-
-    .announcement {
-      position: absolute;
-      left: 50%;
-      top: 43%;
-      z-index: 25;
-      width: 90%;
-      transform: translate(-50%, -50%) scale(0.6);
-      text-align: center;
-      pointer-events: none;
-      opacity: 0;
-      color: #f3d46f;
-      font-size: clamp(2.3rem, 13vw, 7rem);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      text-shadow:
-        5px 5px 0 #320d08,
-        -2px -2px 0 #000,
-        0 0 24px rgba(255, 80, 38, 0.75);
-    }
-
-    .announcement.show {
-      animation: announce 1100ms ease forwards;
-    }
-
-    @keyframes announce {
-      0% {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(2);
-      }
-      20% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(0.88);
-      }
-      70% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-      }
-      100% {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(1.08);
-      }
-    }
-
-    .combat-text {
-      position: absolute;
-      left: 50%;
-      bottom: 94px;
-      z-index: 20;
-      transform: translateX(-50%);
-      width: min(92%, 800px);
-      color: var(--cream);
-      text-align: center;
-      font-family: Arial, sans-serif;
-      font-weight: 900;
-      font-size: clamp(0.8rem, 3.5vw, 1.05rem);
-      text-shadow: 2px 2px 3px black;
-      min-height: 1.3em;
-    }
-
-    /* CONTROLS */
-
-    .controls {
-      position: relative;
-      z-index: 30;
-      padding:
-        10px
-        10px
-        calc(12px + env(safe-area-inset-bottom));
-      background:
-        linear-gradient(
-          to bottom,
-          rgba(8, 10, 8, 0.9),
-          rgba(3, 4, 3, 0.99)
-        );
-      border-top: 2px solid rgba(229, 184, 95, 0.42);
-      box-shadow: 0 -10px 24px rgba(0, 0, 0, 0.45);
-    }
-
-    .control-grid {
-      width: min(780px, 100%);
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-    }
-
-    .attack-button {
-      position: relative;
-      min-height: 68px;
-      padding: 8px 5px;
       overflow: hidden;
-      color: white;
+
+      border-radius: 2.4%;
+
+      background: #010201;
+
+      box-shadow:
+        inset 0 0 25px rgba(0, 0, 0, 0.95),
+        0 0 9px rgba(90, 255, 110, 0.1);
+
+      transform:
+        perspective(900px)
+        rotateX(0.4deg);
+
+      transform-origin: center center;
+    }
+
+    .game-screen {
+      width: 100%;
+      height: 100%;
+
+      display: block;
+
+      border: 0;
+      background: #010201;
+    }
+
+    /*
+      CRT glass and scanlines over the iframe.
+    */
+
+    .screen-glass {
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+
+      pointer-events: none;
+
+      border-radius: inherit;
+
       background:
         linear-gradient(
+          117deg,
+          rgba(255, 255, 255, 0.07),
+          transparent 20%,
+          transparent 68%,
+          rgba(255, 255, 255, 0.018)
+        ),
+        repeating-linear-gradient(
           to bottom,
-          #32471c,
-          #17220f
+          rgba(255, 255, 255, 0.07) 0,
+          rgba(255, 255, 255, 0.07) 1px,
+          transparent 1px,
+          transparent 4px
         );
-      border: 2px solid #090b07;
-      border-radius: 8px;
+
+      opacity: 0.22;
+
       box-shadow:
-        0 0 0 1px rgba(166, 198, 83, 0.55),
-        inset 0 4px 9px rgba(255,255,255,0.05),
-        0 5px 10px rgba(0,0,0,0.35);
-      cursor: pointer;
-      font-size: clamp(0.75rem, 3.1vw, 1rem);
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
+        inset 0 0 28px rgba(0, 0, 0, 0.92);
     }
 
-    .attack-button:nth-child(2) {
-      background: linear-gradient(#51301a, #25150d);
-      box-shadow:
-        0 0 0 1px rgba(212, 142, 76, 0.6),
-        inset 0 4px 9px rgba(255,255,255,0.05),
-        0 5px 10px rgba(0,0,0,0.35);
+    .screen-frame.powering-on {
+      animation: screenPower 700ms ease;
     }
 
-    .attack-button:nth-child(3) {
-      background: linear-gradient(#253d4c, #101c24);
-      box-shadow:
-        0 0 0 1px rgba(89, 180, 225, 0.58),
-        inset 0 4px 9px rgba(255,255,255,0.05),
-        0 5px 10px rgba(0,0,0,0.35);
-    }
+    @keyframes screenPower {
+      0% {
+        filter: brightness(0);
+        transform: scaleY(0.015);
+      }
 
-    .attack-button.block-button {
-      background: linear-gradient(#4a4230, #221e15);
-      box-shadow:
-        0 0 0 1px rgba(221, 193, 122, 0.55),
-        inset 0 4px 9px rgba(255,255,255,0.05),
-        0 5px 10px rgba(0,0,0,0.35);
-    }
+      35% {
+        filter: brightness(3);
+        transform: scaleY(0.025);
+      }
 
-    .attack-button:active:not(:disabled) {
-      transform: translateY(2px) scale(0.97);
-      filter: brightness(1.22);
-    }
+      55% {
+        filter: brightness(1.8);
+        transform: scaleY(1);
+      }
 
-    .attack-button:disabled {
-      opacity: 0.38;
-      cursor: not-allowed;
-    }
-
-    .button-small {
-      display: block;
-      margin-top: 4px;
-      color: rgba(255,255,255,0.62);
-      font-family: Arial, sans-serif;
-      font-size: 0.57rem;
-      text-transform: none;
-    }
-
-    .special-row {
-      width: min(780px, 100%);
-      margin: 8px auto 0;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .special-button,
-    .restart-button {
-      min-height: 48px;
-      padding: 9px;
-      border-radius: 7px;
-      cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .special-button {
-      color: #201000;
-      background: linear-gradient(#ffd95d, #b86c12);
-      border: 2px solid #4c2505;
-      box-shadow:
-        0 0 14px rgba(255, 186, 42, 0.36),
-        inset 0 3px 5px rgba(255,255,255,0.25);
-    }
-
-    .special-button:disabled {
-      opacity: 0.35;
-      filter: grayscale(0.8);
-    }
-
-    .restart-button {
-      display: none;
-      color: var(--cream);
-      background: #241714;
-      border: 1px solid rgba(229,184,95,0.6);
-    }
-
-    .restart-button.show {
-      display: block;
-    }
-
-    /* EFFECTS */
-
-    .fighter.hit {
-      animation: hitShake 280ms ease;
-      filter: brightness(2.2) saturate(0.4);
-    }
-
-    @keyframes hitShake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-16px) rotate(-3deg); }
-      50% { transform: translateX(12px) rotate(2deg); }
-      75% { transform: translateX(-7px); }
-    }
-
-    .fighter.enemy.hit {
-      animation: enemyHitShake 280ms ease;
-    }
-
-    @keyframes enemyHitShake {
-      0%, 100% { transform: scaleX(-1) translateX(0); }
-      25% { transform: scaleX(-1) translateX(-16px) rotate(-3deg); }
-      50% { transform: scaleX(-1) translateX(12px) rotate(2deg); }
-      75% { transform: scaleX(-1) translateX(-7px); }
-    }
-
-    .fighter.attack {
-      animation: attackLunge 270ms ease;
-    }
-
-    @keyframes attackLunge {
-      0%, 100% { transform: translateX(0) scale(1); }
-      50% { transform: translateX(44px) scale(1.06); }
-    }
-
-    .fighter.enemy.attack {
-      animation: enemyAttackLunge 270ms ease;
-    }
-
-    @keyframes enemyAttackLunge {
-      0%, 100% { transform: scaleX(-1) translateX(0); }
-      50% { transform: scaleX(-1) translateX(44px) scale(1.06); }
-    }
-
-    .fighter.blocking {
-      filter: drop-shadow(0 0 18px rgba(71, 182, 255, 0.75));
-      transform: scale(0.95);
-    }
-
-    .fighter.enemy.blocking {
-      transform: scaleX(-1) scale(0.95);
-    }
-
-    .fighter.defeated {
-      animation: fallDown 650ms ease forwards;
-    }
-
-    @keyframes fallDown {
-      to {
-        transform: rotate(78deg) translate(55px, 34px);
-        filter: grayscale(0.7) brightness(0.55);
+      100% {
+        filter: brightness(1);
+        transform: scaleY(1);
       }
     }
 
-    .fighter.enemy.defeated {
-      animation: enemyFallDown 650ms ease forwards;
-    }
+    /*
+      Invisible physical controls positioned directly
+      over the painted cabinet controls.
+    */
 
-    @keyframes enemyFallDown {
-      to {
-        transform: scaleX(-1) rotate(78deg) translate(55px, 34px);
-        filter: grayscale(0.7) brightness(0.55);
-      }
-    }
-
-    .screen-shake {
-      animation: screenShake 330ms ease;
-    }
-
-    @keyframes screenShake {
-      0%, 100% { transform: translate(0); }
-      20% { transform: translate(-6px, 3px); }
-      40% { transform: translate(7px, -3px); }
-      60% { transform: translate(-4px, 2px); }
-      80% { transform: translate(3px, -2px); }
-    }
-
-    .impact {
+    .cabinet-control {
       position: absolute;
-      z-index: 24;
-      width: 16px;
-      height: 16px;
+      z-index: 20;
+
+      border: 0;
       border-radius: 50%;
-      pointer-events: none;
-      background: #f7df76;
-      box-shadow:
-        0 0 10px #ffbb28,
-        0 0 28px #ff3b1e;
-      animation: burst 520ms ease forwards;
-    }
 
-    @keyframes burst {
-      from {
-        opacity: 1;
-        transform: scale(0.4);
-      }
-      to {
-        opacity: 0;
-        transform: scale(7);
-      }
-    }
-
-    .damage-number {
-      position: absolute;
-      z-index: 26;
-      color: #ffd552;
-      font-size: clamp(1.4rem, 7vw, 3rem);
-      text-shadow:
-        3px 3px 0 #7c170d,
-        0 0 8px black;
-      pointer-events: none;
-      animation: damageFloat 720ms ease forwards;
-    }
-
-    @keyframes damageFloat {
-      from {
-        opacity: 1;
-        transform: translateY(0) scale(0.7);
-      }
-      to {
-        opacity: 0;
-        transform: translateY(-90px) scale(1.25);
-      }
-    }
-
-    .finisher-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 100;
-      display: none;
-      place-items: center;
-      padding: 18px;
-      background:
-        radial-gradient(circle, rgba(112, 59, 14, 0.36), transparent 40%),
-        rgba(0, 0, 0, 0.91);
-    }
-
-    .finisher-overlay.show {
-      display: grid;
-      animation: finisherFade 350ms ease;
-    }
-
-    @keyframes finisherFade {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    .finisher-card {
-      width: min(680px, 96vw);
-      text-align: center;
-      padding: 26px 20px;
-      border: 3px solid #c18b38;
-      background:
-        radial-gradient(circle at 50% 10%, rgba(231, 177, 72, 0.18), transparent 35%),
-        linear-gradient(#171612, #070807);
-      box-shadow:
-        0 0 30px rgba(229, 184, 95, 0.28),
-        0 20px 60px black;
-    }
-
-    .finisher-title {
-      color: #d5b04d;
-      font-size: clamp(2.3rem, 11vw, 6rem);
-      letter-spacing: 0.04em;
-      text-shadow:
-        5px 5px 0 #34200b,
-        0 0 20px rgba(255, 200, 68, 0.5);
-    }
-
-    .finisher-subtitle {
-      margin-top: 8px;
-      color: #f2e0b6;
-      font-family: Georgia, serif;
-      font-size: clamp(1rem, 4vw, 1.35rem);
-      line-height: 1.45;
-    }
-
-    .finisher-action {
-      margin-top: 22px;
-      min-height: 56px;
-      padding: 12px 25px;
-      color: #160e05;
-      background: linear-gradient(#f3c863, #a76216);
-      border: 2px solid #5c3108;
-      border-radius: 7px;
+      background: transparent;
       cursor: pointer;
-      font-size: 1.1rem;
-      letter-spacing: 0.05em;
+
+      touch-action: manipulation;
     }
 
-    .combo-meter {
+    .cabinet-control:focus-visible {
+      outline: 3px solid rgba(255, 240, 150, 0.9);
+      outline-offset: 3px;
+    }
+
+    /*
+      Visible pressed effect layered over the painted buttons.
+    */
+
+    .cabinet-control::after {
+      content: "";
+
       position: absolute;
-      left: 12px;
-      top: 105px;
+      inset: 7%;
+
+      border-radius: inherit;
+
+      background: rgba(0, 0, 0, 0);
+      box-shadow: none;
+
+      transition:
+        transform 80ms ease,
+        background 80ms ease,
+        box-shadow 80ms ease;
+    }
+
+    .cabinet-control.pressed::after,
+    .cabinet-control:active::after {
+      transform: translateY(5%);
+      background: rgba(0, 0, 0, 0.18);
+
+      box-shadow:
+        inset 0 6px 9px rgba(0, 0, 0, 0.55),
+        0 0 16px rgba(255, 225, 90, 0.22);
+    }
+
+    /*
+      Red, blue, yellow and green cabinet buttons.
+    */
+
+    .pot-shot {
+      left: 43.1%;
+      top: 68.55%;
+
+      width: 10%;
+      height: 6.6%;
+    }
+
+    .leaf-slap {
+      left: 53.8%;
+      top: 68.55%;
+
+      width: 10%;
+      height: 6.6%;
+    }
+
+    .root-problem {
+      left: 65.1%;
+      top: 68.55%;
+
+      width: 10%;
+      height: 6.6%;
+    }
+
+    .block {
+      left: 76%;
+      top: 68.55%;
+
+      width: 10%;
+      height: 6.6%;
+    }
+
+    /*
+      Joystick area.
+      It triggers Bob’s quickest attack and visibly tilts.
+    */
+
+    .joystick-hotspot {
+      position: absolute;
+
+      left: 14.3%;
+      top: 64%;
+
+      width: 17%;
+      height: 12%;
+
+      z-index: 20;
+
+      border: 0;
+      border-radius: 50%;
+
+      background: transparent;
+      cursor: pointer;
+
+      touch-action: manipulation;
+    }
+
+    .joystick-knob {
+      position: absolute;
+
+      left: 17.9%;
+      top: 64.2%;
+
+      width: 9.5%;
+      height: 6.4%;
+
       z-index: 18;
-      color: #ffdf65;
+
+      pointer-events: none;
+
+      border-radius: 50%;
+
+      transition: transform 120ms ease;
+    }
+
+    .joystick-knob.move-right {
+      transform:
+        translate(19%, 5%)
+        rotate(9deg);
+    }
+
+    .joystick-knob.move-left {
+      transform:
+        translate(-19%, 5%)
+        rotate(-9deg);
+    }
+
+    /*
+      Coin slot acts as INSERT COIN / START.
+    */
+
+    .coin-button {
+      position: absolute;
+
+      left: 71.2%;
+      top: 85%;
+
+      width: 10%;
+      height: 10%;
+
+      z-index: 22;
+
+      border: 0;
+      border-radius: 7px;
+
+      background: transparent;
+      cursor: pointer;
+
+      touch-action: manipulation;
+    }
+
+    .coin-button::after {
+      content: "";
+
+      position: absolute;
+      left: 23%;
+      right: 23%;
+      top: 5%;
+      height: 25%;
+
+      border-radius: 4px;
+
+      background: rgba(255, 40, 15, 0.04);
+
+      transition:
+        background 100ms ease,
+        box-shadow 100ms ease,
+        transform 100ms ease;
+    }
+
+    .coin-button.pressed::after,
+    .coin-button:active::after {
+      transform: translateY(3px);
+
+      background: rgba(255, 64, 25, 0.35);
+
+      box-shadow:
+        0 0 15px rgba(255, 53, 20, 0.9);
+    }
+
+    /*
+      Small home control that does not cover cabinet artwork.
+    */
+
+    .back-home {
+      position: fixed;
+
+      top: calc(9px + env(safe-area-inset-top));
+      left: calc(9px + env(safe-area-inset-left));
+
+      z-index: 100;
+
+      padding: 8px 11px;
+
+      color: #f1dbab;
+      background: rgba(8, 7, 6, 0.78);
+
+      border: 1px solid rgba(220, 174, 84, 0.68);
+      border-radius: 6px;
+
+      text-decoration: none;
+      font-family: Georgia, serif;
+      font-size: 0.73rem;
+
+      backdrop-filter: blur(5px);
+
+      box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.45);
+    }
+
+    /*
+      Temporary instruction.
+      It disappears after the first coin press.
+    */
+
+    .instruction {
+      position: absolute;
+
+      left: 50%;
+      bottom: 1.5%;
+      z-index: 30;
+
+      transform: translateX(-50%);
+
+      width: 86%;
+      padding: 7px 9px;
+
+      color: rgba(244, 222, 174, 0.9);
+      background: rgba(8, 7, 5, 0.78);
+
+      border: 1px solid rgba(224, 175, 77, 0.42);
+      border-radius: 5px;
+
+      text-align: center;
+      font-size: clamp(0.55rem, 2.1vw, 0.74rem);
+      letter-spacing: 0.03em;
+
+      pointer-events: none;
+
+      transition:
+        opacity 300ms ease,
+        visibility 300ms ease;
+    }
+
+    .instruction.hidden {
       opacity: 0;
-      font-size: clamp(1rem, 5vw, 2rem);
-      transform: rotate(-5deg);
-      text-shadow: 3px 3px 0 #62160d;
+      visibility: hidden;
     }
 
-    .combo-meter.show {
-      animation: comboPop 700ms ease;
-    }
+    /*
+      On wide desktop screens, preserve the full cabinet
+      instead of stretching it sideways.
+    */
 
-    @keyframes comboPop {
-      0% { opacity: 0; transform: scale(0.4) rotate(-8deg); }
-      25% { opacity: 1; transform: scale(1.2) rotate(-5deg); }
-      75% { opacity: 1; }
-      100% { opacity: 0; transform: scale(1) rotate(-5deg); }
-    }
-
-    @media (min-width: 850px) {
-      .arena {
-        min-height: 650px;
-      }
-
-      .fighters {
-        bottom: 100px;
-      }
-
-      .controls {
-        padding-bottom: 18px;
-      }
-    }
-
-    @media (max-height: 680px) and (orientation: landscape) {
-      .arena {
-        min-height: 410px;
-      }
-
-      .fighters {
-        bottom: 72px;
-        height: 290px;
-      }
-
-      .fighter {
-        height: 275px;
-        width: 200px;
-      }
-
-      .controls {
-        padding: 6px 10px calc(7px + env(safe-area-inset-bottom));
-      }
-
-      .attack-button {
-        min-height: 48px;
-      }
-
-      .combat-text {
-        bottom: 73px;
-      }
-
-      .neon-sign {
-        top: 58px;
+    @media (min-aspect-ratio: 2 / 3) {
+      .cabinet {
+        width: calc(100svh * 0.666667);
+        height: 100svh;
       }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        animation-duration: 1ms !important;
-        transition-duration: 1ms !important;
+      .screen-frame,
+      .joystick-knob,
+      .cabinet-control::after,
+      .coin-button::after {
+        animation: none;
+        transition: none;
       }
     }
   </style>
 </head>
 
 <body>
-  <main class="game-shell" id="gameShell">
 
-    <header class="arcade-header">
-      <a class="back-link" href="workshop.html">← Workshop</a>
+  <a
+    class="back-home"
+    href="workshop.html"
+  >
+    ← Workshop
+  </a>
 
-      <div class="arcade-name">McBride’s Arcade</div>
+  <main
+    class="cabinet"
+    aria-label="Mortal KomPlant arcade cabinet"
+  >
 
-      <div class="game-name">
-        Mortal KomPlant<br>
-        <small>Garden Brawl</small>
-      </div>
-    </header>
+    <div
+      class="screen-frame"
+      id="screenFrame"
+    >
+      <iframe
+        class="game-screen"
+        id="gameScreen"
+        src="mortal-komplant.html"
+        title="Mortal KomPlant Garden Brawl"
+        allow="autoplay"
+      ></iframe>
 
-    <section class="arena" id="arena">
-
-      <div class="neon-sign">McBride’s</div>
-      <div class="cabinet-lights"></div>
-      <div class="floor"></div>
-
-      <div class="hud">
-
-        <div class="fighter-hud">
-          <div class="fighter-name">BOB</div>
-
-          <div class="health-frame">
-            <div class="health-bar" id="playerHealthBar"></div>
-            <div class="health-number" id="playerHealthNumber">100</div>
-          </div>
-
-          <div class="power-frame">
-            <div class="power-bar" id="playerPowerBar"></div>
-          </div>
-
-          <div class="round-dots">
-            <span class="round-dot" id="playerRoundOne"></span>
-            <span class="round-dot" id="playerRoundTwo"></span>
-          </div>
-        </div>
-
-        <div class="round-box">
-          <div class="timer" id="timer">60</div>
-          <div style="font-size:.7rem;color:#cdb987;margin-top:5px;">
-            ROUND <span id="roundNumber">1</span>
-          </div>
-        </div>
-
-        <div class="fighter-hud enemy">
-          <div class="fighter-name">FLYTRAP</div>
-
-          <div class="health-frame">
-            <div class="health-bar" id="enemyHealthBar"></div>
-            <div class="health-number" id="enemyHealthNumber">100</div>
-          </div>
-
-          <div class="power-frame">
-            <div class="power-bar" id="enemyPowerBar"></div>
-          </div>
-
-          <div class="round-dots">
-            <span class="round-dot" id="enemyRoundOne"></span>
-            <span class="round-dot" id="enemyRoundTwo"></span>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="combo-meter" id="comboMeter">3 HIT COMBO!</div>
-
-      <div class="fighters">
-
-        <div
-          class="fighter"
-          id="playerFighter"
-          aria-label="Bob"
-        >
-          <div class="bob-body">
-            <div class="bob-leaves">
-              <div class="leaf"></div>
-              <div class="leaf"></div>
-              <div class="leaf"></div>
-              <div class="leaf"></div>
-              <div class="leaf"></div>
-              <div class="leaf"></div>
-            </div>
-
-            <div class="headband"></div>
-
-            <div class="face">
-              <div class="brow left"></div>
-              <div class="brow right"></div>
-
-              <div class="eye left"></div>
-              <div class="eye right"></div>
-
-              <div class="mouth"></div>
-            </div>
-
-            <div class="belt"></div>
-
-            <div class="arm left"></div>
-            <div class="arm right"></div>
-
-            <div class="fist left"></div>
-            <div class="fist right"></div>
-          </div>
-        </div>
-
-        <div
-          class="fighter enemy"
-          id="enemyFighter"
-          aria-label="Venus Flytrap"
-        >
-          <div class="flytrap-body">
-
-            <div class="trap">
-              <div class="jaw top"></div>
-              <div class="jaw bottom"></div>
-              <div class="tongue"></div>
-              <div class="trap-eye"></div>
-            </div>
-
-            <div class="stem"></div>
-
-            <div class="enemy-arm left"></div>
-            <div class="enemy-arm right"></div>
-
-            <div class="flytrap-pot"></div>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="announcement" id="announcement">FIGHT!</div>
-
-      <div class="combat-text" id="combatText">
-        Tap an attack when the fight begins.
-      </div>
-
-    </section>
-
-    <section class="controls">
-
-      <div class="control-grid">
-
-        <button
-          class="attack-button"
-          data-move="potShot"
-          disabled
-        >
-          Pot Shot
-          <span class="button-small">Fast strike</span>
-        </button>
-
-        <button
-          class="attack-button"
-          data-move="leafSlap"
-          disabled
-        >
-          Leaf Slap
-          <span class="button-small">Heavy damage</span>
-        </button>
-
-        <button
-          class="attack-button"
-          data-move="rootProblem"
-          disabled
-        >
-          Root Problem
-          <span class="button-small">Builds power</span>
-        </button>
-
-        <button
-          class="attack-button block-button"
-          data-move="block"
-          disabled
-        >
-          Block
-          <span class="button-small">Reduce damage</span>
-        </button>
-
-      </div>
-
-      <div class="special-row">
-
-        <button
-          class="special-button"
-          id="specialButton"
-          disabled
-        >
-          Kintsugi Crush
-        </button>
-
-        <button
-          class="restart-button"
-          id="restartButton"
-        >
-          Fight Again
-        </button>
-
-      </div>
-
-    </section>
-
-  </main>
-
-  <div class="finisher-overlay" id="finisherOverlay">
-
-    <div class="finisher-card">
-
-      <div class="finisher-title">
-        KINTSUGI CRUSH
-      </div>
-
-      <p class="finisher-subtitle">
-        Bob breaks the enemy’s pot, repairs it with gold,
-        and breaks it again because the lesson was apparently unclear.
-      </p>
-
-      <button
-        class="finisher-action"
-        id="performFinisher"
-      >
-        FINISH THE FIGHT
-      </button>
-
+      <div class="screen-glass"></div>
     </div>
 
-  </div>
+    <!-- Invisible controls over the painted cabinet buttons -->
+
+    <button
+      class="cabinet-control pot-shot"
+      type="button"
+      data-move="pot"
+      aria-label="Pot Shot"
+    ></button>
+
+    <button
+      class="cabinet-control leaf-slap"
+      type="button"
+      data-move="leaf"
+      aria-label="Leaf Slap"
+    ></button>
+
+    <button
+      class="cabinet-control root-problem"
+      type="button"
+      data-move="root"
+      aria-label="Root of the Problem"
+    ></button>
+
+    <button
+      class="cabinet-control block"
+      type="button"
+      data-move="block"
+      aria-label="Block"
+    ></button>
+
+    <!-- Joystick -->
+
+    <div
+      class="joystick-knob"
+      id="joystickKnob"
+      aria-hidden="true"
+    ></div>
+
+    <button
+      class="joystick-hotspot"
+      id="joystick"
+      type="button"
+      aria-label="Move joystick"
+    ></button>
+
+    <!-- Coin slot -->
+
+    <button
+      class="coin-button"
+      id="coinButton"
+      type="button"
+      aria-label="Insert coin and start game"
+    ></button>
+
+    <div
+      class="instruction"
+      id="instruction"
+    >
+      Tap the glowing 25¢ coin slot to start.
+      Then use the cabinet buttons.
+    </div>
+
+  </main>
 
   <script>
     "use strict";
 
-    const gameShell = document.getElementById("gameShell");
-    const arena = document.getElementById("arena");
+    const iframe = document.getElementById("gameScreen");
+    const screenFrame = document.getElementById("screenFrame");
 
-    const playerFighter = document.getElementById("playerFighter");
-    const enemyFighter = document.getElementById("enemyFighter");
+    const coinButton = document.getElementById("coinButton");
+    const joystick = document.getElementById("joystick");
+    const joystickKnob = document.getElementById("joystickKnob");
 
-    const playerHealthBar = document.getElementById("playerHealthBar");
-    const enemyHealthBar = document.getElementById("enemyHealthBar");
+    const instruction = document.getElementById("instruction");
 
-    const playerHealthNumber =
-      document.getElementById("playerHealthNumber");
+    const cabinetButtons = Array.from(
+      document.querySelectorAll(".cabinet-control")
+    );
 
-    const enemyHealthNumber =
-      document.getElementById("enemyHealthNumber");
+    let gameReady = false;
+    let gameStarted = false;
 
-    const playerPowerBar = document.getElementById("playerPowerBar");
-    const enemyPowerBar = document.getElementById("enemyPowerBar");
+    /*
+      Because both pages live on studioladuke.com,
+      the cabinet is allowed to control the game iframe.
+    */
 
-    const timerElement = document.getElementById("timer");
-    const roundNumberElement = document.getElementById("roundNumber");
-
-    const announcement = document.getElementById("announcement");
-    const combatText = document.getElementById("combatText");
-    const comboMeter = document.getElementById("comboMeter");
-
-    const attackButtons =
-      Array.from(document.querySelectorAll(".attack-button"));
-
-    const specialButton = document.getElementById("specialButton");
-    const restartButton = document.getElementById("restartButton");
-
-    const finisherOverlay =
-      document.getElementById("finisherOverlay");
-
-    const performFinisher =
-      document.getElementById("performFinisher");
-
-    const playerRoundDots = [
-      document.getElementById("playerRoundOne"),
-      document.getElementById("playerRoundTwo")
-    ];
-
-    const enemyRoundDots = [
-      document.getElementById("enemyRoundOne"),
-      document.getElementById("enemyRoundTwo")
-    ];
-
-    const moves = {
-      potShot: {
-        name: "Pot Shot",
-        minDamage: 7,
-        maxDamage: 12,
-        powerGain: 10,
-        accuracy: 0.94,
-        message: "Bob fires a fistful of soil."
-      },
-
-      leafSlap: {
-        name: "Leaf Slap",
-        minDamage: 11,
-        maxDamage: 18,
-        powerGain: 7,
-        accuracy: 0.79,
-        message: "Bob delivers photosynthetic disrespect."
-      },
-
-      rootProblem: {
-        name: "Root of the Problem",
-        minDamage: 8,
-        maxDamage: 15,
-        powerGain: 18,
-        accuracy: 0.84,
-        message: "Roots erupt beneath the arena."
+    function getGameDocument() {
+      try {
+        return iframe.contentDocument ||
+          iframe.contentWindow.document;
+      } catch (error) {
+        console.error("Could not access game screen:", error);
+        return null;
       }
-    };
-
-    const enemyMoves = [
-      {
-        name: "Snap Attack",
-        minDamage: 7,
-        maxDamage: 13,
-        powerGain: 9,
-        accuracy: 0.9
-      },
-      {
-        name: "Acid Spit",
-        minDamage: 10,
-        maxDamage: 17,
-        powerGain: 11,
-        accuracy: 0.78
-      },
-      {
-        name: "Chomp Chomp",
-        minDamage: 12,
-        maxDamage: 20,
-        powerGain: 7,
-        accuracy: 0.7
-      }
-    ];
-
-    let playerHealth = 100;
-    let enemyHealth = 100;
-
-    let playerPower = 0;
-    let enemyPower = 0;
-
-    let playerRounds = 0;
-    let enemyRounds = 0;
-
-    let roundNumber = 1;
-    let timeRemaining = 60;
-
-    let timerInterval = null;
-    let enemyTurnTimeout = null;
-
-    let fightActive = false;
-    let playerBlocking = false;
-    let enemyBlocking = false;
-    let actionLocked = true;
-
-    let comboCount = 0;
-    let comboDeadline = 0;
-
-    let audioContext = null;
-
-    function randomBetween(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    function clamp(value, min, max) {
-      return Math.max(min, Math.min(max, value));
-    }
+    function addCabinetModeStyles() {
+      const gameDocument = getGameDocument();
 
-    function getAudioContext() {
-      if (!audioContext) {
-        const AudioContextClass =
-          window.AudioContext || window.webkitAudioContext;
-
-        if (AudioContextClass) {
-          audioContext = new AudioContextClass();
-        }
-      }
-
-      if (audioContext && audioContext.state === "suspended") {
-        audioContext.resume().catch(() => {});
-      }
-
-      return audioContext;
-    }
-
-    function playTone(
-      frequency,
-      duration = 0.08,
-      type = "square",
-      volume = 0.06,
-      slideTo = null
-    ) {
-      const context = getAudioContext();
-
-      if (!context) {
+      if (!gameDocument) {
         return;
       }
 
-      const oscillator = context.createOscillator();
-      const gain = context.createGain();
+      /*
+        Hide the webpage control buttons inside the monitor.
+        The physical cabinet controls replace them.
 
-      oscillator.type = type;
-      oscillator.frequency.setValueAtTime(
-        frequency,
-        context.currentTime
+        The fight stage is stretched downward to use
+        all of the available monitor space.
+      */
+
+      const style = gameDocument.createElement("style");
+
+      style.textContent = `
+        .controls,
+        .special-row {
+          display: none !important;
+        }
+
+        .fight-stage {
+          bottom: 5% !important;
+        }
+
+        .combat-message {
+          bottom: 2.5% !important;
+        }
+
+        .hud {
+          top: 2% !important;
+        }
+
+        .start-screen {
+          padding: 6px !important;
+        }
+
+        .start-card {
+          transform: scale(0.88);
+        }
+
+        .title {
+          font-size: clamp(1.8rem, 10vw, 4rem) !important;
+        }
+
+        .subtitle {
+          margin-top: 7px !important;
+          font-size: clamp(0.9rem, 4vw, 1.7rem) !important;
+        }
+
+        .insert {
+          margin-top: 14px !important;
+        }
+
+        .start-button {
+          display: none !important;
+        }
+      `;
+
+      gameDocument.head.appendChild(style);
+
+      gameReady = true;
+    }
+
+    function pressVisual(element) {
+      element.classList.add("pressed");
+
+      window.setTimeout(() => {
+        element.classList.remove("pressed");
+      }, 150);
+    }
+
+    function clickGameMove(moveName) {
+      const gameDocument = getGameDocument();
+
+      if (!gameDocument || !gameReady) {
+        return;
+      }
+
+      const button = gameDocument.querySelector(
+        `.move[data-move="${moveName}"]`
       );
 
-      if (slideTo) {
-        oscillator.frequency.exponentialRampToValueAtTime(
-          slideTo,
-          context.currentTime + duration
-        );
-      }
-
-      gain.gain.setValueAtTime(volume, context.currentTime);
-
-      gain.gain.exponentialRampToValueAtTime(
-        0.001,
-        context.currentTime + duration
-      );
-
-      oscillator.connect(gain);
-      gain.connect(context.destination);
-
-      oscillator.start();
-      oscillator.stop(context.currentTime + duration);
-    }
-
-    function playHitSound(strength = 1) {
-      playTone(
-        95 + strength * 12,
-        0.09,
-        "sawtooth",
-        0.05 + strength * 0.008,
-        45
-      );
-
-      window.setTimeout(() => {
-        playTone(38, 0.12, "square", 0.045);
-      }, 25);
-    }
-
-    function playBlockSound() {
-      playTone(360, 0.08, "triangle", 0.055, 130);
-      window.setTimeout(() => {
-        playTone(520, 0.05, "square", 0.025);
-      }, 35);
-    }
-
-    function playMissSound() {
-      playTone(210, 0.09, "triangle", 0.035, 90);
-    }
-
-    function playFinisherSound() {
-      playTone(75, 0.6, "sawtooth", 0.075, 28);
-
-      window.setTimeout(() => {
-        playTone(420, 0.28, "square", 0.05, 90);
-      }, 210);
-    }
-
-    function vibrate(pattern) {
-      if ("vibrate" in navigator) {
-        navigator.vibrate(pattern);
+      if (button && !button.disabled) {
+        button.click();
       }
     }
 
-    function announce(text) {
-      announcement.textContent = text;
-      announcement.classList.remove("show");
+    function startOrRestartGame() {
+      const gameDocument = getGameDocument();
 
-      void announcement.offsetWidth;
-
-      announcement.classList.add("show");
-    }
-
-    function setCombatText(text) {
-      combatText.textContent = text;
-    }
-
-    function enableControls(enabled) {
-      attackButtons.forEach((button) => {
-        button.disabled = !enabled;
-      });
-
-      specialButton.disabled =
-        !enabled ||
-        playerPower < 100 ||
-        enemyHealth > 25;
-    }
-
-    function updateHud() {
-      playerHealth = clamp(playerHealth, 0, 100);
-      enemyHealth = clamp(enemyHealth, 0, 100);
-
-      playerPower = clamp(playerPower, 0, 100);
-      enemyPower = clamp(enemyPower, 0, 100);
-
-      playerHealthBar.style.width = playerHealth + "%";
-      enemyHealthBar.style.width = enemyHealth + "%";
-
-      playerPowerBar.style.width = playerPower + "%";
-      enemyPowerBar.style.width = enemyPower + "%";
-
-      playerHealthNumber.textContent = playerHealth;
-      enemyHealthNumber.textContent = enemyHealth;
-
-      timerElement.textContent = timeRemaining;
-      roundNumberElement.textContent = roundNumber;
-
-      playerRoundDots.forEach((dot, index) => {
-        dot.classList.toggle("won", index < playerRounds);
-      });
-
-      enemyRoundDots.forEach((dot, index) => {
-        dot.classList.toggle("won", index < enemyRounds);
-      });
-
-      enableControls(
-        fightActive &&
-        !actionLocked &&
-        playerHealth > 0 &&
-        enemyHealth > 0
-      );
-    }
-
-    function createImpact(target, damage) {
-      const arenaRect = arena.getBoundingClientRect();
-      const targetRect = target.getBoundingClientRect();
-
-      const impact = document.createElement("div");
-      impact.className = "impact";
-
-      impact.style.left =
-        targetRect.left -
-        arenaRect.left +
-        targetRect.width * 0.5 +
-        "px";
-
-      impact.style.top =
-        targetRect.top -
-        arenaRect.top +
-        targetRect.height * 0.45 +
-        "px";
-
-      arena.appendChild(impact);
-
-      const damageNumber = document.createElement("div");
-      damageNumber.className = "damage-number";
-      damageNumber.textContent = "-" + damage;
-
-      damageNumber.style.left =
-        targetRect.left -
-        arenaRect.left +
-        targetRect.width * 0.48 +
-        "px";
-
-      damageNumber.style.top =
-        targetRect.top -
-        arenaRect.top +
-        targetRect.height * 0.32 +
-        "px";
-
-      arena.appendChild(damageNumber);
-
-      window.setTimeout(() => impact.remove(), 550);
-      window.setTimeout(() => damageNumber.remove(), 760);
-    }
-
-    function animateAttack(attacker, defender, damage, blocked) {
-      attacker.classList.add("attack");
-
-      window.setTimeout(() => {
-        if (blocked) {
-          defender.classList.add("blocking");
-          playBlockSound();
-          vibrate(25);
-        } else {
-          defender.classList.add("hit");
-          createImpact(defender, damage);
-          playHitSound(Math.min(damage / 8, 2.4));
-          vibrate([25, 20, 40]);
-
-          gameShell.classList.add("screen-shake");
-        }
-      }, 105);
-
-      window.setTimeout(() => {
-        attacker.classList.remove("attack");
-        defender.classList.remove("hit");
-        defender.classList.remove("blocking");
-        gameShell.classList.remove("screen-shake");
-      }, 420);
-    }
-
-    function showCombo() {
-      const now = Date.now();
-
-      if (now <= comboDeadline) {
-        comboCount += 1;
-      } else {
-        comboCount = 1;
-      }
-
-      comboDeadline = now + 1200;
-
-      if (comboCount >= 3) {
-        comboMeter.textContent = comboCount + " HIT COMBO!";
-        comboMeter.classList.remove("show");
-
-        void comboMeter.offsetWidth;
-
-        comboMeter.classList.add("show");
-      }
-    }
-
-    function calculateDamage(move, blocking) {
-      let damage = randomBetween(move.minDamage, move.maxDamage);
-
-      if (blocking) {
-        damage = Math.max(1, Math.floor(damage * 0.28));
-      }
-
-      return damage;
-    }
-
-    function playerMove(moveKey) {
-      if (!fightActive || actionLocked) {
+      if (!gameDocument || !gameReady) {
         return;
       }
 
-      getAudioContext();
+      pressVisual(coinButton);
 
-      if (moveKey === "block") {
-        playerBlocking = true;
-        actionLocked = true;
+      instruction.classList.add("hidden");
 
-        setCombatText("Bob braces his pot.");
+      /*
+        First coin press starts the attract screen.
+      */
 
-        playerFighter.classList.add("blocking");
-        playBlockSound();
+      const startButton =
+        gameDocument.getElementById("startButton");
 
-        window.setTimeout(() => {
-          enemyTurn();
-        }, 470);
+      const startScreen =
+        gameDocument.getElementById("startScreen");
 
-        return;
-      }
-
-      const move = moves[moveKey];
-
-      if (!move) {
-        return;
-      }
-
-      actionLocked = true;
-      enableControls(false);
-
-      const hits = Math.random() <= move.accuracy;
-
-      if (!hits) {
-        playerFighter.classList.add("attack");
-        setCombatText(move.name + " misses. Bob looks inconvenienced.");
-        playMissSound();
-
-        window.setTimeout(() => {
-          playerFighter.classList.remove("attack");
-          enemyTurn();
-        }, 600);
-
-        return;
-      }
-
-      const damage = calculateDamage(move, enemyBlocking);
-
-      enemyHealth -= damage;
-      playerPower += move.powerGain;
-
-      animateAttack(
-        playerFighter,
-        enemyFighter,
-        damage,
-        enemyBlocking
-      );
-
-      showCombo();
-
-      setCombatText(
-        move.message +
-        " " +
-        (enemyBlocking ? "Flytrap blocks most of it." : "")
-      );
-
-      updateHud();
-
-      if (enemyHealth <= 0) {
-        window.setTimeout(() => {
-          finishRound("player");
-        }, 620);
-
-        return;
-      }
-
-      if (enemyHealth <= 25 && playerPower >= 100) {
-        window.setTimeout(() => {
-          actionLocked = false;
-          updateHud();
-          setCombatText(
-            "The Flytrap is vulnerable. KINTSUGI CRUSH is ready."
-          );
-        }, 650);
-
-        return;
-      }
-
-      window.setTimeout(() => {
-        enemyTurn();
-      }, 720);
-    }
-
-    function enemyTurn() {
-      if (!fightActive || enemyHealth <= 0 || playerHealth <= 0) {
-        return;
-      }
-
-      actionLocked = true;
-      enableControls(false);
-
-      enemyBlocking = false;
-
-      const shouldBlock =
-        Math.random() < 0.18 &&
-        playerPower >= 70;
-
-      if (shouldBlock) {
-        enemyBlocking = true;
-        enemyFighter.classList.add("blocking");
-
-        setCombatText("Flytrap curls inward and blocks.");
-
-        playBlockSound();
-
-        enemyTurnTimeout = window.setTimeout(() => {
-          enemyFighter.classList.remove("blocking");
-          enemyBlocking = false;
-          playerBlocking = false;
-          playerFighter.classList.remove("blocking");
-
-          actionLocked = false;
-          updateHud();
-
-          setCombatText("Bob’s turn.");
-        }, 670);
-
-        return;
-      }
-
-      const move =
-        enemyMoves[
-          Math.floor(Math.random() * enemyMoves.length)
-        ];
-
-      const hits = Math.random() <= move.accuracy;
-
-      enemyTurnTimeout = window.setTimeout(() => {
-        if (!hits) {
-          enemyFighter.classList.add("attack");
-          playMissSound();
-
-          setCombatText(
-            "Flytrap uses " +
-            move.name +
-            " and bites absolutely nothing."
-          );
-
-          window.setTimeout(() => {
-            enemyFighter.classList.remove("attack");
-            endEnemyTurn();
-          }, 540);
-
-          return;
-        }
-
-        let damage = calculateDamage(move, playerBlocking);
-
-        if (enemyPower >= 100 && Math.random() < 0.35) {
-          damage += 8;
-          enemyPower = 0;
-
-          setCombatText(
-            "FLYTRAP FURY! Apparently lunch has become personal."
-          );
-        } else {
-          setCombatText(
-            "Flytrap uses " +
-            move.name +
-            (playerBlocking ? ". Bob blocks most of it." : ".")
-          );
-        }
-
-        playerHealth -= damage;
-        enemyPower += move.powerGain;
-
-        animateAttack(
-          enemyFighter,
-          playerFighter,
-          damage,
-          playerBlocking
-        );
-
-        updateHud();
-
-        if (playerHealth <= 0) {
-          window.setTimeout(() => {
-            finishRound("enemy");
-          }, 620);
-
-          return;
-        }
-
-        window.setTimeout(() => {
-          endEnemyTurn();
-        }, 620);
-      }, randomBetween(380, 700));
-    }
-
-    function endEnemyTurn() {
-      playerBlocking = false;
-      enemyBlocking = false;
-
-      playerFighter.classList.remove("blocking");
-      enemyFighter.classList.remove("blocking");
-
-      actionLocked = false;
-
-      updateHud();
-      setCombatText("Bob’s turn.");
-    }
-
-    function startTimer() {
-      clearInterval(timerInterval);
-
-      timerInterval = window.setInterval(() => {
-        if (!fightActive || actionLocked && timeRemaining === 60) {
-          return;
-        }
-
-        timeRemaining -= 1;
-
-        if (timeRemaining <= 0) {
-          timeRemaining = 0;
-          updateHud();
-          clearInterval(timerInterval);
-
-          const winner =
-            playerHealth >= enemyHealth ? "player" : "enemy";
-
-          finishRound(winner, true);
-          return;
-        }
-
-        updateHud();
-      }, 1000);
-    }
-
-    function startRound() {
-      clearTimeout(enemyTurnTimeout);
-
-      playerHealth = 100;
-      enemyHealth = 100;
-
-      playerPower = 0;
-      enemyPower = 0;
-
-      timeRemaining = 60;
-
-      playerBlocking = false;
-      enemyBlocking = false;
-
-      fightActive = false;
-      actionLocked = true;
-
-      playerFighter.className = "fighter";
-      enemyFighter.className = "fighter enemy";
-
-      restartButton.classList.remove("show");
-
-      updateHud();
-
-      announce("ROUND " + roundNumber);
-
-      window.setTimeout(() => {
-        announce("FIGHT!");
-        playTone(130, 0.3, "sawtooth", 0.06, 65);
-      }, 950);
-
-      window.setTimeout(() => {
-        fightActive = true;
-        actionLocked = false;
-
-        updateHud();
-        startTimer();
-
-        setCombatText("Bob’s turn. Choose an attack.");
-      }, 1800);
-    }
-
-    function finishRound(winner, timeExpired = false) {
-      if (!fightActive) {
-        return;
-      }
-
-      fightActive = false;
-      actionLocked = true;
-
-      clearInterval(timerInterval);
-      clearTimeout(enemyTurnTimeout);
-
-      enableControls(false);
-
-      if (winner === "player") {
-        playerRounds += 1;
-        enemyFighter.classList.add("defeated");
-
-        announce(timeExpired ? "BOB WINS" : "BOB WINS");
-
-        setCombatText(
-          timeExpired
-            ? "Time expires. Bob wins by remaining slightly less damaged."
-            : "Flytrap is down. Bob remains unimpressed."
-        );
-      } else {
-        enemyRounds += 1;
-        playerFighter.classList.add("defeated");
-
-        announce("FLYTRAP WINS");
-
-        setCombatText(
-          timeExpired
-            ? "Time expires. Flytrap wins."
-            : "Bob has been temporarily composted."
-        );
-      }
-
-      updateHud();
-
-      window.setTimeout(() => {
-        if (playerRounds >= 2 || enemyRounds >= 2) {
-          finishMatch();
-        } else {
-          roundNumber += 1;
-          startRound();
-        }
-      }, 2100);
-    }
-
-    function finishMatch() {
-      clearInterval(timerInterval);
-
-      fightActive = false;
-      actionLocked = true;
-
-      if (playerRounds >= 2) {
-        announce("BOB WINS");
-        setCombatText(
-          "Cracked, but never broken. McBride’s has a new champion."
-        );
-      } else {
-        announce("GAME OVER");
-        setCombatText(
-          "Flytrap wins the tournament and immediately asks about lunch."
-        );
-      }
-
-      restartButton.classList.add("show");
-      restartButton.textContent = "Fight Again";
-
-      specialButton.disabled = true;
-      attackButtons.forEach((button) => {
-        button.disabled = true;
-      });
-    }
-
-    function openFinisher() {
       if (
-        !fightActive ||
-        actionLocked ||
-        playerPower < 100 ||
-        enemyHealth > 25
+        startButton &&
+        startScreen &&
+        !startScreen.classList.contains("hidden")
       ) {
+        screenFrame.classList.remove("powering-on");
+
+        void screenFrame.offsetWidth;
+
+        screenFrame.classList.add("powering-on");
+
+        window.setTimeout(() => {
+          startButton.click();
+        }, 310);
+
+        gameStarted = true;
         return;
       }
 
-      actionLocked = true;
-      enableControls(false);
+      /*
+        After a completed match, the same coin slot
+        presses Fight Again.
+      */
 
-      finisherOverlay.classList.add("show");
-      playTone(72, 0.45, "sawtooth", 0.06, 35);
-      vibrate([60, 40, 80]);
+      const restartButton =
+        gameDocument.getElementById("restartButton");
+
+      if (
+        restartButton &&
+        restartButton.classList.contains("show")
+      ) {
+        restartButton.click();
+        gameStarted = true;
+      }
     }
 
-    function executeFinisher() {
-      finisherOverlay.classList.remove("show");
-
-      playFinisherSound();
-
-      playerFighter.classList.add("attack");
+    iframe.addEventListener("load", () => {
+      /*
+        A brief delay lets the game finish building its DOM.
+      */
 
       window.setTimeout(() => {
-        gameShell.classList.add("screen-shake");
-        enemyFighter.classList.add("hit");
+        addCabinetModeStyles();
+      }, 120);
+    });
 
-        createImpact(enemyFighter, 99);
-
-        enemyHealth = 0;
-        playerPower = 0;
-
-        updateHud();
-
-        announce("KINTSUGI CRUSH!");
-
-        setCombatText(
-          "Bob repairs what he breaks. Then checks whether the repair can take a punch."
-        );
-
-        vibrate([90, 40, 120, 60, 180]);
-      }, 240);
-
-      window.setTimeout(() => {
-        playerFighter.classList.remove("attack");
-        enemyFighter.classList.remove("hit");
-        enemyFighter.classList.add("defeated");
-        gameShell.classList.remove("screen-shake");
-
-        finishRound("player");
-      }, 1200);
-    }
-
-    function restartMatch() {
-      playerRounds = 0;
-      enemyRounds = 0;
-      roundNumber = 1;
-
-      playerRoundDots.forEach((dot) => {
-        dot.classList.remove("won");
-      });
-
-      enemyRoundDots.forEach((dot) => {
-        dot.classList.remove("won");
-      });
-
-      startRound();
-    }
-
-    attackButtons.forEach((button) => {
+    cabinetButtons.forEach((button) => {
       button.addEventListener("click", () => {
-        playerMove(button.dataset.move);
+        pressVisual(button);
+
+        if (!gameStarted) {
+          return;
+        }
+
+        clickGameMove(button.dataset.move);
       });
     });
 
-    specialButton.addEventListener("click", openFinisher);
-    performFinisher.addEventListener("click", executeFinisher);
-    restartButton.addEventListener("click", restartMatch);
-
-    document.addEventListener("keydown", (event) => {
-      const key = event.key.toLowerCase();
-
-      if (key === "a") {
-        playerMove("potShot");
+    joystick.addEventListener("click", () => {
+      if (!gameStarted) {
+        return;
       }
 
-      if (key === "s") {
-        playerMove("leafSlap");
-      }
+      const moveRight = Math.random() > 0.5;
 
-      if (key === "d") {
-        playerMove("rootProblem");
-      }
+      joystickKnob.classList.remove(
+        "move-left",
+        "move-right"
+      );
 
-      if (key === "f") {
-        playerMove("block");
-      }
+      joystickKnob.classList.add(
+        moveRight ? "move-right" : "move-left"
+      );
 
-      if (key === " ") {
-        event.preventDefault();
-        openFinisher();
-      }
-    });
+      /*
+        The joystick currently triggers Bob’s quickest move.
+        Later it can handle actual walking and crouching.
+      */
 
-    window.addEventListener("load", () => {
-      updateHud();
+      clickGameMove("pot");
 
       window.setTimeout(() => {
-        startRound();
-      }, 500);
+        joystickKnob.classList.remove(
+          "move-left",
+          "move-right"
+        );
+      }, 260);
     });
+
+    coinButton.addEventListener(
+      "click",
+      startOrRestartGame
+    );
   </script>
+
 </body>
 </html>
