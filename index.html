@@ -1,45 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta charset="UTF-8">
 
-<title>Studio LaDuke</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
 
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+  <title>Studio LaDuke</title>
 
-html,body{
-    width:100%;
-    height:100%;
-}
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-body{
-    min-height:100svh;
-    background-color:#111;
-    background-image:
-        linear-gradient(rgba(0,0,0,.08),rgba(0,0,0,.12)),
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #111;
+    }
+
+    body {
+      min-height: 100svh;
+
+      background-image:
         url("54EFFD92-C1F7-4A3E-BADE-CE8296F147E3.png");
-    background-position:center top;
-    background-size:contain;
-    background-repeat:no-repeat;
-    font-family:Georgia,serif;
-}
 
-.enter{
-    position:fixed;
-    inset:0;
-    display:block;
-    z-index:999;
-}
-</style>
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+    }
+
+    .enter {
+      position: fixed;
+      inset: 0;
+      display: block;
+      z-index: 10;
+    }
+
+    @media (max-width: 650px) {
+      body {
+        background-image:
+          url("6ED5F01B-E9C3-40BD-8B1A-5F55CC572F51.png");
+
+        background-size: cover;
+        background-position: center top;
+      }
+    }
+  </style>
 </head>
 
 <body>
-<a class="enter" href="workshop.html" aria-label="Enter Studio LaDuke"></a>
+  <a
+    class="enter"
+    href="workshop.html"
+    aria-label="Enter Studio LaDuke"
+  ></a>
 </body>
 </html>
