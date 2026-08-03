@@ -314,7 +314,8 @@
 
       transition:
         transform 150ms ease,
-        filter 120ms ease;
+        filter 120ms ease,
+        opacity 180ms ease;
     }
 
     .fighter-image {
@@ -489,7 +490,7 @@
       }
     }
 
-    /* BASIC EFFECTS */
+    /* TEXT */
 
     .announcement {
       position: absolute;
@@ -576,6 +577,8 @@
       text-shadow: 2px 2px 3px black;
     }
 
+    /* IMPACT */
+
     .impact {
       position: absolute;
       z-index: 45;
@@ -642,6 +645,7 @@
       height: 7px;
 
       border-radius: 90% 10% 90% 10%;
+
       background:
         linear-gradient(
           90deg,
@@ -676,7 +680,7 @@
       }
     }
 
-    /* FINISHER EFFECTS */
+    /* FINISHER */
 
     .finisher-darkness {
       position: absolute;
@@ -693,7 +697,7 @@
         rgba(0,0,0,0.88);
 
       opacity: 0;
-      transition: opacity 350ms ease;
+      transition: opacity 250ms ease;
     }
 
     .finisher-darkness.show {
@@ -707,7 +711,7 @@
       z-index: 72;
 
       width: 145%;
-      height: 8px;
+      height: 9px;
 
       background:
         linear-gradient(
@@ -724,11 +728,12 @@
         0 0 35px #52ff2e;
 
       opacity: 0;
+
       transform:
         rotate(var(--slash-angle))
         scaleX(0);
 
-      animation: slashCut 390ms ease forwards;
+      animation: slashCut 260ms ease forwards;
     }
 
     @keyframes slashCut {
@@ -739,11 +744,11 @@
           scaleX(0);
       }
 
-      20% {
+      15% {
         opacity: 1;
       }
 
-      65% {
+      62% {
         opacity: 1;
         transform:
           rotate(var(--slash-angle))
@@ -754,7 +759,7 @@
         opacity: 0;
         transform:
           rotate(var(--slash-angle))
-          scaleX(1.2);
+          scaleX(1.25);
       }
     }
 
@@ -766,6 +771,7 @@
       height: calc(var(--sap-size) * 1.35);
 
       border-radius: 50% 50% 55% 45%;
+
       background:
         radial-gradient(
           circle at 35% 25%,
@@ -805,13 +811,13 @@
       position: absolute;
       z-index: 74;
 
-      width: 20px;
-      height: 14px;
+      width: var(--fragment-width);
+      height: var(--fragment-height);
 
       background:
         linear-gradient(
           135deg,
-          #768a35,
+          #84983d,
           #243016
         );
 
@@ -835,7 +841,47 @@
             var(--frag-x),
             var(--frag-y)
           )
-          rotate(520deg);
+          rotate(var(--frag-spin));
+
+        opacity: 0;
+      }
+    }
+
+    .plant-chunk {
+      position: absolute;
+      z-index: 76;
+
+      width: var(--chunk-size);
+      height: var(--chunk-size);
+
+      border-radius: 48% 52% 38% 62%;
+
+      background:
+        radial-gradient(
+          circle at 35% 30%,
+          #b1d65b,
+          #397a27 48%,
+          #163716
+        );
+
+      border: 2px solid #0b180b;
+
+      box-shadow:
+        inset 0 0 8px rgba(220,255,125,0.25),
+        0 0 10px rgba(71,255,47,0.35);
+
+      animation: chunkFly 1050ms ease-out forwards;
+    }
+
+    @keyframes chunkFly {
+      to {
+        transform:
+          translate(
+            var(--chunk-x),
+            var(--chunk-y)
+          )
+          rotate(var(--chunk-spin))
+          scale(0.7);
 
         opacity: 0;
       }
@@ -861,8 +907,8 @@
       visibility: hidden;
 
       transition:
-        opacity 500ms ease,
-        visibility 500ms ease;
+        opacity 450ms ease,
+        visibility 450ms ease;
     }
 
     .victory-screen.show {
@@ -870,9 +916,11 @@
       visibility: visible;
     }
 
-    .victory-title {
+    .victory-content {
       text-align: center;
+    }
 
+    .victory-title {
       color: #d7b650;
       font-size: clamp(2rem, 11vw, 5rem);
       line-height: 0.9;
@@ -889,6 +937,22 @@
       color: #87cf42;
       font-size: 0.56em;
       letter-spacing: 0.08em;
+    }
+
+    .victory-quarter {
+      margin-top: 28px;
+      color: #f2dfae;
+      font-family: Arial, sans-serif;
+      font-weight: 900;
+      font-size: clamp(0.7rem, 3vw, 1rem);
+      letter-spacing: 0.08em;
+      animation: quarterBlink 850ms steps(2) infinite;
+    }
+
+    @keyframes quarterBlink {
+      50% {
+        opacity: 0.28;
+      }
     }
 
     /* CONTROLS */
@@ -992,7 +1056,6 @@
 
       display: grid;
       place-items: center;
-
       padding: 18px;
 
       background:
@@ -1252,9 +1315,17 @@
       class="victory-screen"
       id="victoryScreen"
     >
-      <div class="victory-title">
-        KINTSUGI
-        <span>VICTORY</span>
+      <div class="victory-content">
+
+        <div class="victory-title">
+          KINTSUGI
+          <span>VICTORY</span>
+        </div>
+
+        <div class="victory-quarter">
+          INSERT ANOTHER QUARTER
+        </div>
+
       </div>
     </div>
 
@@ -1483,16 +1554,6 @@
       specialButton.disabled =
         !enabled ||
         bobPower < 100;
-
-      if (
-        bobPower >= 100 &&
-        active &&
-        !finisherReady
-      ) {
-        setMessage(
-          "RAZOR ALOE READY: joystick UP + POT SHOT."
-        );
-      }
     }
 
     function createImpact(target, damage) {
@@ -1576,7 +1637,7 @@
 
       directionSequence =
         directionSequence.filter(
-          item => Date.now() - item.time < 1600
+          item => Date.now() - item.time < 2600
         );
     }
 
@@ -1662,7 +1723,7 @@
 
       bob.classList.add("charging");
 
-      for (let index = 0; index < 8; index += 1) {
+      for (let index = 0; index < 10; index += 1) {
         setTimeout(() => {
           const leaf = document.createElement("div");
 
@@ -1679,7 +1740,7 @@
           game.appendChild(leaf);
 
           setTimeout(() => leaf.remove(), 470);
-        }, index * 70);
+        }, index * 52);
       }
 
       setTimeout(() => {
@@ -1695,7 +1756,7 @@
         vibrate([60,30,70,30,100]);
 
         update();
-      }, 360);
+      }, 340);
 
       setTimeout(() => {
         bob.classList.remove("charging");
@@ -1707,7 +1768,7 @@
         } else {
           enemyTurn();
         }
-      }, 1050);
+      }, 1000);
     }
 
     function playerMove(key) {
@@ -1906,6 +1967,7 @@
       flytrap.classList.add("blocking");
 
       announcement.classList.remove("show");
+
       announce("FINISH HIM!", true);
 
       setMessage(
@@ -1920,7 +1982,7 @@
         directionSequence
           .filter(
             item =>
-              Date.now() - item.time < 1600
+              Date.now() - item.time < 2600
           )
           .map(item => item.direction);
 
@@ -1944,16 +2006,16 @@
         );
 
         slash.style.top =
-          random(38, 68) + "%";
+          random(34, 72) + "%";
 
         game.appendChild(slash);
 
-        setTimeout(() => slash.remove(), 430);
+        setTimeout(() => slash.remove(), 310);
       }, delay);
     }
 
-    function createSapBurst() {
-      for (let index = 0; index < 34; index += 1) {
+    function createSapBurst(amount = 38) {
+      for (let index = 0; index < amount; index += 1) {
         const drop = document.createElement("div");
 
         drop.className = "sap-drop";
@@ -1962,21 +2024,21 @@
           random(58, 78) + "%";
 
         drop.style.top =
-          random(42, 68) + "%";
+          random(40, 70) + "%";
 
         drop.style.setProperty(
           "--sap-size",
-          random(6, 18) + "px"
+          random(6, 20) + "px"
         );
 
         drop.style.setProperty(
           "--sap-x",
-          random(-180, 220) + "px"
+          random(-230, 250) + "px"
         );
 
         drop.style.setProperty(
           "--sap-y",
-          random(-210, 180) + "px"
+          random(-250, 210) + "px"
         );
 
         game.appendChild(drop);
@@ -1985,32 +2047,86 @@
       }
     }
 
-    function createFragments() {
-      for (let index = 0; index < 12; index += 1) {
+    function createFragments(amount = 18) {
+      for (let index = 0; index < amount; index += 1) {
         const fragment =
           document.createElement("div");
 
         fragment.className = "pot-fragment";
 
         fragment.style.left =
-          random(62, 76) + "%";
+          random(61, 77) + "%";
 
         fragment.style.top =
-          random(58, 75) + "%";
+          random(54, 76) + "%";
+
+        fragment.style.setProperty(
+          "--fragment-width",
+          random(14, 34) + "px"
+        );
+
+        fragment.style.setProperty(
+          "--fragment-height",
+          random(10, 24) + "px"
+        );
 
         fragment.style.setProperty(
           "--frag-x",
-          random(-180, 220) + "px"
+          random(-240, 260) + "px"
         );
 
         fragment.style.setProperty(
           "--frag-y",
-          random(-220, 170) + "px"
+          random(-260, 190) + "px"
+        );
+
+        fragment.style.setProperty(
+          "--frag-spin",
+          random(320, 850) + "deg"
         );
 
         game.appendChild(fragment);
 
         setTimeout(() => fragment.remove(), 1100);
+      }
+    }
+
+    function createPlantChunks(amount = 20) {
+      for (let index = 0; index < amount; index += 1) {
+        const chunk =
+          document.createElement("div");
+
+        chunk.className = "plant-chunk";
+
+        chunk.style.left =
+          random(60, 78) + "%";
+
+        chunk.style.top =
+          random(38, 68) + "%";
+
+        chunk.style.setProperty(
+          "--chunk-size",
+          random(12, 34) + "px"
+        );
+
+        chunk.style.setProperty(
+          "--chunk-x",
+          random(-230, 260) + "px"
+        );
+
+        chunk.style.setProperty(
+          "--chunk-y",
+          random(-270, 210) + "px"
+        );
+
+        chunk.style.setProperty(
+          "--chunk-spin",
+          random(300, 950) + "deg"
+        );
+
+        game.appendChild(chunk);
+
+        setTimeout(() => chunk.remove(), 1120);
       }
     }
 
@@ -2037,23 +2153,50 @@
 
       bob.classList.add("charging");
 
-      createSlash(-22, 300);
-      createSlash(18, 500);
-      createSlash(-8, 700);
-      createSlash(31, 880);
-      createSlash(-36, 1020);
+      const slashAngles = [
+        -42, -34, -26, -18,
+        -10, -3, 6, 14,
+        22, 31, 39, -29,
+        -15, 2, 18, 36
+      ];
+
+      slashAngles.forEach((angle, index) => {
+        createSlash(
+          angle,
+          150 + index * 44
+        );
+      });
 
       setTimeout(() => {
-        createSapBurst();
-        createFragments();
+        createSapBurst(42);
+        createSapBurst(36);
+
+        createFragments(20);
+        createFragments(16);
+
+        createPlantChunks(24);
 
         flytrap.classList.add("hit");
         game.classList.add("screen-shake");
 
         vibrate([
-          100,40,120,50,160,70,220
+          100, 35, 110, 40,
+          130, 45, 170, 60, 230
         ]);
-      }, 780);
+      }, 610);
+
+      setTimeout(() => {
+        flytrap.style.opacity = "0";
+        flytrap.style.transform =
+          "scale(1.55) rotate(18deg)";
+
+        createSapBurst(28);
+        createFragments(14);
+        createPlantChunks(15);
+
+        flyHealth = 0;
+        update();
+      }, 980);
 
       setTimeout(() => {
         flytrap.classList.remove(
@@ -2061,15 +2204,10 @@
           "blocking"
         );
 
-        flytrap.classList.add("defeated");
-
         game.classList.remove("screen-shake");
 
         bob.classList.remove("charging");
-
-        flyHealth = 0;
-        update();
-      }, 1600);
+      }, 1350);
 
       setTimeout(() => {
         victoryScreen.classList.add("show");
@@ -2077,17 +2215,26 @@
         setMessage(
           "Cracked, but never broken."
         );
-      }, 2200);
+      }, 1750);
 
       setTimeout(() => {
         finisherDarkness.classList.remove("show");
 
-        bobRounds += 1;
+        bobRounds = 2;
 
-        if (bobRounds >= 2) {
-          restartButton.classList.add("show");
-        }
-      }, 2900);
+        active = false;
+        locked = true;
+        finisherReady = false;
+
+        restartButton.classList.add("show");
+        restartButton.textContent = "Insert Coin";
+
+        setMessage(
+          "Insert another quarter to fight again."
+        );
+
+        update();
+      }, 2250);
     }
 
     function startTimer() {
@@ -2117,6 +2264,17 @@
       }, 1000);
     }
 
+    function resetFighters() {
+      bob.className = "fighter bob";
+      flytrap.className = "fighter flytrap";
+
+      bob.style.opacity = "1";
+      bob.style.transform = "";
+
+      flytrap.style.opacity = "1";
+      flytrap.style.transform = "";
+    }
+
     function startRound() {
       clearInterval(timerInterval);
 
@@ -2132,18 +2290,23 @@
       locked = true;
 
       bobBlocking = false;
+      dodging = false;
+
       finisherReady = false;
       finisherRunning = false;
 
       directionSequence = [];
       lastDirection = "";
 
-      announcement.classList.remove("finish");
+      announcement.classList.remove(
+        "finish",
+        "show"
+      );
+
       finisherDarkness.classList.remove("show");
       victoryScreen.classList.remove("show");
 
-      bob.className = "fighter bob";
-      flytrap.className = "fighter flytrap";
+      resetFighters();
 
       restartButton.classList.remove("show");
 
@@ -2194,6 +2357,10 @@
           flyRounds >= 2
         ) {
           restartButton.classList.add("show");
+
+          setMessage(
+            "Insert another quarter to fight again."
+          );
         } else {
           currentRound += 1;
           startRound();
@@ -2206,6 +2373,9 @@
       flyRounds = 0;
       currentRound = 1;
 
+      victoryScreen.classList.remove("show");
+
+      resetFighters();
       startRound();
     }
 
@@ -2233,11 +2403,6 @@
       }
     );
 
-    /*
-      Cabinet communication.
-      The parent mcbrides.html page sends these commands.
-    */
-
     window.addEventListener("message", event => {
       const data = event.data;
 
@@ -2264,13 +2429,10 @@
       }
     });
 
-    /*
-      Direct API for same-domain iframe access.
-    */
-
     window.arcadeInput = {
       move: playerMove,
       joystick,
+
       start() {
         if (!startScreen.classList.contains("hidden")) {
           startButton.click();
