@@ -16,18 +16,20 @@
 html,body{
     width:100%;
     height:100%;
-    overflow:hidden;
 }
 
 body{
-    background:
-        linear-gradient(rgba(0,0,0,.15),rgba(0,0,0,.20)),
-        url("54EFFD92-C1F7-4A3E-BADE-CE8296F147E3.png")
-        center center/cover no-repeat;
+    min-height:100svh;
+    background-color:#111;
+    background-image:
+        linear-gradient(rgba(0,0,0,.08),rgba(0,0,0,.12)),
+        url("54EFFD92-C1F7-4A3E-BADE-CE8296F147E3.png");
+    background-position:center top;
+    background-size:contain;
+    background-repeat:no-repeat;
     font-family:Georgia,serif;
 }
 
-/* Makes the whole screen clickable */
 .enter{
     position:fixed;
     inset:0;
@@ -35,12 +37,9 @@ body{
     z-index:999;
 }
 </style>
-
 </head>
 
 <body>
-
 <a class="enter" href="workshop.html" aria-label="Enter Studio LaDuke"></a>
-
 </body>
 </html>
