@@ -48,10 +48,7 @@
       appearance: none;
     }
 
-    /*
-      The blurred background prevents visible empty space
-      during resizing or device rotation.
-    */
+    /* SOFT BACKGROUND FILL */
 
     .background-fill {
       position: fixed;
@@ -60,26 +57,17 @@
 
       background:
         linear-gradient(
-          rgba(0, 0, 0, 0.38),
-          rgba(0, 0, 0, 0.62)
+          rgba(0, 0, 0, 0.4),
+          rgba(0, 0, 0, 0.64)
         ),
         url("7B84A8A4-56B8-4572-ABA7-FA9FFD983B3F.png")
         center center / cover no-repeat;
 
-      filter: blur(22px) brightness(0.48);
+      filter: blur(22px) brightness(0.46);
       transform: scale(1.09);
     }
 
-    /*
-      This is the visible camera window.
-
-      Desktop:
-      The complete workshop fits onscreen.
-
-      Phone:
-      The workshop fills the screen vertically and can be
-      dragged horizontally.
-    */
+    /* ROOM CAMERA */
 
     .scene-viewport {
       position: fixed;
@@ -104,7 +92,6 @@
       height: min(100svh, calc(100vw / 1.5));
 
       aspect-ratio: 3 / 2;
-
       overflow: hidden;
 
       background:
@@ -122,11 +109,6 @@
       user-select: none;
     }
 
-    /*
-      On phones, use the device height to size the room.
-      This makes the scene feel like a place instead of a postcard.
-    */
-
     @media (max-width: 700px) and (orientation: portrait) {
       .workshop {
         width: 150svh;
@@ -136,10 +118,6 @@
       }
     }
 
-    /*
-      On short landscape screens, fill width instead.
-    */
-
     @media (max-height: 600px) and (orientation: landscape) {
       .workshop {
         width: 100vw;
@@ -147,7 +125,7 @@
       }
     }
 
-    /* ARTWORK FRAMES */
+    /* REAL ARTWORK INSIDE PHYSICAL FRAMES */
 
     .art-frame {
       position: absolute;
@@ -158,28 +136,84 @@
 
       padding: 0;
 
-      border: 0;
-      background: #15110d;
+      border:
+        clamp(2px, 0.23vw, 5px)
+        solid
+        #26170f;
+
+      border-radius: 1px;
+
+      background:
+        linear-gradient(
+          145deg,
+          #2a1b12,
+          #100b08
+        );
 
       cursor: pointer;
 
       box-shadow:
-        inset 0 0 0 1px rgba(255, 227, 178, 0.12);
+        0 2px 5px rgba(0, 0, 0, 0.58),
+        0 0 0 1px rgba(123, 77, 45, 0.8),
+        inset 0 0 11px rgba(0, 0, 0, 0.7);
 
       transform-origin: center;
+      isolation: isolate;
+    }
+
+    /*
+      Warm glass and room-light layer.
+      This helps the art inherit the workshop atmosphere.
+    */
+
+    .art-frame::after {
+      content: "";
+
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+
+      pointer-events: none;
+
+      background:
+        linear-gradient(
+          118deg,
+          rgba(255, 220, 156, 0.1),
+          transparent 27%,
+          transparent 68%,
+          rgba(0, 0, 0, 0.2)
+        ),
+        linear-gradient(
+          to bottom,
+          rgba(255, 236, 194, 0.025),
+          rgba(22, 11, 5, 0.13)
+        );
+
+      box-shadow:
+        inset 0 0 10px rgba(0, 0, 0, 0.42);
     }
 
     .art-frame img {
+      position: relative;
+      z-index: 1;
+
       display: block;
       width: 100%;
       height: 100%;
 
-      object-fit: contain;
+      object-fit: cover;
       object-position: center;
 
-      background: #15110d;
-
+      background: #17100b;
       pointer-events: none;
+
+      filter:
+        brightness(0.78)
+        contrast(0.96)
+        saturate(0.88)
+        sepia(0.055);
+
+      transform: scale(1.018);
 
       transition:
         transform 180ms ease,
@@ -188,87 +222,125 @@
 
     .art-frame:hover img,
     .art-frame:focus-visible img {
-      transform: scale(1.025);
-      filter: brightness(1.08);
+      transform: scale(1.055);
+
+      filter:
+        brightness(0.9)
+        contrast(1)
+        saturate(0.98)
+        sepia(0.03);
     }
 
     .art-frame:focus-visible {
       outline: 2px solid rgba(255, 213, 119, 0.9);
-      outline-offset: 2px;
+      outline-offset: 3px;
     }
 
     /*
-      These positions correspond to the blank display spaces
-      in the clean workshop image.
+      Slightly different image positions stop important parts
+      from being cut off in certain physical frames.
     */
 
+    .frame-1 img,
+    .frame-2 img {
+      object-position: center center;
+    }
+
+    .frame-3 img {
+      object-position: center 42%;
+    }
+
+    .frame-4 img,
+    .frame-5 img,
+    .frame-6 img,
+    .frame-7 img,
+    .frame-8 img {
+      object-position: center center;
+    }
+
+    .frame-9 img {
+      object-position: center center;
+    }
+
+    .frame-10 img {
+      object-position: center center;
+    }
+
+    /* FRAME LOCATIONS */
+
     .frame-1 {
-      left: 4.65%;
-      top: 7.35%;
-      width: 10.2%;
-      height: 10.1%;
+      left: 4.55%;
+      top: 7.15%;
+      width: 10.45%;
+      height: 10.55%;
     }
 
     .frame-2 {
-      left: 18.25%;
-      top: 9.55%;
-      width: 10.7%;
-      height: 8.75%;
+      left: 18.08%;
+      top: 9.32%;
+      width: 11.05%;
+      height: 9.18%;
     }
 
     .frame-3 {
-      left: 49.9%;
-      top: 7.8%;
-      width: 8.75%;
-      height: 17.45%;
+      left: 49.65%;
+      top: 7.5%;
+      width: 9.25%;
+      height: 18.05%;
     }
 
     .frame-4 {
-      left: 76.7%;
-      top: 13.35%;
-      width: 7.95%;
-      height: 14.95%;
+      left: 76.38%;
+      top: 13%;
+      width: 8.48%;
+      height: 15.55%;
     }
 
     .frame-5 {
-      left: 84.35%;
-      top: 16.25%;
-      width: 5.2%;
-      height: 13.1%;
+      left: 84.05%;
+      top: 15.95%;
+      width: 5.72%;
+      height: 13.72%;
     }
 
     .frame-6 {
-      left: 90.35%;
-      top: 15.75%;
-      width: 5.8%;
-      height: 14.35%;
+      left: 90.05%;
+      top: 15.35%;
+      width: 6.35%;
+      height: 15.05%;
     }
 
     .frame-7 {
-      left: 83.55%;
-      top: 31.85%;
-      width: 6.05%;
-      height: 12.1%;
+      left: 83.2%;
+      top: 31.52%;
+      width: 6.62%;
+      height: 12.78%;
     }
 
     .frame-8 {
-      left: 90.35%;
-      top: 31.55%;
-      width: 5.85%;
-      height: 12.6%;
+      left: 90.05%;
+      top: 31.18%;
+      width: 6.4%;
+      height: 13.3%;
     }
 
-    /*
-      Easel canvas.
-    */
+    /* EASEL */
 
     .frame-9 {
-      left: 67.35%;
-      top: 28.3%;
-      width: 11.35%;
-      height: 22.3%;
+      left: 67.18%;
+      top: 28.02%;
+      width: 11.72%;
+      height: 22.82%;
+
+      border-width:
+        clamp(3px, 0.28vw, 6px);
 
       transform: rotate(2.8deg);
+
+      box-shadow:
+        3px 6px 12px rgba(0, 0, 0, 0.56),
+        0 0 0 1px rgba(115, 76, 48, 0.85),
+        inset 0 0 12px rgba(0, 0, 0, 0.45);
     }
 
     .frame-9:hover,
@@ -278,18 +350,16 @@
         scale(1.012);
     }
 
-    /*
-      Small panel beneath the workbench.
-    */
+    /* CABINET PANEL BELOW WORKBENCH */
 
     .frame-10 {
-      left: 47.05%;
-      top: 44.4%;
-      width: 6%;
-      height: 12.9%;
+      left: 46.78%;
+      top: 44.08%;
+      width: 6.5%;
+      height: 13.62%;
     }
 
-    /* INTERACTIVE OBJECTS */
+    /* INTERACTIVE ROOM OBJECTS */
 
     .hotspot {
       position: absolute;
@@ -369,7 +439,7 @@
       height: 44%;
     }
 
-    /* MOBILE ROOM POSITION INDICATOR */
+    /* ROOM POSITION DOTS */
 
     .room-indicator {
       position: fixed;
@@ -384,7 +454,7 @@
 
       padding: 7px 10px;
 
-      background: rgba(10, 8, 6, 0.7);
+      background: rgba(10, 8, 6, 0.72);
       border: 1px solid rgba(225, 183, 100, 0.3);
       border-radius: 999px;
 
@@ -415,7 +485,7 @@
       }
     }
 
-    /* TOAST */
+    /* TOAST MESSAGE */
 
     .toast {
       position: fixed;
@@ -463,7 +533,7 @@
         translateY(0);
     }
 
-    /* MENU */
+    /* HAMBURGER MENU */
 
     .menu-button {
       position: fixed;
@@ -600,7 +670,6 @@
 
     .menu-title {
       margin-bottom: 8px;
-
       color: #f5dca6;
       font-size: clamp(1.8rem, 7vw, 2.6rem);
     }
@@ -816,43 +885,83 @@
       aria-label="Studio LaDuke creative workshop"
     >
 
-      <button class="art-frame frame-1" type="button">
+      <button
+        class="art-frame frame-1"
+        data-frame-shape="landscape"
+        type="button"
+      >
         <img alt="Studio LaDuke artwork">
       </button>
 
-      <button class="art-frame frame-2" type="button">
+      <button
+        class="art-frame frame-2"
+        data-frame-shape="landscape"
+        type="button"
+      >
         <img alt="Studio LaDuke artwork">
       </button>
 
-      <button class="art-frame frame-3" type="button">
+      <button
+        class="art-frame frame-3"
+        data-frame-shape="portrait"
+        type="button"
+      >
         <img alt="Studio LaDuke artwork">
       </button>
 
-      <button class="art-frame frame-4" type="button">
+      <button
+        class="art-frame frame-4"
+        data-frame-shape="portrait"
+        type="button"
+      >
         <img alt="Studio LaDuke artwork">
       </button>
 
-      <button class="art-frame frame-5" type="button">
+      <button
+        class="art-frame frame-5"
+        data-frame-shape="portrait"
+        type="button"
+      >
         <img alt="Studio LaDuke artwork">
       </button>
 
-      <button class="art-frame frame-6" type="button">
+      <button
+        class="art-frame frame-6"
+        data-frame-shape="portrait"
+        type="button"
+      >
         <img alt="Studio LaDuke artwork">
       </button>
 
-      <button class="art-frame frame-7" type="button">
+      <button
+        class="art-frame frame-7"
+        data-frame-shape="portrait"
+        type="button"
+      >
         <img alt="Studio LaDuke artwork">
       </button>
 
-      <button class="art-frame frame-8" type="button">
+      <button
+        class="art-frame frame-8"
+        data-frame-shape="portrait"
+        type="button"
+      >
         <img alt="Studio LaDuke artwork">
       </button>
 
-      <button class="art-frame frame-9" type="button">
+      <button
+        class="art-frame frame-9"
+        data-frame-shape="portrait"
+        type="button"
+      >
         <img alt="Studio LaDuke artwork">
       </button>
 
-      <button class="art-frame frame-10" type="button">
+      <button
+        class="art-frame frame-10"
+        data-frame-shape="portrait"
+        type="button"
+      >
         <img alt="Studio LaDuke artwork">
       </button>
 
@@ -894,10 +1003,7 @@
 
   </div>
 
-  <div
-    class="room-indicator"
-    aria-hidden="true"
-  >
+  <div class="room-indicator" aria-hidden="true">
     <span class="room-dot" id="roomDotLeft"></span>
     <span class="room-dot active" id="roomDotCenter"></span>
     <span class="room-dot" id="roomDotRight"></span>
@@ -1036,7 +1142,7 @@
   <script>
     "use strict";
 
-    const artwork = [
+    const artworkFiles = [
       "IMG_3211.jpeg",
       "9EAA20AB-901D-41E1-AC98-64455D1A291D.png",
       "8E115567-F28C-456A-8E51-6EB4BA67B0A3.png",
@@ -1104,6 +1210,9 @@
     const roomDotRight =
       document.getElementById("roomDotRight");
 
+    let artworkData = [];
+    let displayedFiles = [];
+
     let activeArtworkIndex = 0;
     let toastTimer = null;
 
@@ -1140,35 +1249,141 @@
       return copy;
     }
 
+    function getImageShape(width, height) {
+      const ratio = width / height;
+
+      if (ratio > 1.18) {
+        return "landscape";
+      }
+
+      if (ratio < 0.84) {
+        return "portrait";
+      }
+
+      return "square";
+    }
+
+    function inspectArtwork(filename) {
+      return new Promise(resolve => {
+        const image = new Image();
+
+        image.onload = () => {
+          resolve({
+            filename,
+            width: image.naturalWidth,
+            height: image.naturalHeight,
+            shape: getImageShape(
+              image.naturalWidth,
+              image.naturalHeight
+            )
+          });
+        };
+
+        image.onerror = () => {
+          resolve({
+            filename,
+            width: 1,
+            height: 1,
+            shape: "square"
+          });
+        };
+
+        image.src = filename;
+      });
+    }
+
+    async function loadArtworkData() {
+      artworkData =
+        await Promise.all(
+          artworkFiles.map(inspectArtwork)
+        );
+
+      populateFrames();
+    }
+
+    function findBestArtwork(
+      desiredShape,
+      available
+    ) {
+      const exactMatches =
+        available.filter(
+          item =>
+            item.shape === desiredShape
+        );
+
+      if (exactMatches.length > 0) {
+        return shuffle(exactMatches)[0];
+      }
+
+      /*
+        Square artwork works reasonably well in most frames,
+        so it becomes the first fallback.
+      */
+
+      const squareMatches =
+        available.filter(
+          item =>
+            item.shape === "square"
+        );
+
+      if (squareMatches.length > 0) {
+        return shuffle(squareMatches)[0];
+      }
+
+      return shuffle(available)[0];
+    }
+
     function populateFrames() {
-      const shuffled = shuffle(artwork);
+      let available =
+        shuffle(artworkData);
+
+      displayedFiles = [];
 
       frames.forEach((frame, index) => {
-        const filename =
-          shuffled[index % shuffled.length];
+        if (available.length === 0) {
+          available =
+            shuffle(artworkData);
+        }
+
+        const desiredShape =
+          frame.dataset.frameShape;
+
+        const selected =
+          findBestArtwork(
+            desiredShape,
+            available
+          );
+
+        available =
+          available.filter(
+            item =>
+              item.filename !== selected.filename
+          );
+
+        displayedFiles.push(
+          selected.filename
+        );
 
         const image =
           frame.querySelector("img");
 
-        image.src = filename;
+        image.src = selected.filename;
 
         image.alt =
           "Studio LaDuke artwork " +
           (index + 1);
 
-        frame.dataset.filename = filename;
+        frame.dataset.filename =
+          selected.filename;
 
-        frame.addEventListener(
-          "click",
-          event => {
-            if (pointerTravel > 8) {
-              event.preventDefault();
-              return;
-            }
-
-            openViewer(filename);
+        frame.onclick = event => {
+          if (pointerTravel > 8) {
+            event.preventDefault();
+            return;
           }
-        );
+
+          openViewer(selected.filename);
+        };
       });
     }
 
@@ -1304,14 +1519,13 @@
 
     function openViewer(filename) {
       activeArtworkIndex =
-        artwork.indexOf(filename);
+        artworkFiles.indexOf(filename);
 
       if (activeArtworkIndex < 0) {
         activeArtworkIndex = 0;
       }
 
       updateViewer();
-
       viewer.classList.add("open");
     }
 
@@ -1321,7 +1535,7 @@
 
     function updateViewer() {
       const filename =
-        artwork[activeArtworkIndex];
+        artworkFiles[activeArtworkIndex];
 
       viewerImage.src = filename;
 
@@ -1335,8 +1549,8 @@
         (
           activeArtworkIndex -
           1 +
-          artwork.length
-        ) % artwork.length;
+          artworkFiles.length
+        ) % artworkFiles.length;
 
       updateViewer();
     }
@@ -1346,7 +1560,7 @@
         (
           activeArtworkIndex +
           1
-        ) % artwork.length;
+        ) % artworkFiles.length;
 
       updateViewer();
     }
@@ -1590,25 +1804,21 @@
       }
     );
 
-    populateFrames();
+    loadArtworkData();
 
     window.setTimeout(() => {
       calculateRoomBounds();
 
-      /*
-        Start slightly left of center so the pool table,
-        dog, window, arcade, and some art are visible.
-      */
-
       if (maxRoomX > 0) {
-        roomX = Math.min(
-          maxRoomX,
-          maxRoomX * 0.2
-        );
+        roomX =
+          Math.min(
+            maxRoomX,
+            maxRoomX * 0.2
+          );
 
         renderRoomPosition();
       }
-    }, 100);
+    }, 120);
   </script>
 
 </body>
