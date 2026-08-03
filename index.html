@@ -28,6 +28,7 @@
     body {
       min-height: 100svh;
 
+      /* Wide desktop landing room */
       background-image:
         url("54EFFD92-C1F7-4A3E-BADE-CE8296F147E3.png");
 
@@ -36,13 +37,16 @@
       background-repeat: no-repeat;
     }
 
+    /* Makes the entire landing image clickable */
     .enter {
       position: fixed;
       inset: 0;
       display: block;
       z-index: 10;
+      -webkit-tap-highlight-color: transparent;
     }
 
+    /* Vertical landing room for phones */
     @media (max-width: 650px) {
       body {
         background-image:
