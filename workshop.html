@@ -11,10 +11,18 @@
   <title>Studio LaDuke Workshop</title>
 
   <style>
+    :root {
+      --gold: #d9aa58;
+      --cream: #f5dfb0;
+      --brown: #321d12;
+      --dark: #080807;
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
 
     html,
@@ -22,82 +30,676 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #111;
+      background: #070706;
     }
 
     body {
       min-height: 100svh;
-      font-family: Georgia, serif;
+      color: var(--cream);
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    /*
+      Blurred background fills any unused space on tall phones
+      while the complete workshop image remains visible.
+    */
+
+    .background-fill {
+      position: fixed;
+      inset: -30px;
+      z-index: 0;
+
+      background:
+        linear-gradient(
+          rgba(0, 0, 0, 0.28),
+          rgba(0, 0, 0, 0.45)
+        ),
+        url("5DA875F9-89D7-4B0A-849D-B25BD3EBBE47.png")
+        center center / cover no-repeat;
+
+      filter: blur(18px) brightness(0.55);
+      transform: scale(1.08);
+    }
+
+    /*
+      The actual workshop scene keeps its original 3:2 ratio.
+      Nothing is cropped.
+    */
+
+    .scene-shell {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+
+      display: grid;
+      place-items: center;
+
+      padding:
+        env(safe-area-inset-top)
+        env(safe-area-inset-right)
+        env(safe-area-inset-bottom)
+        env(safe-area-inset-left);
     }
 
     .workshop {
-      position: fixed;
-      inset: 0;
+      position: relative;
 
-      background-image:
-        url("E674C7F8-34A1-435B-96E5-B39170A6D49E.png");
+      width: min(
+        100vw,
+        calc(100svh * 1.5)
+      );
 
-      background-size: cover;
-      background-position: center center;
-      background-repeat: no-repeat;
+      height: min(
+        100svh,
+        calc(100vw / 1.5)
+      );
+
+      aspect-ratio: 3 / 2;
+
+      overflow: hidden;
+
+      background:
+        url("5DA875F9-89D7-4B0A-849D-B25BD3EBBE47.png")
+        center center / 100% 100% no-repeat;
+
+      box-shadow:
+        0 0 50px rgba(0, 0, 0, 0.88),
+        0 0 20px rgba(219, 170, 81, 0.08);
     }
 
-    .back-home {
-      position: fixed;
-      left: 16px;
-      bottom: calc(16px + env(safe-area-inset-bottom));
-      z-index: 20;
+    /*
+      Arcade cabinet hotspot.
 
-      padding: 12px 17px;
+      This sits over the Mortal KomPlant machine
+      in the workshop artwork.
+    */
 
-      color: #f6dfaf;
-      background: rgba(14, 12, 10, 0.82);
+    .arcade-hotspot {
+      position: absolute;
 
-      border: 1px solid rgba(224, 181, 102, 0.75);
+      left: 57.9%;
+      top: 13.8%;
+
+      width: 18.4%;
+      height: 46%;
+
+      z-index: 8;
+
+      display: block;
+
       border-radius: 8px;
 
       text-decoration: none;
-      font-size: 0.9rem;
-      letter-spacing: 0.04em;
+      cursor: pointer;
+    }
+
+    .arcade-hotspot::before {
+      content: "";
+
+      position: absolute;
+      inset: 4%;
+
+      border: 2px solid transparent;
+      border-radius: 8px;
+
+      transition:
+        border-color 180ms ease,
+        background 180ms ease,
+        box-shadow 180ms ease,
+        transform 180ms ease;
+    }
+
+    .arcade-hotspot:hover::before,
+    .arcade-hotspot:focus-visible::before {
+      border-color: rgba(170, 255, 85, 0.78);
+
+      background:
+        radial-gradient(
+          circle at 50% 28%,
+          rgba(126, 255, 73, 0.13),
+          transparent 55%
+        );
 
       box-shadow:
-        0 0 16px rgba(220, 169, 75, 0.25),
-        0 4px 14px rgba(0, 0, 0, 0.5);
+        0 0 18px rgba(101, 255, 66, 0.35),
+        inset 0 0 16px rgba(101, 255, 66, 0.08);
 
-      -webkit-tap-highlight-color: transparent;
+      transform: scale(1.015);
+    }
+
+    .arcade-hotspot:active::before {
+      transform: scale(0.98);
+    }
+
+    /*
+      Small label appears only while hovering,
+      focusing, or pressing the cabinet.
+    */
+
+    .arcade-label {
+      position: absolute;
+
+      left: 50%;
+      bottom: 6%;
+
+      transform: translateX(-50%);
+
+      width: max-content;
+      max-width: 94%;
+
+      padding: 6px 9px;
+
+      color: #dfffaa;
+      background: rgba(5, 10, 4, 0.86);
+
+      border: 1px solid rgba(147, 222, 76, 0.65);
+      border-radius: 5px;
+
+      font-family: Arial, sans-serif;
+      font-size: clamp(8px, 1.2vw, 13px);
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-align: center;
+      text-transform: uppercase;
+
+      opacity: 0;
+
+      box-shadow:
+        0 0 12px rgba(105, 235, 61, 0.28);
+
+      transition: opacity 160ms ease;
+    }
+
+    .arcade-hotspot:hover .arcade-label,
+    .arcade-hotspot:focus-visible .arcade-label,
+    .arcade-hotspot:active .arcade-label {
+      opacity: 1;
+    }
+
+    /* FRONT ROOM BUTTON */
+
+    .back-home {
+      position: fixed;
+
+      left: calc(14px + env(safe-area-inset-left));
+      bottom: calc(14px + env(safe-area-inset-bottom));
+
+      z-index: 40;
+
+      padding: 11px 15px;
+
+      color: var(--cream);
+      background: rgba(12, 10, 8, 0.84);
+
+      border: 1px solid rgba(224, 181, 102, 0.72);
+      border-radius: 8px;
+
+      text-decoration: none;
+      font-size: 0.82rem;
+      letter-spacing: 0.035em;
+
+      box-shadow:
+        0 0 16px rgba(220, 169, 75, 0.2),
+        0 4px 14px rgba(0, 0, 0, 0.55);
+
+      backdrop-filter: blur(7px);
     }
 
     .back-home:active {
       transform: scale(0.97);
     }
 
+    /* HAMBURGER BUTTON */
+
+    .menu-button {
+      position: fixed;
+
+      top: calc(14px + env(safe-area-inset-top));
+      left: calc(14px + env(safe-area-inset-left));
+
+      z-index: 60;
+
+      width: 52px;
+      height: 52px;
+
+      display: grid;
+      place-items: center;
+
+      color: var(--cream);
+      background: rgba(11, 9, 7, 0.84);
+
+      border: 1px solid rgba(224, 181, 102, 0.72);
+      border-radius: 9px;
+
+      cursor: pointer;
+
+      box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.55),
+        0 0 13px rgba(220, 169, 75, 0.15);
+
+      backdrop-filter: blur(7px);
+    }
+
+    .menu-lines,
+    .menu-lines::before,
+    .menu-lines::after {
+      width: 24px;
+      height: 2px;
+
+      background: currentColor;
+      border-radius: 999px;
+
+      transition:
+        transform 200ms ease,
+        opacity 200ms ease;
+    }
+
+    .menu-lines {
+      position: relative;
+    }
+
+    .menu-lines::before,
+    .menu-lines::after {
+      content: "";
+      position: absolute;
+      left: 0;
+    }
+
+    .menu-lines::before {
+      top: -8px;
+    }
+
+    .menu-lines::after {
+      top: 8px;
+    }
+
+    .menu-button.open .menu-lines {
+      background: transparent;
+    }
+
+    .menu-button.open .menu-lines::before {
+      top: 0;
+      transform: rotate(45deg);
+    }
+
+    .menu-button.open .menu-lines::after {
+      top: 0;
+      transform: rotate(-45deg);
+    }
+
+    /* MENU OVERLAY */
+
+    .menu-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+
+      background: rgba(0, 0, 0, 0.58);
+
+      opacity: 0;
+      visibility: hidden;
+
+      transition:
+        opacity 220ms ease,
+        visibility 220ms ease;
+
+      backdrop-filter: blur(4px);
+    }
+
+    .menu-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .menu-panel {
+      position: fixed;
+
+      top: 0;
+      left: 0;
+      bottom: 0;
+
+      z-index: 55;
+
+      width: min(82vw, 410px);
+
+      padding:
+        calc(88px + env(safe-area-inset-top))
+        28px
+        calc(28px + env(safe-area-inset-bottom));
+
+      overflow-y: auto;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(91, 48, 27, 0.98),
+          rgba(38, 21, 14, 0.99)
+        );
+
+      border-right: 1px solid rgba(222, 174, 89, 0.65);
+
+      box-shadow:
+        16px 0 40px rgba(0, 0, 0, 0.62);
+
+      transform: translateX(-104%);
+
+      transition: transform 260ms ease;
+    }
+
+    .menu-panel.open {
+      transform: translateX(0);
+    }
+
+    .menu-title {
+      margin-bottom: 8px;
+
+      color: #f5dca6;
+      font-size: clamp(1.7rem, 7vw, 2.5rem);
+      line-height: 1;
+    }
+
+    .menu-subtitle {
+      margin-bottom: 28px;
+
+      color: rgba(244, 224, 188, 0.72);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .menu-links {
+      display: grid;
+      gap: 12px;
+    }
+
+    .menu-link {
+      display: block;
+
+      padding: 15px 17px;
+
+      color: #f4e4c5;
+      background: rgba(255, 255, 255, 0.035);
+
+      border: 1px solid rgba(237, 199, 137, 0.22);
+      border-radius: 7px;
+
+      text-decoration: none;
+      font-size: 1.04rem;
+      letter-spacing: 0.025em;
+
+      transition:
+        background 150ms ease,
+        border-color 150ms ease,
+        transform 150ms ease;
+    }
+
+    .menu-link:hover,
+    .menu-link:focus-visible {
+      background: rgba(255, 218, 149, 0.09);
+      border-color: rgba(237, 199, 137, 0.58);
+      transform: translateX(3px);
+    }
+
+    .menu-link.arcade-link {
+      color: #cfff86;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(71, 128, 34, 0.2),
+          rgba(35, 60, 19, 0.14)
+        );
+
+      border-color: rgba(145, 213, 75, 0.48);
+
+      box-shadow:
+        inset 0 0 12px rgba(105, 235, 61, 0.04);
+    }
+
+    .menu-link.arcade-link::before {
+      content: "🎮";
+      margin-right: 10px;
+    }
+
+    .menu-footer {
+      margin-top: 40px;
+
+      color: rgba(244, 224, 188, 0.5);
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+
+    /*
+      Phone layout:
+      keep the complete image visible and make controls compact.
+    */
+
     @media (max-width: 650px) {
-      .workshop {
-        /*
-          The source image is wide, so the phone shows
-          the center of the room without empty black space.
-        */
-        background-position: 48% center;
+      .scene-shell {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+
+      .menu-button {
+        width: 48px;
+        height: 48px;
       }
 
       .back-home {
-        left: 12px;
-        bottom: calc(12px + env(safe-area-inset-bottom));
-        padding: 11px 14px;
-        font-size: 0.82rem;
+        padding: 10px 13px;
+        font-size: 0.76rem;
+      }
+
+      .arcade-hotspot {
+        /*
+          The scene itself is still 3:2, so the same percentages
+          remain aligned on phones.
+        */
+        left: 57.9%;
+        top: 13.8%;
+        width: 18.4%;
+        height: 46%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .arcade-hotspot::before,
+      .arcade-label,
+      .menu-panel,
+      .menu-overlay,
+      .menu-lines,
+      .menu-lines::before,
+      .menu-lines::after {
+        transition: none;
       }
     }
   </style>
 </head>
 
 <body>
-  <main
-    class="workshop"
-    aria-label="Studio LaDuke creative workshop"
-  ></main>
+
+  <div class="background-fill" aria-hidden="true"></div>
+
+  <div class="scene-shell">
+
+    <main
+      class="workshop"
+      aria-label="Studio LaDuke creative workshop"
+    >
+
+      <a
+        class="arcade-hotspot"
+        href="mcbrides.html"
+        aria-label="Play Mortal KomPlant in McBride’s Arcade"
+      >
+        <span class="arcade-label">
+          Enter McBride’s Arcade
+        </span>
+      </a>
+
+    </main>
+
+  </div>
+
+  <button
+    class="menu-button"
+    id="menuButton"
+    type="button"
+    aria-label="Open navigation menu"
+    aria-expanded="false"
+  >
+    <span class="menu-lines"></span>
+  </button>
+
+  <div
+    class="menu-overlay"
+    id="menuOverlay"
+  ></div>
+
+  <aside
+    class="menu-panel"
+    id="menuPanel"
+    aria-label="Studio LaDuke navigation"
+  >
+
+    <h1 class="menu-title">
+      Studio LaDuke
+    </h1>
+
+    <p class="menu-subtitle">
+      Art, stories, music, and things still becoming.
+    </p>
+
+    <nav class="menu-links">
+
+      <a class="menu-link" href="index.html">
+        Front Room
+      </a>
+
+      <a class="menu-link" href="workshop.html">
+        Workshop
+      </a>
+
+      <a
+        class="menu-link arcade-link"
+        href="mcbrides.html"
+      >
+        McBride’s Arcade
+      </a>
+
+      <a class="menu-link" href="directory.html">
+        Directory
+      </a>
+
+      <a class="menu-link" href="books.html">
+        Books
+      </a>
+
+      <a class="menu-link" href="bob.html">
+        Bob’s Room
+      </a>
+
+      <a class="menu-link" href="about.html">
+        About Corey
+      </a>
+
+    </nav>
+
+    <div class="menu-footer">
+      Made in Ketchikan, Alaska.<br>
+      Pull up a chair.
+    </div>
+
+  </aside>
 
   <a class="back-home" href="index.html">
     ← Front Room
   </a>
+
+  <script>
+    "use strict";
+
+    const menuButton =
+      document.getElementById("menuButton");
+
+    const menuPanel =
+      document.getElementById("menuPanel");
+
+    const menuOverlay =
+      document.getElementById("menuOverlay");
+
+    function openMenu() {
+      menuButton.classList.add("open");
+      menuPanel.classList.add("open");
+      menuOverlay.classList.add("open");
+
+      menuButton.setAttribute(
+        "aria-expanded",
+        "true"
+      );
+
+      menuButton.setAttribute(
+        "aria-label",
+        "Close navigation menu"
+      );
+    }
+
+    function closeMenu() {
+      menuButton.classList.remove("open");
+      menuPanel.classList.remove("open");
+      menuOverlay.classList.remove("open");
+
+      menuButton.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+
+      menuButton.setAttribute(
+        "aria-label",
+        "Open navigation menu"
+      );
+    }
+
+    function toggleMenu() {
+      if (menuPanel.classList.contains("open")) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    }
+
+    menuButton.addEventListener(
+      "click",
+      toggleMenu
+    );
+
+    menuOverlay.addEventListener(
+      "click",
+      closeMenu
+    );
+
+    document.addEventListener(
+      "keydown",
+      event => {
+        if (event.key === "Escape") {
+          closeMenu();
+        }
+      }
+    );
+
+    document
+      .querySelectorAll(".menu-link")
+      .forEach(link => {
+        link.addEventListener(
+          "click",
+          closeMenu
+        );
+      });
+  </script>
+
 </body>
 </html>
