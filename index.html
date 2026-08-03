@@ -28,7 +28,7 @@
     body {
       min-height: 100svh;
 
-      /* Wide desktop landing room */
+      /* Wide front room for desktop */
       background-image:
         url("54EFFD92-C1F7-4A3E-BADE-CE8296F147E3.png");
 
@@ -37,16 +37,35 @@
       background-repeat: no-repeat;
     }
 
-    /* Makes the entire landing image clickable */
+    /*
+      Invisible clickable area positioned only over
+      the COME IN button baked into the image.
+    */
     .enter {
       position: fixed;
-      inset: 0;
+      left: 50%;
+      top: 61%;
+      z-index: 20;
+
+      width: 190px;
+      height: 68px;
+
+      transform: translate(-50%, -50%);
+
       display: block;
-      z-index: 10;
+      border-radius: 10px;
+
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Vertical landing room for phones */
+    .enter:hover,
+    .enter:focus-visible {
+      outline: 2px solid rgba(245, 205, 125, 0.75);
+      outline-offset: 3px;
+      background: rgba(255, 210, 120, 0.08);
+    }
+
+    /* Vertical front room for phones */
     @media (max-width: 650px) {
       body {
         background-image:
@@ -54,6 +73,12 @@
 
         background-size: cover;
         background-position: center top;
+      }
+
+      .enter {
+        top: 58%;
+        width: 170px;
+        height: 62px;
       }
     }
   </style>
@@ -63,7 +88,7 @@
   <a
     class="enter"
     href="workshop.html"
-    aria-label="Enter Studio LaDuke"
+    aria-label="Come into Studio LaDuke"
   ></a>
 </body>
 </html>
