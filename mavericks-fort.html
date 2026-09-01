@@ -63,6 +63,21 @@
       pointer-events:auto;
     }
 
+    .back-workshop{
+      color:var(--ink);
+      text-decoration:none;
+      font-weight:800;
+      transition:background 0.18s ease, transform 0.18s ease;
+    }
+
+    .back-workshop:hover,
+    .back-workshop:focus-visible{
+      background:rgba(255,203,87,0.18);
+      transform:translateY(-1px);
+      outline:2px solid rgba(255,203,87,0.68);
+      outline-offset:2px;
+    }
+
     .hud-title{
       font-weight:800;
       letter-spacing:0.4px;
@@ -934,6 +949,7 @@
 <body>
   <div class="hud">
     <div class="hud-box hud-title">Maverick’s Fort</div>
+    <a class="hud-box back-workshop" href="workshop.html">← Workshop</a>
     <div class="hud-box">Laundry Mission: <strong id="laundryCount">0</strong>/6</div>
     <div class="hud-box">Secrets Found: <strong id="secretCount">0</strong>/5</div>
   </div>
