@@ -1107,6 +1107,317 @@
     @media (prefers-reduced-motion: reduce){
       *,*::before,*::after{ scroll-behavior:auto !important; animation-duration:0.01ms !important; animation-iteration-count:1 !important; }
     }
+
+    /* =========================================================
+       PHOTO FORT V3
+       The old CSS-made attic stays above as fallback code, but the
+       visible room is now two photographic scene plates with hotspots.
+       ========================================================= */
+    .sr-only{
+      position:absolute !important;
+      width:1px !important; height:1px !important;
+      padding:0 !important; margin:-1px !important;
+      overflow:hidden !important; clip:rect(0,0,0,0) !important;
+      white-space:nowrap !important; border:0 !important;
+    }
+
+    html,body{ background:#050403; overflow:hidden; }
+    .scene{
+      width:100vw !important;
+      height:100vh !important;
+      min-height:0 !important;
+      overflow:hidden !important;
+      background:#050403;
+    }
+
+    .view{
+      position:absolute;
+      inset:0;
+      overflow:auto;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .28s ease;
+      scrollbar-width:none;
+      overscroll-behavior:none;
+      -webkit-overflow-scrolling:touch;
+      z-index:1;
+      background:#050403;
+    }
+    .view::-webkit-scrollbar{ display:none; }
+    .view.active{ opacity:1; pointer-events:auto; }
+
+    .photo-stage{
+      position:relative;
+      width:100vw;
+      height:max(100vh, 66.6667vw);
+      min-width:100vw;
+      min-height:100vh;
+      background-repeat:no-repeat;
+      background-size:cover;
+      background-position:center;
+      overflow:hidden;
+      isolation:isolate;
+    }
+    .front-stage{ background-image:url('mavericks-fort-front.png'); }
+    .back-stage{ background-image:url('mavericks-fort-back.png'); }
+
+    @media (max-aspect-ratio: 3/2){
+      .photo-stage{
+        width:150vh;
+        height:100vh;
+        min-width:900px;
+        min-height:600px;
+        background-size:100% 100%;
+      }
+    }
+
+    .hotspot{
+      position:absolute;
+      z-index:30;
+      display:block;
+      border:2px solid transparent;
+      border-radius:18px;
+      padding:0;
+      background:rgba(255,255,255,0);
+      color:white;
+      cursor:pointer;
+      box-shadow:none;
+      transition:background .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .hotspot:hover,
+    .hotspot:focus-visible{
+      outline:none;
+      border-color:rgba(255,224,122,.68);
+      background:rgba(255,210,90,.06);
+      box-shadow:0 0 0 3px rgba(255,203,87,.12),0 0 30px rgba(255,203,87,.18);
+      transform:scale(1.012);
+    }
+    .hotspot::after{
+      content:attr(data-tip);
+      position:absolute;
+      left:50%;
+      bottom:8px;
+      transform:translateX(-50%) translateY(6px);
+      opacity:0;
+      pointer-events:none;
+      background:rgba(8,7,6,.82);
+      border:1px solid rgba(255,255,255,.18);
+      color:#fff8e8;
+      font-size:11px;
+      font-weight:900;
+      white-space:nowrap;
+      border-radius:999px;
+      padding:6px 9px;
+      transition:.15s ease;
+      backdrop-filter:blur(8px);
+    }
+    .hotspot:hover::after,
+    .hotspot:focus-visible::after{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+    .dog-hotspot::after{ bottom:16%; }
+    .game-hotspot{
+      border-color:rgba(110,205,255,.0);
+    }
+    .game-hotspot:hover,
+    .game-hotspot:focus-visible{
+      border-color:rgba(110,205,255,.72);
+      box-shadow:0 0 0 3px rgba(110,205,255,.12),0 0 34px rgba(110,205,255,.24);
+      background:rgba(90,180,255,.04);
+    }
+
+    #eqBars{
+      opacity:0;
+      position:absolute;
+      inset:auto 12% 10% 12%;
+      pointer-events:none;
+    }
+
+    .photo-stage .clothing{
+      position:absolute !important;
+      z-index:45;
+      width:48px;
+      height:42px;
+      min-width:0;
+      border:0;
+      padding:0;
+      display:grid;
+      place-items:center;
+      font-size:27px;
+      line-height:1;
+      background:rgba(0,0,0,.12) !important;
+      border-radius:50%;
+      filter:drop-shadow(0 6px 5px rgba(0,0,0,.4));
+      box-shadow:none;
+      cursor:pointer;
+      transform:rotate(var(--r, -5deg));
+      transition:transform .22s ease,opacity .25s ease;
+    }
+    .photo-stage .clothing:hover{ transform:scale(1.18) rotate(5deg); }
+    .photo-stage .clothing.done{
+      opacity:0;
+      transform:scale(.1) translateY(70px);
+      pointer-events:none;
+    }
+    .photo-stage .sock{ --r:-10deg; }
+    .photo-stage .shirt{ --r:8deg; }
+    .photo-stage .shorts{ --r:-4deg; }
+    .photo-stage .hoodie{ --r:6deg; }
+    .photo-stage .cap{ --r:-8deg; }
+    .photo-stage .pants{ --r:5deg; }
+
+    .hotspot.chest.unlocked{
+      border-color:rgba(255,209,92,.66);
+      box-shadow:0 0 34px rgba(255,203,87,.38);
+      animation:chestPulse 1.5s ease-in-out infinite alternate;
+    }
+    @keyframes chestPulse{ to{ box-shadow:0 0 55px rgba(255,203,87,.6); } }
+
+    #lights{ display:none !important; }
+    .room-shadow{
+      position:fixed !important;
+      inset:0 !important;
+      z-index:80 !important;
+      pointer-events:none !important;
+      background:rgba(0,0,0,0);
+      transition:background .35s ease;
+    }
+    body.room-dark .room-shadow{ background:rgba(0,0,0,.55) !important; }
+
+    .spotlight{
+      position:fixed !important;
+      inset:0 !important;
+      width:auto !important;
+      height:auto !important;
+      border:0 !important;
+      transform:none !important;
+      z-index:81 !important;
+      pointer-events:none !important;
+      opacity:0;
+      background:radial-gradient(circle at 77% 74%, rgba(255,251,199,.32) 0 7%, rgba(255,244,175,.14) 8% 17%, transparent 29%);
+      filter:none !important;
+      transition:opacity .2s ease;
+    }
+    .spotlight.on{ opacity:1; }
+
+    .scene-nav{
+      position:fixed;
+      top:50%;
+      z-index:900;
+      width:58px;
+      height:78px;
+      border:1px solid rgba(255,255,255,.2);
+      border-radius:18px;
+      transform:translateY(-50%);
+      background:rgba(0,0,0,.55);
+      color:white;
+      font:900 48px/1 sans-serif;
+      cursor:pointer;
+      backdrop-filter:blur(8px);
+      box-shadow:0 10px 30px rgba(0,0,0,.34);
+    }
+    .scene-nav:hover,.scene-nav:focus-visible{
+      outline:2px solid rgba(255,203,87,.8);
+      background:rgba(0,0,0,.72);
+    }
+    .scene-nav-left{ left:12px; }
+    .scene-nav-right{ right:12px; }
+
+    .view-name{
+      position:fixed;
+      left:50%;
+      bottom:16px;
+      z-index:890;
+      transform:translateX(-50%);
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(0,0,0,.56);
+      border:1px solid rgba(255,255,255,.16);
+      color:#fff8e8;
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.09em;
+      pointer-events:none;
+      backdrop-filter:blur(8px);
+    }
+
+    .pan-hint{
+      display:block !important;
+      position:fixed;
+      left:50%;
+      bottom:54px;
+      z-index:890;
+      transform:translateX(-50%);
+      border-radius:999px;
+      background:rgba(0,0,0,.55);
+      padding:6px 10px;
+      font-size:11px;
+      pointer-events:none;
+      animation:hintFade 6s forwards;
+    }
+
+    /* Game */
+    .game-panel{ width:min(1100px,100%); }
+    .game-title-row{
+      display:flex;
+      gap:18px;
+      align-items:flex-start;
+      justify-content:space-between;
+      padding-right:46px;
+    }
+    .game-score{
+      flex:0 0 auto;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.07);
+      padding:9px 12px;
+      border-radius:12px;
+      font-weight:900;
+      color:var(--gold);
+    }
+    #mavGameCanvas{
+      display:block;
+      width:100%;
+      aspect-ratio:16/9;
+      background:#84d5ff;
+      border:4px solid rgba(255,255,255,.16);
+      border-radius:14px;
+      cursor:default;
+      touch-action:none;
+    }
+    .game-controls{
+      display:grid;
+      grid-template-columns:72px 72px 1fr 1fr auto;
+      gap:8px;
+      margin-top:10px;
+    }
+    .game-control{
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:14px;
+      min-height:52px;
+      background:rgba(255,255,255,.08);
+      color:white;
+      font:900 15px/1 "Trebuchet MS",sans-serif;
+      cursor:pointer;
+      touch-action:none;
+    }
+    .game-control.jump{ background:rgba(90,160,255,.22); }
+    .game-control.restart{ background:rgba(255,203,87,.16); color:#ffe09a; }
+    .game-control:active{ transform:scale(.97); }
+
+    @media(max-width:720px){
+      .hud{ max-width:calc(100vw - 24px); }
+      .hud-title{ display:none; }
+      .scene-nav{ width:46px; height:64px; font-size:38px; }
+      .scene-nav-left{ left:6px; }
+      .scene-nav-right{ right:6px; }
+      .view-name{ bottom:10px; }
+      .pan-hint{ bottom:44px; }
+      .game-title-row{ display:block; padding-right:42px; }
+      .game-score{ display:inline-block; margin-bottom:8px; }
+      .game-controls{ grid-template-columns:repeat(4,1fr); }
+      .game-control.restart{ grid-column:1/-1; }
+    }
+
   </style>
 </head>
 <body>
@@ -1118,133 +1429,86 @@
     <button class="hud-box hud-button" id="fortMapBtn" type="button">🗺 Fort Map</button>
   </div>
 
-  <div class="pan-hint">Drag sideways to explore the whole fort →</div>
+  <div class="pan-hint">Swipe sideways to look around • arrows turn you around</div>
 
-  <div class="scene">
-    <div class="attic"></div>
-    <div class="roof-left"></div>
-    <div class="roof-right"></div>
-    <div class="beam top"></div>
-    <div class="beam left"></div>
-    <div class="beam right"></div>
-    <div class="back-wall"></div>
 
-    <div id="lights" class="lights"></div>
-    <div class="room-shadow"></div>
+  <div class="scene" id="fortScene">
+    <div class="view active" id="frontView" data-view="front" aria-label="Front of Maverick's Fort">
+      <div class="photo-stage front-stage">
+        <!-- FRONT: gaming + hangout side -->
+        <button class="hotspot" id="fortSign" style="left:20%;top:20%;width:15%;height:17%;" data-tip="Maverick's Fort sign" aria-label="Maverick's Fort sign"></button>
 
-    <button class="object fort-sign" id="fortSign">
-      <span class="main">MAVERICK’S FORT</span>
-      <span class="label">Keep Out • Dad Allowed If He Brings Snacks</span>
-    </button>
+        <button class="hotspot" id="windowBox" style="left:28%;top:20%;width:10%;height:20%;" data-tip="Round attic window • tap for day/night" aria-label="Attic window"></button>
 
-    <div class="string-note">Click everything. Seriously.</div>
+        <button class="hotspot" id="radioBtn" style="left:37%;top:12%;width:9%;height:18%;" data-tip="Fort FM" aria-label="Fort FM">
+          <span class="sr-only">Fort FM</span>
+          <span class="eq" id="eqBars" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></span>
+        </button>
 
-    <button class="object rules-sign small" id="rulesSign">
-      FORT RULES
-      <span class="label">1. No boring stuff</span>
-      <span class="label">2. Comics rule</span>
-      <span class="label">3. Squishies may fart</span>
-    </button>
+        <button class="hotspot" id="poster1" style="left:1%;top:30%;width:10%;height:32%;" data-tip="Fort posters" aria-label="Fort poster"></button>
+        <button class="hotspot" id="poster2" style="left:19%;top:21%;width:13%;height:15%;" data-tip="Suspicious poster" aria-label="Suspicious poster"></button>
 
-    <button class="object light-switch" id="lightSwitch" aria-label="Light Switch">
-      <div class="switch-toggle"></div>
-      LIGHTS
-    </button>
+        <button class="hotspot" id="rulesSign" style="left:1%;top:39%;width:9%;height:29%;" data-tip="Fort rules" aria-label="Fort rules"></button>
 
-    <div class="window" id="windowBox" title="Click to change day/night">
-      <div class="sun"></div>
-      <div class="moon"></div>
-      <div class="star" style="left:24px; top:22px;"></div>
-      <div class="star" style="left:58px; top:34px;"></div>
-      <div class="star" style="left:98px; top:28px;"></div>
-      <div class="star" style="left:122px; top:48px;"></div>
-      <div class="star" style="left:34px; top:82px;"></div>
-      <div class="star" style="left:135px; top:80px;"></div>
-      <div class="star" style="left:78px; top:66px;"></div>
-    </div>
+        <button class="hotspot" id="lightSwitch" style="left:49%;top:23%;width:5%;height:21%;" data-tip="Lights" aria-label="Light switch">
+          <span class="switch-toggle sr-only"></span>
+        </button>
 
-    <div class="beanbag"></div>
-    <div class="pillows">
-      <span></span><span></span><span></span><span></span>
-    </div>
+        <button class="hotspot dog-hotspot" id="labBtn" style="left:34%;top:50%;width:25%;height:28%;" data-tip="The Lab • very important employee" aria-label="Black Labrador"></button>
 
-    <button class="object comic-crate big" id="comicCrate">
-      Comic Crate
-      <span class="label">Gary, Dad & Bear stuff</span>
-    </button>
+        <button class="hotspot" id="porkachuBtn" style="left:40%;top:77%;width:16%;height:14%;" data-tip="Porkachu" aria-label="Porkachu"></button>
 
-    <button class="object radio big" id="radioBtn">
-      Fort FM
-      <span class="label">Click to rock the fort</span>
-      <div class="eq" id="eqBars">
-        <span></span><span></span><span></span><span></span><span></span>
+        <button class="hotspot" id="squishBtn" style="left:77%;top:60%;width:23%;height:34%;" data-tip="Squishy basket" aria-label="Squishy basket"></button>
+
+        <button class="hotspot arcade-hotspot" id="arcadeBtn" style="left:54%;top:12%;width:14%;height:48%;" data-tip="Arcade machine" aria-label="Arcade machine"></button>
+
+        <button class="hotspot game-hotspot" id="gameBtn" style="left:69%;top:4%;width:31%;height:43%;" data-tip="Play Super Maverick's World" aria-label="Play Super Maverick's World"></button>
+        <button class="hotspot game-hotspot console-hotspot" id="consoleBtn" style="left:70%;top:43%;width:30%;height:18%;" data-tip="Cartridge console • insert & play" aria-label="Retro cartridge console"></button>
       </div>
-    </button>
-
-    <button class="object memory-box big" id="memoryBtn">
-      Mav Match
-      <span class="label">Monster memory game</span>
-    </button>
-
-    <button class="object desk big" id="deskBtn">
-      Coloring Desk
-      <span class="label">Draw something awesome</span>
-    </button>
-
-    <button class="object squish-basket big" id="squishBtn">
-      Squishy Basket
-      <span class="label">Definitely press these</span>
-    </button>
-
-    <div class="hamper">
-      HAMPER
-      <div id="hamperStatus" class="label" style="display:block; margin-top:6px; color:#34281f; opacity:0.9;">0 / 6</div>
     </div>
 
-    <button class="object chest big" id="rewardChest">
-      Treasure Chest
-      <span class="label">Locked until cleanup</span>
-    </button>
+    <div class="view" id="backView" data-view="back" aria-label="Behind you in Maverick's Fort">
+      <div class="photo-stage back-stage">
+        <!-- BACK: missions + creative side -->
+        <button class="hotspot" id="memoryBtn" style="left:28%;top:12%;width:18%;height:35%;" data-tip="Mav Match memory game" aria-label="Mav Match memory game"></button>
 
-    <button class="object poster deadpoolish" id="poster1">
-      DINO RIDER
-      <span class="label">Definitely not a normal poster</span>
-    </button>
+        <button class="hotspot" id="deskBtn" style="left:10%;top:26%;width:23%;height:32%;" data-tip="Coloring desk" aria-label="Coloring desk"></button>
 
-    <button class="object poster monster" id="poster2">
-      MONSTER BURGER
-      <span class="label">Looks suspiciously haunted</span>
-    </button>
+        <button class="hotspot" id="comicCrate" style="left:58%;top:30%;width:23%;height:32%;" data-tip="Comic crate" aria-label="Comic crate"></button>
 
-    <button class="object plush small" id="porkachuBtn">
-      Porkachu
-    </button>
+        <button class="hotspot" id="mapBtn" style="left:11%;top:29%;width:18%;height:17%;" data-tip="Secret treasure map" aria-label="Secret treasure map"></button>
 
-    <button class="object secret-map small" id="mapBtn">
-      SECRET MAP
-      <span class="label">X marks snacks</span>
-    </button>
+        <button class="hotspot" id="mysteryBox" style="left:31%;top:40%;width:12%;height:17%;" data-tip="Weird mystery box" aria-label="Mystery box"></button>
 
-    <button class="object mystery-box small" id="mysteryBox">
-      Weird Box
-      <span class="label">Do not absolutely click</span>
-    </button>
+        <div class="hotspot hamper-hotspot" style="left:30%;top:40%;width:13%;height:17%;" aria-hidden="true">
+          <span id="hamperStatus" class="sr-only">0 / 6</span>
+        </div>
 
-    <button class="object flashlight small" id="flashlightBtn">
-      Flashlight
-      <span class="label">Fort Explorer Mode</span>
-    </button>
+        <button class="hotspot chest" id="rewardChest" style="left:78%;top:58%;width:18%;height:23%;" data-tip="Treasure chest • cleanup reward" aria-label="Treasure chest">
+          <span class="label sr-only">Locked until cleanup</span>
+        </button>
+
+        <button class="hotspot flashlight-hotspot" id="flashlightBtn" style="left:82%;top:68%;width:10%;height:11%;" data-tip="Flashlight" aria-label="Flashlight"></button>
+
+        <!-- Six loose pieces of laundry stay as tiny physical game props on the rug. -->
+        <button class="clothing sock" data-item="sock" style="left:36%;top:73%;">🧦</button>
+        <button class="clothing shirt" data-item="shirt" style="left:46%;top:68%;">👕</button>
+        <button class="clothing shorts" data-item="shorts" style="left:55%;top:77%;">🩳</button>
+        <button class="clothing hoodie" data-item="hoodie" style="left:64%;top:69%;">🧥</button>
+        <button class="clothing cap" data-item="cap" style="left:73%;top:76%;">🧢</button>
+        <button class="clothing pants" data-item="pants" style="left:27%;top:79%;">👖</button>
+      </div>
+    </div>
+
+    <button class="scene-nav scene-nav-left" id="viewLeft" type="button" aria-label="Turn around">‹</button>
+    <button class="scene-nav scene-nav-right" id="viewRight" type="button" aria-label="Turn around">›</button>
+    <div class="view-name" id="viewName">FRONT OF FORT</div>
+
+    <div id="lights" class="lights" aria-hidden="true"></div>
+    <div class="room-shadow"></div>
     <div class="spotlight" id="spotlight"></div>
-
-    <button class="clothing sock" data-item="sock">🧦 Sock</button>
-    <button class="clothing shirt" data-item="shirt">👕 Shirt</button>
-    <button class="clothing shorts" data-item="shorts">🩳 Shorts</button>
-    <button class="clothing hoodie" data-item="hoodie">🧥 Hoodie</button>
-    <button class="clothing cap" data-item="cap">🧢 Cap</button>
-    <button class="clothing pants" data-item="pants">👖 Pants</button>
-
-    <div class="floor"></div>
   </div>
+
 
   <!-- Comic Modal -->
   <div class="modal" id="comicModal">
@@ -1391,6 +1655,31 @@
       </div>
     </div>
   </div>
+
+
+  <!-- Super Maverick's World -->
+  <div class="modal" id="gameModal">
+    <div class="panel game-panel">
+      <button class="close" data-close="gameModal">×</button>
+      <div class="game-title-row">
+        <div>
+          <h2>Super Maverick’s World</h2>
+          <p>An original tiny attic-console platform game. Run, jump, stomp the grumblies, grab coins, find the bonus pipe, and reach the fort flag.</p>
+        </div>
+        <div class="game-score" id="gameScore">Coins: 0 · Lives: 3</div>
+      </div>
+      <canvas id="mavGameCanvas" width="960" height="540" aria-label="Super Maverick's World game"></canvas>
+      <div class="game-controls">
+        <button class="game-control" id="gameLeft" type="button">◀</button>
+        <button class="game-control" id="gameRight" type="button">▶</button>
+        <button class="game-control jump" id="gameJump" type="button">JUMP</button>
+        <button class="game-control" id="gamePipe" type="button">PIPE ↓</button>
+        <button class="game-control restart" id="gameRestart" type="button">RESTART</button>
+      </div>
+      <div class="footer-note">Keyboard: A/D or ←/→ to move · Space/W/↑ to jump · S/↓ to enter a pipe. Dad follows because apparently supervision is mandatory even in pixel worlds.</div>
+    </div>
+  </div>
+
 
   <div class="toast" id="toast"></div>
 
@@ -2016,6 +2305,460 @@
       toast('Masterpiece saved. Museum notified.');
       jingle();
     });
+
+
+    /* =========================================================
+       Two-view photo room
+       ========================================================= */
+    const frontView = document.getElementById('frontView');
+    const backView = document.getElementById('backView');
+    const viewName = document.getElementById('viewName');
+    let currentView = 'front';
+
+    function centerActiveView(){
+      const active = currentView === 'front' ? frontView : backView;
+      requestAnimationFrame(() => {
+        active.scrollLeft = Math.max(0, (active.scrollWidth - active.clientWidth) / 2);
+        active.scrollTop = Math.max(0, (active.scrollHeight - active.clientHeight) / 2);
+      });
+    }
+
+    function showFortView(which){
+      currentView = which;
+      frontView.classList.toggle('active', which === 'front');
+      backView.classList.toggle('active', which === 'back');
+      viewName.textContent = which === 'front' ? 'FRONT OF FORT' : 'BEHIND YOU';
+      centerActiveView();
+      beep(which === 'front' ? 520 : 440, .05, 'triangle', .018);
+    }
+    document.getElementById('viewLeft').addEventListener('click', () => showFortView(currentView === 'front' ? 'back' : 'front'));
+    document.getElementById('viewRight').addEventListener('click', () => showFortView(currentView === 'front' ? 'back' : 'front'));
+    window.addEventListener('resize', centerActiveView);
+
+    document.getElementById('labBtn').addEventListener('click', () => {
+      toast('Lab status: 100% good dog. Security clearance approved.');
+      beep(330,.06,'triangle',.02);
+      setTimeout(()=>beep(440,.06,'triangle',.02),70);
+    });
+
+    document.getElementById('arcadeBtn').addEventListener('click', () => {
+      toast('Arcade cabinet powered up. The high score is suspicious.');
+      jingle();
+    });
+
+    /* =========================================================
+       Super Maverick's World
+       Original mini platformer built only with Canvas shapes.
+       ========================================================= */
+    const gameCanvas = document.getElementById('mavGameCanvas');
+    const g = gameCanvas.getContext('2d');
+    const gameScoreEl = document.getElementById('gameScore');
+    const keys = {left:false,right:false,jump:false,down:false};
+    let gameRunning = false;
+    let rafId = 0;
+    let lastTime = 0;
+
+    const GAME = {
+      mode:'world',
+      worldWidth:1900,
+      gravity:1800,
+      camX:0,
+      coins:0,
+      lives:3,
+      won:false,
+      message:'',
+      messageUntil:0
+    };
+
+    const player = {x:110,y:360,w:34,h:46,vx:0,vy:0,onGround:false,prevY:360};
+    const dad = {x:45,y:350,w:38,h:54};
+
+    const worldCoins = [
+      {x:270,y:350,taken:false},{x:320,y:310,taken:false},{x:370,y:350,taken:false},
+      {x:700,y:300,taken:false},{x:750,y:260,taken:false},{x:800,y:300,taken:false},
+      {x:1160,y:330,taken:false},{x:1210,y:290,taken:false},{x:1260,y:330,taken:false},
+      {x:1550,y:305,taken:false}
+    ];
+    const enemies = [
+      {x:470,y:415,w:34,h:30,alive:true,vx:-45},
+      {x:900,y:415,w:34,h:30,alive:true,vx:-38},
+      {x:1320,y:415,w:34,h:30,alive:true,vx:-52}
+    ];
+    const platforms = [
+      {x:0,y:445,w:1900,h:95},
+      {x:620,y:365,w:210,h:24},
+      {x:1090,y:385,w:190,h:24},
+      {x:1460,y:360,w:170,h:24}
+    ];
+    const pipe = {x:575,y:365,w:70,h:80};
+    const finish = {x:1745,y:255,h:190};
+
+    const bonusCoins = Array.from({length:14},(_,i)=>({x:160+i*48,y:300-(i%2)*45,taken:false}));
+    const bonusPlayer = {x:90,y:360,w:34,h:46,vx:0,vy:0,onGround:false,prevY:360};
+
+    function resetGame(full=true){
+      GAME.mode='world';
+      GAME.camX=0;
+      GAME.won=false;
+      GAME.message='';
+      if(full){
+        GAME.coins=0;
+        GAME.lives=3;
+        worldCoins.forEach(c=>c.taken=false);
+        bonusCoins.forEach(c=>c.taken=false);
+        enemies.forEach((e,i)=>{ e.alive=true; e.x=[470,900,1320][i]; });
+      }
+      Object.assign(player,{x:110,y:360,vx:0,vy:0,onGround:false,prevY:360});
+      Object.assign(bonusPlayer,{x:90,y:360,vx:0,vy:0,onGround:false,prevY:360});
+      updateGameScore();
+    }
+
+    function updateGameScore(){
+      gameScoreEl.textContent = `Coins: ${GAME.coins} · Lives: ${GAME.lives}`;
+    }
+
+    function gameToast(msg,ms=1700){
+      GAME.message=msg;
+      GAME.messageUntil=performance.now()+ms;
+    }
+
+    function rectsOverlap(a,b){
+      return a.x < b.x+b.w && a.x+a.w > b.x && a.y < b.y+b.h && a.y+a.h > b.y;
+    }
+
+    function coinOverlap(p,c){
+      const dx=(p.x+p.w/2)-c.x, dy=(p.y+p.h/2)-c.y;
+      return dx*dx+dy*dy < 34*34;
+    }
+
+    function physics(p,dt,bonus=false){
+      p.prevY=p.y;
+      const accel=keys.left?-1:keys.right?1:0;
+      p.vx += accel*1150*dt;
+      p.vx *= Math.pow(.0009,dt);
+      p.vx = Math.max(-250,Math.min(250,p.vx));
+      if(!keys.left && !keys.right) p.vx *= .86;
+
+      if(keys.jump && p.onGround){
+        p.vy=-650;
+        p.onGround=false;
+        beep(520,.04,'square',.012);
+      }
+      p.vy += GAME.gravity*dt;
+      p.x += p.vx*dt;
+      p.y += p.vy*dt;
+
+      const groundY=445;
+      const floors = bonus ? [{x:0,y:445,w:960,h:95}] : platforms;
+      p.onGround=false;
+      for(const pl of floors){
+        const wasAbove = p.prevY+p.h <= pl.y+8;
+        const nowCross = p.y+p.h >= pl.y;
+        const withinX = p.x+p.w > pl.x && p.x < pl.x+pl.w;
+        if(wasAbove && nowCross && withinX && p.vy>=0){
+          p.y=pl.y-p.h;
+          p.vy=0;
+          p.onGround=true;
+        }
+      }
+      const maxX=bonus?925:GAME.worldWidth-40;
+      p.x=Math.max(0,Math.min(maxX,p.x));
+      if(p.y>620) loseLife();
+    }
+
+    function loseLife(){
+      GAME.lives--;
+      updateGameScore();
+      beep(140,.18,'sawtooth',.02);
+      if(GAME.lives<=0){
+        gameToast('Out of lives. Fort rewind!',1300);
+        setTimeout(()=>resetGame(true),600);
+      }else{
+        gameToast('Oof. Try again.');
+        if(GAME.mode==='bonus') Object.assign(bonusPlayer,{x:90,y:360,vx:0,vy:0,onGround:false});
+        else Object.assign(player,{x:110,y:360,vx:0,vy:0,onGround:false});
+      }
+    }
+
+    function enterBonus(){
+      if(GAME.mode!=='world') return;
+      if(Math.abs((player.x+player.w/2)-(pipe.x+pipe.w/2))<62 && player.y+player.h>=pipe.y-8){
+        GAME.mode='bonus';
+        Object.assign(bonusPlayer,{x:90,y:360,vx:0,vy:0,onGround:false});
+        gameToast('SECRET COIN ROOM!');
+        jingle();
+      }else{
+        gameToast('Find the big teal pipe.');
+      }
+    }
+
+    function exitBonus(){
+      GAME.mode='world';
+      Object.assign(player,{x:pipe.x+100,y:330,vx:100,vy:-220,onGround:false});
+      gameToast('Back to the fort trail.');
+    }
+
+    function updateGame(dt){
+      if(GAME.won) return;
+      if(GAME.mode==='bonus'){
+        physics(bonusPlayer,dt,true);
+        bonusCoins.forEach(c=>{
+          if(!c.taken && coinOverlap(bonusPlayer,c)){
+            c.taken=true; GAME.coins++; updateGameScore(); beep(760,.04,'triangle',.018);
+          }
+        });
+        if(bonusPlayer.x>900) exitBonus();
+        return;
+      }
+
+      physics(player,dt,false);
+
+      worldCoins.forEach(c=>{
+        if(!c.taken && coinOverlap(player,c)){
+          c.taken=true; GAME.coins++; updateGameScore(); beep(760,.04,'triangle',.018);
+        }
+      });
+
+      enemies.forEach(e=>{
+        if(!e.alive) return;
+        e.x += e.vx*dt;
+        if(e.x<430 || e.x>1380) e.vx*=-1;
+        if(rectsOverlap(player,e)){
+          const fallingOnto = player.vy>0 && player.prevY+player.h <= e.y+9;
+          if(fallingOnto){
+            e.alive=false;
+            player.vy=-360;
+            GAME.coins+=2;
+            updateGameScore();
+            beep(210,.05,'square',.02);
+            setTimeout(()=>beep(420,.05,'square',.02),55);
+          }else{
+            loseLife();
+          }
+        }
+      });
+
+      if(keys.down) enterBonus();
+
+      dad.x += ((player.x-70)-dad.x)*Math.min(1,dt*4.2);
+      dad.y += ((player.y+player.h-dad.h)-dad.y)*Math.min(1,dt*5);
+
+      const targetCam = Math.max(0,Math.min(GAME.worldWidth-960,player.x-340));
+      GAME.camX += (targetCam-GAME.camX)*Math.min(1,dt*5);
+
+      if(player.x>finish.x-25){
+        GAME.won=true;
+        gameToast('FORT FLAG REACHED! YOU WIN!',4000);
+        launchConfetti(70);
+        jingle();
+      }
+    }
+
+    function drawCloud(x,y,s=1){
+      g.save();
+      g.translate(x,y);
+      g.fillStyle='#f8fbff';
+      g.strokeStyle='rgba(20,40,55,.35)';
+      g.lineWidth=3;
+      g.beginPath();
+      g.arc(0,15,20*s,Math.PI,0);
+      g.arc(25*s,7,26*s,Math.PI,0);
+      g.arc(55*s,17,20*s,Math.PI,0);
+      g.lineTo(55*s,28*s); g.lineTo(0,28*s); g.closePath();
+      g.fill(); g.stroke();
+      g.strokeStyle='#172330'; g.lineWidth=3;
+      g.beginPath();
+      g.moveTo(18*s,17*s);g.lineTo(18*s,22*s);
+      g.moveTo(36*s,17*s);g.lineTo(36*s,22*s);
+      g.stroke();
+      g.restore();
+    }
+
+    function drawCoin(x,y){
+      g.fillStyle='#ffcf35'; g.strokeStyle='#a86a12'; g.lineWidth=3;
+      g.beginPath(); g.ellipse(x,y,9,14,0,0,Math.PI*2); g.fill(); g.stroke();
+      g.fillStyle='#fff1a6'; g.fillRect(x-2,y-8,3,16);
+    }
+
+    function drawPipeObj(x,y,w,h){
+      g.fillStyle='#2e9f79'; g.strokeStyle='#155845'; g.lineWidth=4;
+      g.fillRect(x,y,w,h);
+      g.fillStyle='#45c69b'; g.fillRect(x-8,y,w+16,20);
+      g.strokeRect(x-8,y,w+16,20); g.strokeRect(x,y+20,w,h-20);
+    }
+
+    function drawBlob(e){
+      g.save(); g.translate(e.x,e.y);
+      g.fillStyle='#7c4a2f'; g.strokeStyle='#3b241a'; g.lineWidth=3;
+      g.beginPath();
+      g.roundRect(0,3,e.w,e.h-3,12); g.fill(); g.stroke();
+      g.fillStyle='#fff'; g.fillRect(8,9,5,7); g.fillRect(22,9,5,7);
+      g.fillStyle='#111'; g.fillRect(10,11,2,4); g.fillRect(24,11,2,4);
+      g.restore();
+    }
+
+    function drawMav(p,cam=0){
+      const x=p.x-cam,y=p.y;
+      g.save();g.translate(x,y);
+      g.fillStyle='#f2c49f';g.beginPath();g.arc(17,12,11,0,Math.PI*2);g.fill();
+      g.fillStyle='#f1d36e';g.beginPath();g.arc(17,7,12,Math.PI,Math.PI*2);g.fill();
+      g.fillStyle='#2e75d3';g.fillRect(7,20,20,19);g.fillRect(4,34,11,12);g.fillRect(20,34,11,12);
+      g.fillStyle='#faf7ef';g.fillRect(9,16,16,10);
+      g.fillStyle='#111';g.fillRect(10,11,3,3);g.fillRect(21,11,3,3);
+      g.restore();
+    }
+
+    function drawDad(p,cam=0){
+      const x=p.x-cam,y=p.y;
+      g.save();g.translate(x,y);
+      g.fillStyle='#e0ad87';g.beginPath();g.arc(19,13,12,0,Math.PI*2);g.fill();
+      g.fillStyle='#4a2d23';g.beginPath();g.arc(19,8,13,Math.PI,Math.PI*2);g.fill();
+      g.fillStyle='#4a2d23';g.beginPath();g.arc(19,17,10,0,Math.PI);g.fill();
+      g.fillStyle='#37805c';g.fillRect(7,23,24,22);g.fillRect(4,40,12,14);g.fillRect(23,40,12,14);
+      g.fillStyle='#111';g.fillRect(11,12,3,3);g.fillRect(23,12,3,3);
+      g.restore();
+    }
+
+    function drawWorld(){
+      g.clearRect(0,0,960,540);
+      const cam=GAME.camX;
+      const sky=g.createLinearGradient(0,0,0,540);
+      sky.addColorStop(0,'#63c8ff');sky.addColorStop(1,'#d7f4ff');
+      g.fillStyle=sky;g.fillRect(0,0,960,540);
+
+      drawCloud(90-(cam*.12)%1200,80,1.1);
+      drawCloud(390-(cam*.08)%1400,115,.8);
+      drawCloud(720-(cam*.14)%1500,70,1.0);
+
+      // distant hills
+      g.fillStyle='#79c65b';
+      for(let x=-100-(cam*.22)%260;x<1100;x+=260){
+        g.beginPath();g.arc(x,430,150,Math.PI,0);g.fill();
+      }
+
+      platforms.forEach(pl=>{
+        const x=pl.x-cam;
+        g.fillStyle='#8a5b37';g.fillRect(x,pl.y,pl.w,pl.h);
+        g.fillStyle='#55a83f';g.fillRect(x,pl.y,pl.w,16);
+        g.fillStyle='#8bd05d';g.fillRect(x,pl.y,pl.w,6);
+      });
+
+      drawPipeObj(pipe.x-cam,pipe.y,pipe.w,pipe.h);
+
+      worldCoins.forEach(c=>{ if(!c.taken) drawCoin(c.x-cam,c.y); });
+      enemies.forEach(e=>{ if(e.alive) drawBlob({...e,x:e.x-cam}); });
+
+      // flag and fort at end
+      const fx=finish.x-cam;
+      g.strokeStyle='#384b45';g.lineWidth=6;g.beginPath();g.moveTo(fx,finish.y);g.lineTo(fx,445);g.stroke();
+      g.fillStyle='#2d75c9';g.beginPath();g.moveTo(fx+3,finish.y+10);g.lineTo(fx+58,finish.y+30);g.lineTo(fx+3,finish.y+52);g.closePath();g.fill();
+      g.fillStyle='#fff';g.font='bold 20px Trebuchet MS';g.fillText('M',fx+17,finish.y+37);
+      const cx=1810-cam;
+      g.fillStyle='#6a7482';g.fillRect(cx,340,90,105);g.fillRect(cx+16,310,58,135);
+      g.fillStyle='#39424d';g.fillRect(cx+35,385,20,60);
+      for(let i=0;i<5;i++) g.fillRect(cx+i*20,300,10,18);
+
+      drawDad(dad,cam);
+      drawMav(player,cam);
+
+      g.fillStyle='rgba(0,0,0,.55)';g.fillRect(14,14,250,46);
+      g.fillStyle='#fff';g.font='900 18px Trebuchet MS';g.fillText(`WORLD 1 • COINS ${GAME.coins}`,28,43);
+    }
+
+    function drawBonus(){
+      g.clearRect(0,0,960,540);
+      g.fillStyle='#1a3141';g.fillRect(0,0,960,540);
+      for(let i=0;i<12;i++){
+        g.fillStyle=i%2?'#294b5e':'#31586c';
+        g.fillRect(i*80,0,42,445);
+      }
+      g.fillStyle='#6f583b';g.fillRect(0,445,960,95);
+      g.fillStyle='#9b7a50';g.fillRect(0,445,960,16);
+      bonusCoins.forEach(c=>{ if(!c.taken) drawCoin(c.x,c.y); });
+      drawPipeObj(35,365,58,80);
+      drawPipeObj(875,365,58,80);
+      drawMav(bonusPlayer,0);
+      g.fillStyle='#fff';g.font='900 24px Trebuchet MS';g.fillText('SECRET COIN ROOM',330,70);
+      g.font='700 14px Trebuchet MS';g.fillText('Grab what you can. The far pipe sends you back.',318,96);
+    }
+
+    function drawGame(){
+      if(GAME.mode==='bonus') drawBonus(); else drawWorld();
+      if(GAME.message && performance.now()<GAME.messageUntil){
+        g.font='900 26px Trebuchet MS';
+        const w=Math.min(760,g.measureText(GAME.message).width+44);
+        g.fillStyle='rgba(0,0,0,.72)';g.fillRect((960-w)/2,455,w,54);
+        g.fillStyle='#fff';g.fillText(GAME.message,(960-w)/2+22,490);
+      }
+      if(GAME.won){
+        g.fillStyle='rgba(0,0,0,.42)';g.fillRect(0,0,960,540);
+        g.fillStyle='#fff';g.font='900 48px Trebuchet MS';g.fillText('FORT FLAG REACHED!',235,245);
+        g.font='900 25px Trebuchet MS';g.fillStyle='#ffd166';g.fillText('Maverick wins. Dad claims assistant coach credit.',180,292);
+      }
+    }
+
+    function gameLoop(t){
+      if(!gameRunning) return;
+      const dt=Math.min(.033,(t-lastTime)/1000 || .016);
+      lastTime=t;
+      updateGame(dt);
+      drawGame();
+      rafId=requestAnimationFrame(gameLoop);
+    }
+
+    function startGame(){
+      if(!gameRunning){
+        gameRunning=true;
+        lastTime=performance.now();
+        cancelAnimationFrame(rafId);
+        rafId=requestAnimationFrame(gameLoop);
+      }
+    }
+
+    function openGame(){
+      openModal('gameModal');
+      startGame();
+      gameToast('GO!');
+    }
+    document.getElementById('gameBtn').addEventListener('click', openGame);
+    document.getElementById('consoleBtn').addEventListener('click', openGame);
+
+    document.querySelector('[data-close="gameModal"]').addEventListener('click',()=>{ gameRunning=false; cancelAnimationFrame(rafId); });
+    document.getElementById('gameModal').addEventListener('click',e=>{
+      if(e.target.id==='gameModal'){ gameRunning=false; cancelAnimationFrame(rafId); }
+    });
+
+    function setKey(k,v){ keys[k]=v; }
+    window.addEventListener('keydown',e=>{
+      if(!document.getElementById('gameModal').classList.contains('show')) return;
+      if(['ArrowLeft','a','A'].includes(e.key)){keys.left=true;e.preventDefault();}
+      if(['ArrowRight','d','D'].includes(e.key)){keys.right=true;e.preventDefault();}
+      if(['ArrowUp','w','W',' '].includes(e.key)){keys.jump=true;e.preventDefault();}
+      if(['ArrowDown','s','S'].includes(e.key)){keys.down=true;enterBonus();e.preventDefault();}
+    });
+    window.addEventListener('keyup',e=>{
+      if(['ArrowLeft','a','A'].includes(e.key)) keys.left=false;
+      if(['ArrowRight','d','D'].includes(e.key)) keys.right=false;
+      if(['ArrowUp','w','W',' '].includes(e.key)) keys.jump=false;
+      if(['ArrowDown','s','S'].includes(e.key)) keys.down=false;
+    });
+
+    function bindHold(id,key){
+      const el=document.getElementById(id);
+      const on=e=>{e.preventDefault();keys[key]=true;if(key==='down')enterBonus();};
+      const off=e=>{e.preventDefault();keys[key]=false;};
+      ['pointerdown','touchstart'].forEach(evt=>el.addEventListener(evt,on,{passive:false}));
+      ['pointerup','pointercancel','pointerleave','touchend'].forEach(evt=>el.addEventListener(evt,off,{passive:false}));
+    }
+    bindHold('gameLeft','left');
+    bindHold('gameRight','right');
+    bindHold('gameJump','jump');
+    bindHold('gamePipe','down');
+    document.getElementById('gameRestart').addEventListener('click',()=>{ resetGame(true); gameToast('RESTARTED'); });
+
+    resetGame(true);
+    centerActiveView();
+
 
     setupCanvas();
     refreshLights();
