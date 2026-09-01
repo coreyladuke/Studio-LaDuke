@@ -79,6 +79,232 @@
       background: rgba(255, 210, 120, 0.08);
     }
 
+    /* Front-room interactions */
+
+    .room-dimmer,
+    .lamp-glow,
+    .rain-layer {
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .room-dimmer {
+      inset: 0;
+      z-index: 5;
+      background: rgba(3, 4, 7, 0.48);
+      opacity: 0;
+      transition: opacity 420ms ease;
+    }
+
+    .lamp-glow {
+      left: -2%;
+      top: 10%;
+      z-index: 6;
+      width: 14%;
+      height: 37%;
+      border-radius: 50%;
+      background:
+        radial-gradient(
+          ellipse at 42% 44%,
+          rgba(255, 218, 139, 0.32),
+          rgba(255, 174, 59, 0.11) 38%,
+          transparent 72%
+        );
+      filter: blur(7px);
+      opacity: 0.72;
+      transition: opacity 350ms ease;
+    }
+
+    .front-room.lamp-off .room-dimmer {
+      opacity: 0.28;
+    }
+
+    .front-room.lamp-off .lamp-glow {
+      opacity: 0;
+    }
+
+    .rain-layer {
+      left: 29.1%;
+      top: 4.8%;
+      z-index: 7;
+      width: 41.4%;
+      height: 42.3%;
+      overflow: hidden;
+      opacity: 0;
+      clip-path: polygon(2% 5%, 98% 0, 96% 97%, 0 96%);
+      background:
+        repeating-linear-gradient(
+          105deg,
+          transparent 0 13px,
+          rgba(204, 231, 255, 0.28) 14px 16px,
+          transparent 17px 28px
+        ),
+        rgba(45, 73, 90, 0.18);
+      background-position: 0 -60px;
+      mix-blend-mode: screen;
+      transition: opacity 300ms ease;
+    }
+
+    .front-room.raining .rain-layer {
+      opacity: 0.72;
+      animation: rainFall 650ms linear infinite;
+    }
+
+    @keyframes rainFall {
+      to {
+        background-position: -24px 72px;
+      }
+    }
+
+    .room-hotspot,
+    .picture-nav {
+      position: absolute;
+      z-index: 15;
+      display: block;
+      padding: 0;
+      border: 0;
+      border-radius: 10px;
+      color: transparent;
+      background: transparent;
+      cursor: pointer;
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .room-hotspot::after,
+    .picture-nav::after {
+      content: "";
+      position: absolute;
+      inset: 4%;
+      border: 1px solid transparent;
+      border-radius: inherit;
+      transition:
+        border-color 160ms ease,
+        background 160ms ease,
+        box-shadow 160ms ease;
+    }
+
+    .room-hotspot:hover::after,
+    .room-hotspot:focus-visible::after,
+    .picture-nav:hover::after,
+    .picture-nav:focus-visible::after {
+      border-color: rgba(245, 205, 125, 0.72);
+      background: rgba(255, 210, 120, 0.07);
+      box-shadow: 0 0 18px rgba(236, 180, 77, 0.25);
+    }
+
+    .lamp-hotspot {
+      left: 0;
+      top: 13.8%;
+      width: 8.2%;
+      height: 28.5%;
+    }
+
+    .guitar-hotspot {
+      left: 18.1%;
+      top: 34.2%;
+      width: 14.1%;
+      height: 43.5%;
+      border-radius: 46%;
+    }
+
+    .bob-hotspot {
+      left: 29.1%;
+      top: 29.7%;
+      width: 11.4%;
+      height: 17.2%;
+      border-radius: 45%;
+    }
+
+    .book-hotspot {
+      left: 2.5%;
+      top: 45.9%;
+      width: 9.2%;
+      height: 19.2%;
+    }
+
+    .window-hotspot {
+      left: 29.1%;
+      top: 4.8%;
+      width: 41.4%;
+      height: 42.3%;
+    }
+
+    .brain-secret {
+      left: 45.7%;
+      top: 57.2%;
+      z-index: 18;
+      width: 3%;
+      height: 5%;
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 350ms ease, filter 350ms ease;
+    }
+
+    .brain-secret::before {
+      content: "✦";
+      position: absolute;
+      inset: -22%;
+      display: grid;
+      place-items: center;
+      color: #ffd47a;
+      background: radial-gradient(circle, rgba(255, 199, 88, 0.26), transparent 68%);
+      border-radius: 50%;
+      font-size: clamp(15px, 1.8vw, 28px);
+      text-shadow: 0 0 7px #ffbc42, 0 0 16px rgba(255, 183, 53, 0.78);
+    }
+
+    .front-room.lamp-off .brain-secret {
+      opacity: 1;
+      pointer-events: auto;
+      filter: drop-shadow(0 0 8px #ffc85c);
+      animation: secretPulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes secretPulse {
+      0%, 100% { transform: scale(0.9); }
+      50% { transform: scale(1.2); }
+    }
+
+    .nav-studio { left: 10.8%; top: 93.2%; width: 9.2%; height: 6.8%; }
+    .nav-library { left: 21.6%; top: 93.2%; width: 9.5%; height: 6.8%; }
+    .nav-music { left: 32.4%; top: 93.2%; width: 11%; height: 6.8%; }
+    .nav-workshop { left: 46.4%; top: 93.2%; width: 11%; height: 6.8%; }
+    .nav-gallery { left: 58.4%; top: 93.2%; width: 10.4%; height: 6.8%; }
+    .nav-bob { left: 70%; top: 93.2%; width: 13%; height: 6.8%; }
+
+    .front-toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(84px + env(safe-area-inset-bottom));
+      z-index: 75;
+      width: max-content;
+      max-width: calc(100vw - 34px);
+      padding: 11px 15px;
+      color: #f7e5bf;
+      background: rgba(17, 13, 9, 0.93);
+      border: 1px solid rgba(230, 188, 108, 0.62);
+      border-radius: 999px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+      font-family: Arial, sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      line-height: 1.25;
+      text-align: center;
+      opacity: 0;
+      visibility: hidden;
+      transform: translate(-50%, 15px);
+      transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
+      pointer-events: none;
+    }
+
+    .front-toast.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, 0);
+    }
+
     /* Real hamburger button */
 
     .menu-button {
@@ -298,6 +524,79 @@
         height: 5.4%;
       }
 
+      .lamp-glow {
+        left: -3%;
+        top: 12.5%;
+        width: 12%;
+        height: 17%;
+      }
+
+      .rain-layer,
+      .window-hotspot {
+        left: 29.4%;
+        top: 5.5%;
+        width: 46.5%;
+        height: 27.1%;
+      }
+
+      .lamp-hotspot {
+        left: 0;
+        top: 14%;
+        width: 7.5%;
+        height: 14.5%;
+      }
+
+      .guitar-hotspot {
+        left: 13.4%;
+        top: 23.2%;
+        width: 20%;
+        height: 27.5%;
+      }
+
+      .bob-hotspot {
+        left: 26.5%;
+        top: 22.2%;
+        width: 22%;
+        height: 9.4%;
+      }
+
+      .book-hotspot {
+        left: 4.8%;
+        top: 16.8%;
+        width: 15%;
+        height: 8.8%;
+      }
+
+      .brain-secret {
+        left: 47.3%;
+        top: 47.6%;
+        width: 5.5%;
+        height: 5%;
+      }
+
+      .nav-studio,
+      .nav-library,
+      .nav-music,
+      .nav-workshop,
+      .nav-gallery,
+      .nav-bob {
+        top: 88.25%;
+        width: 16.6667%;
+        height: 11.75%;
+      }
+
+      .nav-studio { left: 0; }
+      .nav-library { left: 16.6667%; }
+      .nav-music { left: 33.3334%; }
+      .nav-workshop { left: 50%; }
+      .nav-gallery { left: 66.6667%; }
+      .nav-bob { left: 83.3334%; }
+
+      .front-toast {
+        bottom: calc(13.6% + env(safe-area-inset-bottom));
+        border-radius: 9px;
+      }
+
       .menu-button {
         width: 50px;
         height: 50px;
@@ -310,8 +609,20 @@
       .menu-lines,
       .menu-lines::before,
       .menu-lines::after,
-      .menu-link {
+      .menu-link,
+      .room-dimmer,
+      .lamp-glow,
+      .rain-layer,
+      .room-hotspot::after,
+      .picture-nav::after,
+      .brain-secret,
+      .front-toast {
         transition: none;
+      }
+
+      .front-room.raining .rain-layer,
+      .front-room.lamp-off .brain-secret {
+        animation: none;
       }
     }
   </style>
@@ -320,12 +631,32 @@
 <body>
 
   <div class="front-room" aria-label="Studio LaDuke front room">
+    <div class="room-dimmer" aria-hidden="true"></div>
+    <div class="lamp-glow" aria-hidden="true"></div>
+    <div class="rain-layer" aria-hidden="true"></div>
+
     <a
       class="enter"
       href="workshop.html"
       aria-label="Come into Studio LaDuke"
     ></a>
+
+    <button class="room-hotspot lamp-hotspot" id="lampHotspot" type="button" aria-label="Turn the desk lamp off or on"></button>
+    <button class="room-hotspot guitar-hotspot" id="guitarHotspot" type="button" aria-label="Play the guitar"></button>
+    <button class="room-hotspot bob-hotspot" id="bobHotspot" type="button" aria-label="Talk to Bob"></button>
+    <a class="room-hotspot book-hotspot" href="books.html" aria-label="Open Everybody Deserves to Go Home"></a>
+    <button class="room-hotspot window-hotspot" id="windowHotspot" type="button" aria-label="Change the weather outside"></button>
+    <a class="room-hotspot brain-secret" href="brain.html" aria-label="Enter the hidden room inside my head"></a>
+
+    <a class="picture-nav nav-studio" href="index.html" aria-label="Studio front room"></a>
+    <a class="picture-nav nav-library" href="books.html" aria-label="Library"></a>
+    <button class="picture-nav nav-music" id="musicNav" type="button" aria-label="Music room"></button>
+    <a class="picture-nav nav-workshop" href="workshop.html" aria-label="Workshop"></a>
+    <a class="picture-nav nav-gallery" href="gallery.html" aria-label="Gallery"></a>
+    <a class="picture-nav nav-bob" href="bob.html" aria-label="Bob's Room"></a>
   </div>
+
+  <div class="front-toast" id="frontToast" aria-live="polite"></div>
 
   <button
     class="menu-button"
@@ -391,6 +722,129 @@
     const menuButton = document.getElementById("menuButton");
     const menuPanel = document.getElementById("menuPanel");
     const menuShade = document.getElementById("menuShade");
+    const frontRoom = document.querySelector(".front-room");
+    const frontToast = document.getElementById("frontToast");
+    const lampHotspot = document.getElementById("lampHotspot");
+    const guitarHotspot = document.getElementById("guitarHotspot");
+    const bobHotspot = document.getElementById("bobHotspot");
+    const windowHotspot = document.getElementById("windowHotspot");
+    const musicNav = document.getElementById("musicNav");
+
+    let toastTimer;
+    let audioContext;
+    let bobReadyForDoor = false;
+
+    const bobRemarks = [
+      "Bob says: Growth is mostly standing still with commitment.",
+      "Bob says: Water me, but emotionally? Keep it reasonable.",
+      "Bob says: I have one job and somehow I’m still behind.",
+      "Bob says: The room looks better when you stop rushing through it.",
+      "Bob says: Photosynthesis is just plants eating sunshine. You’re welcome."
+    ];
+
+    function showFrontToast(message, duration = 2300) {
+      window.clearTimeout(toastTimer);
+      frontToast.textContent = message;
+      frontToast.classList.add("show");
+
+      toastTimer = window.setTimeout(() => {
+        frontToast.classList.remove("show");
+      }, duration);
+    }
+
+    function getAudioContext() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      if (audioContext.state === "suspended") {
+        audioContext.resume();
+      }
+
+      return audioContext;
+    }
+
+    function playGuitarChord() {
+      const audio = getAudioContext();
+      const now = audio.currentTime;
+      const frequencies = [196, 246.94, 293.66, 392];
+
+      frequencies.forEach((frequency, index) => {
+        const oscillator = audio.createOscillator();
+        const gain = audio.createGain();
+        const start = now + index * 0.045;
+
+        oscillator.type = "triangle";
+        oscillator.frequency.setValueAtTime(frequency, start);
+        oscillator.detune.setValueAtTime((Math.random() - 0.5) * 7, start);
+
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.exponentialRampToValueAtTime(0.045, start + 0.018);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 1.15);
+
+        oscillator.connect(gain);
+        gain.connect(audio.destination);
+        oscillator.start(start);
+        oscillator.stop(start + 1.2);
+      });
+
+      showFrontToast("The Martin still has something to say.");
+    }
+
+    lampHotspot.addEventListener("click", () => {
+      frontRoom.classList.toggle("lamp-off");
+      const lampIsOff = frontRoom.classList.contains("lamp-off");
+
+      showFrontToast(
+        lampIsOff
+          ? "Lamp off. Something gold just woke up."
+          : "Lamp on. Back to making things."
+      );
+    });
+
+    guitarHotspot.addEventListener("click", playGuitarChord);
+
+    musicNav.addEventListener("click", () => {
+      playGuitarChord();
+      showFrontToast("The music room is tuning up. The guitar works right now.", 2800);
+    });
+
+    bobHotspot.addEventListener("click", () => {
+      if (bobReadyForDoor) {
+        window.location.href = "bob.html";
+        return;
+      }
+
+      const remark = bobRemarks[Math.floor(Math.random() * bobRemarks.length)];
+      showFrontToast(remark + " Tap Bob again to visit his room.", 3400);
+      bobReadyForDoor = true;
+
+      window.setTimeout(() => {
+        bobReadyForDoor = false;
+      }, 5000);
+    });
+
+    windowHotspot.addEventListener("click", () => {
+      frontRoom.classList.toggle("raining");
+      const raining = frontRoom.classList.contains("raining");
+
+      showFrontToast(
+        raining
+          ? "Ketchikan weather mode: rain with a chance of more rain."
+          : "The rain stopped. That seems suspicious."
+      );
+    });
+
+    window.setTimeout(() => {
+      try {
+        if (!sessionStorage.getItem("frontRoomSecretsHint")) {
+          showFrontToast("The front room has secrets. Tap what looks interesting.", 3000);
+          sessionStorage.setItem("frontRoomSecretsHint", "1");
+        }
+      } catch (error) {
+        showFrontToast("The front room has secrets. Tap what looks interesting.", 3000);
+      }
+    }, 850);
 
     function openMenu() {
       menuButton.classList.add("open");
