@@ -83,6 +83,22 @@
       letter-spacing:0.4px;
     }
 
+    .hud-button{
+      border:none;
+      color:var(--ink);
+      font:inherit;
+      font-weight:900;
+      cursor:pointer;
+      background:linear-gradient(135deg, rgba(255,203,87,0.28), rgba(255,255,255,0.08));
+    }
+
+    .hud-button:hover,
+    .hud-button:focus-visible{
+      background:rgba(255,203,87,0.28);
+      outline:2px solid rgba(255,203,87,0.72);
+      outline-offset:2px;
+    }
+
     .scene{
       position:relative;
       width:100vw;
@@ -349,6 +365,21 @@
       transform:translateY(-2px) scale(1.02);
       box-shadow:0 12px 25px rgba(0,0,0,0.32);
       background:rgba(255,255,255,0.12);
+    }
+
+    .fort-sign:hover,
+    .fort-sign:focus-visible{
+      transform:translateX(-50%) translateY(-2px) rotate(-2deg) scale(1.02);
+    }
+
+    .poster.deadpoolish:hover,
+    .poster.deadpoolish:focus-visible{
+      transform:translateY(-2px) rotate(2deg) scale(1.02);
+    }
+
+    .poster.monster:hover,
+    .poster.monster:focus-visible{
+      transform:translateY(-2px) rotate(-3deg) scale(1.02);
     }
 
     .object.small{
@@ -757,14 +788,28 @@
 
     .comic{
       min-height:200px;
+      border:0;
       border-radius:16px;
       padding:12px;
       font-weight:800;
+      font-family:inherit;
+      font-size:16px;
+      color:#fff;
+      text-align:left;
       box-shadow:0 10px 22px rgba(0,0,0,0.28);
       display:flex;
       flex-direction:column;
       justify-content:space-between;
+      cursor:pointer;
+      transition:transform 0.2s ease, filter 0.2s ease;
     }
+    .comic:hover,
+    .comic:focus-visible{ transform:translateY(-4px) rotate(-1deg); filter:brightness(1.08); }
+    .comic .issue{ font-size:12px; letter-spacing:0.12em; opacity:0.82; }
+    .comic .comic-title{ font-size:24px; line-height:1; text-transform:uppercase; }
+    .comic .comic-story{ display:none; font-size:14px; line-height:1.35; font-weight:700; }
+    .comic.open .comic-title{ display:none; }
+    .comic.open .comic-story{ display:block; }
     .comic:nth-child(1){ background:linear-gradient(to bottom, #cc7a67, #80382d); }
     .comic:nth-child(2){ background:linear-gradient(to bottom, #6fb5d8, #2f6680); }
     .comic:nth-child(3){ background:linear-gradient(to bottom, #8ccd75, #3f6d36); }
@@ -920,6 +965,101 @@
       font-size:13px;
     }
 
+    .quest-summary{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:12px;
+      margin:18px 0;
+    }
+
+    .quest-meter{
+      border:1px solid rgba(255,255,255,0.14);
+      border-radius:16px;
+      padding:14px;
+      background:rgba(255,255,255,0.06);
+    }
+
+    .quest-meter strong{ display:block; font-size:24px; color:var(--gold); }
+
+    .quest-list{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(210px, 1fr));
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .quest-item{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      padding:12px;
+      border-radius:14px;
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.1);
+      line-height:1.3;
+    }
+
+    .quest-dot{
+      flex:0 0 22px;
+      width:22px;
+      height:22px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      color:#201307;
+      background:rgba(255,255,255,0.18);
+      font-size:13px;
+      font-weight:900;
+    }
+
+    .quest-item.found{
+      background:rgba(126,203,132,0.13);
+      border-color:rgba(126,203,132,0.44);
+    }
+
+    .quest-item.found .quest-dot{ background:var(--green); }
+    .quest-item small{ display:block; opacity:0.7; margin-top:3px; }
+
+    .reset-progress{
+      margin-top:18px;
+      border:1px solid rgba(255,255,255,0.18);
+      color:var(--ink);
+      background:rgba(255,255,255,0.06);
+      border-radius:12px;
+      padding:10px 13px;
+      font:inherit;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .all-secret-reward{
+      display:none;
+      margin-top:16px;
+      padding:18px;
+      border-radius:16px;
+      color:#2c1a08;
+      background:linear-gradient(135deg, #ffe89a, #ffb94d);
+      box-shadow:0 0 30px rgba(255,203,87,0.22);
+    }
+
+    .all-secret-reward.show{ display:block; }
+
+    .confetti{
+      position:fixed;
+      top:-20px;
+      z-index:4000;
+      width:10px;
+      height:16px;
+      pointer-events:none;
+      animation:confettiFall 1.8s ease-in forwards;
+    }
+
+    @keyframes confettiFall{
+      to{ transform:translate(var(--drift), 110vh) rotate(720deg); opacity:0; }
+    }
+
+    .pan-hint{ display:none; }
+
     @media (max-width: 880px){
       .window{ top:19%; width:145px; height:120px; }
       .poster.deadpoolish{ left:66%; top:24%; }
@@ -933,7 +1073,9 @@
 
     @media (max-width: 720px){
       body{ overflow:auto; }
-      .scene{ min-height:100vh; height:100vh; }
+      .scene{ width:920px; min-height:760px; height:760px; }
+      .hud{ right:10px; gap:6px; }
+      .hud-box{ padding:7px 9px; font-size:12px; }
       .object{ font-size:12px; }
       .comic-crate{ left:8%; }
       .radio{ left:6%; top:64%; width:150px; }
@@ -943,6 +1085,27 @@
       .poster.deadpoolish{ width:100px; height:130px; }
       .poster.monster{ width:100px; height:130px; }
       .rules-sign{ display:none; }
+      .quest-summary{ grid-template-columns:1fr; }
+      .pan-hint{
+        display:block;
+        position:fixed;
+        left:50%;
+        bottom:12px;
+        z-index:900;
+        transform:translateX(-50%);
+        border-radius:999px;
+        background:rgba(0,0,0,0.66);
+        padding:7px 11px;
+        font-size:11px;
+        pointer-events:none;
+        animation:hintFade 5s forwards;
+      }
+    }
+
+    @keyframes hintFade{ 0%,70%{opacity:1} 100%{opacity:0} }
+
+    @media (prefers-reduced-motion: reduce){
+      *,*::before,*::after{ scroll-behavior:auto !important; animation-duration:0.01ms !important; animation-iteration-count:1 !important; }
     }
   </style>
 </head>
@@ -951,8 +1114,11 @@
     <div class="hud-box hud-title">Maverick’s Fort</div>
     <a class="hud-box back-workshop" href="workshop.html">← Workshop</a>
     <div class="hud-box">Laundry Mission: <strong id="laundryCount">0</strong>/6</div>
-    <div class="hud-box">Secrets Found: <strong id="secretCount">0</strong>/5</div>
+    <div class="hud-box">Secrets Found: <strong id="secretCount">0</strong>/9</div>
+    <button class="hud-box hud-button" id="fortMapBtn" type="button">🗺 Fort Map</button>
   </div>
+
+  <div class="pan-hint">Drag sideways to explore the whole fort →</div>
 
   <div class="scene">
     <div class="attic"></div>
@@ -1085,26 +1251,30 @@
     <div class="panel">
       <button class="close" data-close="comicModal">×</button>
       <h2>Comic Crate</h2>
-      <p>This is the starter stack. Later you can replace these with your real comic covers and links.</p>
+      <p>Four forbidden issues survived the snack spill. Tap a cover to read the back.</p>
       <div class="comic-grid">
-        <div class="comic">
-          <div>GARY THE BEAR #1</div>
-          <div>“The Sandwich Situation”</div>
-        </div>
-        <div class="comic">
-          <div>DAD & MAV #2</div>
-          <div>“Fort Builder Supreme”</div>
-        </div>
-        <div class="comic">
-          <div>GARY THE BEAR #3</div>
-          <div>“Snack Attack at Attic Base”</div>
-        </div>
-        <div class="comic">
-          <div>THE BEAR GANG #4</div>
-          <div>“Why Is This Squishy Farting?”</div>
-        </div>
+        <button class="comic" type="button">
+          <span class="issue">Gary the Bear #1</span>
+          <span class="comic-title">The Sandwich Situation</span>
+          <span class="comic-story">Gary discovers the last sandwich has vanished. Every clue points toward Dad. The crumbs point toward Gary.</span>
+        </button>
+        <button class="comic" type="button">
+          <span class="issue">Dad &amp; Mav #2</span>
+          <span class="comic-title">Fort Builder Supreme</span>
+          <span class="comic-story">One blanket. Two chairs. Zero structural permits. Somehow it becomes the safest headquarters in Alaska.</span>
+        </button>
+        <button class="comic" type="button">
+          <span class="issue">Gary the Bear #3</span>
+          <span class="comic-title">Snack Attack</span>
+          <span class="comic-story">A mysterious crunch echoes through Attic Base. Gary prepares for battle and accidentally eats the evidence.</span>
+        </button>
+        <button class="comic" type="button">
+          <span class="issue">The Bear Gang #4</span>
+          <span class="comic-title">The Squishy Incident</span>
+          <span class="comic-story">Nobody pressed the squishy. Everybody heard it. The investigation is immediately compromised by laughing.</span>
+        </button>
       </div>
-      <div class="footer-note">Tip: later you can swap these out for clickable cover images that open full comics.</div>
+      <div class="footer-note">Fort archive rule: put every comic back exactly where nobody can find it.</div>
     </div>
   </div>
 
@@ -1127,7 +1297,7 @@
     <div class="panel">
       <button class="close" data-close="drawModal">×</button>
       <h2>Coloring Desk</h2>
-      <p>Draw with your finger or mouse. This is a starter sketch pad for the fort.</p>
+      <p>Draw with your finger or mouse. The fort accepts masterpieces, monsters, and extremely serious butt jokes.</p>
       <div class="draw-wrap">
         <canvas id="drawCanvas" width="900" height="600"></canvas>
         <div class="draw-tools">
@@ -1142,7 +1312,8 @@
           </div>
           <button class="tool-btn" id="clearCanvas">Clear Drawing</button>
           <button class="tool-btn" id="addDoodle">Add Silly Doodle</button>
-          <div class="footer-note">Later you can replace this with real printable coloring pages from your art.</div>
+          <button class="tool-btn" id="saveDrawing">Save Drawing</button>
+          <div class="footer-note">Fort art department policy: there are no mistakes, only suspicious new creatures.</div>
         </div>
       </div>
     </div>
@@ -1162,6 +1333,47 @@
         <button class="squish" data-fart="1">Ninja Pickle</button>
         <button class="squish" data-fart="1">Toe Bean</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Fort Map Modal -->
+  <div class="modal" id="fortMapModal">
+    <div class="panel">
+      <button class="close" data-close="fortMapModal">×</button>
+      <h2>Maverick’s Fort Map</h2>
+      <p>No exact answers. Just enough clues to keep the expedition moving.</p>
+
+      <div class="quest-summary">
+        <div class="quest-meter">
+          <span>Laundry mission</span>
+          <strong><span id="mapLaundryCount">0</span> / 6</strong>
+          <small>Clean the floor to unlock the chest.</small>
+        </div>
+        <div class="quest-meter">
+          <span>Secret mission</span>
+          <strong><span id="mapSecretCount">0</span> / 9</strong>
+          <small>Every strange object is suspicious.</small>
+        </div>
+      </div>
+
+      <div class="quest-list" id="questList">
+        <div class="quest-item" data-secret="fort-sign"><span class="quest-dot">?</span><div>Claim the fort<small>Start with the biggest name in the room.</small></div></div>
+        <div class="quest-item" data-secret="window"><span class="quest-dot">?</span><div>Control the sky<small>Day and night are closer than they look.</small></div></div>
+        <div class="quest-item" data-secret="radio"><span class="quest-dot">?</span><div>Tune the fort<small>Find the thing with moving bars.</small></div></div>
+        <div class="quest-item" data-secret="comics"><span class="quest-dot">?</span><div>Open the archive<small>Gary has been busy.</small></div></div>
+        <div class="quest-item" data-secret="poster"><span class="quest-dot">?</span><div>Investigate the haunting<small>One wall snack is watching you.</small></div></div>
+        <div class="quest-item" data-secret="map"><span class="quest-dot">?</span><div>Find the map<small>This clue is embarrassingly direct.</small></div></div>
+        <div class="quest-item" data-secret="porkachu"><span class="quest-dot">?</span><div>Wake the creature<small>Yellow. Round. Probably dangerous.</small></div></div>
+        <div class="quest-item" data-secret="memory"><span class="quest-dot">?</span><div>Become Memory Master<small>Match every monster pair.</small></div></div>
+        <div class="quest-item" data-secret="chest"><span class="quest-dot">?</span><div>Open the treasure<small>Six pieces of laundry guard it.</small></div></div>
+      </div>
+
+      <div class="all-secret-reward" id="allSecretReward">
+        <strong>FORT LEGEND STATUS UNLOCKED</strong>
+        <p>You found all nine secrets. Maverick now outranks every adult in the building.</p>
+      </div>
+
+      <button class="reset-progress" id="resetProgress" type="button">Reset missions and play again</button>
     </div>
   </div>
 
@@ -1192,6 +1404,11 @@
     const windowBox = document.getElementById('windowBox');
     const eqBars = document.querySelectorAll('#eqBars span');
     const lightsWrap = document.getElementById('lights');
+    const mapLaundryCountEl = document.getElementById('mapLaundryCount');
+    const mapSecretCountEl = document.getElementById('mapSecretCount');
+    const allSecretReward = document.getElementById('allSecretReward');
+    const STORAGE_KEY = 'mavericks-fort-progress-v2';
+    const SECRET_TOTAL = 9;
 
     let roomLightsOn = true;
     let radioOn = false;
@@ -1202,12 +1419,78 @@
     let audioCtx;
     let eqTimer;
     let secretsFound = new Set();
+    let laundryItems = new Set();
 
     function toast(msg){
       toastEl.textContent = msg;
       toastEl.classList.add('show');
       clearTimeout(toastEl._timer);
       toastEl._timer = setTimeout(() => toastEl.classList.remove('show'), 2200);
+    }
+
+    function saveProgress(){
+      try{
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          secrets:[...secretsFound],
+          laundry:[...laundryItems]
+        }));
+      } catch(error){
+        // The fort still works if private browsing blocks storage.
+      }
+    }
+
+    function launchConfetti(amount=44){
+      const confettiColors = ['#ff6b6b','#ffd166','#7ee787','#8ec5ff','#d9a7ff','#ff9fe2'];
+      for(let i=0;i<amount;i++){
+        const piece = document.createElement('i');
+        piece.className = 'confetti';
+        piece.style.left = `${Math.random()*100}vw`;
+        piece.style.background = confettiColors[i % confettiColors.length];
+        piece.style.setProperty('--drift', `${Math.random()*180-90}px`);
+        piece.style.animationDelay = `${Math.random()*0.55}s`;
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), 2600);
+      }
+    }
+
+    function refreshQuestMap(){
+      laundryDone = laundryItems.size;
+      secretCount = secretsFound.size;
+      laundryCountEl.textContent = laundryDone;
+      hamperStatusEl.textContent = `${laundryDone} / 6`;
+      secretCountEl.textContent = secretCount;
+      mapLaundryCountEl.textContent = laundryDone;
+      mapSecretCountEl.textContent = secretCount;
+
+      document.querySelectorAll('.quest-item').forEach(item => {
+        const found = secretsFound.has(item.dataset.secret);
+        item.classList.toggle('found', found);
+        item.querySelector('.quest-dot').textContent = found ? '✓' : '?';
+      });
+
+      allSecretReward.classList.toggle('show', secretCount === SECRET_TOTAL);
+    }
+
+    function restoreProgress(){
+      try{
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        secretsFound = new Set(Array.isArray(saved.secrets) ? saved.secrets : []);
+        laundryItems = new Set(Array.isArray(saved.laundry) ? saved.laundry : []);
+      } catch(error){
+        secretsFound = new Set();
+        laundryItems = new Set();
+      }
+
+      document.querySelectorAll('.clothing').forEach(item => {
+        item.classList.toggle('done', laundryItems.has(item.dataset.item));
+      });
+
+      chestUnlocked = laundryItems.size === 6;
+      rewardChest.classList.toggle('unlocked', chestUnlocked);
+      rewardChest.querySelector('.label').textContent = chestUnlocked
+        ? 'Unlocked! Click for reward'
+        : 'Locked until cleanup';
+      refreshQuestMap();
     }
 
     function initAudio(){
@@ -1268,8 +1551,14 @@
       if(!secretsFound.has(name)){
         secretsFound.add(name);
         secretCount = secretsFound.size;
-        secretCountEl.textContent = secretCount;
+        saveProgress();
+        refreshQuestMap();
         if(message) toast(message);
+        if(secretCount === SECRET_TOTAL){
+          launchConfetti(70);
+          jingle();
+          setTimeout(() => toast('ALL 9 SECRETS FOUND. Fort Legend status achieved!'), 500);
+        }
       } else if(message){
         toast(message);
       }
@@ -1291,6 +1580,22 @@
       modal.addEventListener('click', (e) => {
         if(e.target === modal) modal.classList.remove('show');
       });
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if(event.key === 'Escape'){
+        document.querySelectorAll('.modal.show').forEach(modal => modal.classList.remove('show'));
+      }
+    });
+
+    document.getElementById('fortMapBtn').addEventListener('click', () => {
+      refreshQuestMap();
+      openModal('fortMapModal');
+    });
+
+    document.getElementById('resetProgress').addEventListener('click', () => {
+      try{ localStorage.removeItem(STORAGE_KEY); } catch(error){}
+      window.location.reload();
     });
 
     // Christmas lights
@@ -1389,6 +1694,13 @@
       beep(560, 0.08, 'triangle', 0.03);
     });
 
+    document.querySelectorAll('.comic').forEach(comic => {
+      comic.addEventListener('click', () => {
+        comic.classList.toggle('open');
+        beep(comic.classList.contains('open') ? 610 : 420, 0.06, 'triangle', 0.02);
+      });
+    });
+
     // Posters
     document.getElementById('poster1').addEventListener('click', () => {
       toast('Deadly level of cool detected: dinosaur-riding antihero energy.');
@@ -1462,15 +1774,18 @@
       item.addEventListener('click', () => {
         if(item.classList.contains('done')) return;
         item.classList.add('done');
-        laundryDone++;
-        laundryCountEl.textContent = laundryDone;
-        hamperStatusEl.textContent = `${laundryDone} / 6`;
+        laundryItems.add(item.dataset.item);
+        laundryDone = laundryItems.size;
+        saveProgress();
+        refreshQuestMap();
         beep(620, 0.06, 'triangle', 0.03);
         toast('Nice. Into the hamper.');
         if(laundryDone === 6){
           chestUnlocked = true;
           rewardChest.classList.add('unlocked');
           rewardChest.querySelector('.label').textContent = 'Unlocked! Click for reward';
+          saveProgress();
+          launchConfetti(40);
           jingle();
           toast('Room cleaned up. Treasure chest unlocked!');
         }
@@ -1693,8 +2008,18 @@
       beep(660, 0.05, 'triangle', 0.025);
     });
 
+    document.getElementById('saveDrawing').addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'mavericks-fort-masterpiece.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      toast('Masterpiece saved. Museum notified.');
+      jingle();
+    });
+
     setupCanvas();
     refreshLights();
+    restoreProgress();
 
     // Welcome
     setTimeout(() => {
