@@ -27,16 +27,25 @@
 
     body {
       min-height: 100svh;
-
-      /* Wide front room for desktop */
-      background-image:
-        url("54EFFD92-C1F7-4A3E-BADE-CE8296F147E3.png");
-
-      background-size: cover;
-      background-position: center center;
-      background-repeat: no-repeat;
-
       font-family: Georgia, "Times New Roman", serif;
+    }
+
+    /* Keep the artwork and its clickable areas in the same coordinate system. */
+
+    .front-room {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      z-index: 1;
+
+      width: max(100vw, calc(100svh * 1.5));
+      height: max(100svh, calc(100vw / 1.5));
+
+      background:
+        url("54EFFD92-C1F7-4A3E-BADE-CE8296F147E3.png")
+        center / 100% 100% no-repeat;
+
+      transform: translate(-50%, -50%);
     }
 
     button,
@@ -47,13 +56,13 @@
     /* COME IN hotspot over the button inside the artwork */
 
     .enter {
-      position: fixed;
-      left: 50%;
-      top: 61%;
+      position: absolute;
+      left: 47.45%;
+      top: 70%;
       z-index: 20;
 
-      width: 190px;
-      height: 68px;
+      width: 12.5%;
+      height: 6%;
 
       transform: translate(-50%, -50%);
 
@@ -274,18 +283,19 @@
     /* Vertical front room for phones */
 
     @media (max-width: 650px) {
-      body {
+      .front-room {
+        width: max(100vw, calc(100svh * 0.48884));
+        height: max(100svh, calc(100vw / 0.48884));
+
         background-image:
           url("6ED5F01B-E9C3-40BD-8B1A-5F55CC572F51.png");
-
-        background-size: cover;
-        background-position: center top;
       }
 
       .enter {
-        top: 58%;
-        width: 170px;
-        height: 62px;
+        left: 50%;
+        top: 57.4%;
+        width: 31.1%;
+        height: 5.4%;
       }
 
       .menu-button {
@@ -309,11 +319,13 @@
 
 <body>
 
-  <a
-    class="enter"
-    href="workshop.html"
-    aria-label="Come into Studio LaDuke"
-  ></a>
+  <div class="front-room" aria-label="Studio LaDuke front room">
+    <a
+      class="enter"
+      href="workshop.html"
+      aria-label="Come into Studio LaDuke"
+    ></a>
+  </div>
 
   <button
     class="menu-button"
