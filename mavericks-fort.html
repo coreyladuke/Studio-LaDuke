@@ -1418,6 +1418,428 @@
       .game-control.restart{ grid-column:1/-1; }
     }
 
+
+    /* =========================================================
+       FORT V4 POLISH (kept under V5 overrides)
+       Full-screen game, picture memory cards, tighter hotspots,
+       colored blinking Christmas lights, visible chest/flashlight,
+       and the moving red lava lamp.
+       ========================================================= */
+    #lights{
+      display:block !important;
+      position:fixed !important;
+      left:8% !important;
+      right:8% !important;
+      top:3.5% !important;
+      height:115px !important;
+      z-index:22 !important;
+      pointer-events:none !important;
+      filter:saturate(1.3);
+    }
+    .bulb{
+      width:13px !important;
+      height:17px !important;
+      opacity:1;
+      border:1px solid rgba(255,255,255,.34) !important;
+      transition:opacity .16s ease,filter .16s ease,transform .16s ease,box-shadow .16s ease !important;
+    }
+    .bulb.twinkle{
+      opacity:.12 !important;
+      filter:brightness(.22) saturate(.6) !important;
+      box-shadow:none !important;
+      transform:scale(.82) !important;
+    }
+    .bulb.off{
+      opacity:.08 !important;
+      filter:brightness(.18) grayscale(.3) !important;
+      box-shadow:none !important;
+    }
+
+    .fort-plaque{
+      background:linear-gradient(#6b412a,#3d2417) !important;
+      border:2px solid #9d6a43 !important;
+      box-shadow:0 7px 18px rgba(0,0,0,.42) !important;
+      color:#ffd66c !important;
+      font:900 clamp(9px,1.1vw,17px)/1 "Trebuchet MS",sans-serif !important;
+      letter-spacing:.08em !important;
+      text-shadow:0 2px 2px #000 !important;
+      transform:rotate(-1deg);
+    }
+    .fort-plaque span{ display:grid;place-items:center;width:100%;height:100%; }
+
+    .radio-physical{ overflow:visible; }
+    .radio-face{
+      position:absolute;inset:5%;border-radius:8px;
+      background:linear-gradient(#546271,#28323d);
+      border:2px solid #111;box-shadow:0 5px 12px rgba(0,0,0,.5);
+      display:block;color:#ffd166;font:900 7px/1 sans-serif;
+    }
+    .radio-face:before{content:"";position:absolute;left:9%;top:18%;width:29%;height:58%;border-radius:50%;background:repeating-radial-gradient(circle,#252c31 0 2px,#111 3px 4px);border:2px solid #78838b;}
+    .radio-face i:nth-child(1),.radio-face i:nth-child(2){position:absolute;right:13%;width:10%;aspect-ratio:1;border-radius:50%;background:#d7c8a8;border:1px solid #28231d;}
+    .radio-face i:nth-child(1){top:17%;}.radio-face i:nth-child(2){top:45%;}
+    .radio-face b{position:absolute;right:7%;bottom:8%;font-size:clamp(5px,.45vw,8px);}
+
+    .switch-physical{ overflow:visible; }
+    .switch-plate{position:absolute;inset:8%;background:#e9e5da;border:2px solid #aaa391;border-radius:6px;box-shadow:0 5px 9px rgba(0,0,0,.35);}
+    .switch-plate i{position:absolute;left:35%;top:22%;width:30%;height:48%;background:#c8c1b1;border-radius:4px;box-shadow:inset 0 -4px rgba(0,0,0,.14);}
+    body.room-dark .switch-plate i{transform:translateY(25%);}
+
+    .station-badge{
+      position:absolute;inset:8%;display:grid;place-items:center;text-align:center;
+      border-radius:8px;border:2px solid #8d72e7;background:linear-gradient(135deg,#6043a2,#302052);
+      box-shadow:0 5px 12px rgba(0,0,0,.42);color:white;font:900 clamp(8px,.85vw,14px)/.95 "Trebuchet MS",sans-serif;
+    }
+    .comic-physical span{
+      position:absolute;inset:5%;display:grid;place-items:center;text-align:center;
+      background:linear-gradient(#9b6a45,#5c3824);border:3px solid #3f2619;border-radius:5px;
+      color:#f3d68f;text-shadow:0 2px #2f1d14;font:900 clamp(8px,.8vw,13px)/.95 "Trebuchet MS",sans-serif;
+      transform:rotate(-2deg);box-shadow:0 5px 12px rgba(0,0,0,.42);
+    }
+
+    .hamper-physical{
+      position:absolute;z-index:25;width:7%;height:12%;min-width:52px;min-height:58px;
+      border:3px solid #b9afa0;border-radius:8px 8px 18px 18px;
+      background:repeating-linear-gradient(90deg,#d9d0c4 0 7px,#a99f92 8px 11px);
+      box-shadow:0 7px 15px rgba(0,0,0,.38);pointer-events:none;
+    }
+    .hamper-physical:before{content:"HAMPER";position:absolute;top:-20px;left:50%;transform:translateX(-50%);font:900 8px sans-serif;color:#f5e8cb;text-shadow:0 2px #000;}
+    .hamper-physical span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.55);padding:3px 5px;border-radius:6px;font:900 9px sans-serif;color:#fff;}
+
+    .physical-chest{overflow:visible !important;border-radius:7px !important;}
+    .physical-chest .chest-body{position:absolute;left:5%;right:5%;top:38%;bottom:4%;background:linear-gradient(90deg,#7a431e,#bd7433 40%,#8a4a1f);border:3px solid #3b2315;border-radius:5px;box-shadow:0 8px 16px rgba(0,0,0,.45);}
+    .physical-chest .chest-lid{position:absolute;left:3%;right:3%;top:9%;height:43%;background:linear-gradient(#c3833e,#75401e);border:3px solid #3b2315;border-radius:50% 50% 5px 5px/70% 70% 12% 12%;box-shadow:inset 0 4px rgba(255,220,140,.15);}
+    .physical-chest .chest-body:before,.physical-chest .chest-lid:before{content:"";position:absolute;left:47%;top:-2px;width:10%;height:calc(100% + 4px);background:#d0a13f;border-left:1px solid #61420f;border-right:1px solid #61420f;}
+    .physical-chest .chest-body i{position:absolute;left:44%;top:17%;width:16%;height:42%;border-radius:3px;background:#f0c04d;border:2px solid #5d4010;}
+    .physical-chest.unlocked .chest-lid{transform:translateY(-8%) rotate(-7deg);transform-origin:left bottom;filter:brightness(1.2);}
+
+    .physical-flashlight{overflow:visible !important;transform:rotate(-15deg);}
+    .physical-flashlight>span{position:absolute;left:10%;top:34%;width:68%;height:30%;border-radius:999px;background:linear-gradient(#8e969d,#333a40);border:2px solid #1d2125;box-shadow:0 5px 10px rgba(0,0,0,.45);}
+    .physical-flashlight>span:before{content:"";position:absolute;right:-30%;top:-35%;width:40%;height:170%;clip-path:polygon(0 20%,100% 0,100% 100%,0 80%);background:linear-gradient(90deg,#5a6269,#a9b0b4);border-right:2px solid #333;}
+    .physical-flashlight>span i{position:absolute;left:18%;top:-18%;width:15%;height:136%;border-radius:4px;background:#da4242;border:1px solid #622;}
+
+    .lava-lamp{overflow:visible !important;border:0 !important;background:transparent !important;box-shadow:none !important;}
+    .lava-glass{position:absolute;left:24%;right:24%;top:13%;bottom:18%;clip-path:polygon(31% 0,69% 0,91% 100%,9% 100%);background:linear-gradient(90deg,rgba(98,0,0,.88),rgba(247,64,48,.78),rgba(78,0,0,.9));border-radius:50%;overflow:hidden;filter:drop-shadow(0 0 8px rgba(255,47,35,.75));}
+    .lava-cap:before,.lava-cap:after{content:"";position:absolute;left:25%;right:25%;height:14%;background:linear-gradient(#555,#202020);border:1px solid #111;}
+    .lava-cap:before{top:4%;border-radius:50% 50% 2px 2px;}.lava-cap:after{bottom:4%;border-radius:2px 2px 50% 50%;}
+    .lava-glass i{position:absolute;display:block;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffbd63,#f23f2d 45%,#8c0d13 80%);box-shadow:0 0 8px rgba(255,80,45,.8);}
+    .lava-a{width:46%;height:34%;left:12%;top:55%;animation:lavaA 3.4s ease-in-out infinite alternate;}
+    .lava-b{width:36%;height:27%;right:10%;top:20%;animation:lavaB 4.1s ease-in-out infinite alternate;}
+    @keyframes lavaA{to{transform:translate(35%,-130%) scale(.72,1.18) rotate(18deg);border-radius:58% 42% 64% 36%;}}
+    @keyframes lavaB{to{transform:translate(-45%,150%) scale(1.12,.72) rotate(-16deg);border-radius:42% 58% 35% 65%;}}
+    .lava-lamp.turbo-lava .lava-a{animation-duration:1.2s}.lava-lamp.turbo-lava .lava-b{animation-duration:1.45s}
+
+    /* Picture memory cards */
+    #memoryModal .panel{width:min(930px,96vw);}
+    .memory-board{grid-template-columns:repeat(4,minmax(105px,1fr));gap:12px;}
+    .card{min-height:142px;aspect-ratio:auto !important;padding:7px !important;overflow:hidden;display:grid;place-items:center;background:linear-gradient(145deg,#392663,#21163c) !important;border:2px solid rgba(255,255,255,.12) !important;}
+    .card .card-back{display:grid;place-items:center;width:100%;height:100%;min-height:120px;border-radius:10px;background:repeating-linear-gradient(45deg,#5a3e9b 0 10px,#412d73 10px 20px);font:900 42px/1 sans-serif;color:#ffe58b;text-shadow:0 3px #201233;}
+    .card.revealed,.card.matched{background:linear-gradient(145deg,#fff0c7,#d8b66f) !important;color:#22150d !important;}
+    .monster-card{width:100%;height:100%;display:grid;grid-template-rows:1fr auto auto;align-items:center;gap:2px;}
+    .monster-art{width:100%;height:83px;display:block;filter:drop-shadow(0 5px 3px rgba(0,0,0,.24));}
+    .monster-name{font:900 13px/1 "Trebuchet MS",sans-serif;}
+    .monster-desc{font:700 9px/1.15 "Trebuchet MS",sans-serif;opacity:.72;min-height:20px;}
+
+    /* Full-screen game */
+    #gameModal{padding:0 !important;background:#05070a !important;}
+    #gameModal .game-panel{
+      width:100vw !important;height:100dvh !important;max-width:none !important;max-height:none !important;
+      border-radius:0 !important;border:0 !important;padding:10px 12px 8px !important;
+      display:flex !important;flex-direction:column !important;overflow:hidden !important;background:linear-gradient(#0c1320,#05070a) !important;
+    }
+    #gameModal .close{position:fixed;top:max(10px,env(safe-area-inset-top));right:12px;z-index:5000;background:rgba(0,0,0,.65);}
+    .game-title-row{flex:0 0 auto;padding-right:52px !important;align-items:center !important;margin-bottom:4px;}
+    .game-title-row h2{font-size:clamp(20px,3vw,32px);margin:0 0 2px !important;}
+    .game-title-row p{font-size:clamp(10px,1.3vw,13px);margin:0 !important;opacity:.72;}
+    .game-score{font-size:clamp(11px,1.5vw,15px);padding:7px 9px !important;}
+    #mavGameCanvas{
+      flex:1 1 auto !important;min-height:0 !important;width:100% !important;height:auto !important;aspect-ratio:auto !important;
+      object-fit:contain;background:#6fd3ff !important;border:2px solid rgba(255,255,255,.14) !important;border-radius:12px !important;
+      image-rendering:pixelated;
+    }
+    .game-controls{
+      flex:0 0 auto !important;display:grid !important;grid-template-columns:64px 64px 1fr 1fr 80px !important;
+      gap:8px !important;margin:7px 0 max(2px,env(safe-area-inset-bottom)) !important;padding:7px !important;
+      border-radius:16px;background:rgba(9,13,20,.92);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);
+    }
+    .game-control{min-height:50px !important;border-radius:13px !important;background:#222d3a !important;box-shadow:inset 0 -4px rgba(0,0,0,.25);}
+    .game-control.jump{background:#2c65a5 !important;font-size:16px !important;}
+    .game-control:nth-child(4){background:#236d63 !important;}
+    .game-control.restart{background:#5f4921 !important;color:#ffe092 !important;}
+    #gameModal .footer-note{font-size:10px;margin:0;text-align:center;opacity:.55;flex:0 0 auto;}
+
+    @media(max-width:720px){
+      #lights{left:4% !important;right:4% !important;top:2% !important;}
+      .memory-board{grid-template-columns:repeat(3,minmax(90px,1fr));gap:8px;}
+      .card{min-height:125px;}
+      .monster-art{height:70px;}
+      #gameModal .game-panel{padding:max(7px,env(safe-area-inset-top)) 7px 5px !important;}
+      .game-title-row p{display:none;}
+      .game-title-row{min-height:38px;}
+      .game-controls{grid-template-columns:56px 56px 1fr 1fr !important;gap:6px !important;padding:6px !important;}
+      .game-control{min-height:56px !important;font-size:14px !important;}
+      .game-control.restart{grid-column:1/-1 !important;min-height:34px !important;}
+      #gameModal .footer-note{display:none;}
+    }
+
+
+    /* =========================================================
+       FORT V8: BIGGER MAV MATCH + REAL LAUNDRY + KID LIGHTS
+       ========================================================= */
+
+    /* The actual room photo has warm white bulbs baked in. This live layer lays colored kid-room bulbs over the rafters and randomly blinks individual bulbs. */
+    #lights{
+      left:0 !important;right:0 !important;top:0 !important;height:29vh !important;
+      z-index:24 !important;filter:saturate(1.55) brightness(1.12) !important;
+    }
+    .bulb{
+      width:14px !important;height:18px !important;border-radius:7px 7px 10px 10px !important;
+      border:1px solid rgba(255,255,255,.5) !important;opacity:.98 !important;
+    }
+    .bulb.twinkle{opacity:.06 !important;filter:brightness(.12) !important;transform:scale(.72) !important;}
+    .bulb.off{opacity:.025 !important;filter:brightness(.08) grayscale(.25) !important;}
+
+    /* Laundry is art, not emoji. Each piece is a transparent SVG prop sized to the furniture/rug beneath it. */
+    .photo-stage .laundry-real{
+      padding:0 !important;margin:0 !important;background:transparent !important;border:0 !important;
+      box-shadow:none !important;border-radius:0 !important;z-index:34 !important;overflow:visible !important;
+      filter:drop-shadow(0 5px 5px rgba(0,0,0,.42));
+      transform-origin:center !important;
+    }
+    .photo-stage .laundry-real svg{display:block;width:100%;height:100%;overflow:visible;pointer-events:none;}
+    .photo-stage .sock-real{transform:rotate(31deg) skewX(-6deg) !important;}
+    .photo-stage .shirt-real{transform:rotate(-12deg) scaleY(.78) !important;}
+    .photo-stage .shorts-real{transform:rotate(15deg) scaleY(.82) !important;}
+    .photo-stage .hoodie-real{transform:rotate(7deg) skewY(-4deg) !important;filter:drop-shadow(0 8px 7px rgba(0,0,0,.48));}
+    .photo-stage .cap-real{transform:rotate(-15deg) !important;}
+    .photo-stage .pants-real{transform:rotate(5deg) skewY(8deg) !important;filter:drop-shadow(0 8px 7px rgba(0,0,0,.5));}
+    .photo-stage .laundry-real:hover,.photo-stage .laundry-real:focus-visible{
+      filter:drop-shadow(0 0 8px rgba(255,220,105,.95)) drop-shadow(0 7px 5px rgba(0,0,0,.4)) !important;
+      outline:2px dashed rgba(255,222,120,.82) !important;outline-offset:3px !important;
+    }
+    .photo-stage .laundry-real.done{
+      opacity:0 !important;transform:translate(260px,-80px) scale(.12) rotate(250deg) !important;pointer-events:none !important;
+      transition:transform .48s cubic-bezier(.2,.8,.3,1.2),opacity .42s ease !important;
+    }
+
+    /* The chest now sits on top of the wooden BOX BOX trunk, so the interaction looks physically anchored in the room. */
+    .physical-chest{z-index:35 !important;}
+    .physical-flashlight{z-index:35 !important;}
+
+    /* Mav Match becomes a real full-size mini-game: 24 cards / 12 pairs. */
+    #memoryModal{padding:1.5vh 1.5vw !important;background:rgba(5,4,8,.84) !important;}
+    #memoryModal .panel{
+      width:min(1440px,97vw) !important;max-height:97vh !important;min-height:min(900px,94vh);
+      display:flex;flex-direction:column;overflow:auto;padding:18px 20px 22px !important;
+    }
+    #memoryModal h2{font-size:clamp(27px,3vw,42px) !important;margin-bottom:2px !important;}
+    #memoryModal p{margin:2px 0 7px !important;}
+    #memoryModal .memory-status{font-size:clamp(15px,1.5vw,21px);color:#ffd166;margin:2px 0 8px;font-weight:900;}
+    #memoryModal .memory-board{
+      flex:1 1 auto;display:grid !important;grid-template-columns:repeat(6,minmax(118px,1fr)) !important;
+      gap:clamp(8px,1vw,14px) !important;margin-top:5px !important;align-content:center;
+    }
+    #memoryModal .card{
+      min-height:145px !important;aspect-ratio:1/.92 !important;border-radius:16px !important;padding:7px !important;
+      box-shadow:0 10px 22px rgba(0,0,0,.27) !important;
+    }
+    #memoryModal .card .card-back{min-height:128px !important;font-size:48px !important;border-radius:12px !important;}
+    #memoryModal .monster-art{height:92px !important;}
+    #memoryModal .monster-name{font-size:14px !important;}
+    #memoryModal .monster-desc{font-size:10px !important;min-height:22px !important;}
+    #memoryModal .card.matched{box-shadow:0 0 0 3px rgba(126,203,132,.85),0 0 22px rgba(126,203,132,.35) !important;}
+
+    @media(max-width:900px){
+      #memoryModal{padding:0 !important;}
+      #memoryModal .panel{width:100vw !important;height:100dvh !important;max-height:none !important;min-height:0 !important;border-radius:0 !important;padding:12px 10px 16px !important;}
+      #memoryModal .memory-board{grid-template-columns:repeat(4,minmax(82px,1fr)) !important;gap:8px !important;align-content:start;}
+      #memoryModal .card{min-height:126px !important;aspect-ratio:auto !important;}
+      #memoryModal .card .card-back{min-height:110px !important;}
+      #memoryModal .monster-art{height:72px !important;}
+      #memoryModal .monster-name{font-size:12px !important;}
+      #memoryModal .monster-desc{font-size:8px !important;}
+    }
+
+    @media(max-width:520px){
+      #memoryModal .memory-board{grid-template-columns:repeat(4,minmax(68px,1fr)) !important;gap:6px !important;}
+      #memoryModal .card{min-height:106px !important;padding:4px !important;border-radius:11px !important;}
+      #memoryModal .card .card-back{min-height:96px !important;font-size:39px !important;}
+      #memoryModal .monster-art{height:58px !important;}
+      #memoryModal .monster-name{font-size:10px !important;}
+      #memoryModal .monster-desc{display:none !important;}
+    }
+
+
+    /* =========================================================
+       FORT V8: PHOTO-ANCHORED PROPS + CARD POLISH + GAME ART PASS
+       ========================================================= */
+
+    /* Better kid-room lights: colorful, irregular, and visibly alive without looking like a nightclub. */
+    #lights{height:27vh !important;opacity:.96 !important;}
+    .bulb{width:13px !important;height:17px !important;border:1px solid rgba(255,255,255,.62) !important;filter:saturate(1.35) !important;}
+    .bulb::after{content:"";position:absolute;inset:2px 3px 5px;border-radius:50%;background:rgba(255,255,255,.38);filter:blur(1px);}
+    .bulb.twinkle{opacity:.12 !important;filter:brightness(.18) saturate(.7) !important;transform:scale(.78) rotate(4deg) !important;box-shadow:none !important;}
+
+    /* More visible treasure chest, physically seated on the center trunk. */
+    #rewardChest{
+      left:31.3% !important;top:40.4% !important;width:13.4% !important;height:16.8% !important;
+      filter:drop-shadow(0 9px 8px rgba(0,0,0,.48));
+    }
+    .physical-chest .chest-lid{
+      top:5% !important;height:46% !important;
+      background:linear-gradient(180deg,#e2a14c 0%,#a45f28 40%,#6f3819 100%) !important;
+      border:4px solid #342013 !important;
+      box-shadow:inset 0 5px rgba(255,233,167,.2),0 3px 0 rgba(0,0,0,.28) !important;
+    }
+    .physical-chest .chest-body{
+      top:39% !important;bottom:1% !important;
+      background:linear-gradient(90deg,#6b3518 0%,#bd7330 18%,#8b481d 50%,#c47a34 80%,#6b3518 100%) !important;
+      border:4px solid #342013 !important;
+    }
+    .physical-chest::before{
+      content:"TREASURE";position:absolute;left:18%;right:18%;bottom:18%;z-index:8;
+      padding:2px 1px;border-radius:3px;background:#c79531;border:1px solid #5e4316;color:#3a250e;
+      font:900 clamp(6px,.62vw,10px)/1 "Trebuchet MS",sans-serif;letter-spacing:.05em;text-align:center;
+      text-shadow:0 1px rgba(255,238,171,.45);box-shadow:inset 0 1px rgba(255,255,255,.3);
+    }
+    .physical-chest::after{
+      content:"";position:absolute;left:46%;top:48%;width:10%;height:20%;z-index:9;border-radius:3px 3px 7px 7px;
+      background:linear-gradient(#ffe284,#c58b23);border:2px solid #503611;box-shadow:0 1px 3px rgba(0,0,0,.45);
+    }
+    .physical-chest:not(.unlocked){box-shadow:0 0 0 1px rgba(255,208,96,.2),0 0 16px rgba(255,190,65,.14) !important;}
+    .physical-chest.unlocked{filter:drop-shadow(0 0 14px rgba(255,206,79,.75)) drop-shadow(0 9px 8px rgba(0,0,0,.48));}
+
+    /* Flashlight lives far to the right, on the green beanbag. No chest overlap. */
+    #flashlightBtn{left:86.7% !important;top:74.7% !important;width:7.8% !important;height:5.6% !important;transform:rotate(18deg) !important;}
+    .physical-flashlight>span{height:38% !important;top:30% !important;background:linear-gradient(180deg,#aab1b6,#4f575d 48%,#252c30) !important;}
+    .physical-flashlight>span:before{background:linear-gradient(90deg,#50585e,#c5c9cc) !important;}
+
+    /* Laundry is intentionally larger and sits on specific furniture/rug features in the photo. */
+    .photo-stage .laundry-real{opacity:.96 !important;filter:drop-shadow(0 4px 4px rgba(0,0,0,.5)) saturate(.88) brightness(.9) !important;}
+    .photo-stage .laundry-real svg{overflow:visible !important;}
+    .photo-stage .sock-real{left:14.6% !important;top:54.8% !important;width:6.2% !important;height:9.8% !important;transform:rotate(46deg) skewX(-9deg) scaleY(.72) !important;}
+    .photo-stage .cap-real{left:18.2% !important;top:44.2% !important;width:7.1% !important;height:6.7% !important;transform:rotate(-24deg) skewX(-8deg) !important;}
+    .photo-stage .shirt-real{left:40.2% !important;top:75.2% !important;width:11.8% !important;height:10.7% !important;transform:rotate(-16deg) skewX(8deg) scaleY(.62) !important;}
+    .photo-stage .shorts-real{left:54.1% !important;top:72.8% !important;width:10.3% !important;height:9.2% !important;transform:rotate(18deg) skewX(-7deg) scaleY(.7) !important;}
+    .photo-stage .hoodie-real{left:78.6% !important;top:67.7% !important;width:13.2% !important;height:15.8% !important;transform:rotate(11deg) skewY(5deg) scaleY(.82) !important;}
+    .photo-stage .pants-real{left:91.2% !important;top:41.2% !important;width:8.3% !important;height:21.5% !important;transform:rotate(3deg) skewY(10deg) !important;}
+
+    /* Mav Match cards: a proper framed face so artwork never clips or looks pasted on. */
+    #memoryModal .memory-board{grid-template-columns:repeat(6,minmax(128px,1fr)) !important;gap:12px !important;}
+    #memoryModal .card{min-height:158px !important;padding:6px !important;overflow:visible !important;background:linear-gradient(145deg,#38285f,#1a132e) !important;}
+    #memoryModal .card .card-back{min-height:144px !important;border:3px solid rgba(255,255,255,.12);box-shadow:inset 0 0 0 4px rgba(0,0,0,.12);}
+    #memoryModal .monster-card{
+      position:relative;width:100%;height:100%;min-height:144px;display:grid;grid-template-rows:minmax(92px,1fr) auto auto;
+      align-items:center;justify-items:center;gap:3px;padding:6px 6px 7px;border-radius:12px;overflow:hidden;
+      background:linear-gradient(180deg,#fff4d7 0%,#efd9a2 72%,#d0ac66 100%);
+      box-shadow:inset 0 0 0 3px #7f5a2d,inset 0 0 0 6px rgba(255,255,255,.32);
+    }
+    #memoryModal .monster-card::before{
+      content:"";position:absolute;left:7%;right:7%;top:6%;height:68%;border-radius:50%;
+      background:radial-gradient(circle at 50% 38%,rgba(255,255,255,.9),rgba(255,229,168,.48) 54%,rgba(166,111,56,.13) 71%,transparent 72%);
+    }
+    #memoryModal .monster-art{
+      position:relative;z-index:2;width:94% !important;height:100px !important;max-width:124px;overflow:visible !important;
+      filter:drop-shadow(0 6px 3px rgba(64,37,19,.28)) !important;
+    }
+    #memoryModal .monster-name{position:relative;z-index:2;font-size:14px !important;color:#342111;letter-spacing:.02em;}
+    #memoryModal .monster-desc{position:relative;z-index:2;font-size:9px !important;color:#5e472f;min-height:21px !important;text-align:center;}
+    #memoryModal .card.matched .monster-card{box-shadow:inset 0 0 0 3px #497a48,inset 0 0 0 6px rgba(255,255,255,.34),0 0 18px rgba(104,210,116,.42);}
+
+    /* Make the full-screen game feel like a real console game instead of a canvas demo. */
+    #gameModal .game-panel{background:radial-gradient(circle at 50% 0,#182b45,#080d15 62%,#030508) !important;}
+    #mavGameCanvas{box-shadow:0 0 0 2px rgba(0,0,0,.75),0 12px 40px rgba(0,0,0,.5),inset 0 0 24px rgba(0,0,0,.16) !important;}
+    .game-controls{max-width:1040px;width:min(1040px,100%);align-self:center;}
+    .game-control{font-size:16px !important;letter-spacing:.02em;}
+
+    @media(max-width:900px){
+      #memoryModal .memory-board{grid-template-columns:repeat(4,minmax(82px,1fr)) !important;}
+      #memoryModal .card{min-height:136px !important;overflow:visible !important;}
+      #memoryModal .monster-card{min-height:122px;grid-template-rows:minmax(70px,1fr) auto auto;padding:5px;}
+      #memoryModal .monster-art{height:79px !important;max-width:98px;}
+    }
+    @media(max-width:520px){
+      #memoryModal .memory-board{grid-template-columns:repeat(4,minmax(69px,1fr)) !important;gap:6px !important;}
+      #memoryModal .card{min-height:116px !important;padding:3px !important;}
+      #memoryModal .monster-card{min-height:106px;grid-template-rows:72px auto;padding:3px 3px 5px;}
+      #memoryModal .monster-art{height:72px !important;max-width:82px;}
+      #memoryModal .monster-name{font-size:10px !important;}
+      #memoryModal .monster-desc{display:none !important;}
+    }
+
+
+    /* =========================================================
+       FORT V8: MAKE THE PHOTO DO THE WORK
+       ========================================================= */
+
+    /* The wooden BOX BOX trunk in the photo IS the treasure chest now.
+       Keep the click target and hardware, ditch the floating cartoon chest. */
+    #rewardChest{
+      left:30.5% !important;top:43.3% !important;width:10.3% !important;height:13.1% !important;
+      background:transparent !important;border:0 !important;border-radius:6px !important;
+      filter:none !important;box-shadow:none !important;overflow:visible !important;
+    }
+    #rewardChest .chest-lid,#rewardChest .chest-body{display:none !important;}
+    #rewardChest::before{
+      content:"" !important;position:absolute;left:45%;top:43%;width:12%;height:24%;z-index:8;
+      background:linear-gradient(#efca63,#a9751c);border:1px solid #5a3d0c;border-radius:2px;
+      box-shadow:0 1px 3px rgba(0,0,0,.55),inset 0 1px rgba(255,255,255,.45);
+    }
+    #rewardChest::after{
+      content:"" !important;position:absolute;left:48.5%;top:50%;width:5%;height:9%;z-index:9;
+      border-radius:50% 50% 40% 40%;background:#4a310c;box-shadow:0 0 0 1px rgba(255,221,125,.45);
+    }
+    #rewardChest:hover,#rewardChest:focus-visible{
+      outline:2px solid rgba(255,212,91,.65) !important;outline-offset:2px !important;
+      box-shadow:0 0 22px rgba(255,197,61,.24) !important;
+    }
+    #rewardChest.unlocked{box-shadow:0 0 28px rgba(255,205,71,.42) !important;animation:chestPulse 1.5s ease-in-out infinite alternate;}
+
+    /* Smaller flashlight, clearly on the far-right beanbag. */
+    #flashlightBtn{left:87.1% !important;top:74.8% !important;width:6.2% !important;height:4.6% !important;transform:rotate(17deg) !important;}
+
+    /* Smaller laundry with photo-aware placement. It should read as mess, not UI. */
+    .photo-stage .laundry-real{opacity:.88 !important;filter:drop-shadow(0 3px 3px rgba(0,0,0,.48)) saturate(.72) brightness(.83) !important;}
+    .photo-stage .sock-real{left:12.8% !important;top:52.5% !important;width:4.3% !important;height:6.7% !important;transform:rotate(57deg) skewX(-10deg) scaleY(.62) !important;}
+    .photo-stage .cap-real{left:18.3% !important;top:45.6% !important;width:4.9% !important;height:4.8% !important;transform:rotate(-20deg) skewX(-7deg) !important;}
+    .photo-stage .shirt-real{left:40.7% !important;top:76.5% !important;width:8.6% !important;height:7.6% !important;transform:rotate(-15deg) skewX(10deg) scaleY(.56) !important;}
+    .photo-stage .shorts-real{left:54.3% !important;top:75.4% !important;width:7.1% !important;height:6.5% !important;transform:rotate(19deg) skewX(-8deg) scaleY(.62) !important;}
+    .photo-stage .hoodie-real{left:54.4% !important;top:54.6% !important;width:8.4% !important;height:10.8% !important;transform:rotate(-9deg) skewY(-5deg) scaleY(.74) !important;opacity:.78 !important;}
+    .photo-stage .pants-real{left:92.6% !important;top:42.8% !important;width:5.8% !important;height:17.4% !important;transform:rotate(2deg) skewY(10deg) !important;opacity:.82 !important;}
+
+    /* Quiet the fake props. Their photo areas remain fully clickable, but the room stays photographic. */
+    #memoryBtn .station-badge{opacity:.22 !important;transform:scale(.72);transform-origin:center;}
+    #memoryBtn:hover .station-badge,#memoryBtn:focus-visible .station-badge{opacity:.88 !important;}
+    #memoryBtn{left:29.7% !important;top:16.4% !important;width:8.2% !important;height:10.8% !important;}
+    #comicCrate{left:55.6% !important;top:41.8% !important;width:11.2% !important;height:12.8% !important;}
+    #comicCrate span{opacity:.15 !important;transform:scale(.82) rotate(-2deg) !important;}
+    #comicCrate:hover span,#comicCrate:focus-visible span{opacity:.9 !important;}
+
+    /* Front-room overlays: smaller and more like real objects mounted in the room. */
+    #fortSign{left:40.8% !important;top:7.1% !important;width:12.2% !important;height:6.2% !important;opacity:.78;}
+    #fortSign span{font-size:clamp(8px,.85vw,13px) !important;letter-spacing:.08em !important;}
+    #radioBtn{left:34.5% !important;top:39.8% !important;width:5.9% !important;height:7.4% !important;opacity:.82;}
+    #lightSwitch{left:46.9% !important;top:46.8% !important;width:2.8% !important;height:6.2% !important;opacity:.82;}
+    #lavaLampBtn{left:67.7% !important;top:53.3% !important;width:3.2% !important;height:10.8% !important;opacity:.9;}
+
+    /* Slightly bigger on-screen heroes so the game feels like the TV art rather than a distant demo. */
+    #mavGameCanvas{image-rendering:auto !important;}
+
+
+    /* V8 final room-cleanup polish: use the REAL wicker basket in the photo as the hamper. */
+    .hamper-physical{
+      left:69.2% !important;top:58.6% !important;width:4.1% !important;height:8.5% !important;
+      min-width:0 !important;min-height:0 !important;background:transparent !important;border:0 !important;
+      box-shadow:none !important;border-radius:0 !important;
+    }
+    .hamper-physical::before{content:"" !important;display:none !important;}
+    .hamper-physical span{
+      left:50% !important;top:18% !important;transform:translate(-50%,-50%) !important;
+      padding:3px 6px !important;border-radius:999px !important;background:rgba(15,12,9,.72) !important;
+      color:#ffe7a3 !important;border:1px solid rgba(255,223,141,.26) !important;font-size:8px !important;
+      box-shadow:0 2px 6px rgba(0,0,0,.38);
+    }
+    .photo-stage .shirt-real,.photo-stage .shorts-real{opacity:.76 !important;filter:drop-shadow(0 2px 3px rgba(0,0,0,.4)) saturate(.62) brightness(.78) !important;}
+
   </style>
 </head>
 <body>
@@ -1435,68 +1857,78 @@
   <div class="scene" id="fortScene">
     <div class="view active" id="frontView" data-view="front" aria-label="Front of Maverick's Fort">
       <div class="photo-stage front-stage">
-        <!-- FRONT: gaming + hangout side -->
-        <button class="hotspot" id="fortSign" style="left:20%;top:20%;width:15%;height:17%;" data-tip="Maverick's Fort sign" aria-label="Maverick's Fort sign"></button>
+        <!-- FRONT: gaming + hangout side. Hotspots are intentionally tight so objects do not overlap. -->
+        <button class="hotspot fort-plaque" id="fortSign" style="left:43%;top:5%;width:15%;height:9%;" data-tip="Claim Maverick's Fort" aria-label="Maverick's Fort sign"><span>MAVERICK'S FORT</span></button>
 
-        <button class="hotspot" id="windowBox" style="left:28%;top:20%;width:10%;height:20%;" data-tip="Round attic window • tap for day/night" aria-label="Attic window"></button>
+        <button class="hotspot" id="windowBox" style="left:27.5%;top:21%;width:7.5%;height:18%;" data-tip="Round attic window • tap for day/night" aria-label="Attic window"></button>
 
-        <button class="hotspot" id="radioBtn" style="left:37%;top:12%;width:9%;height:18%;" data-tip="Fort FM" aria-label="Fort FM">
-          <span class="sr-only">Fort FM</span>
+        <button class="hotspot radio-physical" id="radioBtn" style="left:37%;top:38%;width:7%;height:9%;" data-tip="Fort FM" aria-label="Fort FM">
+          <span class="radio-face" aria-hidden="true"><i></i><i></i><b>FORT FM</b></span>
           <span class="eq" id="eqBars" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></span>
         </button>
 
-        <button class="hotspot" id="poster1" style="left:1%;top:30%;width:10%;height:32%;" data-tip="Fort posters" aria-label="Fort poster"></button>
-        <button class="hotspot" id="poster2" style="left:19%;top:21%;width:13%;height:15%;" data-tip="Suspicious poster" aria-label="Suspicious poster"></button>
+        <button class="hotspot" id="poster1" style="left:1.5%;top:36%;width:8%;height:31%;" data-tip="Be Brave • Be Kind • Be You" aria-label="Fort posters"></button>
+        <button class="hotspot" id="poster2" style="left:18.5%;top:22%;width:9%;height:12%;" data-tip="Adventure poster" aria-label="Adventure poster"></button>
 
-        <button class="hotspot" id="rulesSign" style="left:1%;top:39%;width:9%;height:29%;" data-tip="Fort rules" aria-label="Fort rules"></button>
+        <button class="hotspot" id="rulesSign" style="left:49%;top:25%;width:6%;height:18%;" data-tip="KEEP OUT • gamer at play" aria-label="Fort rules"></button>
 
-        <button class="hotspot" id="lightSwitch" style="left:49%;top:23%;width:5%;height:21%;" data-tip="Lights" aria-label="Light switch">
-          <span class="switch-toggle sr-only"></span>
-        </button>
+        <button class="hotspot switch-physical" id="lightSwitch" style="left:47.3%;top:45%;width:3.6%;height:8%;" data-tip="Christmas lights" aria-label="Light switch"><span class="switch-plate" aria-hidden="true"><i></i></span></button>
 
-        <button class="hotspot dog-hotspot" id="labBtn" style="left:34%;top:50%;width:25%;height:28%;" data-tip="The Lab • very important employee" aria-label="Black Labrador"></button>
+        <button class="hotspot dog-hotspot" id="labBtn" style="left:38%;top:55%;width:16%;height:27%;" data-tip="The Lab • very important employee" aria-label="Black Labrador"></button>
 
-        <button class="hotspot" id="porkachuBtn" style="left:40%;top:77%;width:16%;height:14%;" data-tip="Porkachu" aria-label="Porkachu"></button>
+        <button class="hotspot" id="porkachuBtn" style="left:41%;top:84%;width:14%;height:11%;" data-tip="Porkachu" aria-label="Porkachu"></button>
 
-        <button class="hotspot" id="squishBtn" style="left:77%;top:60%;width:23%;height:34%;" data-tip="Squishy basket" aria-label="Squishy basket"></button>
+        <button class="hotspot" id="squishBtn" style="left:84%;top:69%;width:15%;height:26%;" data-tip="Squishy basket" aria-label="Squishy basket"></button>
 
-        <button class="hotspot arcade-hotspot" id="arcadeBtn" style="left:54%;top:12%;width:14%;height:48%;" data-tip="Arcade machine" aria-label="Arcade machine"></button>
+        <button class="hotspot arcade-hotspot" id="arcadeBtn" style="left:56%;top:17%;width:11%;height:42%;" data-tip="Arcade machine" aria-label="Arcade machine"></button>
 
-        <button class="hotspot game-hotspot" id="gameBtn" style="left:69%;top:4%;width:31%;height:43%;" data-tip="Play Super Maverick's World" aria-label="Play Super Maverick's World"></button>
-        <button class="hotspot game-hotspot console-hotspot" id="consoleBtn" style="left:70%;top:43%;width:30%;height:18%;" data-tip="Cartridge console • insert & play" aria-label="Retro cartridge console"></button>
+        <button class="hotspot game-hotspot" id="gameBtn" style="left:72%;top:6%;width:28%;height:40%;" data-tip="Play Super Maverick's World" aria-label="Play Super Maverick's World"></button>
+        <button class="hotspot game-hotspot console-hotspot" id="consoleBtn" style="left:74%;top:47%;width:21%;height:14%;" data-tip="Cartridge console • insert & play" aria-label="Retro cartridge console"></button>
+
+        <button class="hotspot lava-lamp" id="lavaLampBtn" style="left:67.4%;top:51%;width:3.8%;height:13%;" data-tip="Red lava lamp" aria-label="Red lava lamp"><span class="lava-glass"><i class="lava-a"></i><i class="lava-b"></i></span><span class="lava-cap"></span></button>
       </div>
     </div>
 
     <div class="view" id="backView" data-view="back" aria-label="Behind you in Maverick's Fort">
       <div class="photo-stage back-stage">
         <!-- BACK: missions + creative side -->
-        <button class="hotspot" id="memoryBtn" style="left:28%;top:12%;width:18%;height:35%;" data-tip="Mav Match memory game" aria-label="Mav Match memory game"></button>
+        <button class="hotspot memory-station" id="memoryBtn" style="left:29%;top:13%;width:11%;height:16%;" data-tip="Mav Match • picture memory game" aria-label="Mav Match memory game"><span class="station-badge">MAV<br>MATCH</span></button>
 
-        <button class="hotspot" id="deskBtn" style="left:10%;top:26%;width:23%;height:32%;" data-tip="Coloring desk" aria-label="Coloring desk"></button>
+        <button class="hotspot" id="deskBtn" style="left:12%;top:31%;width:21%;height:23%;" data-tip="Coloring desk" aria-label="Coloring desk"></button>
 
-        <button class="hotspot" id="comicCrate" style="left:58%;top:30%;width:23%;height:32%;" data-tip="Comic crate" aria-label="Comic crate"></button>
+        <button class="hotspot comic-physical" id="comicCrate" style="left:62%;top:52%;width:11%;height:13%;" data-tip="Mav Comics" aria-label="Comic crate"><span>MAV<br>COMICS</span></button>
 
-        <button class="hotspot" id="mapBtn" style="left:11%;top:29%;width:18%;height:17%;" data-tip="Secret treasure map" aria-label="Secret treasure map"></button>
+        <button class="hotspot" id="mapBtn" style="left:10%;top:29%;width:22%;height:17%;" data-tip="Secret treasure map" aria-label="Secret treasure map"></button>
 
-        <button class="hotspot" id="mysteryBox" style="left:31%;top:40%;width:12%;height:17%;" data-tip="Weird mystery box" aria-label="Mystery box"></button>
+        <button class="hotspot" id="mysteryBox" style="left:31.5%;top:39.5%;width:8.5%;height:11%;" data-tip="Weird mystery box" aria-label="Mystery box"></button>
 
-        <div class="hotspot hamper-hotspot" style="left:30%;top:40%;width:13%;height:17%;" aria-hidden="true">
-          <span id="hamperStatus" class="sr-only">0 / 6</span>
-        </div>
+        <div class="hamper-physical" aria-hidden="true" style="left:48%;top:72%;"><span id="hamperStatus">0 / 6</span></div>
 
-        <button class="hotspot chest" id="rewardChest" style="left:78%;top:58%;width:18%;height:23%;" data-tip="Treasure chest • cleanup reward" aria-label="Treasure chest">
-          <span class="label sr-only">Locked until cleanup</span>
+        <button class="hotspot chest physical-chest" id="rewardChest" style="left:33.1%;top:42.2%;width:10.4%;height:14.2%;" data-tip="Treasure chest • clean 6 things, then OPEN it" aria-label="Treasure chest">
+          <span class="chest-lid" aria-hidden="true"></span><span class="chest-body" aria-hidden="true"><i></i></span><span class="label sr-only">Locked until cleanup</span>
         </button>
 
-        <button class="hotspot flashlight-hotspot" id="flashlightBtn" style="left:82%;top:68%;width:10%;height:11%;" data-tip="Flashlight" aria-label="Flashlight"></button>
+        <button class="hotspot flashlight-hotspot physical-flashlight" id="flashlightBtn" style="left:82.7%;top:69.2%;width:7.2%;height:5.8%;" data-tip="Flashlight" aria-label="Flashlight"><span aria-hidden="true"><i></i></span></button>
 
-        <!-- Six loose pieces of laundry stay as tiny physical game props on the rug. -->
-        <button class="clothing sock" data-item="sock" style="left:36%;top:73%;">🧦</button>
-        <button class="clothing shirt" data-item="shirt" style="left:46%;top:68%;">👕</button>
-        <button class="clothing shorts" data-item="shorts" style="left:55%;top:77%;">🩳</button>
-        <button class="clothing hoodie" data-item="hoodie" style="left:64%;top:69%;">🧥</button>
-        <button class="clothing cap" data-item="cap" style="left:73%;top:76%;">🧢</button>
-        <button class="clothing pants" data-item="pants" style="left:27%;top:79%;">👖</button>
+        <!-- Six real-looking pieces of messy laundry. They are deliberately scattered into the furniture instead of floating like game icons. -->
+        <button class="clothing laundry-real sock-real" data-item="sock" style="left:18.8%;top:54.5%;width:5.2%;height:8.5%;" aria-label="Sock under the desk" data-tip="A suspicious sock">
+          <svg viewBox="0 0 90 120" aria-hidden="true"><path d="M31 8h32v56c0 10 8 16 18 22 10 7 9 19-1 25-13 8-37 5-48-8-8-10-5-22 1-31 5-7 7-13 7-21V8Z" fill="#c7d5e5" stroke="#596778" stroke-width="5"/><path d="M32 24h31M36 72c14 4 25 12 31 25" fill="none" stroke="#7692ae" stroke-width="6" opacity=".8"/></svg>
+        </button>
+        <button class="clothing laundry-real shirt-real" data-item="shirt" style="left:43%;top:71.5%;width:9.5%;height:10.5%;" aria-label="Crumpled shirt on the rug" data-tip="Crumpled shirt">
+          <svg viewBox="0 0 150 110" aria-hidden="true"><path d="M48 17 66 8h18l18 9 33 17-17 30-18-10v42H50V54L32 64 15 34Z" fill="#bd5c56" stroke="#67302e" stroke-width="5"/><path d="M56 24q19 16 38 0M51 66q22-14 49 1M37 42l19 13M111 42 94 54" fill="none" stroke="#df8178" stroke-width="5" opacity=".85"/></svg>
+        </button>
+        <button class="clothing laundry-real shorts-real" data-item="shorts" style="left:56.5%;top:76%;width:8.5%;height:9%;" aria-label="Shorts tossed on the rug" data-tip="Tossed shorts">
+          <svg viewBox="0 0 130 100" aria-hidden="true"><path d="M22 13h86l-4 78H70L64 62l-8 29H22Z" fill="#6e79b8" stroke="#343b6f" stroke-width="5"/><path d="M26 31h78M64 15v47M37 31q4 13 18 9M93 31q-4 13-18 9" fill="none" stroke="#a5acd9" stroke-width="5"/></svg>
+        </button>
+        <button class="clothing laundry-real hoodie-real" data-item="hoodie" style="left:76.8%;top:59%;width:11%;height:15%;" aria-label="Hoodie slumped over the green chair" data-tip="Hoodie on the chair">
+          <svg viewBox="0 0 150 150" aria-hidden="true"><path d="M48 42q3-30 27-33 25 3 28 33l25 19-15 30-17-10v56H53V81L35 92 20 61Z" fill="#4f8669" stroke="#254b39" stroke-width="5"/><path d="M52 42q23 16 47 0M60 87q15 9 30 0M75 48v82" fill="none" stroke="#79aa8d" stroke-width="5"/><path d="M56 36q19-25 39 0" fill="none" stroke="#294d3c" stroke-width="7"/></svg>
+        </button>
+        <button class="clothing laundry-real cap-real" data-item="cap" style="left:19.3%;top:39.5%;width:6.2%;height:6.5%;" aria-label="Cap hanging on the desk chair" data-tip="Cap on the chair">
+          <svg viewBox="0 0 120 80" aria-hidden="true"><path d="M27 48q4-35 35-36 33 2 36 36Z" fill="#c48235" stroke="#65431c" stroke-width="5"/><path d="M57 48q26-8 52 7-21 13-54 6Z" fill="#d79a4d" stroke="#65431c" stroke-width="5"/><path d="M61 14v33" stroke="#8d5d24" stroke-width="4"/></svg>
+        </button>
+        <button class="clothing laundry-real pants-real" data-item="pants" style="left:91%;top:42%;width:7.5%;height:18%;" aria-label="Pants hanging off the bed" data-tip="Pants hanging off the bed">
+          <svg viewBox="0 0 115 190" aria-hidden="true"><path d="M20 9h76l-5 72-11 101H52L57 87l-15 95H13L24 80Z" fill="#416f78" stroke="#1d4149" stroke-width="6"/><path d="M23 32h70M58 11l-1 76M33 38q4 13 18 8M82 38q-4 13-17 8" fill="none" stroke="#6c9aa2" stroke-width="5"/></svg>
+        </button>
       </div>
     </div>
 
@@ -1547,11 +1979,11 @@
     <div class="panel">
       <button class="close" data-close="memoryModal">×</button>
       <h2>Mav Match</h2>
-      <p>Match the silly knockoff monsters.</p>
-      <div class="memory-status" id="memoryStatus">Matches: 0 / 6</div>
+      <p>Find all 12 pairs of ridiculous fort creatures. Twenty-four cards. No mercy.</p>
+      <div class="memory-status" id="memoryStatus">Matches: 0 / 12</div>
       <div class="memory-board" id="memoryBoard"></div>
       <div class="reward" id="memoryReward">
-        <strong>Memory Master!</strong> You cleared the board. Maverick officially rules this fort.
+        <strong>Memory Master!</strong> All 12 creature pairs cleared. Maverick officially rules this fort.
       </div>
     </div>
   </div>
@@ -1629,7 +2061,7 @@
         <div class="quest-item" data-secret="map"><span class="quest-dot">?</span><div>Find the map<small>This clue is embarrassingly direct.</small></div></div>
         <div class="quest-item" data-secret="porkachu"><span class="quest-dot">?</span><div>Wake the creature<small>Yellow. Round. Probably dangerous.</small></div></div>
         <div class="quest-item" data-secret="memory"><span class="quest-dot">?</span><div>Become Memory Master<small>Match every monster pair.</small></div></div>
-        <div class="quest-item" data-secret="chest"><span class="quest-dot">?</span><div>Open the treasure<small>Six pieces of laundry guard it.</small></div></div>
+        <div class="quest-item" data-secret="chest"><span class="quest-dot">?</span><div>Open the treasure<small>Clean all 6 clothes, then OPEN the glowing chest. Unlocking it is not enough.</small></div></div>
       </div>
 
       <div class="all-secret-reward" id="allSecretReward">
@@ -1659,12 +2091,12 @@
 
   <!-- Super Maverick's World -->
   <div class="modal" id="gameModal">
-    <div class="panel game-panel">
+    <div class="panel game-panel" role="application">
       <button class="close" data-close="gameModal">×</button>
       <div class="game-title-row">
         <div>
           <h2>Super Maverick’s World</h2>
-          <p>An original tiny attic-console platform game. Run, jump, stomp the grumblies, grab coins, find the bonus pipe, and reach the fort flag.</p>
+          <p>A full-screen attic-console adventure. Run, jump, stomp the Grumblies, grab coins, drop into the secret coin room, and reach Fort Maverick.</p>
         </div>
         <div class="game-score" id="gameScore">Coins: 0 · Lives: 3</div>
       </div>
@@ -1758,6 +2190,7 @@
       });
 
       allSecretReward.classList.toggle('show', secretCount === SECRET_TOTAL);
+      if(secretCount === 8 && !secretsFound.has('chest')){ setTimeout(()=>toast('8 / 9! Last clue: clean all 6 clothes, then OPEN the glowing treasure chest.'),250); }
     }
 
     function restoreProgress(){
@@ -1887,37 +2320,46 @@
       window.location.reload();
     });
 
-    // Christmas lights
-    const colors = ['#ff6b6b','#ffd166','#7ee787','#8ec5ff','#d9a7ff','#ff9fe2'];
+    // Christmas lights - colored kid-room bulbs that follow the attic rafters.
+    const colors = ['#ff3b3b','#ffd23f','#3ee06f','#38a8ff','#c35cff','#ff62b3'];
     function createLights(){
-      for(let i=0;i<26;i++){
-        const bulb = document.createElement('div');
-        bulb.className = 'bulb';
-        bulb.style.background = colors[i % colors.length];
-        bulb.style.left = `${3 + i * 3.5}%`;
-        const y = i < 13
-          ? 48 - (Math.abs(6 - i) * 3.2)
-          : 48 - (Math.abs(19 - i) * 3.2);
-        bulb.style.top = `${y}px`;
-        bulb.style.boxShadow = `0 0 14px ${colors[i % colors.length]}, 0 0 28px ${colors[i % colors.length]}`;
-        bulb.style.transform = `rotate(${Math.random()*10 - 5}deg)`;
-        lightsWrap.appendChild(bulb);
+      lightsWrap.innerHTML='';
+      const points=[];
+      // left roofline: down toward the center
+      for(let i=0;i<14;i++) points.push({x:6+i*3.0, y:4+i*1.28});
+      // center beam: a shallow smile
+      for(let i=0;i<17;i++){
+        const t=i/16;
+        points.push({x:39+t*27, y:20 + Math.sin(t*Math.PI)*4.5});
       }
+      // right roofline: up away from center
+      for(let i=0;i<13;i++) points.push({x:66+i*2.45, y:20-i*1.28});
+      points.forEach((p,i)=>{
+        const bulb=document.createElement('div');
+        bulb.className='bulb';
+        const color=colors[i%colors.length];
+        bulb.style.background=color;
+        bulb.style.left=`${p.x}%`;
+        bulb.style.top=`${p.y}vh`;
+        bulb.style.boxShadow=`0 0 11px ${color},0 0 22px ${color},0 0 34px ${color}`;
+        bulb.style.transform=`rotate(${(i%5-2)*2}deg)`;
+        lightsWrap.appendChild(bulb);
+      });
     }
     createLights();
 
     function refreshLights(){
-      document.querySelectorAll('.bulb').forEach(b => {
-        b.classList.toggle('off', !roomLightsOn);
-      });
+      document.querySelectorAll('.bulb').forEach(b=>b.classList.toggle('off',!roomLightsOn));
     }
 
-    setInterval(() => {
-      const bulbs = [...document.querySelectorAll('.bulb')];
-      bulbs.forEach(b => b.classList.remove('twinkle'));
-      const randomBulbs = bulbs.sort(() => 0.5 - Math.random()).slice(0, 4);
-      randomBulbs.forEach(b => b.classList.add('twinkle'));
-    }, 400);
+    // A few individual bulbs wink out and return at random. It should feel like a kid's string of Christmas lights, not a nightclub strobe.
+    setInterval(()=>{
+      if(!roomLightsOn) return;
+      const bulbs=[...document.querySelectorAll('.bulb')];
+      bulbs.forEach(b=>b.classList.remove('twinkle'));
+      const count=2+Math.floor(Math.random()*4);
+      [...bulbs].sort(()=>Math.random()-.5).slice(0,count).forEach(b=>b.classList.add('twinkle'));
+    },620);
 
     // Light switch
     document.getElementById('lightSwitch').addEventListener('click', () => {
@@ -1926,6 +2368,12 @@
       refreshLights();
       beep(roomLightsOn ? 660 : 320, 0.08, 'square', 0.025);
       toast(roomLightsOn ? 'Fort lights on.' : 'Fort lights off. Cozy mode engaged.');
+    });
+
+    document.getElementById('lavaLampBtn').addEventListener('click', () => {
+      document.getElementById('lavaLampBtn').classList.toggle('turbo-lava');
+      toast(document.getElementById('lavaLampBtn').classList.contains('turbo-lava') ? 'Lava lamp: RED WARP SPEED.' : 'Lava lamp: normal weird blob speed.');
+      beep(430,0.08,'sine',0.02);
     });
 
     // Window
@@ -2103,14 +2551,62 @@
     const memoryStatus = document.getElementById('memoryStatus');
     const memoryReward = document.getElementById('memoryReward');
 
-    const monsterNames = [
-      'Porkachu',
-      'Quackasaur',
-      'Batburger',
-      'Snailbro',
-      'Toadzilla',
-      'Mallow Wolf'
-    ];
+    const monsterData = {
+      'Porkachu': {
+        desc:'Snack-shocking pork beast',
+        art:`<svg class="monster-art" viewBox="0 0 120 90" aria-hidden="true"><path d="M22 58Q14 41 25 25Q37 8 59 13Q80 7 95 25Q108 42 97 60Q91 77 61 78Q31 79 22 58Z" fill="#f5cc3d" stroke="#5b4212" stroke-width="4"/><path d="M34 24L23 8L43 18M83 22L99 8L91 29" fill="#f5cc3d" stroke="#5b4212" stroke-width="4"/><ellipse cx="43" cy="42" rx="7" ry="9" fill="#fff"/><ellipse cx="78" cy="42" rx="7" ry="9" fill="#fff"/><circle cx="45" cy="44" r="3"/><circle cx="76" cy="44" r="3"/><ellipse cx="60" cy="57" rx="15" ry="11" fill="#e99a76" stroke="#754a36" stroke-width="3"/><circle cx="55" cy="57" r="2"/><circle cx="65" cy="57" r="2"/><path d="M18 45l-11 6 10 4-9 7 16-3" fill="none" stroke="#fff38a" stroke-width="5" stroke-linecap="round"/></svg>`
+      },
+      'Quackasaur': {
+        desc:'Ancient duck with attitude',
+        art:`<svg class="monster-art" viewBox="0 0 120 90" aria-hidden="true"><path d="M31 64Q21 50 29 31Q36 14 58 14Q82 13 91 31Q100 49 88 68Q74 80 48 77Q36 76 31 64Z" fill="#6fb96f" stroke="#264d2b" stroke-width="4"/><path d="M38 24Q24 7 21 29M82 24Q97 8 99 31" fill="#5ba95e" stroke="#264d2b" stroke-width="4"/><ellipse cx="47" cy="40" rx="8" ry="9" fill="#fff"/><ellipse cx="75" cy="40" rx="8" ry="9" fill="#fff"/><circle cx="49" cy="43" r="3"/><circle cx="73" cy="43" r="3"/><path d="M45 53Q61 44 78 54Q62 67 45 53Z" fill="#f0a93c" stroke="#7c5216" stroke-width="3"/><path d="M61 14l5-10 7 12M73 18l8-8 4 13" fill="#8ad68a" stroke="#264d2b" stroke-width="3"/></svg>`
+      },
+      'Batburger': {
+        desc:'Flying burger menace',
+        art:`<svg class="monster-art" viewBox="0 0 120 90" aria-hidden="true"><path d="M35 29Q60 12 85 29L93 39H27Z" fill="#e8a548" stroke="#5a331d" stroke-width="4"/><path d="M25 41H95L88 63H32Z" fill="#6d3a20" stroke="#492416" stroke-width="4"/><path d="M31 48H89" stroke="#63b755" stroke-width="7"/><path d="M34 62Q60 79 86 62" fill="#d88a35" stroke="#5a331d" stroke-width="4"/><path d="M27 44Q9 27 7 53Q19 45 29 59M93 44Q111 27 113 53Q101 45 91 59" fill="#654389" stroke="#2d1b42" stroke-width="4"/><circle cx="49" cy="50" r="5" fill="#fff"/><circle cx="72" cy="50" r="5" fill="#fff"/><circle cx="50" cy="51" r="2"/><circle cx="71" cy="51" r="2"/></svg>`
+      },
+      'Snailbro': {
+        desc:'Slow but emotionally stable',
+        art:`<svg class="monster-art" viewBox="0 0 120 90" aria-hidden="true"><ellipse cx="66" cy="60" rx="43" ry="15" fill="#77bd89" stroke="#28553a" stroke-width="4"/><circle cx="48" cy="43" r="26" fill="#c78459" stroke="#65402d" stroke-width="4"/><path d="M48 27Q69 29 65 48Q61 65 44 58Q32 53 38 42Q44 33 53 38Q60 43 55 50" fill="none" stroke="#7a4a34" stroke-width="5"/><path d="M87 47V25M101 48V25" stroke="#28553a" stroke-width="4"/><circle cx="87" cy="22" r="6" fill="#fff" stroke="#28553a" stroke-width="3"/><circle cx="101" cy="22" r="6" fill="#fff" stroke="#28553a" stroke-width="3"/><circle cx="89" cy="23" r="2"/><circle cx="99" cy="23" r="2"/><path d="M84 62Q94 69 104 61" fill="none" stroke="#28553a" stroke-width="3"/><path d="M75 40h32" stroke="#222" stroke-width="5"/><path d="M80 35h12v10H80M95 35h12v10H95" fill="#273d50" stroke="#111" stroke-width="2"/></svg>`
+      },
+      'Toadzilla': {
+        desc:'Hop-stomp chaos frog',
+        art:`<svg class="monster-art" viewBox="0 0 120 90" aria-hidden="true"><path d="M28 67Q18 49 31 31Q44 15 60 18Q78 14 91 32Q103 50 91 69Q76 80 46 77Q34 75 28 67Z" fill="#5aae62" stroke="#24512c" stroke-width="4"/><circle cx="42" cy="31" r="14" fill="#6bc775" stroke="#24512c" stroke-width="4"/><circle cx="80" cy="31" r="14" fill="#6bc775" stroke="#24512c" stroke-width="4"/><circle cx="43" cy="30" r="7" fill="#fff"/><circle cx="79" cy="30" r="7" fill="#fff"/><circle cx="45" cy="32" r="3"/><circle cx="77" cy="32" r="3"/><path d="M40 57Q60 70 82 56" fill="none" stroke="#214526" stroke-width="4"/><path d="M27 67l-14 10M93 67l14 10" stroke="#24512c" stroke-width="7" stroke-linecap="round"/><path d="M51 20l8-13 8 13" fill="#d85d43" stroke="#6f2d25" stroke-width="3"/></svg>`
+      },
+      'Mallow Wolf': {
+        desc:'Fluffy marshmallow trouble',
+        art:`<svg class="monster-art" viewBox="0 0 120 90" aria-hidden="true"><path d="M31 64Q20 48 28 30Q39 10 59 14Q80 9 94 29Q103 46 92 66Q75 81 47 77Q36 76 31 64Z" fill="#e8e8f1" stroke="#5e6270" stroke-width="4"/><path d="M36 25L23 9L45 17M83 24L98 9L91 31" fill="#d5d6e2" stroke="#5e6270" stroke-width="4"/><ellipse cx="47" cy="41" rx="7" ry="8" fill="#fff"/><ellipse cx="75" cy="41" rx="7" ry="8" fill="#fff"/><circle cx="49" cy="43" r="3"/><circle cx="73" cy="43" r="3"/><path d="M53 54Q61 49 69 54Q66 61 61 62Q56 61 53 54Z" fill="#484953"/><path d="M47 65Q61 72 76 64" fill="none" stroke="#484953" stroke-width="3"/><circle cx="34" cy="53" r="6" fill="#f3c3d5"/><circle cx="87" cy="53" r="6" fill="#f3c3d5"/></svg>`
+      },
+      'Wafflerat': {
+        desc:'Breakfast bandit with syrup rage',
+        art:`<svg class="monster-art" viewBox="0 0 120 90" aria-hidden="true"><path d="M31 25h61v49H31Z" rx="8" fill="#dca64b" stroke="#70491d" stroke-width="4"/><path d="M38 32h47M38 44h47M38 56h47M47 28v40M60 28v40M73 28v40" stroke="#f1ca74" stroke-width="3"/><path d="M30 40Q13 31 16 49Q19 59 33 56M91 38Q108 29 106 48Q104 58 90 56" fill="#a96d3a" stroke="#5d3b21" stroke-width="4"/><circle cx="49" cy="46" r="6" fill="#fff"/><circle cx="75" cy="46" r="6" fill="#fff"/><circle cx="51" cy="47" r="2.5"/><circle cx="73" cy="47" r="2.5"/><path d="M54 62q8 6 16 0" fill="none" stroke="#5f361d" stroke-width="3"/><path d="M87 65q18 6 21 16" fill="none" stroke="#7b4b28" stroke-width="5" stroke-linecap="round"/></svg>`
+      },
+      'Blobcat': {
+        desc:'Purring puddle of questionable physics',
+        art:`<svg class="monster-art" viewBox="0 0 120 90" aria-hidden="true"><path d="M22 66Q15 44 28 29L31 11l16 13q14-8 28 0l16-13 2 20q14 15 5 35Q87 79 61 80Q35 80 22 66Z" fill="#9b73d0" stroke="#4c326f" stroke-width="4"/><ellipse cx="45" cy="45" rx="7" ry="8" fill="#fff"/><ellipse cx="76" cy="45" rx="7" ry="8" fill="#fff"/><circle cx="47" cy="46" r="3"/><circle cx="74" cy="46" r="3"/><path d="M56 57l5 5 5-5M43 62h-23M45 67H25M78 62h23M76 67h20" fill="none" stroke="#432b62" stroke-width="3" stroke-linecap="round"/><circle cx="27" cy="71" r="7" fill="#b992e6"/><circle cx="94" cy="70" r="8" fill="#b992e6"/></svg>`
+      },
+      'Nuggetron': {
+        desc:'Crispy robot with surprisingly deep feelings',
+        art:`<svg class="monster-art" viewBox="0 0 120 90" aria-hidden="true"><rect x="29" y="21" width="63" height="53" rx="20" fill="#d69142" stroke="#67421f" stroke-width="4"/><path d="M40 21q4-13 14-9M79 21q-4-13-14-9" fill="none" stroke="#67421f" stroke-width="4"/><rect x="39" y="33" width="15" height="15" rx="3" fill="#d8f6ff" stroke="#394f5a" stroke-width="3"/><rect x="68" y="33" width="15" height="15" rx="3" fill="#d8f6ff" stroke="#394f5a" stroke-width="3"/><circle cx="46" cy="40" r="3" fill="#39b7e8"/><circle cx="75" cy="40" r="3" fill="#39b7e8"/><path d="M49 59h24M61 49v9" stroke="#6b3e1b" stroke-width="4"/><path d="M28 44 13 35v22l15-5M92 44l15-9v22l-15-5" fill="#7c8790" stroke="#3c444b" stroke-width="4"/><circle cx="61" cy="63" r="5" fill="#ff5d56"/></svg>`
+      },
+      'Craboodle': {
+        desc:'Noodle-clawed beach menace',
+        art:`<svg class="monster-art" viewBox="0 0 120 90" aria-hidden="true"><ellipse cx="61" cy="55" rx="35" ry="24" fill="#e76f55" stroke="#783429" stroke-width="4"/><path d="M35 39Q22 21 10 34Q18 49 34 48M87 39q13-18 25-5-8 15-26 14" fill="#ed8067" stroke="#783429" stroke-width="4"/><path d="M29 60 10 72M40 70 25 84M92 60l19 12M82 70l15 14" stroke="#783429" stroke-width="5" stroke-linecap="round"/><circle cx="49" cy="49" r="7" fill="#fff"/><circle cx="74" cy="49" r="7" fill="#fff"/><circle cx="51" cy="51" r="3"/><circle cx="72" cy="51" r="3"/><path d="M49 65q12 7 24 0" fill="none" stroke="#713126" stroke-width="3"/><path d="M47 31q10-12 19 0M58 28q10-12 19 0" fill="none" stroke="#f1c068" stroke-width="4"/></svg>`
+      },
+      'Picklephant': {
+        desc:'Brined thunder elephant',
+        art:`<svg class="monster-art" viewBox="0 0 120 90" aria-hidden="true"><ellipse cx="59" cy="49" rx="35" ry="30" fill="#68a84f" stroke="#315829" stroke-width="4"/><ellipse cx="30" cy="45" rx="18" ry="22" fill="#79b65e" stroke="#315829" stroke-width="4"/><ellipse cx="88" cy="45" rx="18" ry="22" fill="#79b65e" stroke="#315829" stroke-width="4"/><path d="M59 53q4 8 1 23-2 10 12 9" fill="none" stroke="#315829" stroke-width="8" stroke-linecap="round"/><circle cx="48" cy="42" r="7" fill="#fff"/><circle cx="72" cy="42" r="7" fill="#fff"/><circle cx="50" cy="44" r="3"/><circle cx="70" cy="44" r="3"/><circle cx="48" cy="27" r="3" fill="#9dcd72"/><circle cx="70" cy="61" r="3" fill="#9dcd72"/><circle cx="79" cy="33" r="3" fill="#9dcd72"/></svg>`
+      },
+      'Toastopus': {
+        desc:'Eight arms, zero breakfast manners',
+        art:`<svg class="monster-art" viewBox="0 0 120 90" aria-hidden="true"><path d="M37 19h49q12 0 11 13l-4 31q-1 13-15 13H43q-14 0-15-13l-4-31q-1-13 13-13Z" fill="#d59654" stroke="#694326" stroke-width="4"/><path d="M42 19q4-13 14-8M77 19q-4-13-14-8" fill="none" stroke="#694326" stroke-width="4"/><circle cx="49" cy="42" r="6" fill="#fff"/><circle cx="75" cy="42" r="6" fill="#fff"/><circle cx="51" cy="44" r="2.5"/><circle cx="73" cy="44" r="2.5"/><path d="M53 58q8 6 16 0" fill="none" stroke="#694326" stroke-width="3"/><path d="M34 66q-22 6-17 18M45 72q-14 3-13 13M76 72q14 3 13 13M87 66q22 6 17 18M51 75q-7 4-5 11M70 75q7 4 5 11" fill="none" stroke="#b8666d" stroke-width="5" stroke-linecap="round"/></svg>`
+      }
+    };
+    const monsterNames = Object.keys(monsterData);
+    const MEMORY_PAIR_TOTAL = monsterNames.length;
+    function monsterCardHTML(name){
+      const m=monsterData[name];
+      return `<span class="monster-card">${m.art}<span class="monster-name">${name}</span><span class="monster-desc">${m.desc}</span></span>`;
+    }
 
     let firstCard = null;
     let secondCard = null;
@@ -2124,7 +2620,7 @@
       secondCard = null;
       lockBoard = false;
       matches = 0;
-      memoryStatus.textContent = 'Matches: 0 / 6';
+      memoryStatus.textContent = `Matches: 0 / ${MEMORY_PAIR_TOTAL}`;
 
       const deck = [...monsterNames, ...monsterNames]
         .sort(() => Math.random() - 0.5);
@@ -2133,7 +2629,7 @@
         const card = document.createElement('button');
         card.className = 'card';
         card.dataset.name = name;
-        card.textContent = '?';
+        card.innerHTML = '<span class="card-back">?</span>';
         card.addEventListener('click', () => flipCard(card));
         memoryBoard.appendChild(card);
       });
@@ -2146,7 +2642,7 @@
 
       beep(520, 0.05, 'triangle', 0.02);
       card.classList.add('revealed');
-      card.textContent = card.dataset.name;
+      card.innerHTML = monsterCardHTML(card.dataset.name);
 
       if(!firstCard){
         firstCard = card;
@@ -2162,13 +2658,13 @@
         firstCard.classList.remove('revealed');
         secondCard.classList.remove('revealed');
         matches++;
-        memoryStatus.textContent = `Matches: ${matches} / 6`;
+        memoryStatus.textContent = `Matches: ${matches} / ${MEMORY_PAIR_TOTAL}`;
         firstCard = null;
         secondCard = null;
         lockBoard = false;
         beep(720, 0.09, 'triangle', 0.03);
 
-        if(matches === 6){
+        if(matches === MEMORY_PAIR_TOTAL){
           memoryReward.classList.add('show');
           registerSecret('memory', 'Secret found: memory game beaten.');
           jingle();
@@ -2177,8 +2673,8 @@
         setTimeout(() => {
           firstCard.classList.remove('revealed');
           secondCard.classList.remove('revealed');
-          firstCard.textContent = '?';
-          secondCard.textContent = '?';
+          firstCard.innerHTML = '<span class="card-back">?</span>';
+          secondCard.innerHTML = '<span class="card-back">?</span>';
           firstCard = null;
           secondCard = null;
           lockBoard = false;
@@ -2414,7 +2910,7 @@
     }
 
     function updateGameScore(){
-      gameScoreEl.textContent = `Coins: ${GAME.coins} · Lives: ${GAME.lives}`;
+      gameScoreEl.textContent = `🪙 ${GAME.coins}   •   ❤ ${GAME.lives}`;
     }
 
     function gameToast(msg,ms=1700){
@@ -2554,147 +3050,145 @@
       }
     }
 
-    function drawCloud(x,y,s=1){
-      g.save();
-      g.translate(x,y);
-      g.fillStyle='#f8fbff';
-      g.strokeStyle='rgba(20,40,55,.35)';
-      g.lineWidth=3;
-      g.beginPath();
-      g.arc(0,15,20*s,Math.PI,0);
-      g.arc(25*s,7,26*s,Math.PI,0);
-      g.arc(55*s,17,20*s,Math.PI,0);
-      g.lineTo(55*s,28*s); g.lineTo(0,28*s); g.closePath();
-      g.fill(); g.stroke();
-      g.strokeStyle='#172330'; g.lineWidth=3;
-      g.beginPath();
-      g.moveTo(18*s,17*s);g.lineTo(18*s,22*s);
-      g.moveTo(36*s,17*s);g.lineTo(36*s,22*s);
-      g.stroke();
+    function pixelRect(x,y,w,h,fill,stroke='#1b1b1b',lw=2){
+      g.fillStyle=fill;g.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));
+      if(stroke){g.strokeStyle=stroke;g.lineWidth=lw;g.strokeRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));}
+    }
+
+    function rr(x,y,w,h,r){
+      g.beginPath();g.roundRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h),r);
+    }
+
+    function drawCloud(x,y,s=1,face=true){
+      g.save();g.translate(Math.round(x),Math.round(y));
+      g.fillStyle='rgba(30,89,126,.18)';g.beginPath();g.ellipse(28*s,35*s,42*s,7*s,0,0,Math.PI*2);g.fill();
+      g.fillStyle='#fbfdff';g.strokeStyle='#3d6074';g.lineWidth=2.2;
+      g.beginPath();g.arc(0,20*s,19*s,Math.PI,0);g.arc(23*s,9*s,25*s,Math.PI,0);g.arc(51*s,20*s,20*s,Math.PI,0);g.quadraticCurveTo(58*s,34*s,47*s,35*s);g.lineTo(5*s,35*s);g.quadraticCurveTo(-8*s,32*s,0,20*s);g.closePath();g.fill();g.stroke();
+      if(face){g.strokeStyle='#172a38';g.lineWidth=Math.max(2,3*s);g.lineCap='round';g.beginPath();g.moveTo(18*s,21*s);g.lineTo(18*s,27*s);g.moveTo(36*s,21*s);g.lineTo(36*s,27*s);g.stroke();}
       g.restore();
     }
 
-    function drawCoin(x,y){
-      g.fillStyle='#ffcf35'; g.strokeStyle='#a86a12'; g.lineWidth=3;
-      g.beginPath(); g.ellipse(x,y,9,14,0,0,Math.PI*2); g.fill(); g.stroke();
-      g.fillStyle='#fff1a6'; g.fillRect(x-2,y-8,3,16);
+    function drawCoin(x,y,t=0){
+      const spin=.22+.78*Math.abs(Math.cos(t*.006+x*.011));
+      g.save();g.translate(Math.round(x),Math.round(y));g.scale(spin,1);
+      const grd=g.createLinearGradient(-10,0,10,0);grd.addColorStop(0,'#b96a00');grd.addColorStop(.28,'#ffd52a');grd.addColorStop(.58,'#fff3a3');grd.addColorStop(1,'#d88600');
+      g.fillStyle=grd;g.strokeStyle='#704409';g.lineWidth=3;g.beginPath();g.ellipse(0,0,10,15,0,0,Math.PI*2);g.fill();g.stroke();
+      g.fillStyle='rgba(255,255,255,.75)';g.fillRect(-4,-10,2,16);g.restore();
     }
 
     function drawPipeObj(x,y,w,h){
-      g.fillStyle='#2e9f79'; g.strokeStyle='#155845'; g.lineWidth=4;
-      g.fillRect(x,y,w,h);
-      g.fillStyle='#45c69b'; g.fillRect(x-8,y,w+16,20);
-      g.strokeRect(x-8,y,w+16,20); g.strokeRect(x,y+20,w,h-20);
+      const grd=g.createLinearGradient(x,0,x+w,0);grd.addColorStop(0,'#093b56');grd.addColorStop(.16,'#167f8c');grd.addColorStop(.38,'#42d1b3');grd.addColorStop(.62,'#178a8f');grd.addColorStop(.88,'#0b596d');grd.addColorStop(1,'#062d42');
+      g.fillStyle=grd;g.fillRect(x,y,w,h);g.strokeStyle='#062d3a';g.lineWidth=4;g.strokeRect(x,y,w,h);
+      g.fillStyle='#34bba8';g.fillRect(x-9,y,w+18,21);g.strokeRect(x-9,y,w+18,21);
+      g.fillStyle='rgba(255,255,255,.3)';g.fillRect(x+8,y+5,7,h-10);g.fillStyle='rgba(0,0,0,.2)';g.fillRect(x+w-10,y+4,7,h-8);
+      g.fillStyle='rgba(0,0,0,.26)';g.fillRect(x-4,y+20,w+8,4);
     }
 
-    function drawBlob(e){
-      g.save(); g.translate(e.x,e.y);
-      g.fillStyle='#7c4a2f'; g.strokeStyle='#3b241a'; g.lineWidth=3;
-      g.beginPath();
-      g.roundRect(0,3,e.w,e.h-3,12); g.fill(); g.stroke();
-      g.fillStyle='#fff'; g.fillRect(8,9,5,7); g.fillRect(22,9,5,7);
-      g.fillStyle='#111'; g.fillRect(10,11,2,4); g.fillRect(24,11,2,4);
+    function drawCrate(x,y,kind='star'){
+      pixelRect(x,y,42,42,'#a9652c','#4b2d17',3);pixelRect(x+4,y+4,34,34,'#d99442','#75441f',2);
+      g.strokeStyle='rgba(94,48,20,.55)';g.lineWidth=2;g.beginPath();g.moveTo(x+6,y+9);g.lineTo(x+36,y+33);g.moveTo(x+36,y+9);g.lineTo(x+6,y+33);g.stroke();
+      g.fillStyle='#fff0a4';g.font='900 20px Trebuchet MS';g.textAlign='center';g.fillText(kind==='star'?'★':'M',x+21,y+29);g.textAlign='left';
+    }
+
+    function drawGrumbly(e,t=0){
+      const bob=Math.sin(t*.008+e.x*.02)*2;
+      g.save();g.translate(Math.round(e.x),Math.round(e.y+bob));
+      g.fillStyle='rgba(0,0,0,.18)';g.beginPath();g.ellipse(e.w/2,e.h+3,e.w*.48,4,0,0,Math.PI*2);g.fill();
+      const body=g.createLinearGradient(0,0,0,e.h);body.addColorStop(0,'#aa6742');body.addColorStop(1,'#673522');
+      g.fillStyle=body;g.strokeStyle='#2d1710';g.lineWidth=3;rr(0,4,e.w,e.h-4,10);g.fill();g.stroke();
+      g.fillStyle='#c67b4c';g.beginPath();g.moveTo(4,8);g.lineTo(8,-2);g.lineTo(14,8);g.moveTo(e.w-15,8);g.lineTo(e.w-9,-2);g.lineTo(e.w-4,8);g.fill();
+      g.fillStyle='#fff';rr(5,10,10,10,3);g.fill();rr(19,10,10,10,3);g.fill();g.fillStyle='#121212';g.fillRect(10,13,3,5);g.fillRect(21,13,3,5);
+      g.strokeStyle='#2a1510';g.lineWidth=3;g.beginPath();g.moveTo(7,25);g.quadraticCurveTo(e.w/2,21,e.w-7,25);g.stroke();
+      pixelRect(1,e.h-2,12,5,'#251612',null);pixelRect(e.w-13,e.h-2,12,5,'#251612',null);g.restore();
+    }
+
+    function drawMav(p,cam=0,t=0){
+      const x=Math.round(p.x-cam),y=Math.round(p.y);const walk=Math.abs(p.vx)>15&&p.onGround?Math.sin(t*.018)*3:0;const airborne=!p.onGround;
+      g.save();g.translate(x,y);g.scale(1.18,1.18);g.lineJoin='round';
+      g.fillStyle='rgba(0,0,0,.2)';g.beginPath();g.ellipse(17,48,18,5,0,0,Math.PI*2);g.fill();
+      // shoes + legs
+      pixelRect(5,39+(airborne?-2:walk),12,8,'#1c4c85','#102d50',2);pixelRect(20,39+(airborne?-2:-walk),12,8,'#1c4c85','#102d50',2);
+      pixelRect(3,44+(airborne?-2:walk),15,5,'#f3f0e9','#2a2a2a',2);pixelRect(19,44+(airborne?-2:-walk),15,5,'#f3f0e9','#2a2a2a',2);
+      // blue adventure suit
+      g.fillStyle='#2379d8';g.strokeStyle='#10345c';g.lineWidth=2;rr(5,20,25,21,6);g.fill();g.stroke();pixelRect(1,24,7,13,'#2379d8','#10345c',2);pixelRect(29,24,7,13,'#2379d8','#10345c',2);
+      g.fillStyle='#e8f5ff';rr(9,21,17,7,3);g.fill();g.fillStyle='#ffd452';g.beginPath();g.arc(17.5,31,3.4,0,Math.PI*2);g.fill();
+      // face
+      g.fillStyle='#f0c39d';g.strokeStyle='#684332';g.lineWidth=2;rr(7,5,22,18,7);g.fill();g.stroke();
+      // blond hair
+      g.fillStyle='#efd15b';g.strokeStyle='#8d6b1d';g.lineWidth=2;g.beginPath();g.moveTo(7,11);g.lineTo(9,2);g.lineTo(13,7);g.lineTo(17,1);g.lineTo(21,7);g.lineTo(27,3);g.lineTo(30,11);g.quadraticCurveTo(18,6,7,11);g.fill();g.stroke();
+      // blue eyes and smile
+      g.fillStyle='#fff';rr(10,11,6,6,2);g.fill();rr(20,11,6,6,2);g.fill();g.fillStyle='#4c97df';g.fillRect(12,12,3,4);g.fillRect(21,12,3,4);g.fillStyle='#14273a';g.fillRect(13,13,1,2);g.fillRect(22,13,1,2);g.strokeStyle='#754433';g.lineWidth=2;g.beginPath();g.moveTo(14,19);g.quadraticCurveTo(18,22,23,19);g.stroke();
       g.restore();
     }
 
-    function drawMav(p,cam=0){
-      const x=p.x-cam,y=p.y;
-      g.save();g.translate(x,y);
-      g.fillStyle='#f2c49f';g.beginPath();g.arc(17,12,11,0,Math.PI*2);g.fill();
-      g.fillStyle='#f1d36e';g.beginPath();g.arc(17,7,12,Math.PI,Math.PI*2);g.fill();
-      g.fillStyle='#2e75d3';g.fillRect(7,20,20,19);g.fillRect(4,34,11,12);g.fillRect(20,34,11,12);
-      g.fillStyle='#faf7ef';g.fillRect(9,16,16,10);
-      g.fillStyle='#111';g.fillRect(10,11,3,3);g.fillRect(21,11,3,3);
+    function drawDad(p,cam=0,t=0){
+      const x=Math.round(p.x-cam),y=Math.round(p.y);const walk=Math.abs(player.vx)>15?Math.sin(t*.016+1)*3:0;
+      g.save();g.translate(x,y);g.scale(1.14,1.14);
+      g.fillStyle='rgba(0,0,0,.18)';g.beginPath();g.ellipse(20,56,21,5,0,0,Math.PI*2);g.fill();
+      pixelRect(6,41+walk,12,13,'#29483b','#10251c',2);pixelRect(23,41-walk,12,13,'#29483b','#10251c',2);pixelRect(3,51+walk,16,5,'#33271f','#111',2);pixelRect(22,51-walk,16,5,'#33271f','#111',2);
+      const shirt=g.createLinearGradient(0,24,0,49);shirt.addColorStop(0,'#51a376');shirt.addColorStop(1,'#2f7653');g.fillStyle=shirt;g.strokeStyle='#153827';g.lineWidth=2;rr(5,24,31,25,6);g.fill();g.stroke();pixelRect(0,28,8,15,'#3f9367','#153827',2);pixelRect(35,28,8,15,'#3f9367','#153827',2);
+      g.fillStyle='#dda984';g.strokeStyle='#5c392b';g.lineWidth=2;rr(8,5,25,22,8);g.fill();g.stroke();
+      g.fillStyle='#4b2d22';g.beginPath();g.moveTo(8,12);g.quadraticCurveTo(20,-2,34,10);g.lineTo(31,5);g.quadraticCurveTo(20,-4,7,7);g.fill();
+      g.fillStyle='#4b2d22';g.beginPath();g.moveTo(9,17);g.quadraticCurveTo(20,35,32,17);g.lineTo(30,26);g.quadraticCurveTo(20,35,11,26);g.closePath();g.fill();
+      g.fillStyle='#fff';rr(11,12,6,6,2);g.fill();rr(24,12,6,6,2);g.fill();g.fillStyle='#567c82';g.fillRect(13,13,3,4);g.fillRect(25,13,3,4);g.fillStyle='#111';g.fillRect(14,14,1,2);g.fillRect(26,14,1,2);
       g.restore();
     }
 
-    function drawDad(p,cam=0){
-      const x=p.x-cam,y=p.y;
-      g.save();g.translate(x,y);
-      g.fillStyle='#e0ad87';g.beginPath();g.arc(19,13,12,0,Math.PI*2);g.fill();
-      g.fillStyle='#4a2d23';g.beginPath();g.arc(19,8,13,Math.PI,Math.PI*2);g.fill();
-      g.fillStyle='#4a2d23';g.beginPath();g.arc(19,17,10,0,Math.PI);g.fill();
-      g.fillStyle='#37805c';g.fillRect(7,23,24,22);g.fillRect(4,40,12,14);g.fillRect(23,40,12,14);
-      g.fillStyle='#111';g.fillRect(11,12,3,3);g.fillRect(23,12,3,3);
-      g.restore();
+    function drawGround(pl,cam){
+      const x=Math.round(pl.x-cam);if(x>1000||x+pl.w<0)return;
+      const soil=g.createLinearGradient(0,pl.y,0,pl.y+pl.h);soil.addColorStop(0,'#9e6338');soil.addColorStop(1,'#6e4128');g.fillStyle=soil;g.fillRect(x,pl.y,pl.w,pl.h);g.strokeStyle='#4c2c1c';g.lineWidth=2;g.strokeRect(x,pl.y,pl.w,pl.h);
+      g.fillStyle='#3f9448';g.fillRect(x,pl.y,pl.w,14);g.fillStyle='#76c85c';g.fillRect(x,pl.y,pl.w,5);
+      for(let xx=x+10;xx<x+pl.w;xx+=28){g.fillStyle=(Math.floor(xx/28)%2)?'#805033':'#8f5835';g.fillRect(xx,pl.y+23,14,9);g.fillStyle='rgba(255,209,138,.11)';g.fillRect(xx+2,pl.y+25,6,2);}
+      g.strokeStyle='rgba(66,37,21,.38)';for(let xx=x+18;xx<x+pl.w;xx+=36){g.beginPath();g.moveTo(xx,pl.y+51);g.lineTo(xx+12,pl.y+65);g.stroke();}
+    }
+
+    function drawPine(x,base,s=1,shade='#285e43'){
+      g.save();g.translate(Math.round(x),Math.round(base));g.fillStyle='#5c4027';g.fillRect(-3*s,-34*s,6*s,34*s);g.fillStyle=shade;
+      for(let i=0;i<3;i++){const yy=-78*s+i*22*s;g.beginPath();g.moveTo(0,yy);g.lineTo(-26*s-i*4*s,yy+45*s);g.lineTo(26*s+i*4*s,yy+45*s);g.closePath();g.fill();}g.restore();
     }
 
     function drawWorld(){
-      g.clearRect(0,0,960,540);
-      const cam=GAME.camX;
-      const sky=g.createLinearGradient(0,0,0,540);
-      sky.addColorStop(0,'#63c8ff');sky.addColorStop(1,'#d7f4ff');
-      g.fillStyle=sky;g.fillRect(0,0,960,540);
-
-      drawCloud(90-(cam*.12)%1200,80,1.1);
-      drawCloud(390-(cam*.08)%1400,115,.8);
-      drawCloud(720-(cam*.14)%1500,70,1.0);
-
-      // distant hills
-      g.fillStyle='#79c65b';
-      for(let x=-100-(cam*.22)%260;x<1100;x+=260){
-        g.beginPath();g.arc(x,430,150,Math.PI,0);g.fill();
-      }
-
-      platforms.forEach(pl=>{
-        const x=pl.x-cam;
-        g.fillStyle='#8a5b37';g.fillRect(x,pl.y,pl.w,pl.h);
-        g.fillStyle='#55a83f';g.fillRect(x,pl.y,pl.w,16);
-        g.fillStyle='#8bd05d';g.fillRect(x,pl.y,pl.w,6);
-      });
-
+      const t=performance.now();g.imageSmoothingEnabled=false;g.clearRect(0,0,960,540);const cam=GAME.camX;
+      const sky=g.createLinearGradient(0,0,0,540);sky.addColorStop(0,'#258fe0');sky.addColorStop(.48,'#6ec9f3');sky.addColorStop(.78,'#b9eafa');sky.addColorStop(1,'#ecfbff');g.fillStyle=sky;g.fillRect(0,0,960,540);
+      // sun
+      g.fillStyle='rgba(255,230,121,.38)';g.beginPath();g.arc(835,88,52,0,Math.PI*2);g.fill();g.fillStyle='#ffe078';g.beginPath();g.arc(835,88,31,0,Math.PI*2);g.fill();
+      // far mountains, multiple depth layers
+      g.fillStyle='#91c3db';for(let x=-200-(cam*.06)%330;x<1200;x+=330){g.beginPath();g.moveTo(x,360);g.lineTo(x+140,155);g.lineTo(x+300,360);g.closePath();g.fill();g.fillStyle='#f4fbfd';g.beginPath();g.moveTo(x+95,222);g.lineTo(x+140,155);g.lineTo(x+187,221);g.lineTo(x+154,209);g.lineTo(x+138,232);g.lineTo(x+120,209);g.closePath();g.fill();g.fillStyle='#91c3db';}
+      g.fillStyle='#5d9f88';for(let x=-150-(cam*.13)%290;x<1200;x+=290){g.beginPath();g.moveTo(x,423);g.lineTo(x+120,255);g.lineTo(x+275,423);g.closePath();g.fill();}
+      drawCloud(65-(cam*.10)%1240,74,1.08,true);drawCloud(385-(cam*.07)%1350,122,.82,true);drawCloud(720-(cam*.12)%1500,60,.96,true);
+      // rolling hills
+      g.fillStyle='#70bc59';for(let x=-100-(cam*.17)%250;x<1150;x+=250){g.beginPath();g.arc(x,438,145,Math.PI,0);g.fill();}
+      // pine line
+      for(let i=0;i<11;i++)drawPine(i*112-(cam*.28)%1230,438,(.72+(i%3)*.08),i%2?'#2d7450':'#286546');
+      platforms.forEach(pl=>drawGround(pl,cam));
+      // set dressing
+      [[360,285],[820,245],[1025,300],[1400,255]].forEach((q,i)=>drawCrate(q[0]-cam,q[1],i%2?'M':'star'));
+      // little flowers and rocks
+      for(const [wx,wy] of [[210,438],[540,438],[1040,438],[1515,353],[1640,438]]){const x=wx-cam;if(x>-20&&x<980){g.fillStyle='#fff2a0';g.fillRect(x,wy-12,4,9);g.fillStyle='#f25e77';g.beginPath();g.arc(x+2,wy-14,4,0,Math.PI*2);g.fill();}}
       drawPipeObj(pipe.x-cam,pipe.y,pipe.w,pipe.h);
-
-      worldCoins.forEach(c=>{ if(!c.taken) drawCoin(c.x-cam,c.y); });
-      enemies.forEach(e=>{ if(e.alive) drawBlob({...e,x:e.x-cam}); });
-
-      // flag and fort at end
-      const fx=finish.x-cam;
-      g.strokeStyle='#384b45';g.lineWidth=6;g.beginPath();g.moveTo(fx,finish.y);g.lineTo(fx,445);g.stroke();
-      g.fillStyle='#2d75c9';g.beginPath();g.moveTo(fx+3,finish.y+10);g.lineTo(fx+58,finish.y+30);g.lineTo(fx+3,finish.y+52);g.closePath();g.fill();
-      g.fillStyle='#fff';g.font='bold 20px Trebuchet MS';g.fillText('M',fx+17,finish.y+37);
-      const cx=1810-cam;
-      g.fillStyle='#6a7482';g.fillRect(cx,340,90,105);g.fillRect(cx+16,310,58,135);
-      g.fillStyle='#39424d';g.fillRect(cx+35,385,20,60);
-      for(let i=0;i<5;i++) g.fillRect(cx+i*20,300,10,18);
-
-      drawDad(dad,cam);
-      drawMav(player,cam);
-
-      g.fillStyle='rgba(0,0,0,.55)';g.fillRect(14,14,250,46);
-      g.fillStyle='#fff';g.font='900 18px Trebuchet MS';g.fillText(`WORLD 1 • COINS ${GAME.coins}`,28,43);
+      worldCoins.forEach(c=>{if(!c.taken)drawCoin(c.x-cam,c.y,t);});enemies.forEach(e=>{if(e.alive)drawGrumbly({...e,x:e.x-cam},t);});
+      // Fort Maverick end gate, wood + stone hybrid
+      const fx=finish.x-cam;g.strokeStyle='#3b3026';g.lineWidth=7;g.beginPath();g.moveTo(fx,finish.y);g.lineTo(fx,445);g.stroke();g.fillStyle='#216fc2';g.beginPath();g.moveTo(fx+4,finish.y+8);g.lineTo(fx+68,finish.y+29);g.lineTo(fx+4,finish.y+51);g.closePath();g.fill();g.fillStyle='#fff';g.font='900 20px Trebuchet MS';g.fillText('M',fx+22,finish.y+37);
+      const cx=1810-cam;pixelRect(cx,338,94,107,'#61717a','#29343b',4);pixelRect(cx+15,304,64,141,'#758690','#29343b',4);for(let yy=319;yy<430;yy+=19){for(let xx=0;xx<3;xx++){g.strokeStyle='rgba(30,43,50,.42)';g.strokeRect(cx+19+xx*19+(yy%38?8:0),yy,17,13);}}pixelRect(cx+36,382,22,63,'#241f1b','#15120f',3);for(let i=0;i<5;i++)pixelRect(cx+i*20,293,12,23,'#758690','#29343b',2);g.fillStyle='#ffe27a';g.font='900 12px Trebuchet MS';g.fillText('FORT MAV',cx+16,367);
+      drawDad(dad,cam,t);drawMav(player,cam,t);
+      // Internal game HUD to match the TV presentation
+      g.fillStyle='rgba(7,20,33,.76)';rr(12,12,935,53,10);g.fill();g.strokeStyle='rgba(255,255,255,.18)';g.lineWidth=2;g.stroke();
+      g.fillStyle='#fff';g.font='900 15px Trebuchet MS';g.fillText(`MAV  ❤ ${GAME.lives}`,28,44);g.fillStyle='#ffd54e';g.fillText(`COINS × ${String(GAME.coins).padStart(2,'0')}`,790,44);g.fillStyle='#ffffff';g.font='900 22px Trebuchet MS';g.textAlign='center';g.fillText("SUPER MAVERICK'S WORLD",480,44);g.textAlign='left';
     }
 
     function drawBonus(){
-      g.clearRect(0,0,960,540);
-      g.fillStyle='#1a3141';g.fillRect(0,0,960,540);
-      for(let i=0;i<12;i++){
-        g.fillStyle=i%2?'#294b5e':'#31586c';
-        g.fillRect(i*80,0,42,445);
-      }
-      g.fillStyle='#6f583b';g.fillRect(0,445,960,95);
-      g.fillStyle='#9b7a50';g.fillRect(0,445,960,16);
-      bonusCoins.forEach(c=>{ if(!c.taken) drawCoin(c.x,c.y); });
-      drawPipeObj(35,365,58,80);
-      drawPipeObj(875,365,58,80);
-      drawMav(bonusPlayer,0);
-      g.fillStyle='#fff';g.font='900 24px Trebuchet MS';g.fillText('SECRET COIN ROOM',330,70);
-      g.font='700 14px Trebuchet MS';g.fillText('Grab what you can. The far pipe sends you back.',318,96);
+      const t=performance.now();g.imageSmoothingEnabled=false;g.clearRect(0,0,960,540);const cave=g.createLinearGradient(0,0,0,540);cave.addColorStop(0,'#123448');cave.addColorStop(.55,'#0a2230');cave.addColorStop(1,'#050e16');g.fillStyle=cave;g.fillRect(0,0,960,540);
+      for(let i=0;i<14;i++){g.fillStyle=i%2?'#285a6b':'#1d4658';g.beginPath();g.moveTo(i*75,0);g.lineTo(i*75+38,110+(i%3)*24);g.lineTo(i*75+75,0);g.closePath();g.fill();}
+      for(let i=0;i<60;i++){const x=(i*137)%960,y=70+((i*83)%330);g.fillStyle=i%3?'#74bed0':'#d3f4ff';g.fillRect(x,y,3+(i%2),3+(i%2));}
+      pixelRect(0,445,960,95,'#65523d','#352a20',2);g.fillStyle='#a58b5f';g.fillRect(0,445,960,15);
+      bonusCoins.forEach(c=>{if(!c.taken)drawCoin(c.x,c.y,t);});drawPipeObj(35,365,58,80);drawPipeObj(875,365,58,80);drawMav(bonusPlayer,0,t);
+      g.fillStyle='rgba(3,9,14,.67)';rr(266,28,428,82,12);g.fill();g.strokeStyle='rgba(255,255,255,.15)';g.stroke();g.fillStyle='#ffe27a';g.font='900 27px Trebuchet MS';g.fillText('SECRET COIN CAVE',337,67);g.fillStyle='#fff';g.font='700 13px Trebuchet MS';g.fillText('Grab the shiny stuff. Far tunnel = back to the fort.',317,94);
     }
 
     function drawGame(){
-      if(GAME.mode==='bonus') drawBonus(); else drawWorld();
-      if(GAME.message && performance.now()<GAME.messageUntil){
-        g.font='900 26px Trebuchet MS';
-        const w=Math.min(760,g.measureText(GAME.message).width+44);
-        g.fillStyle='rgba(0,0,0,.72)';g.fillRect((960-w)/2,455,w,54);
-        g.fillStyle='#fff';g.fillText(GAME.message,(960-w)/2+22,490);
-      }
-      if(GAME.won){
-        g.fillStyle='rgba(0,0,0,.42)';g.fillRect(0,0,960,540);
-        g.fillStyle='#fff';g.font='900 48px Trebuchet MS';g.fillText('FORT FLAG REACHED!',235,245);
-        g.font='900 25px Trebuchet MS';g.fillStyle='#ffd166';g.fillText('Maverick wins. Dad claims assistant coach credit.',180,292);
-      }
+      if(GAME.mode==='bonus')drawBonus();else drawWorld();
+      if(GAME.message&&performance.now()<GAME.messageUntil){g.font='900 22px Trebuchet MS';const w=Math.min(790,g.measureText(GAME.message).width+44);g.fillStyle='rgba(5,8,13,.82)';rr((960-w)/2,466,w,46,11);g.fill();g.strokeStyle='rgba(255,255,255,.16)';g.stroke();g.fillStyle='#fff';g.fillText(GAME.message,(960-w)/2+22,496);}
+      if(GAME.won){g.fillStyle='rgba(3,9,14,.63)';g.fillRect(0,0,960,540);g.fillStyle='#fff';g.font='900 45px Trebuchet MS';g.fillText('FORT MAVERICK REACHED!',190,235);g.font='900 22px Trebuchet MS';g.fillStyle='#ffd166';g.fillText('Mav wins. Dad requests assistant-coach snacks.',218,280);}
     }
 
     function gameLoop(t){
@@ -2707,6 +3201,7 @@
     }
 
     function startGame(){
+      g.imageSmoothingEnabled=false;
       if(!gameRunning){
         gameRunning=true;
         lastTime=performance.now();
@@ -2771,4 +3266,3 @@
   </script>
 </body>
 </html>
-
