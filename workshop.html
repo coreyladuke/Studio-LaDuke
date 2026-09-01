@@ -1179,12 +1179,12 @@
         aria-label="Enter McBride’s Arcade"
       ></a>
 
-      <button
+      <a
         class="hotspot pool-hotspot"
         id="poolHotspot"
-        type="button"
-        aria-label="Pool table"
-      ></button>
+        href="pool.html"
+        aria-label="Play pool"
+      ></a>
 
       <button
         class="hotspot sewing-hotspot"
@@ -2212,19 +2212,6 @@
         );
       }
     );
-
-    document
-      .getElementById("poolHotspot")
-      .addEventListener(
-        "click",
-        () => {
-          if (pointerTravel <= 8) {
-            showToast(
-              "Studio Pool is being racked up."
-            );
-          }
-        }
-      );
 
     document
       .getElementById("sewingHotspot")
