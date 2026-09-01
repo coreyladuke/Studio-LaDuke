@@ -2,383 +2,723 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  >
-
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>About Corey | Studio LaDuke</title>
 
   <style>
-    * {
-      box-sizing: border-box;
+    :root {
+      --ink: #090a12;
+      --paper: #fff4d6;
+      --gold: #ffc85a;
+      --coral: #ff654f;
+      --teal: #47d6c5;
+      --violet: #9b76ff;
+      --panel: rgba(16, 18, 31, 0.78);
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    html, body { margin: 0; min-height: 100%; }
 
-    html,
     body {
-      margin: 0;
-      min-height: 100%;
+      overflow-x: hidden;
+      color: var(--paper);
+      background: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
     }
 
-    body {
+    a, button { color: inherit; font: inherit; }
+    a { text-decoration-thickness: 1px; text-underline-offset: 4px; }
+
+    .motion-field {
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      overflow: hidden;
+      pointer-events: none;
       background:
-        radial-gradient(
-          circle at 15% 10%,
-          rgba(147, 92, 52, 0.18),
-          transparent 28%
-        ),
-        linear-gradient(
-          145deg,
-          #171311,
-          #090807 70%
-        );
-
-      color: #eee6d8;
-      font-family: Georgia, serif;
+        radial-gradient(circle at 50% 15%, rgba(65, 32, 100, 0.48), transparent 36%),
+        linear-gradient(145deg, #0b101a, #120b19 56%, #061519);
     }
 
-    a {
-      color: inherit;
+    .swirl {
+      position: absolute;
+      width: 68vmax;
+      aspect-ratio: 1;
+      border-radius: 43% 57% 54% 46% / 58% 44% 56% 42%;
+      filter: blur(48px);
+      mix-blend-mode: screen;
+      opacity: 0.31;
+    }
+
+    .swirl.one {
+      left: -31vmax;
+      top: -34vmax;
+      background: conic-gradient(from 40deg, transparent 0 18%, var(--coral), transparent 42%, var(--gold), transparent 73%, var(--violet));
+      animation: swirlOne 25s linear infinite;
+    }
+
+    .swirl.two {
+      right: -36vmax;
+      top: 20vh;
+      background: conic-gradient(from 190deg, transparent 0 14%, var(--teal), transparent 40%, var(--violet), transparent 71%, var(--coral));
+      animation: swirlTwo 32s linear infinite reverse;
+    }
+
+    .swirl.three {
+      left: 13vw;
+      bottom: -53vmax;
+      background: conic-gradient(from 90deg, var(--gold), transparent 30%, var(--teal), transparent 63%, var(--coral));
+      animation: swirlThree 37s linear infinite;
+    }
+
+    .grain {
+      position: absolute;
+      inset: 0;
+      opacity: 0.14;
+      background-image:
+        repeating-linear-gradient(115deg, transparent 0 7px, rgba(255, 255, 255, 0.025) 8px 9px),
+        repeating-linear-gradient(25deg, transparent 0 11px, rgba(255, 200, 90, 0.022) 12px 13px);
+    }
+
+    @keyframes swirlOne {
+      50% { transform: translate(16vw, 18vh) rotate(180deg) scale(1.12); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes swirlTwo {
+      50% { transform: translate(-18vw, 9vh) rotate(170deg) scale(0.88); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes swirlThree {
+      50% { transform: translate(10vw, -17vh) rotate(190deg) scale(1.08); }
+      100% { transform: rotate(360deg); }
     }
 
     .page {
-      width: min(920px, 100%);
+      width: min(1120px, 100%);
       margin: 0 auto;
-      padding: 24px 18px 60px;
+      padding: calc(18px + env(safe-area-inset-top)) 18px calc(68px + env(safe-area-inset-bottom));
     }
 
-    .top-links {
+    .topbar {
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 44px;
+      gap: 14px;
+      margin-bottom: 30px;
     }
+
+    .brand {
+      color: var(--gold);
+      font-family: Arial, sans-serif;
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.16em;
+      text-decoration: none;
+    }
+
+    .top-links { display: flex; gap: 8px; }
 
     .top-links a {
       padding: 9px 12px;
-
-      border:
-        1px solid rgba(255, 255, 255, 0.2);
-
-      background:
-        rgba(0, 0, 0, 0.35);
-
-      color:
-        rgba(255, 255, 255, 0.72);
-
+      border: 1px solid rgba(255, 244, 214, 0.2);
+      border-radius: 999px;
+      background: rgba(5, 7, 13, 0.44);
+      color: rgba(255, 244, 214, 0.82);
+      font-family: Arial, sans-serif;
+      font-size: 0.74rem;
+      font-weight: 800;
       text-decoration: none;
-      font-size: 0.78rem;
+      backdrop-filter: blur(8px);
     }
 
     .hero {
       position: relative;
-      padding: 34px 0 46px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.75fr);
+      gap: clamp(25px, 5vw, 72px);
+      align-items: center;
+      min-height: 670px;
+      padding: clamp(28px, 6vw, 72px) 0;
     }
 
+    .hero-copy { position: relative; z-index: 3; }
+
     .eyebrow {
-      margin: 0 0 13px;
-      color: #b99066;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 0 20px;
+      color: var(--teal);
+      font-family: Arial, sans-serif;
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
-      letter-spacing: 0.18em;
-      font-size: 0.76rem;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 34px;
+      height: 3px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--coral), var(--gold));
     }
 
     h1 {
       max-width: 760px;
       margin: 0;
+      font-size: clamp(4.2rem, 13vw, 9.2rem);
+      line-height: 0.78;
+      letter-spacing: -0.065em;
+      text-transform: uppercase;
+    }
 
-      font-size:
-        clamp(3rem, 12vw, 7.4rem);
-
-      line-height: 0.88;
-      letter-spacing: -0.04em;
+    h1 span {
+      display: block;
+      margin-left: 0.28em;
+      color: transparent;
+      -webkit-text-stroke: 2px var(--gold);
+      text-shadow: 8px 8px 0 rgba(255, 101, 79, 0.21);
     }
 
     .intro {
-      max-width: 680px;
-      margin: 26px 0 0;
-      color: #c9beb0;
-      font-size: clamp(1.05rem, 3.4vw, 1.32rem);
-      line-height: 1.65;
+      max-width: 730px;
+      margin: 34px 0 0;
+      color: rgba(255, 244, 214, 0.87);
+      font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+      line-height: 1.58;
     }
 
-    .intro strong {
-      color: #f3eadc;
+    .intro strong { color: #fff; }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 11px;
+      margin-top: 28px;
     }
 
-    .sections {
+    .primary-link, .idea-button {
+      min-height: 48px;
+      padding: 13px 17px;
+      border-radius: 8px;
+      font-family: Arial, sans-serif;
+      font-size: 0.81rem;
+      font-weight: 900;
+      letter-spacing: 0.045em;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .primary-link {
+      border: 1px solid var(--gold);
+      color: #19120a;
+      background: linear-gradient(135deg, #ffe19b, var(--gold));
+      box-shadow: 0 10px 24px rgba(255, 200, 90, 0.19);
+    }
+
+    .idea-button {
+      border: 1px solid rgba(71, 214, 197, 0.55);
+      color: var(--paper);
+      background: rgba(71, 214, 197, 0.08);
+    }
+
+    .idea-line {
+      min-height: 28px;
+      margin: 15px 0 0;
+      color: var(--teal);
+      font-family: Arial, sans-serif;
+      font-size: 0.84rem;
+      font-weight: 800;
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .idea-line.changing { opacity: 0; transform: translateY(7px); }
+
+    .art-stack { position: relative; min-height: 520px; }
+
+    .art-card {
+      position: absolute;
+      display: block;
+      overflow: hidden;
+      border: 5px solid rgba(255, 244, 214, 0.92);
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 24px 55px rgba(0, 0, 0, 0.52);
+      transition: transform 220ms ease, filter 220ms ease, z-index 0s;
+    }
+
+    .art-card img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .art-card:nth-child(1) { left: 2%; top: 5%; z-index: 1; width: 66%; aspect-ratio: 1; transform: rotate(-8deg); }
+    .art-card:nth-child(2) { right: 0; top: 20%; z-index: 2; width: 72%; aspect-ratio: 1.23; transform: rotate(7deg); }
+    .art-card:nth-child(3) { left: 12%; bottom: 0; z-index: 3; width: 72%; aspect-ratio: 1; transform: rotate(-2deg); }
+
+    .art-card:hover, .art-card:focus-visible {
+      z-index: 5;
+      filter: saturate(1.12) brightness(1.04);
+      transform: rotate(0deg) scale(1.06);
+    }
+
+    .ticker {
+      margin: 10px calc(50% - 50vw) 54px;
+      overflow: hidden;
+      border-block: 1px solid rgba(255, 244, 214, 0.16);
+      background: rgba(5, 7, 13, 0.47);
+      backdrop-filter: blur(9px);
+    }
+
+    .ticker-track {
+      display: flex;
+      width: max-content;
+      padding: 13px 0;
+      color: var(--gold);
+      font-family: Arial, sans-serif;
+      font-size: 0.82rem;
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      white-space: nowrap;
+      animation: tickerMove 25s linear infinite;
+    }
+
+    .ticker-track span { padding-right: 28px; }
+    @keyframes tickerMove { to { transform: translateX(-50%); } }
+
+    .section-heading {
+      max-width: 820px;
+      margin: 0 0 26px;
+      font-size: clamp(2.25rem, 7vw, 5.2rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+    }
+
+    .section-heading em { color: var(--coral); font-weight: normal; }
+
+    .story-grid {
       display: grid;
-      gap: 20px;
-      margin-top: 34px;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
     }
 
-    .card {
+    .story-card {
       position: relative;
       overflow: hidden;
-      padding: 26px 24px;
-
-      border:
-        1px solid rgba(255, 255, 255, 0.13);
-
+      min-height: 330px;
+      padding: clamp(24px, 4vw, 38px);
+      border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+      border-radius: 22px;
       background:
-        rgba(255, 255, 255, 0.045);
-
-      box-shadow:
-        0 16px 40px rgba(0, 0, 0, 0.28);
+        linear-gradient(145deg, color-mix(in srgb, var(--accent) 13%, transparent), transparent 60%),
+        var(--panel);
+      box-shadow: 0 22px 50px rgba(0, 0, 0, 0.27);
+      backdrop-filter: blur(13px);
     }
 
-    .card::after {
-      content: "";
+    .story-card::before {
+      content: attr(data-number);
       position: absolute;
-      right: -45px;
-      bottom: -65px;
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      background: rgba(168, 103, 64, 0.09);
+      right: -8px;
+      top: -36px;
+      color: color-mix(in srgb, var(--accent) 17%, transparent);
+      font-family: Arial Black, Arial, sans-serif;
+      font-size: 10rem;
+      font-weight: 900;
+      line-height: 1;
     }
 
-    .card h2 {
+    .story-card:nth-child(1) { --accent: var(--teal); grid-column: span 7; transform: rotate(-0.6deg); }
+    .story-card:nth-child(2) { --accent: var(--coral); grid-column: span 5; transform: translateY(28px) rotate(0.8deg); }
+    .story-card:nth-child(3) { --accent: var(--gold); grid-column: 3 / span 8; margin-top: 24px; transform: rotate(-0.4deg); }
+
+    .story-label {
       position: relative;
       z-index: 2;
-      margin: 0 0 12px;
-      font-size: clamp(1.45rem, 5vw, 2rem);
+      display: inline-block;
+      margin-bottom: 22px;
+      padding: 6px 9px;
+      border-radius: 4px;
+      color: #090a12;
+      background: var(--accent);
+      font-family: Arial, sans-serif;
+      font-size: 0.7rem;
+      font-weight: 900;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
     }
 
-    .card p {
+    .story-card h2 {
+      position: relative;
+      z-index: 2;
+      margin: 0 0 16px;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      line-height: 1;
+    }
+
+    .story-card p {
       position: relative;
       z-index: 2;
       margin: 0;
-      color: #c6baac;
-      line-height: 1.7;
+      color: rgba(255, 244, 214, 0.76);
+      font-size: 1.02rem;
+      line-height: 1.68;
     }
 
-    .card p + p {
-      margin-top: 14px;
-    }
+    .story-card p + p { margin-top: 14px; }
 
-    .quote {
-      margin: 38px 0;
-      padding: 28px 24px;
-
-      border-left:
-        5px solid #b68150;
-
+    .manifesto {
+      position: relative;
+      margin: 90px 0 54px;
+      padding: clamp(34px, 7vw, 76px);
+      border: 2px solid var(--gold);
+      border-radius: 32px 7px 32px 7px;
       background:
-        rgba(255, 255, 255, 0.06);
-
-      color: #efe5d6;
-      font-size: clamp(1.3rem, 4.5vw, 2rem);
-      line-height: 1.4;
+        radial-gradient(circle at 92% 12%, rgba(155, 118, 255, 0.27), transparent 31%),
+        linear-gradient(135deg, rgba(255, 101, 79, 0.14), rgba(7, 14, 20, 0.86));
+      box-shadow: 14px 14px 0 rgba(255, 200, 90, 0.11);
+      text-align: center;
     }
 
-    .quote span {
+    .manifesto p {
+      max-width: 900px;
+      margin: 0 auto;
+      font-size: clamp(1.75rem, 5vw, 4rem);
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+    }
+
+    .manifesto strong { color: var(--gold); }
+
+    .manifesto small {
       display: block;
-      margin-top: 12px;
-      color: #9d9184;
-      font-size: 0.8rem;
-      letter-spacing: 0.08em;
+      margin-top: 22px;
+      color: rgba(255, 244, 214, 0.54);
+      font-family: Arial, sans-serif;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
     }
 
     .now {
-      padding: 30px 24px;
-      border: 1px solid rgba(182, 129, 80, 0.45);
-      background:
-        linear-gradient(
-          135deg,
-          rgba(182, 129, 80, 0.15),
-          rgba(255, 255, 255, 0.03)
-        );
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 30px;
+      align-items: end;
+      padding: clamp(28px, 5vw, 54px);
+      border: 1px solid rgba(71, 214, 197, 0.42);
+      border-radius: 22px;
+      background: rgba(5, 15, 20, 0.66);
+      backdrop-filter: blur(12px);
     }
 
-    .now h2 {
-      margin-top: 0;
-      font-size: clamp(1.7rem, 5vw, 2.5rem);
-    }
+    .now h2 { margin: 0 0 14px; color: var(--teal); font-size: clamp(2rem, 5vw, 3.8rem); }
 
     .now p {
-      color: #cbbfb1;
+      max-width: 750px;
+      margin: 0;
+      color: rgba(255, 244, 214, 0.77);
+      font-size: 1.04rem;
       line-height: 1.7;
     }
 
-    .links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 24px;
-    }
+    .now-links { display: grid; gap: 9px; min-width: 185px; }
 
-    .links a {
-      display: inline-block;
-      padding: 12px 16px;
-      border: 1px solid #d8cdbf;
-      color: #eee6d8;
+    .now-links a {
+      padding: 12px 15px;
+      border: 1px solid rgba(255, 244, 214, 0.24);
+      border-radius: 7px;
+      color: var(--paper);
+      background: rgba(255, 255, 255, 0.035);
+      font-family: Arial, sans-serif;
+      font-size: 0.78rem;
+      font-weight: 900;
       text-decoration: none;
     }
 
-    .links a:hover,
-    .links a:focus-visible {
-      background: #eee6d8;
-      color: #15110f;
+    .now-links a:hover, .now-links a:focus-visible {
+      border-color: var(--teal);
+      background: rgba(71, 214, 197, 0.11);
+    }
+
+    .emergency {
+      display: grid;
+      place-items: center;
+      margin: 58px auto 0;
+      text-align: center;
+    }
+
+    .emergency button {
+      padding: 15px 20px;
+      border: 2px solid var(--coral);
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(255, 101, 79, 0.11);
+      box-shadow: 0 0 0 7px rgba(255, 101, 79, 0.06);
+      font-family: Arial, sans-serif;
+      font-size: 0.77rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+    }
+
+    .emergency-output {
+      min-height: 26px;
+      margin: 17px 0 0;
+      color: var(--gold);
+      font-family: Arial, sans-serif;
+      font-size: 0.88rem;
+      font-weight: 800;
     }
 
     footer {
-      margin-top: 50px;
-      padding-top: 22px;
-      border-top: 1px solid rgba(255, 255, 255, 0.15);
-      color: #847a70;
-      font-size: 0.85rem;
-      line-height: 1.6;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin-top: 64px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 244, 214, 0.14);
+      color: rgba(255, 244, 214, 0.45);
+      font-family: Arial, sans-serif;
+      font-size: 0.76rem;
+      line-height: 1.5;
     }
 
-    @media (min-width: 720px) {
-      .sections {
-        grid-template-columns: repeat(2, 1fr);
+    .spark {
+      position: fixed;
+      left: var(--x);
+      top: var(--y);
+      z-index: 100;
+      width: var(--size);
+      height: var(--size);
+      border-radius: 50%;
+      background: var(--color);
+      box-shadow: 0 0 12px var(--color);
+      pointer-events: none;
+      animation: sparkFly 900ms ease-out forwards;
+    }
+
+    @keyframes sparkFly {
+      to { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.2) rotate(240deg); }
+    }
+
+    @media (max-width: 760px) {
+      .topbar { align-items: flex-start; }
+      .top-links { flex-direction: column; align-items: flex-end; }
+      .hero { grid-template-columns: 1fr; min-height: auto; padding-top: 48px; }
+      h1 { font-size: clamp(4.2rem, 24vw, 7.2rem); }
+      .art-stack { width: min(440px, 94%); min-height: 465px; margin: 4px auto 0; }
+      .ticker { margin-top: 20px; }
+      .story-grid { display: grid; grid-template-columns: 1fr; }
+
+      .story-card:nth-child(1),
+      .story-card:nth-child(2),
+      .story-card:nth-child(3) {
+        grid-column: 1;
+        margin-top: 0;
+        transform: none;
       }
 
-      .card:last-child {
-        grid-column: 1 / -1;
+      .now { grid-template-columns: 1fr; align-items: start; }
+      .now-links { grid-template-columns: 1fr 1fr; min-width: 0; }
+      footer { flex-direction: column; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation: none !important;
+        transition: none !important;
       }
     }
   </style>
 </head>
 
 <body>
+  <div class="motion-field" aria-hidden="true">
+    <div class="swirl one"></div>
+    <div class="swirl two"></div>
+    <div class="swirl three"></div>
+    <div class="grain"></div>
+  </div>
 
   <main class="page">
-
-    <nav class="top-links" aria-label="Page navigation">
-      <a href="directory.html">
-        Directory
-      </a>
-
-      <a href="workshop.html">
-        The Workshop
-      </a>
+    <nav class="topbar" aria-label="Page navigation">
+      <a class="brand" href="index.html">STUDIO LADUKE</a>
+      <div class="top-links">
+        <a href="directory.html">Directory</a>
+        <a href="workshop.html">The Workshop</a>
+      </div>
     </nav>
 
     <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Tlingit &amp; Haida artist · Ketchikan, Alaska</p>
+        <h1>Corey <span>LaDuke</span></h1>
 
-      <p class="eyebrow">
-        Artist · Builder · Writer · Musician
-      </p>
+        <p class="intro">
+          <strong>I create art, books, songs, furniture, upholstery, websites, and whatever else refuses to stay trapped in my head.</strong>
+          Studio LaDuke is where serious work, strange humor, hard-earned rebuilding, and unreasonable ideas all get to share one roof.
+        </p>
 
-      <h1>
-        Corey<br>
-        LaDuke
-      </h1>
+        <div class="hero-actions">
+          <a class="primary-link" href="workshop.html">Step into the workshop</a>
+          <button class="idea-button" id="ideaButton" type="button">Spin the idea wheel</button>
+        </div>
 
-      <p class="intro">
-        I make things because leaving an idea trapped inside my head
-        seems unnecessarily cruel.
-        <strong>Studio LaDuke</strong> is where those ideas become
-        books, paddles, drawings, music, objects, experiments,
-        and occasionally very strange websites.
-      </p>
+        <p class="idea-line" id="ideaLine" aria-live="polite">Current setting: make the weird version first.</p>
+      </div>
 
+      <div class="art-stack" aria-label="A few Studio LaDuke creations">
+        <a class="art-card" href="gallery.html" aria-label="See more Studio LaDuke artwork">
+          <img src="IMG_3211.jpeg" alt="Studio LaDuke graphic">
+        </a>
+        <a class="art-card" href="gallery.html" aria-label="See the Hump Day whale artwork in the gallery">
+          <img src="9EAA20AB-901D-41E1-AC98-64455D1A291D.png" alt="Hump Day whale artwork">
+        </a>
+        <a class="art-card" href="gallery.html" aria-label="See the Feel the Burn jellyfish artwork in the gallery">
+          <img src="8E115567-F28C-456A-8E51-6EB4BA67B0A3.png" alt="Feel the Burn jellyfish artwork">
+        </a>
+      </div>
     </header>
 
-    <section class="sections">
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-track">
+        <span>ART · WORDS · MUSIC · BUILD · REPAIR · LAUGH · REPEAT ·</span>
+        <span>ART · WORDS · MUSIC · BUILD · REPAIR · LAUGH · REPEAT ·</span>
+      </div>
+    </div>
 
-      <article class="card">
-        <h2>Where I’m From</h2>
+    <section aria-labelledby="aboutStory">
+      <h2 class="section-heading" id="aboutStory">One person. <em>No tidy category.</em></h2>
 
-        <p>
-          I live and work in Ketchikan, Alaska, where rain, cedar,
-          boats, mountains, music, and stories all seem to collect
-          in the same corners.
-        </p>
+      <div class="story-grid">
+        <article class="story-card" data-number="01">
+          <span class="story-label">Place</span>
+          <h2>Where I’m From</h2>
+          <p>I live and create in Ketchikan, Alaska—rainy, isolated, beautiful, and full of the kind of stories that stick to everything.</p>
+          <p>I’m Tlingit and Haida, Teiḵwèidi (Brown Bear) of Sàanyàa Ḵwáan. Place, family, Northwest Coast formline, boats, cedar, music, humor, and lived experience all find their way into the work.</p>
+        </article>
 
-        <p>
-          My work is shaped by place, family, Northwest Coast art,
-          lived experience, and the stubborn belief that damaged
-          things can become meaningful without pretending they were
-          never broken.
-        </p>
-      </article>
+        <article class="story-card" data-number="02">
+          <span class="story-label">The pile</span>
+          <h2>What I Create</h2>
+          <p>Northwest Coast art and contemporary illustration. Books and stories. Songs. Paddles. Upholstery. Furniture. Wallets, shoes, prototypes, websites, and whatever else might become interesting if I keep messing with it.</p>
+          <p>Some projects are polished. Some are prototypes. Some are held together by epoxy, curiosity, and unreasonable confidence.</p>
+        </article>
 
-      <article class="card">
-        <h2>What I Make</h2>
-
-        <p>
-          Books, drawings, paddles, furniture, upholstery,
-          prototypes, websites, songs, wallets, shoes, and anything
-          else that refuses to stay an idea.
-        </p>
-
-        <p>
-          Some projects are polished. Some are prototypes.
-          Some are held together by epoxy, curiosity, and
-          unreasonable confidence.
-        </p>
-      </article>
-
-      <article class="card">
-        <h2>Why Studio LaDuke Exists</h2>
-
-        <p>
-          This is not one narrow brand with one tidy category.
-          It is a workshop for the whole pile.
-        </p>
-
-        <p>
-          Studio LaDuke exists to make room for serious work,
-          strange humor, recovery, experimentation, craftsmanship,
-          and whatever comes next.
-        </p>
-      </article>
-
+        <article class="story-card" data-number="03">
+          <span class="story-label">The reason</span>
+          <h2>Why Studio LaDuke Exists</h2>
+          <p>This isn’t one clean brand with one tidy category. It’s the roof over the whole pile—a place for art, craftsmanship, stories, recovery, experiments, stupid jokes, and whatever comes next.</p>
+          <p>I believe broken doesn’t mean finished. A life, an object, or an idea can carry the marks of what happened and still become something worth keeping.</p>
+        </article>
+      </div>
     </section>
 
-    <blockquote class="quote">
-      “I am not waiting until I have everything figured out.
-      Apparently, that would take forever.”
-      <span>Studio LaDuke operating principle</span>
+    <blockquote class="manifesto">
+      <p>I’m not waiting until I have everything figured out. <strong>Apparently, that would take forever.</strong></p>
+      <small>Studio LaDuke operating principle</small>
     </blockquote>
 
     <section class="now">
-
-      <h2>Currently Under Construction</h2>
-
-      <p>
-        I am finishing my first book,
-        <em>Everybody Deserves to Go Home</em>,
-        developing Bob’s World, learning web design,
-        building physical projects, and figuring out what happens
-        when all of those things are allowed to share one roof.
-      </p>
-
-      <div class="links">
-
-        <a href="books.html">
-          See the books
-        </a>
-
-        <a href="projects.html">
-          See the projects
-        </a>
-
-        <a href="brain.html">
-          Enter the brain room
-        </a>
-
+      <div>
+        <h2>Currently Making</h2>
+        <p>I’m finishing <em>Everybody Deserves to Go Home</em>, building Bob’s World and this strange little digital workshop, making physical objects, writing songs, and finding out what happens when none of those things are forced to live in separate boxes.</p>
       </div>
 
+      <div class="now-links">
+        <a href="books.html">Read about the book</a>
+        <a href="gallery.html">See the artwork</a>
+        <a href="bob.html">Visit Bob’s World</a>
+        <a href="brain.html">Enter the brain room</a>
+      </div>
+    </section>
+
+    <section class="emergency" aria-label="Creative emergency button">
+      <button id="emergencyButton" type="button">BREAK GLASS IN CASE OF BORING</button>
+      <p class="emergency-output" id="emergencyOutput" aria-live="polite"></p>
     </section>
 
     <footer>
-      Studio LaDuke<br>
-      Ketchikan, Alaska
+      <span>Studio LaDuke · Ketchikan, Alaska</span>
+      <span>Built before I had it all figured out.</span>
     </footer>
-
   </main>
 
+  <script>
+    const ideaButton = document.getElementById("ideaButton");
+    const ideaLine = document.getElementById("ideaLine");
+    const emergencyButton = document.getElementById("emergencyButton");
+    const emergencyOutput = document.getElementById("emergencyOutput");
+
+    const ideas = [
+      "Make something useful, then make it a little strange.",
+      "Start with the version you’re almost embarrassed to explain.",
+      "Combine two things that were never supposed to meet.",
+      "If it needs permission, this is the permission.",
+      "Make the weird version first. You can behave later.",
+      "Build the thing you keep wishing already existed."
+    ];
+
+    const emergencyLines = [
+      "Official permission granted: make the dumb version first.",
+      "Add one color that has no business being there.",
+      "Turn the mistake into the part people remember.",
+      "Stop polishing. Start playing.",
+      "Put the serious idea next to the stupid joke. Keep both."
+    ];
+
+    let lastIdea = -1;
+    let lastEmergency = -1;
+
+    function differentIndex(items, previous) {
+      if (items.length < 2) return 0;
+      let next = previous;
+      while (next === previous) next = Math.floor(Math.random() * items.length);
+      return next;
+    }
+
+    function makeSparks(origin) {
+      const colors = ["#ffc85a", "#ff654f", "#47d6c5", "#9b76ff", "#fff4d6"];
+      const rect = origin.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      for (let index = 0; index < 22; index += 1) {
+        const spark = document.createElement("span");
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 55 + Math.random() * 145;
+
+        spark.className = "spark";
+        spark.style.setProperty("--x", centerX + "px");
+        spark.style.setProperty("--y", centerY + "px");
+        spark.style.setProperty("--dx", Math.cos(angle) * distance + "px");
+        spark.style.setProperty("--dy", Math.sin(angle) * distance + "px");
+        spark.style.setProperty("--size", 4 + Math.random() * 8 + "px");
+        spark.style.setProperty("--color", colors[Math.floor(Math.random() * colors.length)]);
+
+        document.body.appendChild(spark);
+        window.setTimeout(() => spark.remove(), 950);
+      }
+    }
+
+    ideaButton.addEventListener("click", () => {
+      lastIdea = differentIndex(ideas, lastIdea);
+      ideaLine.classList.add("changing");
+      window.setTimeout(() => {
+        ideaLine.textContent = ideas[lastIdea];
+        ideaLine.classList.remove("changing");
+      }, 150);
+      makeSparks(ideaButton);
+    });
+
+    emergencyButton.addEventListener("click", () => {
+      lastEmergency = differentIndex(emergencyLines, lastEmergency);
+      emergencyOutput.textContent = emergencyLines[lastEmergency];
+      makeSparks(emergencyButton);
+    });
+  </script>
 </body>
 </html>
