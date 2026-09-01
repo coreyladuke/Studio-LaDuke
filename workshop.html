@@ -418,6 +418,129 @@
       height: 44%;
     }
 
+    /* WALL STEREO */
+    .stereo-hotspot {
+      left: 21.7%;
+      top: 17.2%;
+      width: 14.2%;
+      height: 11.8%;
+    }
+
+    .stereo-hotspot::before {
+      content: "";
+      position: absolute;
+      inset: 4% 2%;
+      z-index: -1;
+      border-radius: 10px;
+      pointer-events: none;
+      opacity: 0;
+      background:
+        radial-gradient(
+          ellipse at center,
+          rgba(255, 190, 70, 0.34),
+          rgba(255, 145, 35, 0.14) 48%,
+          transparent 74%
+        );
+      filter: blur(7px);
+      transition: opacity 220ms ease;
+    }
+
+    .stereo-hotspot.is-playing::before {
+      opacity: 0.9;
+      animation: stereoPulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes stereoPulse {
+      0%,
+      100% {
+        opacity: 0.46;
+        transform: scale(0.96);
+      }
+
+      50% {
+        opacity: 0.98;
+        transform: scale(1.04);
+      }
+    }
+
+    /* Appears only after the wall stereo has been used. */
+    .stereo-controls {
+      position: fixed;
+      right: calc(14px + env(safe-area-inset-right));
+      bottom: calc(72px + env(safe-area-inset-bottom));
+      z-index: 165;
+
+      width: min(290px, calc(100vw - 28px));
+      padding: 10px 12px;
+
+      color: #f4e3bf;
+      background: rgba(14, 11, 8, 0.9);
+      border: 1px solid rgba(225, 183, 100, 0.52);
+      border-radius: 10px;
+      box-shadow: 0 9px 28px rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(8px);
+
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(8px);
+      transition:
+        opacity 180ms ease,
+        transform 180ms ease,
+        visibility 180ms ease;
+    }
+
+    .stereo-controls.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .stereo-now-playing {
+      overflow: hidden;
+      margin-bottom: 8px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-family: Arial, sans-serif;
+      font-size: 0.78rem;
+      color: rgba(246, 226, 190, 0.88);
+    }
+
+    .stereo-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr 1fr;
+      gap: 7px;
+    }
+
+    .stereo-control {
+      min-height: 38px;
+      border: 1px solid rgba(225, 183, 100, 0.38);
+      border-radius: 7px;
+      color: #f5dfb2;
+      background: rgba(255, 255, 255, 0.045);
+      cursor: pointer;
+      font-family: Arial, sans-serif;
+      font-size: 0.82rem;
+    }
+
+    .stereo-control:hover,
+    .stereo-control:focus-visible {
+      background: rgba(213, 167, 82, 0.14);
+      border-color: rgba(225, 183, 100, 0.72);
+    }
+
+    @media (max-width: 700px) and (orientation: portrait) {
+      .stereo-controls {
+        left: 50%;
+        right: auto;
+        bottom: calc(72px + env(safe-area-inset-bottom));
+        transform: translate(-50%, 8px);
+      }
+
+      .stereo-controls.show {
+        transform: translate(-50%, 0);
+      }
+    }
+
     /* A quiet arcade glow so the machine feels alive without
        turning the room into a neon sign. */
     .arcade-hotspot::before {
@@ -1084,6 +1207,13 @@
         aria-label="Forest doorway"
       ></button>
 
+      <button
+        class="hotspot stereo-hotspot"
+        id="stereoHotspot"
+        type="button"
+        aria-label="Workshop stereo"
+      ></button>
+
       <div
         class="thrown-ball"
         id="thrownBall"
@@ -1244,8 +1374,93 @@
     aria-live="polite"
   ></div>
 
+  <div
+    class="stereo-controls"
+    id="stereoControls"
+    aria-label="Workshop stereo controls"
+  >
+    <div
+      class="stereo-now-playing"
+      id="stereoNowPlaying"
+    >
+      Workshop stereo
+    </div>
+
+    <div class="stereo-buttons">
+      <button
+        class="stereo-control"
+        id="stereoPrevious"
+        type="button"
+        aria-label="Previous track"
+      >
+        ◀ Prev
+      </button>
+
+      <button
+        class="stereo-control"
+        id="stereoPlayPause"
+        type="button"
+        aria-label="Play or pause"
+      >
+        ▶ Play
+      </button>
+
+      <button
+        class="stereo-control"
+        id="stereoNext"
+        type="button"
+        aria-label="Next track"
+      >
+        Next ▶
+      </button>
+    </div>
+  </div>
+
+  <audio
+    id="workshopStereo"
+    preload="metadata"
+  ></audio>
+
   <script>
     "use strict";
+
+    const stereoPlaylist = [
+      {
+        title: "No Filter",
+        artist: "AlexGrohl",
+        src: "audio/alexgrohl-no-filter-garage-rock-449647.mp3"
+      },
+      {
+        title: "Catchy Garage Rock",
+        artist: "MagpieMusic",
+        src: "audio/magpiemusic-catchy-garage-rock-342334.mp3"
+      },
+      {
+        title: "Garage Rock",
+        artist: "OctoSound",
+        src: "audio/octosound-garage-rock-563899.mp3"
+      },
+      {
+        title: "Dirty Neon Nights",
+        artist: "OpenMindAudio",
+        src: "audio/openmindaudio-background-music-garage-rock-dirty-neon-nights-503855.mp3"
+      },
+      {
+        title: "Punk Rock Heatwave",
+        artist: "VibeMode",
+        src: "audio/vibemode-punk-rock-heatwave-545931.mp3"
+      },
+      {
+        title: "Garage Indie Rock",
+        artist: "VJGalaxy",
+        src: "audio/vjgalaxy-garage-indie-rock-background-music-570902.mp3"
+      },
+      {
+        title: "Garage Indie Rock Instrumental",
+        artist: "VJGalaxy",
+        src: "audio/vjgalaxy-garage-indie-rock-rock-instrumental-570901.mp3"
+      }
+    ];
 
     const artworkFiles = [
       "IMG_3211.jpeg",
@@ -1309,6 +1524,27 @@
     const thrownBall =
       document.getElementById("thrownBall");
 
+    const stereoHotspot =
+      document.getElementById("stereoHotspot");
+
+    const workshopStereo =
+      document.getElementById("workshopStereo");
+
+    const stereoControls =
+      document.getElementById("stereoControls");
+
+    const stereoNowPlaying =
+      document.getElementById("stereoNowPlaying");
+
+    const stereoPrevious =
+      document.getElementById("stereoPrevious");
+
+    const stereoPlayPause =
+      document.getElementById("stereoPlayPause");
+
+    const stereoNext =
+      document.getElementById("stereoNext");
+
     const roomDotLeft =
       document.getElementById("roomDotLeft");
 
@@ -1321,6 +1557,11 @@
     let artworkData = [];
     let activeArtworkIndex = 0;
     let toastTimer = null;
+
+    let stereoTrackIndex = 0;
+    let stereoHasStarted = false;
+
+    workshopStereo.volume = 0.58;
 
     let roomX = 0;
     let minRoomX = 0;
@@ -1697,6 +1938,79 @@
       }
     }
 
+    function updateStereoDisplay() {
+      const track = stereoPlaylist[stereoTrackIndex];
+
+      stereoNowPlaying.textContent =
+        track.title + " · " + track.artist;
+
+      const playing = !workshopStereo.paused;
+
+      stereoPlayPause.textContent =
+        playing ? "❚❚ Pause" : "▶ Play";
+
+      stereoHotspot.classList.toggle(
+        "is-playing",
+        playing
+      );
+    }
+
+    function loadStereoTrack(index, autoplay = false) {
+      stereoTrackIndex =
+        (
+          index + stereoPlaylist.length
+        ) % stereoPlaylist.length;
+
+      const track = stereoPlaylist[stereoTrackIndex];
+
+      workshopStereo.src = track.src;
+      workshopStereo.load();
+      updateStereoDisplay();
+
+      if (autoplay) {
+        const playAttempt = workshopStereo.play();
+
+        if (playAttempt && typeof playAttempt.catch === "function") {
+          playAttempt.catch(() => {
+            updateStereoDisplay();
+          });
+        }
+      }
+    }
+
+    function showStereoControls() {
+      stereoControls.classList.add("show");
+    }
+
+    function toggleStereo() {
+      showStereoControls();
+
+      if (!stereoHasStarted) {
+        stereoHasStarted = true;
+        loadStereoTrack(stereoTrackIndex, true);
+        showToast("The workshop stereo wakes up.");
+        return;
+      }
+
+      if (workshopStereo.paused) {
+        workshopStereo.play().catch(() => {});
+      } else {
+        workshopStereo.pause();
+      }
+    }
+
+    function nextStereoTrack() {
+      stereoHasStarted = true;
+      showStereoControls();
+      loadStereoTrack(stereoTrackIndex + 1, true);
+    }
+
+    function previousStereoTrack() {
+      stereoHasStarted = true;
+      showStereoControls();
+      loadStereoTrack(stereoTrackIndex - 1, true);
+    }
+
     function showToast(text) {
       window.clearTimeout(toastTimer);
 
@@ -1837,6 +2151,68 @@
         );
       });
 
+    stereoHotspot.addEventListener(
+      "click",
+      () => {
+        if (pointerTravel <= 8) {
+          toggleStereo();
+        }
+      }
+    );
+
+    stereoPlayPause.addEventListener(
+      "click",
+      event => {
+        event.stopPropagation();
+        toggleStereo();
+      }
+    );
+
+    stereoPrevious.addEventListener(
+      "click",
+      event => {
+        event.stopPropagation();
+        previousStereoTrack();
+      }
+    );
+
+    stereoNext.addEventListener(
+      "click",
+      event => {
+        event.stopPropagation();
+        nextStereoTrack();
+      }
+    );
+
+    workshopStereo.addEventListener(
+      "play",
+      updateStereoDisplay
+    );
+
+    workshopStereo.addEventListener(
+      "pause",
+      updateStereoDisplay
+    );
+
+    workshopStereo.addEventListener(
+      "ended",
+      nextStereoTrack
+    );
+
+    workshopStereo.addEventListener(
+      "error",
+      () => {
+        showToast(
+          "That track did not load. Trying the next one."
+        );
+
+        window.setTimeout(
+          nextStereoTrack,
+          550
+        );
+      }
+    );
+
     document
       .getElementById("poolHotspot")
       .addEventListener(
@@ -1912,6 +2288,7 @@
     );
 
     loadArtworkData();
+    loadStereoTrack(0, false);
 
     window.setTimeout(() => {
       try {
