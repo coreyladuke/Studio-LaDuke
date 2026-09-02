@@ -1,838 +1,114 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  >
-
-  <title>The Room Inside My Head</title>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#160d18">
+  <title>The Room Inside My Head | Studio LaDuke</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      margin: 0;
-      width: 100%;
-      min-height: 100%;
-      overflow: hidden;
-      background: #050505;
-      color: #f4ecd9;
-      font-family: Georgia, serif;
-    }
-
-    button,
-    a {
-      font: inherit;
-    }
-
-    .room {
-      position: relative;
-      width: 100vw;
-      height: 100svh;
-      min-height: 580px;
-      overflow: hidden;
-
-      background:
-        radial-gradient(
-          ellipse at 25% 20%,
-          rgba(130, 54, 75, 0.45),
-          transparent 35%
-        ),
-        radial-gradient(
-          ellipse at 75% 35%,
-          rgba(89, 45, 83, 0.5),
-          transparent 34%
-        ),
-        repeating-radial-gradient(
-          ellipse at 50% 15%,
-          #4c2737 0 16px,
-          #66354a 17px 30px,
-          #351b29 31px 45px
-        );
-    }
-
-    .room::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 30;
-
-      background:
-        radial-gradient(
-          circle at 50% 42%,
-          transparent 0 34%,
-          rgba(0, 0, 0, 0.48) 68%,
-          rgba(0, 0, 0, 0.92) 100%
-        );
-    }
-
-    .title {
-      position: absolute;
-      top: 18px;
-      left: 50%;
-      z-index: 40;
-      width: 92%;
-      transform: translateX(-50%);
-      text-align: center;
-      pointer-events: none;
-      text-shadow: 0 3px 15px black;
-    }
-
-    .title h1 {
-      margin: 0;
-      font-size: clamp(1.5rem, 6vw, 2.6rem);
-      letter-spacing: 0.05em;
-    }
-
-    .title p {
-      margin: 7px 0 0;
-      color: #c7b7bd;
-      font-size: 0.85rem;
-    }
-
-    .cord {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      z-index: 8;
-      width: 3px;
-      height: 20%;
-      transform: translateX(-50%);
-      background: #111;
-    }
-
-    .light-button {
-      position: absolute;
-      top: 18%;
-      left: 50%;
-      z-index: 18;
-      width: 70px;
-      height: 90px;
-      padding: 0;
-      transform: translate(-50%, -10%);
-      border: 0;
-      background: transparent;
-      cursor: pointer;
-    }
-
-    .bulb {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      width: 48px;
-      height: 58px;
-      transform: translateX(-50%);
-      border: 3px solid #252525;
-      border-radius: 50%;
-      background: #373229;
-      transition: 0.25s;
-    }
-
-    .bulb::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      bottom: -18px;
-      width: 25px;
-      height: 19px;
-      transform: translateX(-50%);
-
-      background:
-        repeating-linear-gradient(
-          #555 0 3px,
-          #222 4px 6px
-        );
-    }
-
-    .room.light-on .bulb {
-      background: #ffe7a0;
-      border-color: #927741;
-
-      box-shadow:
-        0 0 25px #ffd36f,
-        0 0 90px rgba(255, 211, 111, 0.75),
-        0 0 180px rgba(255, 211, 111, 0.35);
-    }
-
-    .window {
-      position: absolute;
-      top: 28%;
-      left: 6%;
-      z-index: 10;
-      width: min(29vw, 250px);
-      height: min(25vh, 210px);
-      padding: 0;
-      border: 8px solid #281812;
-
-      background:
-        radial-gradient(
-          circle at 72% 24%,
-          #dedbc8 0 5%,
-          transparent 6%
-        ),
-        linear-gradient(
-          #111a2a 0 65%,
-          #071018 66%
-        );
-
-      box-shadow:
-        inset 0 0 28px black,
-        0 15px 35px rgba(0, 0, 0, 0.55);
-
-      cursor: pointer;
-    }
-
-    .window::before,
-    .window::after {
-      content: "";
-      position: absolute;
-      background: #281812;
-    }
-
-    .window::before {
-      top: 0;
-      left: 50%;
-      width: 6px;
-      height: 100%;
-      transform: translateX(-50%);
-    }
-
-    .window::after {
-      top: 50%;
-      left: 0;
-      width: 100%;
-      height: 6px;
-      transform: translateY(-50%);
-    }
-
-    .window-text {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      padding: 15px;
-      color: transparent;
-      text-align: center;
-      font-size: clamp(0.7rem, 2.7vw, 1rem);
-      line-height: 1.35;
-      transition: 0.2s;
-    }
-
-    .room.light-on .window-text {
-      color: #eee4c6;
-      text-shadow: 0 2px 8px black;
-    }
-
-    .floor {
-      position: absolute;
-      left: -10%;
-      bottom: -5%;
-      z-index: 5;
-      width: 120%;
-      height: 38%;
-      transform: perspective(600px) rotateX(55deg);
-      transform-origin: bottom;
-
-      background:
-        repeating-linear-gradient(
-          90deg,
-          #2f1c13 0 47px,
-          #1e120d 48px 52px,
-          #3a2418 53px 99px
-        );
-
-      box-shadow: inset 0 20px 45px black;
-    }
-
-    .table {
-      position: absolute;
-      left: 50%;
-      bottom: 20%;
-      z-index: 14;
-      width: min(60vw, 520px);
-      height: 25px;
-      transform: translateX(-50%);
-      border-radius: 5px;
-
-      background:
-        linear-gradient(
-          #795039,
-          #3e261a
-        );
-
-      box-shadow:
-        0 10px 22px rgba(0, 0, 0, 0.7);
-    }
-
-    .table::before,
-    .table::after {
-      content: "";
-      position: absolute;
-      top: 22px;
-      width: 18px;
-      height: 155px;
-
-      background:
-        linear-gradient(
-          90deg,
-          #26160f,
-          #593622,
-          #24140e
-        );
-    }
-
-    .table::before {
-      left: 10%;
-    }
-
-    .table::after {
-      right: 10%;
-    }
-
-    .bob {
-      position: absolute;
-      left: 50%;
-      bottom: calc(20% + 23px);
-      z-index: 20;
-      width: 125px;
-      height: 185px;
-      transform: translateX(-50%);
-      border: 0;
-      background: transparent;
-      cursor: pointer;
-    }
-
-    .plant {
-      position: absolute;
-      left: 50%;
-      bottom: 64px;
-      width: 110px;
-      height: 120px;
-      transform: translateX(-50%);
-    }
-
-    .leaf {
-      position: absolute;
-      left: 50%;
-      bottom: 0;
-      width: 24px;
-      height: 110px;
-      border-radius: 70% 15% 70% 18%;
-      transform-origin: bottom center;
-
-      background:
-        linear-gradient(
-          90deg,
-          #172817,
-          #416932,
-          #1b341b
-        );
-    }
-
-    .leaf:nth-child(1) {
-      transform: translateX(-50%) rotate(-38deg) scale(0.8);
-    }
-
-    .leaf:nth-child(2) {
-      transform: translateX(-50%) rotate(-19deg) scale(0.92);
-    }
-
-    .leaf:nth-child(3) {
-      transform: translateX(-50%);
-    }
-
-    .leaf:nth-child(4) {
-      transform: translateX(-50%) rotate(19deg) scale(0.92);
-    }
-
-    .leaf:nth-child(5) {
-      transform: translateX(-50%) rotate(38deg) scale(0.8);
-    }
-
-    .pot {
-      position: absolute;
-      left: 50%;
-      bottom: 0;
-      width: 92px;
-      height: 72px;
-      transform: translateX(-50%);
-      border-radius: 7px 7px 27px 27px;
-
-      background:
-        linear-gradient(
-          110deg,
-          #34302b 0 44%,
-          #191816 45% 49%,
-          #4a443d 50%
-        );
-
-      box-shadow:
-        inset 0 7px #1a1917,
-        0 9px 14px rgba(0, 0, 0, 0.55);
-    }
-
-    .pot::after {
-      content: "";
-      position: absolute;
-      top: 14px;
-      left: 30px;
-      width: 5px;
-      height: 47px;
-      border-radius: 4px;
-      background: #d3a54a;
-      transform: rotate(-12deg);
-
-      box-shadow:
-        11px 17px 0 -1px #d3a54a,
-        22px 2px 0 -1px #d3a54a;
-    }
-
-    .eyes {
-      position: absolute;
-      left: 50%;
-      bottom: 32px;
-      width: 52px;
-      height: 12px;
-      transform: translateX(-50%);
-      z-index: 3;
-    }
-
-    .eye {
-      position: absolute;
-      top: 0;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #080808;
-      transition: 0.2s;
-    }
-
-    .eye:first-child {
-      left: 7px;
-    }
-
-    .eye:last-child {
-      right: 7px;
-    }
-
-    .bob.look-up .eye {
-      transform: translateY(-4px);
-    }
-
-    .book {
-      position: absolute;
-      left: 11%;
-      bottom: 24%;
-      z-index: 18;
-      width: min(23vw, 155px);
-      min-height: 68px;
-      padding: 10px;
-      transform: rotate(-6deg);
-      border: 0;
-      border-radius: 3px 8px 8px 3px;
-
-      background:
-        linear-gradient(
-          90deg,
-          #2d1713 0 12%,
-          #773b2d 13%
-        );
-
-      color: #e6cfa7;
-      font-size: clamp(0.58rem, 2vw, 0.86rem);
-      letter-spacing: 0.06em;
-      box-shadow: 8px 10px 18px rgba(0, 0, 0, 0.55);
-      cursor: pointer;
-    }
-
-    .book.open {
-      color: transparent;
-    }
-
-    .book.open::after {
-      content: "LOOK UP";
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      color: #f0d78d;
-      font-weight: bold;
-      text-shadow: 0 2px 6px black;
-    }
-
-    .crack {
-      position: absolute;
-      top: 24%;
-      right: 3%;
-      z-index: 16;
-      width: 90px;
-      height: 230px;
-      padding: 0;
-      border: 0;
-      background: transparent;
-      opacity: 0.25;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .crack span {
-      position: absolute;
-      width: 7px;
-      height: 74px;
-      border-radius: 8px;
-      background: #d3a54a;
-      transform-origin: bottom center;
-    }
-
-    .crack span:nth-child(1) {
-      top: 0;
-      left: 48px;
-      transform: rotate(18deg);
-    }
-
-    .crack span:nth-child(2) {
-      top: 58px;
-      left: 34px;
-      transform: rotate(-22deg);
-    }
-
-    .crack span:nth-child(3) {
-      top: 113px;
-      left: 53px;
-      transform: rotate(26deg);
-    }
-
-    .crack span:nth-child(4) {
-      top: 165px;
-      left: 34px;
-      transform: rotate(-18deg);
-    }
-
-    .room.crack-awake .crack {
-      opacity: 1;
-
-      filter:
-        drop-shadow(0 0 8px #d3a54a)
-        drop-shadow(0 0 20px rgba(211, 165, 74, 0.8));
-    }
-
-    .message {
-      position: absolute;
-      left: 50%;
-      bottom: 4%;
-      z-index: 50;
-      width: min(90vw, 670px);
-      min-height: 58px;
-      transform: translateX(-50%);
-      display: grid;
-      place-items: center;
-      padding: 13px 17px;
-
-      border:
-        1px solid rgba(255, 255, 255, 0.18);
-
-      background:
-        rgba(0, 0, 0, 0.74);
-
-      color: #e7dfd1;
-      text-align: center;
-      line-height: 1.35;
-
-      box-shadow:
-        0 8px 25px rgba(0, 0, 0, 0.45);
-    }
-
-    .door {
-      position: absolute;
-      top: 48%;
-      left: 50%;
-      z-index: 60;
-      width: min(88vw, 430px);
-      padding: 27px 22px;
-      transform: translate(-50%, -50%) scale(0.92);
-
-      border: 2px solid #d3a54a;
-      background: rgba(8, 7, 6, 0.95);
-      text-align: center;
-
-      box-shadow:
-        0 0 30px rgba(211, 165, 74, 0.3),
-        0 25px 70px rgba(0, 0, 0, 0.8);
-
-      opacity: 0;
-      pointer-events: none;
-      transition: 0.22s;
-    }
-
-    .door.open {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translate(-50%, -50%) scale(1);
-    }
-
-    .door h2 {
-      margin-top: 0;
-      font-size: clamp(1.6rem, 6vw, 2.4rem);
-    }
-
-    .door p {
-      color: #c9c0b2;
-      line-height: 1.5;
-    }
-
-    .door a {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 12px 22px;
-      border: 2px solid #f4ecd9;
-      color: #f4ecd9;
-      text-decoration: none;
-    }
-
-    .back {
-      position: absolute;
-      top: 14px;
-      left: 14px;
-      z-index: 70;
-      padding: 9px 11px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: rgba(0, 0, 0, 0.4);
-      color: rgba(255, 255, 255, 0.65);
-      text-decoration: none;
-      font-size: 0.76rem;
-    }
-
-    @media (max-width: 620px) {
-      .window {
-        top: 29%;
-        left: 3%;
-        width: 30vw;
-        height: 19vh;
-        border-width: 6px;
-      }
-
-      .table {
-        width: 65vw;
-      }
-
-      .book {
-        left: 4%;
-        bottom: 25%;
-        width: 25vw;
-      }
-
-      .crack {
-        right: -8px;
-        transform: scale(0.75);
-      }
-
-      .message {
-        bottom: 2%;
-        font-size: 0.84rem;
-      }
-    }
+    :root{--cream:#fff5da;--gold:#ffca66;--glass:rgba(16,8,15,.78);--safe-top:max(12px,env(safe-area-inset-top));--safe-bottom:max(12px,env(safe-area-inset-bottom))}
+    *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080509;color:var(--cream)}
+    body{font-family:Georgia,"Times New Roman",serif;touch-action:manipulation}button,a{font:inherit;-webkit-tap-highlight-color:transparent}button{color:inherit}
+    .room{position:relative;width:100vw;height:100svh;overflow:hidden;background:#0c0710;isolation:isolate}
+    .world{position:absolute;inset:0 auto 0 0;height:100%;width:auto;min-width:100%;aspect-ratio:1672/941;transform:translate3d(0,0,0);transition:transform .72s cubic-bezier(.22,.78,.2,1);will-change:transform}
+    .room-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;user-select:none;pointer-events:none}
+    .shade{position:absolute;inset:0;z-index:2;pointer-events:none;background:rgba(5,1,7,.45);transition:background .6s ease}.room.light-on .shade{background:rgba(5,1,7,.08)}
+    .vignette{position:absolute;inset:0;z-index:28;pointer-events:none;background:radial-gradient(ellipse at 50% 49%,transparent 35%,rgba(4,1,5,.15) 67%,rgba(4,1,5,.72) 115%)}
+    .dust{position:absolute;inset:0;z-index:7;overflow:hidden;pointer-events:none;opacity:.4}.mote{position:absolute;width:4px;height:4px;border-radius:50%;background:#ffd98c;box-shadow:0 0 8px #ffcf70;animation:float 8s linear infinite;opacity:0}
+    @keyframes float{0%{transform:translateY(18vh) scale(.5);opacity:0}15%{opacity:.65}85%{opacity:.15}100%{transform:translate(35px,-84vh) scale(1.25);opacity:0}}
+    .hotspot{position:absolute;z-index:12;border:0;background:transparent;padding:0;cursor:pointer;border-radius:28%;outline:0}
+    .hotspot::before{content:"";position:absolute;inset:8%;border:2px solid transparent;border-radius:inherit;transition:.22s ease;filter:drop-shadow(0 0 9px transparent)}
+    .hotspot:hover::before,.hotspot:focus-visible::before{border-color:rgba(255,222,151,.8);box-shadow:inset 0 0 28px rgba(255,194,94,.16);filter:drop-shadow(0 0 10px rgba(255,196,91,.65))}
+    .hotspot::after{content:attr(data-label);position:absolute;left:50%;bottom:-13px;transform:translate(-50%,7px);white-space:nowrap;padding:5px 8px;border:1px solid rgba(255,231,181,.24);border-radius:999px;background:rgba(12,6,12,.82);color:#fff1cc;font:700 11px/1.1 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;opacity:0;transition:.2s;pointer-events:none}
+    .hotspot:hover::after,.hotspot:focus-visible::after{opacity:1;transform:translate(-50%,0)}.hotspot.found::before{border-color:rgba(255,202,102,.24)}
+    .window-spot{left:3.5%;top:6%;width:24%;height:34%;border-radius:45%}.light-spot{left:44.5%;top:0;width:11.5%;height:37%}.book-spot{left:18.8%;top:54%;width:22%;height:22%;transform:rotate(-3deg)}
+    .bob-spot{left:44%;top:43%;width:13%;height:25%;border-radius:40%}.crack-spot{left:68.5%;top:6%;width:15%;height:67%;border-radius:14%}.phone-spot{left:78.2%;top:43%;width:13%;height:22%}
+    .memory-spot{left:27.6%;top:24%;width:16%;height:23%}.notes-spot{left:59%;top:17%;width:10%;height:30%}
+    .crack-glow{position:absolute;left:68.7%;top:5%;width:15%;height:68%;z-index:9;pointer-events:none;opacity:0;background:radial-gradient(ellipse,rgba(255,199,73,.2),transparent 66%);filter:drop-shadow(0 0 18px #ffbc3f);transition:.5s}
+    .room.crack-awake .crack-glow{opacity:1;animation:pulse 1.8s ease-in-out infinite}@keyframes pulse{50%{opacity:.55;filter:drop-shadow(0 0 32px #ffd477)}}
+    .reaction{position:absolute;z-index:22;pointer-events:none;font:900 22px/1 system-ui,sans-serif;color:#ffe5a1;text-shadow:0 2px 10px #000;animation:pop .75s ease-out forwards}
+    @keyframes pop{0%{transform:translate(-50%,-15%) scale(.2);opacity:0}35%{transform:translate(-50%,-50%) scale(1.2);opacity:1}100%{transform:translate(-50%,-120%) scale(.9);opacity:0}}
+    .topbar{position:fixed;left:0;right:0;top:0;z-index:80;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:var(--safe-top) 12px 0;pointer-events:none}.topbar>*{pointer-events:auto}
+    .nav-pill,.reset{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:9px 12px;border:1px solid rgba(255,240,207,.24);border-radius:999px;background:rgba(11,6,12,.76);backdrop-filter:blur(12px);color:#fff1d4;text-decoration:none;font:750 13px/1 system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.28)}
+    .nav-pill:hover,.nav-pill:focus-visible,.reset:hover,.reset:focus-visible{border-color:#efc470;outline:2px solid rgba(255,211,122,.35)}
+    .title-card{position:fixed;left:50%;top:var(--safe-top);z-index:75;transform:translateX(-50%);width:min(520px,56vw);padding:9px 18px 11px;border:1px solid rgba(255,236,196,.17);border-radius:18px;background:linear-gradient(180deg,rgba(31,13,29,.82),rgba(9,5,10,.56));backdrop-filter:blur(12px);text-align:center;pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .title-card h1{margin:0;font-size:clamp(18px,3vw,31px);line-height:1.05;letter-spacing:.035em}.title-card p{margin:5px 0 0;color:#d8c5c8;font:600 11px/1.2 system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+    .progress{position:fixed;right:13px;top:calc(var(--safe-top) + 53px);z-index:78;display:flex;gap:6px;padding:7px 9px;border:1px solid rgba(255,238,204,.18);border-radius:999px;background:rgba(9,5,10,.7);backdrop-filter:blur(10px)}
+    .step-dot{width:9px;height:9px;border-radius:50%;background:#493442;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);transition:.3s}.step-dot.done{background:#ffcd6e;box-shadow:0 0 12px rgba(255,198,77,.85)}
+    .message{position:fixed;left:50%;bottom:calc(var(--safe-bottom) + 57px);z-index:90;width:min(760px,calc(100vw - 28px));min-height:62px;display:grid;place-items:center;transform:translateX(-50%);padding:13px 58px;border:1px solid rgba(255,235,199,.25);border-radius:20px;background:linear-gradient(135deg,rgba(22,9,20,.94),rgba(7,4,7,.88));backdrop-filter:blur(14px);box-shadow:0 16px 45px rgba(0,0,0,.48);color:#fff1d7;text-align:center;font-size:clamp(14px,2vw,17px);line-height:1.35}
+    .speaker{position:absolute;left:12px;top:50%;width:34px;height:34px;transform:translateY(-50%);border:1px solid rgba(255,233,192,.22);border-radius:50%;background:rgba(255,255,255,.05);cursor:pointer}.speaker::after{content:"♪";font:800 16px/1 system-ui,sans-serif;color:#f7cf82}
+    .camera{position:fixed;left:50%;bottom:var(--safe-bottom);z-index:95;display:flex;gap:7px;transform:translateX(-50%)}.camera button{width:44px;height:44px;border:1px solid rgba(255,236,198,.26);border-radius:50%;background:rgba(12,6,12,.82);backdrop-filter:blur(12px);color:#ffe7b1;font:900 18px/1 system-ui,sans-serif;cursor:pointer;box-shadow:0 9px 24px rgba(0,0,0,.35)}.camera button.active{background:#b06a34;color:#fff;border-color:#ffde96}.camera button:focus-visible{outline:3px solid rgba(255,205,110,.52)}
+    .modal{position:fixed;inset:0;z-index:150;display:grid;place-items:center;padding:20px;background:rgba(5,2,6,.76);backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:.25s}.modal.open{opacity:1;pointer-events:auto}
+    .panel{position:relative;width:min(620px,94vw);max-height:86svh;overflow:auto;padding:32px clamp(22px,5vw,44px);border:2px solid #cc9344;border-radius:26px;background:radial-gradient(circle at 50% 0,#43243b,#160d17 60%,#0c080d);box-shadow:0 24px 90px #000,0 0 45px rgba(255,184,69,.18);text-align:center}
+    .panel h2{margin:0 0 10px;color:#ffdda0;font-size:clamp(27px,6vw,46px)}.panel p{color:#e2d1ce;font-size:clamp(15px,2.7vw,18px);line-height:1.55}.panel .big-line{margin:20px 0;color:#fff0ca;font-style:italic;font-size:clamp(21px,4vw,31px)}
+    .close{position:absolute;right:13px;top:12px;width:40px;height:40px;border:1px solid rgba(255,255,255,.22);border-radius:50%;background:rgba(0,0,0,.35);color:#fff;font:700 22px/1 system-ui,sans-serif;cursor:pointer}
+    .panel-link,.panel-button{display:inline-flex;justify-content:center;align-items:center;min-height:45px;margin:6px;padding:10px 17px;border:1px solid #f0c36f;border-radius:999px;background:#9b5730;color:#fff7e6;text-decoration:none;font:800 14px/1 system-ui,sans-serif;cursor:pointer}
+    .book-cover{width:130px;height:170px;margin:4px auto 18px;display:grid;place-items:center;padding:12px;border-radius:5px 13px 13px 5px;background:linear-gradient(90deg,#4f1718 0 12%,#8e312c 13% 86%,#542020);box-shadow:10px 13px 22px rgba(0,0,0,.55);color:#f0d6a0;font:800 14px/1.35 system-ui,sans-serif;letter-spacing:.08em}
+    .flash{position:fixed;inset:0;z-index:140;pointer-events:none;background:#ffd986;opacity:0}.flash.go{animation:flash .62s ease-out}@keyframes flash{0%{opacity:.72}100%{opacity:0}}
+    @media(max-width:700px){.title-card{width:55vw;padding:8px 9px}.title-card p{display:none}.topbar{padding-inline:8px}.nav-pill,.reset{min-height:38px;padding:8px 10px;font-size:0}.nav-pill::after{content:"↩";font-size:18px}.reset::after{content:"↻";font-size:18px}.progress{right:8px;top:calc(var(--safe-top) + 47px)}.message{bottom:calc(var(--safe-bottom) + 54px);min-height:58px;padding:11px 45px 11px 48px;font-size:13.5px}.speaker{left:8px}.hotspot::after{display:none}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
   </style>
 </head>
-
 <body>
-
   <main class="room" id="room">
-
-    <a class="back" href="workshop.html">
-      Back to the workshop
-    </a>
-
-    <div class="title">
-      <h1>The Room Inside My Head</h1>
-      <p>There is a way through. Bob appears unhelpful.</p>
+    <div class="world" id="world">
+      <img class="room-art" src="brain-room-v2.png" alt="A warm, strange illustrated room inside a mind, with Bob on a table beneath a hanging light">
+      <div class="shade"></div><div class="dust" id="dust" aria-hidden="true"></div><div class="crack-glow" aria-hidden="true"></div>
+      <button class="hotspot window-spot" id="windowButton" data-label="Night window" aria-label="Look through the night window"></button>
+      <button class="hotspot light-spot" id="lightButton" data-label="Hanging light" aria-label="Turn the hanging light on or off"></button>
+      <button class="hotspot book-spot" id="bookButton" data-label="The red book" aria-label="Open the red book"></button>
+      <button class="hotspot bob-spot" id="bobButton" data-label="Bob" aria-label="Talk to Bob"></button>
+      <button class="hotspot crack-spot" id="crackButton" data-label="Golden crack" aria-label="Touch the golden crack"></button>
+      <button class="hotspot phone-spot" id="phoneButton" data-label="The telephone" aria-label="Answer the old telephone"></button>
+      <button class="hotspot memory-spot" id="memoryButton" data-label="Memory shelf" aria-label="Inspect the memory shelf"></button>
+      <button class="hotspot notes-spot" id="notesButton" data-label="Loose thoughts" aria-label="Read the loose thoughts"></button>
+      <div class="vignette"></div>
     </div>
-
-    <div class="cord"></div>
-
-    <button
-      class="light-button"
-      id="lightButton"
-      type="button"
-      aria-label="Turn on the hanging light"
-    >
-      <span class="bulb"></span>
-    </button>
-
-    <button
-      class="window"
-      id="windowButton"
-      type="button"
-      aria-label="Look through the window"
-    >
-      <span class="window-text">
-        THE CRACK REMEMBERS
-      </span>
-    </button>
-
-    <div class="floor"></div>
-    <div class="table"></div>
-
-    <button
-      class="bob"
-      id="bobButton"
-      type="button"
-      aria-label="Talk to Bob"
-    >
-      <span class="plant">
-        <span class="leaf"></span>
-        <span class="leaf"></span>
-        <span class="leaf"></span>
-        <span class="leaf"></span>
-        <span class="leaf"></span>
-      </span>
-
-      <span class="pot"></span>
-
-      <span class="eyes">
-        <span class="eye"></span>
-        <span class="eye"></span>
-      </span>
-    </button>
-
-    <button
-      class="book"
-      id="bookButton"
-      type="button"
-      aria-label="Open the book"
-    >
-      EVERYBODY<br>
-      DESERVES<br>
-      TO GO HOME
-    </button>
-
-    <button
-      class="crack"
-      id="crackButton"
-      type="button"
-      aria-label="Touch the gold crack"
-    >
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-
-    <div
-      class="message"
-      id="message"
-      aria-live="polite"
-    >
-      The room is waiting for you to touch something.
-    </div>
-
-    <section
-      class="door"
-      id="door"
-      aria-hidden="true"
-    >
-      <h2>You found the door.</h2>
-
-      <p>
-        Unfortunately, it leads farther inside.
-      </p>
-
-      <a href="workshop.html">
-        Return to Studio LaDuke
-      </a>
-    </section>
-
+    <div class="topbar"><a class="nav-pill" href="workshop.html">← Back to the Workshop</a><button class="reset" id="resetButton" type="button">Reset the room</button></div>
+    <header class="title-card"><h1>The Room Inside My Head</h1><p>There is a way through. Bob appears unhelpful.</p></header>
+    <div class="progress" id="progress" aria-label="Puzzle progress"><span class="step-dot" data-step="light"></span><span class="step-dot" data-step="window"></span><span class="step-dot" data-step="book"></span><span class="step-dot" data-step="crack"></span></div>
+    <div class="message" id="message" aria-live="polite"><button class="speaker" id="speakerButton" type="button" aria-label="Repeat the last message aloud"></button><span id="messageText">The room has been thinking about you. Touch something before it changes its mind.</span></div>
+    <div class="camera" aria-label="Look around the room"><button type="button" data-view="0" aria-label="Look left">←</button><button type="button" data-view="1" class="active" aria-label="Look at the center">●</button><button type="button" data-view="2" aria-label="Look right">→</button></div>
   </main>
-
+  <div class="modal" id="bookModal" role="dialog" aria-modal="true" aria-labelledby="bookTitle"><div class="panel"><button class="close" data-close="bookModal" aria-label="Close the book">×</button><div class="book-cover">EVERYBODY<br>DESERVES<br>TO GO HOME</div><h2 id="bookTitle">The book opens itself.</h2><p>Most of the pages are blank. That feels a little judgmental.</p><p class="big-line">LOOK UP. THEN LOOK FOR THE PART THAT WAS REPAIRED.</p><button class="panel-button" data-close="bookModal">I have been instructed</button></div></div>
+  <div class="modal" id="doorModal" role="dialog" aria-modal="true" aria-labelledby="doorTitle"><div class="panel"><button class="close" data-close="doorModal" aria-label="Close the doorway">×</button><h2 id="doorTitle">You found the way through.</h2><p>The damaged part did not disappear. It became the brightest part of the wall.</p><p class="big-line">Unfortunately, the door leads farther inside.</p><a class="panel-link" href="workshop.html">Return to Studio LaDuke</a><button class="panel-button" id="stayButton">Stay in my head</button></div></div>
+  <div class="flash" id="flash"></div>
   <script>
-    const room = document.getElementById("room");
-    const message = document.getElementById("message");
-    const bobButton = document.getElementById("bobButton");
-    const lightButton = document.getElementById("lightButton");
-    const windowButton = document.getElementById("windowButton");
-    const bookButton = document.getElementById("bookButton");
-    const crackButton = document.getElementById("crackButton");
-    const door = document.getElementById("door");
-
-    let lightOn = false;
-    let bookOpen = false;
-    let crackAwake = false;
-
-    function say(words) {
-      message.textContent = words;
-    }
-
-    bobButton.addEventListener("click", function () {
-      bobButton.classList.add("look-up");
-
-      say(
-        'Bob: “There is a light directly above you. This seems relevant.”'
-      );
-    });
-
-    lightButton.addEventListener("click", function () {
-      lightOn = !lightOn;
-
-      room.classList.toggle("light-on", lightOn);
-
-      if (lightOn) {
-        say("Something appeared in the window.");
-      } else {
-        say("The room folds back into shadow.");
-      }
-    });
-
-    bookButton.addEventListener("click", function () {
-      bookOpen = true;
-      bookButton.classList.add("open");
-
-      say("The book contains two words: LOOK UP.");
-    });
-
-    windowButton.addEventListener("click", function () {
-      if (!lightOn) {
-        say(
-          "The window shows almost nothing. Light may help."
-        );
-
-        return;
-      }
-
-      crackAwake = true;
-      room.classList.add("crack-awake");
-
-      say("THE CRACK REMEMBERS.");
-    });
-
-    crackButton.addEventListener("click", function () {
-      if (!crackAwake) {
-        say(
-          "A dull seam in the wall. It is not ready to become important."
-        );
-
-        return;
-      }
-
-      if (!bookOpen) {
-        say(
-          "The gold warms beneath your hand. Somewhere, a closed book objects."
-        );
-
-        return;
-      }
-
-      door.classList.add("open");
-      door.setAttribute("aria-hidden", "false");
-
-      say("A hidden doorway opens inside the wall.");
-    });
+    (()=>{
+      const room=document.getElementById("room"),world=document.getElementById("world"),messageText=document.getElementById("messageText"),flash=document.getElementById("flash");
+      const buttons={light:document.getElementById("lightButton"),window:document.getElementById("windowButton"),book:document.getElementById("bookButton"),bob:document.getElementById("bobButton"),crack:document.getElementById("crackButton"),phone:document.getElementById("phoneButton"),memory:document.getElementById("memoryButton"),notes:document.getElementById("notesButton")};
+      const state={light:false,window:false,book:false,crack:false,view:1,last:"",bob:0,memory:0,notes:0};
+      const bobLines=["Bob: “There is a light directly above you. I cannot believe I had to participate in this.”","Bob: “You are inside your own head. Somehow I still did not get privacy.”","Bob: “The crack is not broken. It is aggressively repaired.”","Bob: “I have been wrong before. The records were destroyed.”"];
+      const memoryLines=["A tiny memory rolls forward: you knew all the words until somebody asked.","This shelf contains every excellent comeback discovered six hours too late.","A glass dome protects one completely ordinary Tuesday. It was a good one."];
+      const noteLines=["Loose thought: buy batteries. No context survived.","Loose thought: you are allowed to rest before everything is finished.","Loose thought: this seemed urgent at 3:14 a.m."];
+      let audioContext;
+      function say(text){state.last=text;messageText.textContent=text}
+      function tone(freq,duration,type,volume){try{audioContext||=new(window.AudioContext||window.webkitAudioContext)();const osc=audioContext.createOscillator(),gain=audioContext.createGain();osc.type=type||"sine";osc.frequency.value=freq||420;gain.gain.setValueAtTime(volume||.035,audioContext.currentTime);gain.gain.exponentialRampToValueAtTime(.0001,audioContext.currentTime+(duration||.08));osc.connect(gain).connect(audioContext.destination);osc.start();osc.stop(audioContext.currentTime+(duration||.08))}catch(_){}}
+      function speak(text,rate,pitch){if(!("speechSynthesis" in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.rate=rate||.9;u.pitch=pitch||.75;u.volume=.8;speechSynthesis.speak(u)}
+      function react(target,glyph){const el=document.createElement("span");el.className="reaction";el.textContent=glyph||"✦";el.style.left=(target.offsetLeft+target.offsetWidth/2)+"px";el.style.top=(target.offsetTop+target.offsetHeight/2)+"px";world.appendChild(el);setTimeout(()=>el.remove(),800)}
+      function found(name){if(buttons[name])buttons[name].classList.add("found")}
+      function updateProgress(){["light","window","book","crack"].forEach(key=>document.querySelector('[data-step="'+key+'"]').classList.toggle("done",!!state[key]))}
+      function setView(view){state.view=Math.max(0,Math.min(2,view));const travel=Math.max(0,world.getBoundingClientRect().width-room.clientWidth);world.style.transform="translate3d("+(-travel*(state.view/2))+"px,0,0)";document.querySelectorAll("[data-view]").forEach(btn=>btn.classList.toggle("active",Number(btn.dataset.view)===state.view))}
+      function openModal(id){const m=document.getElementById(id);m.classList.add("open");const first=m.querySelector("button,a");if(first)first.focus()}
+      function closeModal(id){document.getElementById(id).classList.remove("open")}
+      buttons.bob.addEventListener("click",()=>{react(buttons.bob,"…");tone(250,.12,"triangle");say(bobLines[state.bob++%bobLines.length]);found("bob")});
+      buttons.light.addEventListener("click",()=>{state.light=!state.light;room.classList.toggle("light-on",state.light);tone(state.light?610:250,.16,"sine",.05);react(buttons.light,state.light?"✦":"·");if(state.light){found("light");say("The light comes on. Something has appeared in the night window.")}else say("The room folds back into shadow. It keeps the furniture this time.");updateProgress()});
+      buttons.window.addEventListener("click",()=>{if(!state.light){tone(160,.1,"square",.025);say("The window shows almost nothing. Light may help.");return}state.window=true;room.classList.add("crack-awake");found("window");react(buttons.window,"☾");tone(720,.18,"sine");say("Words fog the glass from the inside: THE CRACK REMEMBERS.");updateProgress()});
+      buttons.book.addEventListener("click",()=>{state.book=true;found("book");react(buttons.book,"↟");tone(330,.08,"triangle");setTimeout(()=>tone(440,.12,"triangle"),70);say("The book contains directions. This is already more practical than expected.");updateProgress();openModal("bookModal")});
+      buttons.crack.addEventListener("click",()=>{if(!state.window){tone(130,.12,"square",.02);say("A seam in the wall. It is waiting to become important.");return}if(!state.book){tone(190,.13,"triangle");say("The gold warms beneath your hand. Somewhere, a closed book objects.");return}state.crack=true;found("crack");updateProgress();flash.classList.remove("go");void flash.offsetWidth;flash.classList.add("go");tone(220,.35,"sine",.06);setTimeout(()=>tone(440,.42,"sine",.05),100);setTimeout(()=>tone(660,.5,"sine",.04),220);say("The repaired wall opens like it has been waiting for you to notice it.");setTimeout(()=>openModal("doorModal"),420)});
+      buttons.phone.addEventListener("click",()=>{found("phone");react(buttons.phone,"☎");tone(520,.07,"square",.025);setTimeout(()=>tone(390,.08,"square",.025),120);say("The telephone rings once. You answer. A calm voice says “goat” and hangs up.");setTimeout(()=>speak("goat",.72,.82),250)});
+      buttons.memory.addEventListener("click",()=>{found("memory");react(buttons.memory,"✧");tone(800,.1,"sine",.025);say(memoryLines[state.memory++%memoryLines.length])});
+      buttons.notes.addEventListener("click",()=>{found("notes");react(buttons.notes,"?");tone(310,.07,"triangle",.025);say(noteLines[state.notes++%noteLines.length])});
+      document.querySelectorAll("[data-view]").forEach(btn=>btn.addEventListener("click",()=>setView(Number(btn.dataset.view))));
+      document.querySelectorAll("[data-close]").forEach(btn=>btn.addEventListener("click",()=>closeModal(btn.dataset.close)));
+      document.querySelectorAll(".modal").forEach(modal=>modal.addEventListener("click",event=>{if(event.target===modal)closeModal(modal.id)}));
+      document.getElementById("stayButton").addEventListener("click",()=>{closeModal("doorModal");say("You stay. Bob pretends this was not the correct choice.");setView(1)});
+      document.getElementById("speakerButton").addEventListener("click",()=>speak(state.last||messageText.textContent,1,.85));
+      document.getElementById("resetButton").addEventListener("click",()=>{Object.assign(state,{light:false,window:false,book:false,crack:false,view:1,last:"",bob:0,memory:0,notes:0});room.classList.remove("light-on","crack-awake");Object.values(buttons).forEach(btn=>btn.classList.remove("found"));updateProgress();setView(1);say("The room forgets what you touched. It keeps the uncomfortable parts for continuity.");tone(210,.18,"triangle")});
+      window.addEventListener("resize",()=>setView(state.view));window.addEventListener("keydown",event=>{if(event.key==="ArrowLeft")setView(state.view-1);if(event.key==="ArrowRight")setView(state.view+1);if(event.key==="Escape")document.querySelectorAll(".modal.open").forEach(m=>closeModal(m.id))});
+      const dust=document.getElementById("dust");for(let i=0;i<18;i++){const m=document.createElement("i");m.className="mote";m.style.left=(8+Math.random()*84)+"%";m.style.top=(30+Math.random()*70)+"%";m.style.animationDelay=(-Math.random()*8)+"s";m.style.animationDuration=(7+Math.random()*8)+"s";dust.appendChild(m)}
+      updateProgress();requestAnimationFrame(()=>setView(1));
+    })();
   </script>
-
 </body>
 </html>
