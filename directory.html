@@ -44,16 +44,17 @@
   <main>
     <section class="hero">
       <div class="hero-copy"><p class="eyebrow">Building directory / absolutely not a normal website</p><h1>Pick a door.</h1><p>Every finished room in Studio LaDuke is open from here. Some contain art. Some contain games. At least one contains Bob.</p></div>
-      <div class="control-panel"><div class="panel-label"><span>Navigation roulette</span><span><i class="status-light"></i> Online</span></div><button class="surprise" id="surpriseButton" type="button">SEND ME SOMEWHERE WEIRD</button><p class="panel-note">CAUTION: button may choose a hidden brain, an arcade, a swimming pool, or a fort governed by a child.</p></div>
+      <div class="control-panel"><div class="panel-label"><span>Navigation roulette</span><span><i class="status-light"></i> Online</span></div><button class="surprise" id="surpriseButton" type="button">SEND ME SOMEWHERE WEIRD</button><p class="panel-note">CAUTION: button may choose a hidden brain, an arcade, a wet forest, a swimming pool, or a fort governed by a child.</p></div>
     </section>
     <div class="section-head"><h2>The rooms</h2><p>No fake “coming soon” doors. Every card below leads somewhere that actually exists.</p></div>
     <nav class="rooms" aria-label="Studio LaDuke rooms">
       <a class="room-card wide tall orange" href="workshop.html"><span class="room-number">Room 01 · Main hub <i class="open-dot"></i></span><span class="room-icon">⚙</span><h3>The Workshop</h3><p>The living center of the studio: objects, hidden doors, current work, and the route into nearly everything else.</p><span class="arrow">→</span></a>
+      <a class="room-card tall green" href="forest-path.html"><span class="room-number">Room 01½ · Technically outside <i class="open-dot"></i></span><span class="room-icon">♣</span><h3>The Back Forty</h3><p>A rain-wet forest crossing with Bob’s greenhouse, the fire pit, a trail to Mav’s Fort, and a raven providing unusable directions.</p><span class="arrow">→</span></a>
       <a class="room-card tall gold" href="mavericks-fort.html"><span class="room-number">Room 02 · Fort rules apply <i class="open-dot"></i></span><span class="room-icon">★</span><h3>Maverick’s Fort</h3><p>Nine secrets, a laundry mission, monster matching, comics, squishies, and Dad’s snack-based entry permit.</p><span class="arrow">→</span></a>
       <a class="room-card red" href="mcbrides.html"><span class="room-number">Room 03 · Insert coin <i class="open-dot"></i></span><span class="room-icon">♜</span><h3>McBride’s Arcade</h3><p>A playable cabinet hiding in the building.</p><span class="arrow">→</span></a>
       <a class="room-card blue" href="pool.html"><span class="room-number">Room 04 · Chalk up <i class="open-dot"></i></span><span class="room-icon">●</span><h3>Teddy’s Pool Room</h3><p>Playable pool. Questionable geometry. Excellent atmosphere.</p><span class="arrow">→</span></a>
       <a class="room-card green" href="gallery.html"><span class="room-number">Room 05 · Walls are alive <i class="open-dot"></i></span><span class="room-icon">✦</span><h3>The Gallery</h3><p>Studio LaDuke work without the polite white-room silence.</p><span class="arrow">→</span></a>
-      <a class="room-card wide violet" href="bob.html"><span class="room-number">Room 06 · Bob was here <i class="open-dot"></i></span><span class="room-icon">☻</span><h3>Bob’s World</h3><p>An interactive room devoted to the least qualified tour guide in the building. He has opinions. Nobody asked.</p><span class="arrow">→</span></a>
+      <a class="room-card wide violet" href="bob.html"><span class="room-number">Room 06 · Greenhouse jurisdiction <i class="open-dot"></i></span><span class="room-icon">☻</span><h3>Bob’s World</h3><p>The greenhouse outside belongs to the least qualified tour guide on the property. He has opinions. Nobody asked.</p><span class="arrow">→</span></a>
       <a class="room-card violet" href="brain.html"><span class="room-number">Room 07 · Hidden-ish <i class="open-dot"></i></span><span class="room-icon">⌁</span><h3>Inside the Brain</h3><p>The wiring, noise, and trapdoors behind the work.</p><span class="arrow">→</span></a>
       <a class="room-card gold" href="books.html"><span class="room-number">Room 08 · Library <i class="open-dot"></i></span><span class="room-icon">▤</span><h3>Books</h3><p>Stories that survived becoming real.</p><span class="arrow">→</span></a>
       <a class="room-card orange" href="about.html"><span class="room-number">Room 09 · Human evidence <i class="open-dot"></i></span><span class="room-icon">◎</span><h3>About Corey</h3><p>The person, place, and reason all of this exists.</p><span class="arrow">→</span></a>
@@ -64,7 +65,7 @@
   </main>
   <div class="toast" id="toast" role="status"></div>
   <script>
-    const destinations=['workshop.html','mavericks-fort.html','mcbrides.html','pool.html','gallery.html','bob.html','brain.html','books.html','about.html'];
+    const destinations=['workshop.html','forest-path.html','mavericks-fort.html','mcbrides.html','pool.html','gallery.html','bob.html','brain.html','books.html','about.html'];
     const surpriseButton=document.getElementById('surpriseButton'),powerButton=document.getElementById('powerButton'),toast=document.getElementById('toast'),clock=document.getElementById('clock');
     function showToast(message){toast.textContent=message;toast.classList.add('show');clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>toast.classList.remove('show'),1800)}
     function updateClock(){try{const time=new Intl.DateTimeFormat('en-US',{timeZone:'America/Sitka',hour:'numeric',minute:'2-digit'}).format(new Date());clock.textContent=`${time} · Ketchikan`}catch(error){clock.textContent='Ketchikan, Alaska'}}
