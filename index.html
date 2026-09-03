@@ -133,27 +133,62 @@
       opacity: 0;
       clip-path: polygon(2% 5%, 98% 0, 96% 97%, 0 96%);
       background:
-        repeating-linear-gradient(
-          105deg,
-          transparent 0 13px,
-          rgba(204, 231, 255, 0.28) 14px 16px,
-          transparent 17px 28px
-        ),
-        rgba(45, 73, 90, 0.18);
-      background-position: 0 -60px;
-      mix-blend-mode: screen;
-      transition: opacity 300ms ease;
+        radial-gradient(ellipse at 50% 72%, rgba(184, 219, 225, 0.12), transparent 58%),
+        linear-gradient(rgba(7, 29, 42, 0.58), rgba(3, 17, 27, 0.74));
+      mix-blend-mode: normal;
+      transition: opacity 550ms ease, filter 550ms ease;
+      filter: saturate(.66) brightness(.68) contrast(1.08);
+      -webkit-backdrop-filter: brightness(.68) saturate(.58) contrast(1.08);
+      backdrop-filter: brightness(.68) saturate(.58) contrast(1.08);
     }
 
     .front-room.raining .rain-layer {
-      opacity: 0.72;
-      animation: rainFall 650ms linear infinite;
+      opacity: 0.94;
     }
 
-    @keyframes rainFall {
-      to {
-        background-position: -24px 72px;
-      }
+    .rain-layer::before,
+    .rain-layer::after {
+      content: "";
+      position: absolute;
+      inset: -15%;
+      pointer-events: none;
+    }
+
+    .rain-layer::before {
+      background:
+        radial-gradient(ellipse at 18% 38%, rgba(205,232,238,.24), transparent 16%),
+        radial-gradient(ellipse at 70% 62%, rgba(188,222,230,.2), transparent 22%);
+      filter: blur(10px);
+      animation: stormMist 7s ease-in-out infinite alternate;
+    }
+
+    .rain-drop {
+      position:absolute;
+      top:-18%;
+      width:var(--rain-width,1px);
+      height:var(--rain-length,18px);
+      border-radius:999px;
+      background:linear-gradient(to bottom,transparent,rgba(220,241,247,var(--rain-alpha,.68)) 34%,rgba(244,252,255,.42));
+      filter:blur(var(--rain-blur,.2px));
+      transform:rotate(8deg);
+      animation:forestRain var(--rain-speed,1.25s) linear infinite;
+      animation-delay:var(--rain-delay,0s);
+    }
+
+    .rain-drop.far {
+      height:var(--rain-length,9px);
+      opacity:.7;
+      filter:blur(.65px);
+    }
+
+    @keyframes forestRain {
+      from { transform:translate3d(0,-15%,0) rotate(8deg); }
+      to { transform:translate3d(-48px,620px,0) rotate(8deg); }
+    }
+
+    @keyframes stormMist {
+      from { transform:translate3d(-2%,1%,0); opacity:.62; }
+      to { transform:translate3d(3%,-1%,0); opacity:.95; }
     }
 
     .room-hotspot,
@@ -736,6 +771,8 @@
 
     let toastTimer;
     let audioContext;
+    let rainSource;
+    let rainGain;
     let bobReadyForDoor = false;
 
     const bobRemarks = [
@@ -766,6 +803,71 @@
       }
 
       return audioContext;
+    }
+
+    function buildForestRain() {
+      const layer = document.querySelector('.rain-layer');
+      if (!layer || layer.querySelector('.rain-drop')) return;
+
+      for (let index = 0; index < 110; index += 1) {
+        const drop = document.createElement('i');
+        const far = index < 48;
+        drop.className = `rain-drop${far ? ' far' : ''}`;
+        drop.style.left = `${(index * 37 + Math.random() * 23) % 104}%`;
+        drop.style.top = `${-18 + Math.random() * 28}%`;
+        drop.style.setProperty('--rain-length', `${far ? 6 + Math.random() * 8 : 13 + Math.random() * 18}px`);
+        drop.style.setProperty('--rain-width', `${far ? .9 + Math.random() * .45 : 1.4 + Math.random() * 1.1}px`);
+        drop.style.setProperty('--rain-alpha', `${far ? .38 + Math.random() * .22 : .58 + Math.random() * .3}`);
+        drop.style.setProperty('--rain-speed', `${far ? 1.8 + Math.random() * 1.2 : .8 + Math.random() * .7}s`);
+        drop.style.setProperty('--rain-delay', `${-Math.random() * 3}s`);
+        layer.appendChild(drop);
+      }
+    }
+
+    function startRainSound() {
+      if (rainSource) return;
+      const audio = getAudioContext();
+      const seconds = 2.5;
+      const buffer = audio.createBuffer(1, audio.sampleRate * seconds, audio.sampleRate);
+      const samples = buffer.getChannelData(0);
+      let wash = 0;
+
+      for (let index = 0; index < samples.length; index += 1) {
+        const white = Math.random() * 2 - 1;
+        wash = wash * .985 + white * .015;
+        samples[index] = white * .22 + wash * 2.6;
+      }
+
+      rainSource = audio.createBufferSource();
+      rainGain = audio.createGain();
+      const highpass = audio.createBiquadFilter();
+      const lowpass = audio.createBiquadFilter();
+      rainSource.buffer = buffer;
+      rainSource.loop = true;
+      highpass.type = 'highpass';
+      highpass.frequency.value = 180;
+      lowpass.type = 'lowpass';
+      lowpass.frequency.value = 4800;
+      rainGain.gain.setValueAtTime(.0001, audio.currentTime);
+      rainGain.gain.exponentialRampToValueAtTime(.052, audio.currentTime + .7);
+      rainSource.connect(highpass);
+      highpass.connect(lowpass);
+      lowpass.connect(rainGain);
+      rainGain.connect(audio.destination);
+      rainSource.start();
+    }
+
+    function stopRainSound() {
+      if (!rainSource || !rainGain || !audioContext) return;
+      const source = rainSource;
+      rainGain.gain.cancelScheduledValues(audioContext.currentTime);
+      rainGain.gain.setValueAtTime(Math.max(.0001, rainGain.gain.value), audioContext.currentTime);
+      rainGain.gain.exponentialRampToValueAtTime(.0001, audioContext.currentTime + .5);
+      window.setTimeout(() => {
+        try { source.stop(); } catch (error) {}
+      }, 550);
+      rainSource = null;
+      rainGain = null;
     }
 
     function playGuitarChord() {
@@ -832,9 +934,16 @@
       frontRoom.classList.toggle("raining");
       const raining = frontRoom.classList.contains("raining");
 
+      if (raining) {
+        buildForestRain();
+        startRainSound();
+      } else {
+        stopRainSound();
+      }
+
       showFrontToast(
         raining
-          ? "Ketchikan weather mode: rain with a chance of more rain."
+          ? "Ketchikan weather mode: the forest has been properly soaked."
           : "The rain stopped. That seems suspicious."
       );
     });
