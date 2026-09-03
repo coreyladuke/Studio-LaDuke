@@ -451,6 +451,62 @@
       }
     }
 
+    .proseak-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 320;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(3, 8, 11, 0.78);
+      backdrop-filter: blur(12px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 190ms ease;
+    }
+
+    .proseak-modal.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .proseak-card {
+      position: relative;
+      width: min(520px, 94vw);
+      max-height: 88dvh;
+      overflow: auto;
+      padding: clamp(25px, 5vw, 42px);
+      border: 2px solid #5fa9ba;
+      border-radius: 26px;
+      background:
+        radial-gradient(circle at 50% 0, rgba(70, 153, 170, 0.28), transparent 38%),
+        linear-gradient(145deg, #17333b, #081419 70%);
+      box-shadow: 0 28px 90px #000, 0 0 42px rgba(74, 185, 202, 0.18);
+      color: #effcff;
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+
+    .proseak-mark {
+      margin-bottom: 8px;
+      color: #f8d574;
+      font-size: clamp(32px, 8vw, 55px);
+      font-weight: 1000;
+      letter-spacing: 0.055em;
+      text-shadow: 0 4px 0 #173b45;
+    }
+
+    .proseak-card h2 { margin: 0 0 8px; font-size: clamp(19px, 4vw, 27px); }
+    .proseak-card p { margin: 7px 0; color: #c9e2e6; line-height: 1.45; }
+    .proseak-tagline { color: #f8d574 !important; font-weight: 900; letter-spacing: .05em; }
+    .proseak-contact { margin: 20px 0; padding: 15px; border: 1px solid rgba(176,232,240,.2); border-radius: 16px; background: rgba(0,0,0,.2); }
+    .proseak-contact a { color: #fff; font-weight: 800; text-decoration-color: #f8d574; text-underline-offset: 3px; }
+    .proseak-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .proseak-action { display: grid; place-items: center; min-height: 49px; padding: 10px 14px; border: 1px solid #79bdc9; border-radius: 999px; background: #17677a; color: #fff; text-decoration: none; font-weight: 900; }
+    .proseak-action.facebook { background: #285a9d; }
+    .proseak-close { position: absolute; right: 12px; top: 12px; width: 42px; height: 42px; border: 1px solid rgba(255,255,255,.3); border-radius: 50%; background: rgba(0,0,0,.3); color: #fff; font: 800 24px/1 Arial,sans-serif; cursor: pointer; }
+    @media(max-width:520px){.proseak-actions{grid-template-columns:1fr}.proseak-card{padding-top:48px}}
+
     .arcade-hotspot {
       left: 59.65%;
       top: 26.4%;
@@ -1315,7 +1371,7 @@
         class="hotspot sewing-hotspot"
         id="sewingHotspot"
         type="button"
-        aria-label="Sewing machine"
+        aria-label="Open ProSEAK contact information"
       ></button>
 
       <button
@@ -1567,6 +1623,27 @@
       Full Gallery
     </a>
 
+  </div>
+
+  <div class="proseak-modal" id="proseakModal" role="dialog" aria-modal="true" aria-labelledby="proseakTitle">
+    <section class="proseak-card">
+      <button class="proseak-close" id="proseakClose" type="button" aria-label="Close ProSEAK information">×</button>
+      <div class="proseak-mark">ProSEAK</div>
+      <h2 id="proseakTitle">Canvas &amp; Upholstery</h2>
+      <p class="proseak-tagline">BUILT FOR SALT. STITCHED FOR SOUTHEAST ALASKA.</p>
+      <p>That JUKI is not decorative. This is where boat canvas, cushions, covers, and other stubborn pieces of fabric learn some discipline.</p>
+      <div class="proseak-contact">
+        <p><strong>7446 N. Tongass Highway<br>Ketchikan, Alaska 99901</strong></p>
+        <p><a href="tel:+19072259200">907-225-9200</a><br><a href="mailto:Contact@ProSEAK.com">Contact@ProSEAK.com</a></p>
+        <p>Monday–Friday · 9:00 AM–5:00 PM</p>
+      </div>
+      <div class="proseak-actions">
+        <a class="proseak-action" href="https://www.proseak.com/contact" target="_blank" rel="noopener">Visit ProSEAK</a>
+        <a class="proseak-action facebook" href="https://www.facebook.com/61560654611667/" target="_blank" rel="noopener">Open Facebook</a>
+        <a class="proseak-action" href="tel:+19072259200">Call the Shop</a>
+        <a class="proseak-action" href="mailto:Contact@ProSEAK.com">Send an Email</a>
+      </div>
+    </section>
   </div>
 
   <div
@@ -2540,12 +2617,21 @@
         "click",
         () => {
           if (pointerTravel <= 8) {
-            showToast(
-              "The upholstery room is coming soon."
-            );
+            document.getElementById("proseakModal").classList.add("open");
+            showToast("The JUKI has transferred you to the sales department.");
           }
         }
       );
+
+    const proseakModal = document.getElementById("proseakModal");
+    const closeProseak = () => proseakModal.classList.remove("open");
+    document.getElementById("proseakClose").addEventListener("click", closeProseak);
+    proseakModal.addEventListener("click", event => {
+      if (event.target === proseakModal) closeProseak();
+    });
+    window.addEventListener("keydown", event => {
+      if (event.key === "Escape") closeProseak();
+    });
 
     document
       .getElementById("dogHotspot")
