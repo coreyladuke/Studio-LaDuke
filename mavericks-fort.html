@@ -2152,6 +2152,75 @@
       #gameDash{right:12% !important;bottom:31% !important;width:94px !important;height:50px !important;}
       #gamePipe{left:3% !important;bottom:31% !important;width:94px !important;height:48px !important;}
     }
+
+    /* V19: full-resolution television art and a contained phone playfield. */
+    #mavGameCanvas{
+      image-rendering:auto !important;
+      width:min(100%,960px) !important;
+      height:auto !important;
+      max-width:100% !important;
+      max-height:100% !important;
+      margin:0 !important;
+      aspect-ratio:16/9 !important;
+      object-fit:contain !important;
+      touch-action:none;
+    }
+    .game-control{touch-action:none;-webkit-user-select:none;user-select:none;}
+
+    /* The photographed lamps are the lamps. Only their warm light is added. */
+    #lavaLampBtn,#lavaLampBackBtn{
+      background:transparent !important;
+      border:0 !important;
+      box-shadow:none !important;
+      filter:none !important;
+      opacity:1 !important;
+    }
+    #lavaLampBtn .lava-glass,#lavaLampBtn .lava-cap,
+    #lavaLampBackBtn .lava-glass,#lavaLampBackBtn .lava-cap{display:none !important;}
+    #lavaLampBtn.turbo-lava,#lavaLampBackBtn.turbo-lava{
+      box-shadow:0 0 8px 3px rgba(255,75,28,.38),0 0 22px 9px rgba(255,48,20,.2) !important;
+      animation:realLavaGlow 2.8s ease-in-out infinite alternate !important;
+    }
+    @keyframes realLavaGlow{
+      from{filter:brightness(1) saturate(1);}
+      to{filter:brightness(1.16) saturate(1.2);}
+    }
+
+    @media (orientation:portrait) and (max-width:900px){
+      #gameModal .game-panel{
+        grid-template-rows:70px auto 132px !important;
+        align-content:start !important;
+        padding:max(5px,env(safe-area-inset-top)) 6px max(5px,env(safe-area-inset-bottom)) !important;
+      }
+      #mavGameCanvas{
+        position:relative !important;
+        left:auto !important;
+        top:auto !important;
+        transform:none !important;
+        width:100% !important;
+        height:auto !important;
+        max-width:100% !important;
+        max-height:none !important;
+      }
+      .game-controls{
+        width:100% !important;
+        height:132px !important;
+        grid-template-columns:minmax(58px,.8fr) minmax(58px,.8fr) repeat(3,minmax(0,1fr)) !important;
+        grid-template-rows:48px 70px !important;
+        gap:8px !important;
+        overflow:hidden !important;
+      }
+      #gameRestart{right:56px !important;top:max(40px,env(safe-area-inset-top)) !important;}
+    }
+
+    @media (orientation:landscape) and (max-height:760px){
+      #mavGameCanvas{
+        width:min(calc(100% - 8px),calc((100svh - 8px) * 1.77778)) !important;
+        height:auto !important;
+        max-width:calc(100% - 8px) !important;
+        max-height:calc(100% - 8px) !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -2187,7 +2256,7 @@
 
         <button class="hotspot switch-physical" id="lightSwitch" style="left:47.3%;top:45%;width:3.6%;height:8%;" data-tip="Christmas lights" aria-label="Light switch"><span class="switch-plate" aria-hidden="true"><i></i></span></button>
 
-        <button class="hotspot dog-hotspot" id="labBtn" style="left:38%;top:55%;width:16%;height:27%;" data-tip="The Lab • very important employee" aria-label="Black Labrador"></button>
+        <button class="hotspot dog-hotspot" id="labBtn" style="left:38%;top:55%;width:16%;height:27%;" data-tip="Havoc • very important employee" aria-label="Havoc the black Labrador"></button>
 
         <button class="hotspot" id="porkachuBtn" style="left:41%;top:84%;width:14%;height:11%;" data-tip="Porkachu" aria-label="Porkachu"></button>
 
@@ -2451,7 +2520,7 @@
         <div class="game-score" id="gameScore">Coins: 0 · Lives: 3</div>
       </div>
       <button class="game-control restart" id="gameRestart" type="button">RESTART</button>
-      <canvas id="mavGameCanvas" width="480" height="270" aria-label="Super Maverick's World game"></canvas>
+      <canvas id="mavGameCanvas" width="960" height="540" aria-label="Super Maverick's World game"></canvas>
       <div class="game-controls">
         <button class="game-control" id="gameLeft" type="button">◀</button>
         <button class="game-control" id="gameRight" type="button">▶</button>
@@ -3196,36 +3265,38 @@
     document.getElementById('viewRight').addEventListener('click', () => showFortView(currentView === 'front' ? 'back' : 'front'));
     window.addEventListener('resize', centerActiveView);
 
-    const animalCycle = [
-      { name:'meow', emoji:'🐱', play(){ beep(820,.09,'triangle',.018); setTimeout(()=>beep(610,.11,'triangle',.018),85); } },
-      { name:'ribbit', emoji:'🐸', play(){ beep(210,.08,'square',.028); setTimeout(()=>beep(160,.08,'square',.024),70); } },
-      { name:'oink', emoji:'🐷', play(){ beep(280,.06,'sawtooth',.022); setTimeout(()=>beep(210,.08,'sawtooth',.02),70); } },
-      { name:'neigh', emoji:'🐴', play(){ beep(360,.08,'triangle',.018); setTimeout(()=>beep(520,.11,'triangle',.016),70); setTimeout(()=>beep(420,.1,'triangle',.016),150); } },
-      { name:'goat', emoji:'🐐', play(){ beep(300,.06,'square',.02); setTimeout(()=>beep(390,.05,'square',.018),65); setTimeout(()=>beep(250,.08,'square',.02),120); } },
-      { name:'roar', emoji:'🦖', play(){ beep(130,.12,'sawtooth',.03); setTimeout(()=>beep(92,.16,'sawtooth',.028),90); } }
+    const havocCycle = [
+      { voice:'meow', label:'MEOW', emoji:'🐱', play(){ beep(820,.09,'triangle',.018); setTimeout(()=>beep(610,.11,'triangle',.018),85); } },
+      { voice:'goat', label:'GOAT', emoji:'🐐', play(){ beep(300,.06,'square',.02); setTimeout(()=>beep(390,.05,'square',.018),65); } },
+      { voice:'I am a microwave', label:'I AM A MICROWAVE', emoji:'📻', play(){ beep(740,.08,'sine',.018); setTimeout(()=>beep(740,.08,'sine',.018),120); } },
+      { voice:'please hold', label:'PLEASE HOLD', emoji:'☎️', play(){ beep(440,.08,'triangle',.018); setTimeout(()=>beep(554,.1,'triangle',.018),95); } },
+      { voice:'taxes', label:'TAXES', emoji:'🧾', play(){ beep(145,.18,'sawtooth',.022); } },
+      { voice:'that is a chicken', label:'THAT IS A CHICKEN', emoji:'🐔', play(){ beep(520,.05,'square',.02); setTimeout(()=>beep(690,.06,'square',.018),60); } },
+      { voice:'ribbit', label:'RIBBIT', emoji:'🐸', play(){ beep(210,.08,'square',.028); setTimeout(()=>beep(160,.08,'square',.024),70); } },
+      { voice:'absolutely not', label:'ABSOLUTELY NOT', emoji:'🚫', play(){ beep(180,.08,'sawtooth',.022); setTimeout(()=>beep(110,.13,'sawtooth',.02),75); } }
     ];
     let animalIndex = 0;
-    function maybeSpeakAnimal(word){
+    function maybeSpeakHavoc(words){
       if(!('speechSynthesis' in window)) return;
       try{
-        const u = new SpeechSynthesisUtterance(word);
-        u.rate = .9;
-        u.pitch = word === 'roar' ? .65 : word === 'ribbit' ? .85 : 1.05;
-        u.volume = .65;
+        const u = new SpeechSynthesisUtterance(words);
+        u.rate = words.length > 10 ? .82 : .9;
+        u.pitch = words === 'taxes' ? .58 : words === 'ribbit' ? .85 : 1.05;
+        u.volume = .78;
         window.speechSynthesis.cancel();
         window.speechSynthesis.speak(u);
       }catch(err){}
     }
     document.getElementById('labBtn').addEventListener('click', () => {
       const dog = document.getElementById('labBtn');
-      const animal = animalCycle[animalIndex];
-      animalIndex = (animalIndex + 1) % animalCycle.length;
+      const animal = havocCycle[animalIndex];
+      animalIndex = (animalIndex + 1) % havocCycle.length;
       dog.classList.remove('goofy');
       void dog.offsetWidth;
       dog.classList.add('goofy');
       animal.play();
-      maybeSpeakAnimal(animal.name);
-      toast(`The lab says ${animal.emoji} ${animal.name.toUpperCase()} instead of barking.`);
+      maybeSpeakHavoc(animal.voice);
+      toast(`Havoc says ${animal.emoji} ${animal.label} instead of barking.`);
     });
 
     document.getElementById('arcadeBtn').addEventListener('click', () => {
@@ -3816,7 +3887,7 @@
       toast('Welcome to Maverick’s Fort. Click everything.');
     }, 300);
   </script>
-  <script data-studio-laduke-game="v18">
+  <script data-studio-laduke-game="v19">
 (() => {
   'use strict';
 
@@ -3828,7 +3899,9 @@
   const modal = document.getElementById('gameModal');
   const W = 960;
   const H = 540;
-  const PIXEL_SCALE = .5;
+  // Draw at the full 960 x 540 design resolution. Safari was previously
+  // enlarging a 480 x 270 bitmap, which made the fort television game blur.
+  const PIXEL_SCALE = 1;
   const TAU = Math.PI * 2;
   const RENDER_SCALE = 1.34;
   const RENDER_SHIFT_Y = -120;
@@ -3844,7 +3917,7 @@
 
   canvas.width = W * PIXEL_SCALE;
   canvas.height = H * PIXEL_SCALE;
-  ctx.imageSmoothingEnabled = false;
+  ctx.imageSmoothingEnabled = true;
 
   const tone = (...args) => {
     try { if (typeof window.beep === 'function') window.beep(...args); } catch (_) {}
@@ -4313,13 +4386,15 @@
   }
 
   function drawBackground(cam,t){
-    const sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,'#078cf0');sky.addColorStop(.58,'#6bcaff');sky.addColorStop(1,'#e7f8ff');ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
-    const sunGlow=ctx.createRadialGradient(820,92,10,820,92,90);sunGlow.addColorStop(0,'rgba(255,247,173,.95)');sunGlow.addColorStop(.38,'rgba(255,226,108,.45)');sunGlow.addColorStop(1,'rgba(255,226,108,0)');ctx.fillStyle=sunGlow;ctx.fillRect(720,0,200,200);ellipse(820,92,32,32,'#ffe781');
-    for(let x=-300-(cam*.045)%390;x<W+360;x+=390){polygon([[x,405],[x+175,250],[x+360,405]],'#75b8df','#3f86ba',3);polygon([[x+54,405],[x+175,292],[x+302,405]],'#55a3ce');}
-    for(let x=-200-(cam*.095)%330;x<W+330;x+=330)polygon([[x,440],[x+145,326],[x+320,440]],'#3f99b9','#287395',3);
+    // Palette and layer order are taken directly from the game pictured on
+    // the television: blue sky, cool mountains, round green hills and pines.
+    const sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,'#169eef');sky.addColorStop(.56,'#39baf5');sky.addColorStop(1,'#b9edff');ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='rgba(255,255,255,.12)';ctx.fillRect(0,58,W,3);ctx.fillStyle='rgba(17,102,172,.08)';ctx.fillRect(0,320,W,3);
+    for(let x=-300-(cam*.045)%390;x<W+360;x+=390){polygon([[x,405],[x+175,250],[x+360,405]],'#78b8dd','#397baa',4);polygon([[x+54,405],[x+175,292],[x+302,405]],'#4e9bc7');polygon([[x+135,286],[x+175,250],[x+214,286],[x+191,276],[x+175,292],[x+159,276]],'#bfe5f2');}
+    for(let x=-200-(cam*.095)%330;x<W+330;x+=330)polygon([[x,440],[x+145,326],[x+320,440]],'#3d91b0','#276c8d',4);
     drawCloud(90-(cam*.07)%1280,78,1.05,true);drawCloud(475-(cam*.05)%1500,130,.8,true);drawCloud(820-(cam*.085)%1660,62,.92,true);
-    ctx.fillStyle='#55c46a';for(let x=-160-(cam*.14)%310;x<W+310;x+=310){ctx.beginPath();ctx.arc(x,455,185,Math.PI,0);ctx.fill();ctx.strokeStyle='#2e9d55';ctx.lineWidth=3;ctx.stroke();}
-    ctx.fillStyle='#2ea95b';for(let x=-30-(cam*.2)%280;x<W+300;x+=280){ctx.beginPath();ctx.arc(x,468,125,Math.PI,0);ctx.fill();}
+    ctx.fillStyle='#55c965';for(let x=-160-(cam*.14)%310;x<W+310;x+=310){ctx.beginPath();ctx.arc(x,455,185,Math.PI,0);ctx.fill();ctx.strokeStyle='#268e49';ctx.lineWidth=4;ctx.stroke();}
+    ctx.fillStyle='#2ead58';for(let x=-30-(cam*.2)%280;x<W+300;x+=280){ctx.beginPath();ctx.arc(x,468,125,Math.PI,0);ctx.fill();ctx.strokeStyle='rgba(25,126,66,.65)';ctx.lineWidth=3;ctx.stroke();}
     for(let i=0;i<16;i++)drawTree(i*92-(cam*.29)%1480,448,.72+(i%3)*.08,i%2?'#286c4a':'#347f51');
     const breeze=Math.sin(t*.0018)*2.4;ctx.strokeStyle='rgba(34,105,68,.46)';ctx.lineWidth=2;
     for(let x=22-(cam*.44)%78;x<W;x+=78){ctx.beginPath();ctx.moveTo(x,447);ctx.quadraticCurveTo(x+breeze,430,x+5+breeze,419);ctx.stroke();}
@@ -4499,7 +4574,7 @@
     if(GAME.won){ctx.fillStyle='rgba(3,12,20,.68)';ctx.fillRect(0,0,W,H);const pulse=1+Math.sin(performance.now()*.006)*.02;ctx.save();ctx.translate(W/2,235);ctx.scale(pulse,pulse);ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='900 43px Trebuchet MS';ctx.fillText('FORT MAVERICK REACHED!',0,0);ctx.fillStyle='#ffe16a';ctx.font='900 23px Trebuchet MS';ctx.fillText(player.finn?'FINN HAS BEEN PROMOTED TO ASSISTANT MAYOR.':'MAV WINS. DAD REQUESTS VICTORY SNACKS.',0,45);ctx.fillStyle='#d9f3ff';ctx.font='700 16px Trebuchet MS';ctx.fillText(`Coins ${GAME.coins}  •  Secret Finn tags ${GAME.tags}/3  •  Press RESTART to run it again`,0,82);ctx.restore();}
   }
 
-  function draw(){ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,canvas.width,canvas.height);ctx.setTransform(PIXEL_SCALE,0,0,PIXEL_SCALE,0,0);ctx.imageSmoothingEnabled=false;GAME.mode==='bonus'?drawBonus():drawWorld();drawOverlay();ctx.setTransform(1,0,0,1,0,0);}
+  function draw(){ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,canvas.width,canvas.height);ctx.setTransform(PIXEL_SCALE,0,0,PIXEL_SCALE,0,0);ctx.imageSmoothingEnabled=true;GAME.mode==='bonus'?drawBonus():drawWorld();drawOverlay();ctx.setTransform(1,0,0,1,0,0);}
   function frame(time){if(!running)return;const dt=Math.min(.03,(time-lastTime)/1000||.016);lastTime=time;updateWorld(dt);draw();raf=requestAnimationFrame(frame);}
   function start(){if(running)return;running=true;lastTime=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(frame);}
   function stop(){running=false;cancelAnimationFrame(raf);}
