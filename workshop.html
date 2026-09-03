@@ -1214,7 +1214,7 @@
         data-frame-shape="landscape"
         type="button"
       >
-        <img alt="Studio LaDuke artwork">
+        <img src="5009BA2B-780C-4A6C-A6AA-4B5CDD3174C6.png" alt="Studio LaDuke artwork">
       </button>
 
       <button
@@ -1222,7 +1222,7 @@
         data-frame-shape="landscape"
         type="button"
       >
-        <img alt="Studio LaDuke artwork">
+        <img src="9EAA20AB-901D-41E1-AC98-64455D1A291D.png" alt="Studio LaDuke artwork">
       </button>
 
       <button
@@ -1230,7 +1230,7 @@
         data-frame-shape="portrait"
         type="button"
       >
-        <img alt="Studio LaDuke artwork">
+        <img src="IMG_0082.jpeg" alt="Studio LaDuke artwork">
       </button>
 
       <button
@@ -1238,7 +1238,7 @@
         data-frame-shape="portrait"
         type="button"
       >
-        <img alt="Studio LaDuke artwork">
+        <img src="IMG_0014.jpeg" alt="Studio LaDuke artwork">
       </button>
 
       <button
@@ -1246,7 +1246,7 @@
         data-frame-shape="portrait"
         type="button"
       >
-        <img alt="Studio LaDuke artwork">
+        <img src="9F7F0E8D-FD9F-43F4-863E-308974B7AD58.jpeg" alt="Studio LaDuke artwork">
       </button>
 
       <button
@@ -1254,7 +1254,7 @@
         data-frame-shape="portrait"
         type="button"
       >
-        <img alt="Studio LaDuke artwork">
+        <img src="03DE2160-F40A-4D77-BA2F-030FAC8C7AE7.png" alt="Studio LaDuke artwork">
       </button>
 
       <button
@@ -1262,7 +1262,7 @@
         data-frame-shape="portrait"
         type="button"
       >
-        <img alt="Studio LaDuke artwork">
+        <img src="D649A1E7-F73A-4529-8F41-05A5524C4C8E.png" alt="Studio LaDuke artwork">
       </button>
 
       <button
@@ -1270,7 +1270,7 @@
         data-frame-shape="portrait"
         type="button"
       >
-        <img alt="Studio LaDuke artwork">
+        <img src="650B0A6A-1B85-4665-82D7-95FF79C8761E.png" alt="Studio LaDuke artwork">
       </button>
 
       <button
@@ -1278,14 +1278,14 @@
         data-frame-shape="portrait"
         type="button"
       >
-        <img alt="Studio LaDuke artwork">
+        <img src="193005A4-396A-42B8-895F-3D32037BB744.png" alt="Studio LaDuke artwork">
       </button>
       <button
         class="art-frame frame-10"
         data-frame-shape="portrait"
         type="button"
       >
-        <img alt="Studio LaDuke artwork">
+        <img src="650E29C5-1949-4A2D-9B0C-9F2B31BB3934.png" alt="Studio LaDuke artwork">
       </button>
 
       <a
@@ -1325,12 +1325,12 @@
         aria-label="Fin"
       ></button>
 
-      <button
+      <a
         class="hotspot forest-hotspot"
         id="forestHotspot"
-        type="button"
-        aria-label="Forest doorway"
-      ></button>
+        href="forest-path.html"
+        aria-label="Follow the forest path outside"
+      ></a>
 
       <button
         class="hotspot stereo-hotspot"
@@ -1466,6 +1466,10 @@
 
       <a class="menu-link" href="workshop.html">
         Workshop
+      </a>
+
+      <a class="menu-link" href="forest-path.html">
+        The Back Forty
       </a>
 
       <a class="menu-link" href="directory.html">
@@ -2095,6 +2099,21 @@
         return;
       }
 
+      /*
+        Do not capture the pointer when the visitor is tapping an actual
+        object. Pointer capture changes the click target to the room itself
+        on some touch browsers, which made doors and buttons feel randomly
+        unresponsive. Empty wall/floor space still pans normally.
+      */
+      if (
+        event.target.closest(
+          "a, button, input, select, textarea, [role='button']"
+        )
+      ) {
+        pointerTravel = 0;
+        return;
+      }
+
       pointerActive = true;
       pointerId = event.pointerId;
       pointerStartX = event.clientX;
@@ -2556,19 +2575,6 @@
             showToast("You throw the ball. Fin bolts after it.");
 
             document.getElementById("dogHotspot").style.pointerEvents = "none";
-          }
-        }
-      );
-
-    document
-      .getElementById("forestHotspot")
-      .addEventListener(
-        "click",
-        () => {
-          if (pointerTravel <= 8) {
-            showToast(
-              "The forest path is not open yet."
-            );
           }
         }
       );
