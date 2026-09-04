@@ -119,6 +119,168 @@
       }
     }
 
+    /* The room is in use, not waiting for a catalog photographer.
+       These lightweight scraps are reshuffled into believable work surfaces
+       every time the page opens. */
+    .lived-in-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 7;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .mess-piece {
+      position: absolute;
+      left: var(--mx, 50%);
+      top: var(--my, 50%);
+      width: var(--mw, 5%);
+      height: var(--mh, 2%);
+      opacity: var(--mo, .94);
+      transform: translate(-50%,-50%) rotate(var(--mr, 0deg));
+      transform-origin: center;
+      filter: saturate(1.25) drop-shadow(0 2px 2px rgba(0,0,0,.55));
+    }
+
+    .mess-piece.wood {
+      border: 1px solid rgba(62,32,12,.8);
+      border-radius: 2px 5px 2px 3px;
+      background:
+        repeating-linear-gradient(6deg,rgba(76,34,12,.24) 0 1px,transparent 1px 7px),
+        linear-gradient(90deg,#d19343,#f1bd69 46%,#9f5927);
+    }
+
+    .mess-piece.canvas {
+      border: 1px solid rgba(62,53,39,.7);
+      border-radius: 2px;
+      background:
+        repeating-linear-gradient(45deg,rgba(255,255,255,.18) 0 1px,transparent 1px 3px),
+        hsl(var(--hue,38) 52% 67%);
+      clip-path: polygon(2% 5%,94% 0,100% 82%,68% 100%,5% 92%);
+    }
+
+    .mess-piece.vinyl {
+      border: 1px solid rgba(203,247,255,.75);
+      border-radius: 48% 8% 40% 12%;
+      background:
+        linear-gradient(120deg,rgba(255,255,255,.58),transparent 22% 58%,rgba(150,235,255,.34)),
+        rgba(79,203,224,.18);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.22);
+      backdrop-filter: blur(.4px);
+    }
+
+    .mess-piece.paint {
+      border-radius: 44% 56% 38% 62%;
+      background:
+        radial-gradient(circle at 16% 20%,#ffd64d 0 8%,transparent 9%),
+        radial-gradient(circle at 73% 38%,#f05b74 0 11%,transparent 12%),
+        radial-gradient(circle at 54% 80%,#34c7b1 0 9%,transparent 10%),
+        hsl(var(--hue,192) 72% 48%);
+      mix-blend-mode: screen;
+    }
+
+    .mess-piece.tape {
+      border-radius: 999px;
+      background: repeating-linear-gradient(90deg,#f5d34a 0 6%,#1f1c14 6% 7%);
+      box-shadow: inset 0 -2px rgba(143,92,15,.5);
+    }
+
+    .memory-drawer {
+      position: absolute;
+      left: 29.9%;
+      top: 56.8%;
+      z-index: 31;
+      width: 6.5%;
+      height: 18.3%;
+      border: 0;
+      border-radius: 3px;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .memory-drawer::after {
+      content: "OPEN";
+      position: absolute;
+      left: 50%;
+      bottom: 2%;
+      padding: 3px 7px;
+      border: 1px solid rgba(238,204,128,.48);
+      border-radius: 999px;
+      background: rgba(10,8,5,.8);
+      color: #ffe39b;
+      font: 800 clamp(5px,.62vw,10px)/1 Arial,sans-serif;
+      letter-spacing: .12em;
+      opacity: 0;
+      transform: translateX(-50%) translateY(3px);
+      transition: opacity .16s ease,transform .16s ease;
+    }
+
+    .memory-drawer:hover::after,
+    .memory-drawer:focus-visible::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .memory-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 340;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: rgba(3,6,8,.82);
+      backdrop-filter: blur(12px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .2s ease,visibility .2s ease;
+    }
+
+    .memory-modal.open { opacity:1; visibility:visible; }
+
+    .memory-box {
+      position: relative;
+      width: min(780px,95vw);
+      max-height: 90dvh;
+      overflow: auto;
+      padding: clamp(24px,5vw,48px);
+      border: 7px solid #5e391f;
+      border-radius: 18px 18px 28px 28px;
+      background:
+        repeating-linear-gradient(90deg,rgba(74,39,16,.15) 0 2px,transparent 2px 28px),
+        linear-gradient(#b77a3d,#75431f);
+      box-shadow: inset 0 0 0 2px #d5a269,0 30px 90px #000;
+      color: #241306;
+      font-family: Arial,sans-serif;
+    }
+
+    .memory-box h2 { margin:0 44px 5px 0; color:#fff0c2; font-size:clamp(24px,5vw,42px); text-shadow:0 2px #321a0c; }
+    .memory-box > p { margin:0 0 22px; color:#f7ddb0; font-weight:800; }
+    .memory-close { position:absolute;right:12px;top:12px;width:42px;height:42px;border:2px solid rgba(255,255,255,.35);border-radius:50%;background:#2f190c;color:#fff;font:900 24px/1 Arial;cursor:pointer; }
+    .ticket-stack { display:grid; gap:14px; }
+    .ticket {
+      position: relative;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:12px;
+      align-items:center;
+      min-height:92px;
+      padding:17px 22px;
+      border:2px solid currentColor;
+      border-radius:9px;
+      background:#f5e8c7;
+      box-shadow:0 6px 12px rgba(45,21,5,.34);
+      transform:rotate(var(--ticket-tilt));
+      overflow:hidden;
+    }
+    .ticket::before { content:"";position:absolute;right:78px;top:0;bottom:0;border-left:2px dashed currentColor;opacity:.35; }
+    .ticket strong { display:block;font-size:clamp(20px,4.8vw,36px);letter-spacing:.04em;line-height:.92; }
+    .ticket span { display:block;margin-top:6px;font:800 11px/1.2 ui-monospace,monospace;letter-spacing:.11em; }
+    .ticket b { writing-mode:vertical-rl;font-size:12px;letter-spacing:.13em; }
+    .ticket.blink { --ticket-tilt:-1.1deg;color:#ae332b;background:linear-gradient(100deg,#f4ead6,#d8f1ef); }
+    .ticket.gorge { --ticket-tilt:.7deg;color:#236b78;background:linear-gradient(100deg,#f3dfb6,#f8f0d9); }
+    .ticket.foo { --ticket-tilt:-.35deg;color:#151515;background:linear-gradient(100deg,#e7d451,#f2e7b7); }
+    .drawer-note { margin:22px 0 0!important;padding:12px 15px;border-radius:10px;background:rgba(50,24,8,.28);color:#fff0c2!important;font:italic 700 14px/1.4 Georgia,serif!important; }
+
     /* REAL ARTWORK */
 
     /* ARTWORK — mapped to the actual blank frame interiors in the room image */
@@ -612,6 +774,16 @@
       transition: opacity 180ms ease,transform 180ms ease,visibility 180ms ease;
     }
     .stereo-controls.show { opacity:1; visibility:visible; transform:translateY(0); }
+    .stereo-controls.minimized {
+      width: 48px;
+      min-height: 48px;
+      padding: 5px;
+      gap: 0;
+    }
+    .stereo-controls.minimized .stereo-now-playing,
+    .stereo-controls.minimized .stereo-control:not(.stereo-minimize) {
+      display: none;
+    }
     .stereo-now-playing {
       min-width:0; flex:1 1 auto; overflow:hidden; margin:0;
       white-space:nowrap; text-overflow:ellipsis;
@@ -631,6 +803,11 @@
       background:rgba(213,167,82,.14);
       border-color:rgba(225,183,100,.68);
     }
+    .stereo-minimize {
+      flex: 0 0 auto;
+      font-size: 1rem;
+      background: rgba(213,167,82,.11);
+    }
 
     @media (max-width: 700px) and (orientation: portrait) {
       .stereo-controls {
@@ -642,6 +819,13 @@
 
       .stereo-controls.show {
         transform: translate(-50%, 0);
+      }
+
+      .stereo-controls.minimized {
+        left: auto;
+        right: calc(12px + env(safe-area-inset-right));
+        bottom: calc(68px + env(safe-area-inset-bottom));
+        transform: none;
       }
     }
 
@@ -1265,6 +1449,19 @@
       aria-label="Studio LaDuke creative workshop"
     >
 
+      <div class="lived-in-layer" id="livedInLayer" aria-hidden="true">
+        <i class="mess-piece wood" data-zone="bench"></i>
+        <i class="mess-piece wood" data-zone="sewing"></i>
+        <i class="mess-piece canvas" data-zone="bench"></i>
+        <i class="mess-piece canvas" data-zone="sewing"></i>
+        <i class="mess-piece canvas" data-zone="sewing"></i>
+        <i class="mess-piece vinyl" data-zone="bench"></i>
+        <i class="mess-piece vinyl" data-zone="sewing"></i>
+        <i class="mess-piece paint" data-zone="bench"></i>
+        <i class="mess-piece paint" data-zone="sewing"></i>
+        <i class="mess-piece tape" data-zone="bench"></i>
+      </div>
+
       <button
         class="art-frame frame-1"
         data-frame-shape="landscape"
@@ -1343,6 +1540,13 @@
       >
         <img src="650E29C5-1949-4A2D-9B0C-9F2B31BB3934.png" alt="Studio LaDuke artwork">
       </button>
+
+      <button
+        class="memory-drawer"
+        id="memoryDrawer"
+        type="button"
+        aria-label="Open the workshop memory drawer"
+      ></button>
 
       <a
         class="fort-entry"
@@ -1646,6 +1850,20 @@
     </section>
   </div>
 
+  <div class="memory-modal" id="memoryModal" role="dialog" aria-modal="true" aria-labelledby="memoryTitle">
+    <section class="memory-box">
+      <button class="memory-close" id="memoryClose" type="button" aria-label="Close the memory drawer">×</button>
+      <h2 id="memoryTitle">THE DRAWER THAT MOVED FOUR TIMES</h2>
+      <p>Old shows, bent corners, and enough proof that Corey has always been willing to drive an unreasonable distance for loud guitars.</p>
+      <div class="ticket-stack">
+        <article class="ticket blink"><div><strong>BLINK-182</strong><span>SEATTLE · JUNE 25 · KEEP FOREVER</span></div><b>ADMIT ONE</b></article>
+        <article class="ticket gorge"><div><strong>BLINK-182</strong><span>THE GORGE · SUNBURN INCLUDED</span></div><b>LOUD SEAT</b></article>
+        <article class="ticket foo"><div><strong>FOO FIGHTERS</strong><span>FAIRBANKS · 08.21.21 · RAVENS OVERHEAD</span></div><b>STILL HERE</b></article>
+      </div>
+      <p class="drawer-note">Also inside: one dead Sharpie, three mystery screws, and a key that has confidently refused to identify itself.</p>
+    </section>
+  </div>
+
   <div
     class="toast"
     id="toast"
@@ -1690,6 +1908,16 @@
         aria-label="Next track"
       >
         ▶
+      </button>
+
+      <button
+        class="stereo-control stereo-minimize"
+        id="stereoMinimize"
+        type="button"
+        aria-label="Minimize stereo controls"
+        title="Minimize stereo controls"
+      >
+        −
       </button>
     </div>
   </div>
@@ -1831,6 +2059,9 @@
     const stereoNext =
       document.getElementById("stereoNext");
 
+    const stereoMinimize =
+      document.getElementById("stereoMinimize");
+
     const roomDotLeft =
       document.getElementById("roomDotLeft");
 
@@ -1846,6 +2077,7 @@
 
     let stereoTrackIndex = 0;
     let stereoHasStarted = false;
+    let stereoCollapseTimer = null;
 
     workshopStereo.volume = 0.58;
 
@@ -1860,6 +2092,47 @@
     let pointerTravel = 0;
 
     let viewerTouchStartX = 0;
+
+    const messRanges = {
+      bench: { minX: 31, maxX: 58, minY: 44.4, maxY: 51.3 },
+      sewing: { minX: 63, maxX: 91, minY: 67.3, maxY: 74.4 }
+    };
+
+    function randomBetween(minimum, maximum) {
+      return minimum + Math.random() * (maximum - minimum);
+    }
+
+    function refreshWorkshopMess() {
+      document.querySelectorAll(".mess-piece").forEach((piece, index) => {
+        const zone = messRanges[piece.dataset.zone] || messRanges.bench;
+        const isWood = piece.classList.contains("wood");
+        const isCanvas = piece.classList.contains("canvas");
+        const isVinyl = piece.classList.contains("vinyl");
+        const isTape = piece.classList.contains("tape");
+        const width = isWood
+          ? randomBetween(3.8, 7.4)
+          : isCanvas || isVinyl
+            ? randomBetween(3.2, 6.3)
+            : isTape
+              ? randomBetween(4.4, 7.2)
+              : randomBetween(1.3, 2.5);
+        const height = isWood || isTape
+          ? randomBetween(.65, 1.2)
+          : isCanvas || isVinyl
+            ? randomBetween(1.6, 3.4)
+            : randomBetween(1.1, 2.2);
+
+        piece.style.setProperty("--mx", randomBetween(zone.minX, zone.maxX).toFixed(2) + "%");
+        piece.style.setProperty("--my", randomBetween(zone.minY, zone.maxY).toFixed(2) + "%");
+        piece.style.setProperty("--mw", width.toFixed(2) + "%");
+        piece.style.setProperty("--mh", height.toFixed(2) + "%");
+        piece.style.setProperty("--mr", randomBetween(-23, 23).toFixed(1) + "deg");
+        piece.style.setProperty("--hue", Math.floor(randomBetween(6, 210)));
+        piece.style.setProperty("--mo", index > 5 && Math.random() < .18 ? "0" : randomBetween(.78, .98).toFixed(2));
+      });
+    }
+
+    refreshWorkshopMess();
 
     function shuffle(items) {
       const copy = [...items];
@@ -2378,6 +2651,30 @@
 
     function showStereoControls() {
       stereoControls.classList.add("show");
+      stereoControls.classList.remove("minimized");
+      stereoMinimize.textContent = "−";
+      stereoMinimize.setAttribute("aria-label", "Minimize stereo controls");
+      stereoMinimize.title = "Minimize stereo controls";
+      window.clearTimeout(stereoCollapseTimer);
+      stereoCollapseTimer = window.setTimeout(() => {
+        if (!workshopStereo.paused) minimizeStereoControls();
+      }, 4200);
+    }
+
+    function minimizeStereoControls() {
+      window.clearTimeout(stereoCollapseTimer);
+      stereoControls.classList.add("show", "minimized");
+      stereoMinimize.textContent = "♫";
+      stereoMinimize.setAttribute("aria-label", "Expand stereo controls");
+      stereoMinimize.title = "Expand stereo controls";
+    }
+
+    function toggleStereoSize() {
+      if (stereoControls.classList.contains("minimized")) {
+        showStereoControls();
+      } else {
+        minimizeStereoControls();
+      }
     }
 
     function toggleStereo() {
@@ -2582,6 +2879,14 @@
       }
     );
 
+    stereoMinimize.addEventListener(
+      "click",
+      event => {
+        event.stopPropagation();
+        toggleStereoSize();
+      }
+    );
+
     workshopStereo.addEventListener(
       "play",
       updateStereoDisplay
@@ -2631,6 +2936,45 @@
     });
     window.addEventListener("keydown", event => {
       if (event.key === "Escape") closeProseak();
+    });
+
+    const memoryModal = document.getElementById("memoryModal");
+    const memoryDrawer = document.getElementById("memoryDrawer");
+    const closeMemoryDrawer = () => memoryModal.classList.remove("open");
+
+    function drawerThump() {
+      try {
+        const DrawerAudio = window.AudioContext || window.webkitAudioContext;
+        const audio = new DrawerAudio();
+        const oscillator = audio.createOscillator();
+        const gain = audio.createGain();
+        oscillator.type = "triangle";
+        oscillator.frequency.setValueAtTime(92, audio.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(48, audio.currentTime + .11);
+        gain.gain.setValueAtTime(.07, audio.currentTime);
+        gain.gain.exponentialRampToValueAtTime(.0001, audio.currentTime + .14);
+        oscillator.connect(gain).connect(audio.destination);
+        oscillator.start();
+        oscillator.stop(audio.currentTime + .14);
+        window.setTimeout(() => audio.close(), 220);
+      } catch (error) {
+        /* The drawer still opens on browsers that decline Web Audio. */
+      }
+    }
+
+    memoryDrawer.addEventListener("click", event => {
+      event.stopPropagation();
+      memoryModal.classList.add("open");
+      drawerThump();
+      showToast("You found the drawer Corey keeps meaning to organize.");
+    });
+
+    document.getElementById("memoryClose").addEventListener("click", closeMemoryDrawer);
+    memoryModal.addEventListener("click", event => {
+      if (event.target === memoryModal) closeMemoryDrawer();
+    });
+    window.addEventListener("keydown", event => {
+      if (event.key === "Escape") closeMemoryDrawer();
     });
 
     document
