@@ -337,6 +337,9 @@
       background-position: right center;
     }
 
+    .game.opponent-cactus .flytrap .fighter-image{filter:hue-rotate(55deg) saturate(1.45) contrast(1.08);transform:scale(1.05)}
+    .game.opponent-fern .flytrap .fighter-image{filter:hue-rotate(145deg) saturate(.9) brightness(1.12);transform:scale(1.1) rotate(-2deg)}
+
     .fighter::after {
       content: "";
       position: absolute;
@@ -1501,14 +1504,12 @@
       <div class="center-hud">
         <div class="timer" id="timer">60</div>
 
-        <div class="round-text">
-          ROUND <span id="roundNumber">1</span>
-        </div>
+        <div class="round-text">ROUND <span id="roundNumber">1</span><br><small>CHALLENGER <span id="challengerNumber">1</span>/3</small></div>
       </div>
 
       <div class="hud-side enemy">
 
-        <div class="name">FLYTRAP</div>
+        <div class="name" id="enemyName">FLYTRAP</div>
 
         <div class="health-shell">
           <div class="health" id="flyHealth"></div>
@@ -1601,7 +1602,7 @@
         </div>
 
         <div class="subtitle">
-          GARDEN BRAWL
+          THREE-CHALLENGER GARDEN BRAWL
         </div>
 
         <div class="insert">
@@ -1663,6 +1664,8 @@
 
     const timerDisplay = document.getElementById("timer");
     const roundDisplay = document.getElementById("roundNumber");
+    const challengerDisplay = document.getElementById("challengerNumber");
+    const enemyNameDisplay = document.getElementById("enemyName");
 
     const announcement =
       document.getElementById("announcement");
@@ -1727,6 +1730,19 @@
 
     let finisherReady = false;
     let finisherRunning = false;
+    const opponents = [
+      {name:"FLYTRAP",className:"opponent-flytrap",move:"Flytrap"},
+      {name:"CACTUS JACK",className:"opponent-cactus",move:"Cactus Jack"},
+      {name:"GRANDMA FERN",className:"opponent-fern",move:"Grandma Fern"}
+    ];
+    let opponentIndex = 0;
+
+    function configureOpponent(){
+      game.classList.remove("opponent-flytrap","opponent-cactus","opponent-fern");
+      game.classList.add(opponents[opponentIndex].className);
+      enemyNameDisplay.textContent=opponents[opponentIndex].name;
+      challengerDisplay.textContent=String(opponentIndex+1);
+    }
 
     function random(min, max) {
       return Math.floor(
@@ -2177,7 +2193,7 @@
         if (enemyMove === "bite") {
           flytrap.classList.add("bite-animation");
 
-          setMessage("Flytrap lunges with Snap Attack.");
+          setMessage(opponents[opponentIndex].move + " lunges with Snap Attack.");
 
           damage = random(7, 13);
         }
@@ -2186,7 +2202,7 @@
           flytrap.classList.add("acid-animation");
           createAcid();
 
-          setMessage("Flytrap spits corrosive plant juice.");
+          setMessage(opponents[opponentIndex].move + " spits corrosive plant juice.");
 
           damage = random(10, 17);
         }
@@ -2195,7 +2211,7 @@
           flytrap.classList.add("vine-animation");
           createVine();
 
-          setMessage("Flytrap lashes Bob with a vine whip.");
+          setMessage(opponents[opponentIndex].move + " lashes Bob with a vine whip.");
 
           damage = random(8, 15);
         }
@@ -2415,6 +2431,7 @@
 
       finisherRunning = true;
       locked = true;
+      const finalOpponent = opponentIndex === opponents.length - 1;
 
       announcement.classList.remove("finish");
 
@@ -2473,29 +2490,29 @@
 
       window.setTimeout(() => {
         bobRounds = 2;
-
-        victoryScreen.classList.add("show");
-
-        setMessage(
-          "Cracked, but never broken."
-        );
+        if(finalOpponent){
+          victoryScreen.classList.add("show");
+          setMessage("All three challengers have been aggressively gardened.");
+        }else{
+          announce(opponents[opponentIndex].name + " DEFEATED");
+          setMessage("The greenhouse sends in someone with even fewer manners.");
+        }
       }, 1750);
 
       window.setTimeout(() => {
         finisherDarkness.classList.remove("show");
 
-        active = false;
-        locked = true;
-
-        finisherReady = false;
-
-        restartButton.classList.add("show");
-
-        setMessage(
-          "Insert another quarter to fight again."
-        );
-
-        update();
+        active = false; locked = true; finisherReady = false;
+        if(finalOpponent){
+          restartButton.classList.add("show");
+          setMessage("Insert another quarter to fight all three again.");
+          update();
+        }else{
+          opponentIndex += 1; bobRounds = 0; flyRounds = 0; currentRound = 1;
+          configureOpponent();
+          announce(opponents[opponentIndex].name + " ENTERS");
+          window.setTimeout(startRound,650);
+        }
       }, 2250);
     }
 
@@ -2650,6 +2667,7 @@
     }
 
     function restart() {
+      opponentIndex = 0;
       bobRounds = 0;
       flyRounds = 0;
 
@@ -2658,6 +2676,7 @@
       victoryScreen.classList.remove("show");
 
       resetFighters();
+      configureOpponent();
       startRound();
     }
 
@@ -2681,6 +2700,7 @@
       "click",
       () => {
         startScreen.classList.add("hidden");
+        configureOpponent();
         window.setTimeout(startRound, 350);
       }
     );
