@@ -815,6 +815,7 @@
     let rainSource;
     let rainGain;
     let bobReadyForDoor = false;
+    let guitarChordIndex = 0;
 
     const bobRemarks = [
       "Bob says: Growth is mostly standing still with commitment.",
@@ -934,10 +935,20 @@
       rainGain = null;
     }
 
+    const guitarProgression = [
+      { name: "G", notes: [196, 246.94, 293.66, 392] },
+      { name: "D", notes: [146.83, 220, 293.66, 369.99] },
+      { name: "Em", notes: [164.81, 196, 246.94, 329.63] },
+      { name: "C", notes: [130.81, 196, 261.63, 329.63] }
+    ];
+
     function playGuitarChord() {
       const audio = getAudioContext();
       const now = audio.currentTime;
-      const frequencies = [196, 246.94, 293.66, 392];
+      const chord = guitarProgression[guitarChordIndex];
+      const frequencies = chord.notes;
+
+      guitarChordIndex = (guitarChordIndex + 1) % guitarProgression.length;
 
       frequencies.forEach((frequency, index) => {
         const oscillator = audio.createOscillator();
@@ -958,7 +969,10 @@
         oscillator.stop(start + 1.2);
       });
 
-      showFrontToast("The Martin still has something to say.");
+      showFrontToast(
+        chord.name + " chord. Tap again for " +
+        guitarProgression[guitarChordIndex].name + "."
+      );
     }
 
     lampHotspot.addEventListener("click", () => {
