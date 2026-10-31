@@ -1,0 +1,5 @@
+# Super Maverick's World
+
+The Fort page keeps its room, hotspots, progress, and modal. The one active platformer is loaded from `super-mavericks-world.js`; its responsive controls, title/pause screens, and cartridge shelf are in `super-mavericks-world.css`. Four original chapter backdrops are stored as WebP files under `assets/` rather than embedded in the page source. The adventure now has six authored chapters, three boss battles, two checkpoints in each long chapter, Finn's abilities, Bob's suit, and the secret coin cave.
+
+The original branch remains available in Git history. Desktop keys: A/D or arrows to move, Space/W/Up to jump, F/X for Finn's bone, Shift/E for Finn Dash, S/Down at a pipe, and P/Escape to pause. Touch controls are available in the game modal. The sound button saves its preference locally. The Fort's TV opens the current platformer; its console and visible cartridges open the game shelf. Only completed games are marked playable. The HEIMR direction is recorded in `HEIMR_GAME_CONCEPT.md`.
