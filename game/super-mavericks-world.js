@@ -41,7 +41,7 @@
   ];
   // Six stages form three distinct worlds. Each world ends with a main boss;
   // its first stage has an optional-route miniboss arena before the exit.
-  LEVELS[0].checkpoints=[1850,3900];
+  LEVELS[0].checkpoints=[1740,3820];
   Object.assign(LEVELS[0],{world:6100,finish:5960});
   LEVELS[0].ground.push([3330,438,660],[4140,438,430],[4720,438,760],[5620,438,480]);
   LEVELS[0].plats.push([3430,330,180],[3710,255,180],[4170,340,230],[4510,275,150],[4820,335,220],[5120,250,160],[5480,330,190],[5780,255,160]);
@@ -51,7 +51,7 @@
   LEVELS[0].coins.push([3260,340],[3650,210],[4050,350],[4460,230],[4660,330],[5040,215],[5370,310],[5560,370],[5880,210]);
   LEVELS[0].enemies.push([3490,392],[4230,392],[4920,392],[5680,392]);
   LEVELS[1].world=3900;LEVELS[1].finish=3700;LEVELS[1].checkpoints=[1800];
-  LEVELS[2].world=6800;LEVELS[2].finish=6660;LEVELS[2].checkpoints=[1800,4100];LEVELS[2].blocks[1]=[398,245,'bob'];
+  LEVELS[2].world=6800;LEVELS[2].finish=6660;LEVELS[2].checkpoints=[1790,4160];LEVELS[2].blocks[1]=[398,245,'bob'];
   LEVELS[2].ground.push([3740,438,210],[4100,438,650],[4900,438,390],[5430,438,610],[6190,438,610]);
   LEVELS[2].plats.push([3530,325,220],[3830,245,150],[4150,340,230],[4490,260,170],[4940,330,210],[5240,245,145],[5480,340,220],[5790,265,170],[6240,330,210],[6520,245,160]);
   LEVELS[2].blocks.push([3570,240,'brick'],[3628,240,'coin'],[3686,240,'brick'],[4180,255,'brick'],[4238,255,'coin'],[4296,255,'brick'],[4980,245,'brick'],[5038,245,'brick'],[5096,245,'coin'],[5530,255,'brick'],[5588,255,'tag'],[6300,245,'brick'],[6358,245,'coin'],[6570,160,'brick']);
@@ -67,7 +67,9 @@
   LEVELS[3].boss={name:'BARKBACK BRUISER',kind:'boar',x:2790,y:312,bounds:[2440,3160],hp:7,projectile:'seed'};
   LEVELS.push({name:'TIDAL ROOTS',world:6200,theme:2,start:[110,330],ground:[[0,438,560],[690,438,600],[1430,438,430],[1970,438,710],[2790,438,520],[3430,438,720],[4310,438,540],[5010,438,1050]],plats:[[210,335,190],[520,265,150],[760,335,180],[1110,270,170],[1470,340,210],[1750,265,150],[2020,330,210],[2380,250,160],[2830,335,200],[3180,270,150],[3520,345,220],[3910,260,180],[4360,330,200],[4680,250,150],[5100,335,210],[5520,265,180],[5890,340,170]],blocks:[[300,250,'brick'],[358,250,'coin'],[830,255,'bob'],[1480,250,'brick'],[1538,250,'tag'],[1596,250,'brick'],[2190,245,'brick'],[2248,245,'coin'],[2306,245,'brick'],[2920,245,'brick'],[2978,245,'coin'],[3590,250,'brick'],[3648,250,'tag'],[3706,250,'brick'],[4450,245,'brick'],[4508,245,'coin'],[4566,245,'brick'],[5280,245,'finn']],coins:[[600,350],[1040,220],[1370,340],[1850,215],[2480,205],[2730,340],[3360,350],[3820,215],[4200,330],[4840,210],[5000,350],[5740,215],[6070,320]],enemies:[[930,392],[1680,392],[2410,392],[3310,392],[4170,392],[4890,392],[5830,392]],finish:6030,checkpoints:[2100,4240],intro:'LEVEL 5  •  FIND THE LOW TIDE PATH'});
   LEVELS.push({name:'GRUMBLE KEEP',world:3900,theme:3,start:[110,330],ground:[[0,438,640],[770,438,580],[1470,438,520],[2110,438,640],[2900,438,1000]],plats:[[240,335,190],[500,260,160],[820,335,180],[1110,260,170],[1510,345,210],[1810,270,150],[2150,335,190],[2490,250,180],[2850,340,220],[3180,265,160],[3500,335,190]],blocks:[[300,250,'brick'],[358,250,'coin'],[900,245,'brick'],[958,245,'tag'],[1016,245,'brick'],[1580,250,'brick'],[1638,250,'coin'],[1696,250,'brick'],[2280,245,'brick'],[2338,245,'coin'],[2396,245,'brick'],[3000,245,'brick'],[3058,245,'coin'],[3116,245,'brick'],[3540,220,'tag']],coins:[[580,215],[1280,220],[1740,210],[2030,340],[2670,200],[2800,330],[3400,210],[3700,300]],enemies:[[650,392],[1280,392],[1980,392],[2800,392],[3460,392]],finish:99999,checkpoints:[1450,2850],intro:'FINAL BOSS  •  THE GRUMBLE KING IS HOME'});
-  LEVELS[4].checkpoints=[1850,3900];
+  LEVELS[4].checkpoints=[1740,3850];
+  LEVELS[3].checkpoints=[1780,2310];
+  LEVELS[5].checkpoints=[1220,3130];
   LEVELS[5].boss={name:'THE GRUMBLE KING',kind:'grumble',x:3420,y:312,bounds:[3020,3730],hp:10,projectile:'complaint'};
   const WORLDS=[
     {name:'SUNLIT FORTLAND',look:'golden hills, clear skies and cedar rain',first:0,last:1},
@@ -113,7 +115,7 @@
   function updateStory(dt){if(!S.story)return;S.story.time+=dt;if(S.story.time>=3.2)advanceStory()}
   function burst(x,y,color='#ffe16a',n=12){for(let i=0;i<n;i++)particles.push({x,y,vx:(Math.random()-.5)*300,vy:-80-Math.random()*260,life:.35+Math.random()*.45,color,r:3+Math.random()*5})}
   function makeBlock(a,i){return{x:a[0],y:a[1],w:52,h:48,type:a[2],used:false,broken:false,bump:0,id:i}}
-  function loadLevel(index,keep=true){S.level=index;S.mode='world';level=LEVELS[index];checkpointIndex=0;checkpointX=level.start[0];S.cam=0;S.transition=2.15;S.won=false;S.midBossDone=false;S.activeMidBoss=false;S.bossMax=level.boss?.hp||level.miniBoss?.hp||9;S.bossHP=S.bossMax;Object.assign(player,{x:level.start[0],y:level.start[1],vx:0,vy:0,dir:1,ground:false,inv:1,blend:0,dash:0,dashCD:0,boneCD:0,glide:false,runners:false,speedBoost:0});blocks=level.blocks.map(makeBlock);coins=level.coins.map((a,i)=>({x:a[0],y:a[1],w:25,h:34,taken:false,id:i}));enemies=level.enemies.map((a,i)=>({x:a[0],y:a[1],w:50,h:43,vx:i%2?75:-75,alive:true,stun:0}));bones=[];vines=[];particles=[];items=[];hazards=[];boss=level.boss?{...level.boss,w:142,h:126,vx:-78,vy:0,ground:true,flash:0,attack:1.2,phase:0}:null;if(level.boss&&!player.finn)activateFinn(false);updateScore();msg(level.intro,2.3)}
+  function loadLevel(index,keep=true){S.level=index;S.mode='world';level=LEVELS[index];checkpointIndex=0;checkpointX=level.start[0];S.cam=0;S.transition=2.15;S.won=false;S.midBossDone=false;S.activeMidBoss=false;S.bossMax=level.boss?.hp||level.miniBoss?.hp||9;S.bossHP=S.bossMax;Object.assign(player,{x:level.start[0],y:level.start[1],vx:0,vy:0,dir:1,ground:false,inv:1,blend:0,dash:0,dashCD:0,boneCD:0,glide:false,runners:false,speedBoost:0});blocks=level.blocks.map(makeBlock);coins=level.coins.map((a,i)=>({x:a[0],y:a[1],w:25,h:34,taken:false,id:i}));enemies=level.enemies.map((a,i)=>({x:a[0],y:a[1],w:50,h:43,vx:i%2?75:-75,alive:true,stun:0}));bones=[];vines=[];particles=[];items=[];hazards=[];boss=level.boss?{...level.boss,w:142,h:126,vx:-78,vy:0,ground:true,flash:0,attack:1.2,windup:0,phase:0}:null;if(level.boss&&!player.finn)activateFinn(false);updateScore();msg(level.intro,2.3)}
   function reset(){S.coins=0;S.points=0;S.lives=3;S.tags=0;S.won=false;S.story=null;Object.keys(gearScenesSeen).forEach(key=>gearScenesSeen[key]=false);scorePanel?.classList.remove('show');Object.assign(player,{finn:false,bob:false,blend:0,double:true,cape:false,glide:false,runners:false,speedBoost:0});setAbilityLabels('BONE','FINN DASH',true);loadLevel(0,false)}
   function setAbilityLabels(primary,secondary,locked=false){const a=document.getElementById('gameBone'),b=document.getElementById('gameDash');if(a)a.textContent=primary;if(b)b.textContent=secondary;a?.classList.toggle('locked',locked);b?.classList.toggle('locked',locked)}
   function activateFinn(audio=true){Object.assign(player,{finn:true,bob:false,blend:0,double:true});setAbilityLabels('BONE','FINN DASH');burst(player.x+24,player.y+30,'#fff4a8',36);S.shake=9;if(audio)speak('FINN POWER',.68);msg('FINN POWER • DOUBLE JUMP • BONES • DASH',2.8);updateScore()}
@@ -151,7 +153,7 @@
     if(player.jumpBuffer>0&&(player.coyote>0||(player.finn&&player.double))){if(player.coyote<=0)player.double=false;player.vy=player.finn?-710:-665;player.ground=false;player.coyote=0;player.jumpBuffer=0;player.hold=.18;player.land=0;tone(410,.08);burst(player.x+23,player.y+player.h,'#eaf6cf',5)}
     if(!input.jump&&player.vy<-235)player.vy+=1500*dt;if(input.jump&&player.hold>0&&player.vy<0){player.vy-=190*dt;player.hold-=dt}else player.hold=0;player.glide=Boolean(player.cape&&!player.ground&&input.jump&&player.vy>0);if(player.glide)player.vy=Math.min(player.vy,155);
     if(level.checkpoints&&checkpointIndex<level.checkpoints.length&&player.x>level.checkpoints[checkpointIndex]){checkpointX=level.checkpoints[checkpointIndex];checkpointIndex++;msg('CHECKPOINT! FINN SAYS YOU MAY KEEP GOING.',1.5);burst(checkpointX,340,'#ffe27a',22)}
-    const prevY=player.y;player.vy+=1880*dt;player.vy=Math.min(980,player.vy);player.x+=player.vx*dt;player.y+=player.vy*dt;player.x=clamp(player.x,0,(S.mode==='bonus'?960:level.world)-player.w);if(S.mode!=='bonus'&&level.miniBoss&&!S.midBossDone&&!boss&&player.x>level.miniBoss.trigger){boss={...level.miniBoss,w:142,h:126,vx:-86,vy:0,ground:true,flash:0,attack:1.1,phase:0};S.activeMidBoss=true;S.bossHP=level.miniBoss.hp;S.bossMax=level.miniBoss.hp;hazards=[];msg(`MINI-BOSS! ${boss.name}`,2.3);S.shake=5}if(S.mode!=='bonus'&&level.miniBoss&&!S.midBossDone&&player.x>level.miniBoss.trigger+680){player.x=level.miniBoss.trigger+680;player.vx=Math.min(0,player.vx)}if(S.mode!=='bonus')underside(prevY);landOn(floors(),prevY);if(player.ground)player.double=true;if(player.y>620)die();
+    const prevY=player.y;player.vy+=1880*dt;player.vy=Math.min(980,player.vy);player.x+=player.vx*dt;player.y+=player.vy*dt;player.x=clamp(player.x,0,(S.mode==='bonus'?960:level.world)-player.w);if(S.mode!=='bonus'&&level.miniBoss&&!S.midBossDone&&!boss&&player.x>level.miniBoss.trigger){boss={...level.miniBoss,w:142,h:126,vx:-86,vy:0,ground:true,flash:0,attack:1.1,windup:0,phase:0};S.activeMidBoss=true;S.bossHP=level.miniBoss.hp;S.bossMax=level.miniBoss.hp;hazards=[];msg(`MINI-BOSS! ${boss.name}`,2.3);S.shake=5}if(S.mode!=='bonus'&&level.miniBoss&&!S.midBossDone&&player.x>level.miniBoss.trigger+680){player.x=level.miniBoss.trigger+680;player.vx=Math.min(0,player.vx)}if(S.mode!=='bonus')underside(prevY);landOn(floors(),prevY);if(player.ground)player.double=true;if(player.y>620)die();
     (S.mode==='bonus'?bonusCoins:coins).forEach(c=>{if(!c.taken&&hit(player,c)){c.taken=true;S.coins++;S.points+=100;burst(c.x,c.y,'#ffe36a',8);tone(760,.05)}});
     items.forEach(it=>{it.vy+=700*dt;it.y+=it.vy*dt;const floorY=(it.kind==='finn'||it.kind==='bob'||it.kind==='cape'||it.kind==='runners')?350:370;if(it.y>floorY){it.y=floorY;it.vy=-Math.abs(it.vy)*.45}if(hit(player,it)){it.dead=true;if(it.kind==='finn'){activateFinn();showGearScene('finn','FINN SUIT, MADE FOR YOU','I stitched this suit so you can borrow Finn’s quick paws. A good friend should get to come along.')}else if(it.kind==='bob')activateBob();else if(it.kind==='cape'){player.cape=true;setAbilityLabels(player.bob?'VINE':'BONE',player.bob?'BLEND':player.finn?'FINN DASH':'CAPE GLIDE');burst(player.x+24,player.y+28,'#f5a94d',36);tone(880,.12);msg('CAPE FOUND • HOLD JUMP WHILE FALLING TO GLIDE',2.4);showGearScene('cape','A CAPE FROM THE WORKBENCH','I cut it from light sailcloth so the wind can carry you. Hold Jump when you start to fall.')}else if(it.kind==='runners'){player.runners=true;player.speedBoost=8;burst(player.x+24,player.y+30,'#ff4b55',28);tone(740,.1);msg('RED RUNNERS • SPEED BOOST!',1.8);showGearScene('runners','RED RUNNERS, FIELD TESTED','I added grippy soles and light canvas. Take a running start—these will carry you past trouble.')}else{S.tags++;S.points+=500;burst(it.x,it.y,'#82f3ff',18);msg('SECRET FINN TAG • EXTREMELY OFFICIAL',1.7)}}});items=items.filter(i=>!i.dead);if(S.story)return;
     if(S.mode!=='bonus')enemies.forEach(e=>{if(!e.alive)return;e.x+=e.vx*dt;if(e.x<40||e.x>level.world-70)e.vx*=-1;const foot=level.ground.some(g=>e.x+e.w/2>g[0]&&e.x+e.w/2<g[0]+g[2]);if(!foot)e.vx*=-1;if(hit(player,e)){if(player.vy>100&&player.y+player.h<e.y+26){e.alive=false;S.points+=250;player.vy=-420;burst(e.x+25,e.y+18,'#bde85e',15);msg('GRUMBLY: DE-GRUMBLED',.9)}else die()}});
@@ -161,7 +163,46 @@
     if(boss&&S.mode!=='bonus')updateBoss(dt);
     if(S.mode!=='bonus'&&!level.boss&&(!level.miniBoss||S.midBossDone)&&player.x>level.finish)nextLevel();S.cam=S.mode==='bonus'?0:clamp(player.x-W*.36,0,level.world-W);updateScore();
   }
-  function updateBoss(dt){boss.flash=Math.max(0,boss.flash-dt);boss.attack-=dt;boss.x+=boss.vx*dt;const [left,right]=boss.bounds;if(boss.x<left||boss.x+boss.w>right)boss.vx*=-1;if(boss.attack<=0){boss.attack=.78+Math.random()*.55;const from=(boss.kind==='ram'||boss.kind==='boar')?boss.x+boss.w*.32:boss.x+boss.w*.5;hazards.push({kind:boss.projectile,x:from,y:boss.y+38,w:34,h:30,vx:-250-Math.random()*110,vy:-360-Math.random()*100,life:5});speak(boss.kind==='grumble'?'unacceptable':boss.kind==='boar'?'snort':'rain',.58)}hazards.forEach(h=>{h.x+=h.vx*dt;h.y+=h.vy*dt;h.vy+=1100*dt;if(h.y>408){h.y=408;h.vy=-Math.abs(h.vy)*.63}h.life-=dt;if(hit(player,h)){h.life=0;die()}});hazards=hazards.filter(h=>h.life>0);if(hit(player,boss)){if(player.vy>180&&player.y+player.h<boss.y+42){player.vy=-520;if(boss.flash<=0){boss.flash=.2;S.bossHP--;S.points+=500;S.shake=10;burst(boss.x,boss.y,'#ffda65',22);if(S.bossHP<=0)bossDefeated()}}else die()}}
+  // Bosses warn before each shot, and fire toward Maverick from either side.
+  // A readable wind-up makes a fight about timing instead of surprise damage.
+  function updateBoss(dt){
+    boss.flash=Math.max(0,boss.flash-dt);
+    boss.attack-=dt;
+    boss.x+=boss.vx*dt;
+    const [left,right]=boss.bounds;
+    if(boss.x<left){boss.x=left;boss.vx=Math.abs(boss.vx)}
+    else if(boss.x+boss.w>right){boss.x=right-boss.w;boss.vx=-Math.abs(boss.vx)}
+    if(boss.windup>0){
+      boss.windup-=dt;
+      if(boss.windup<=0){
+        const direction=(player.x+player.w/2)<(boss.x+boss.w/2)?-1:1;
+        const from=boss.x+(direction<0?6:boss.w-40);
+        hazards.push({kind:boss.projectile,x:from,y:boss.y+38,w:34,h:30,
+          vx:direction*(245+Math.random()*85),vy:-300-Math.random()*95,life:4.5});
+        tone(210,.11);
+      }
+    }else if(boss.attack<=0){
+      boss.windup=.42;
+      boss.attack=1.12+Math.random()*.48;
+    }
+    hazards.forEach(h=>{
+      h.x+=h.vx*dt;h.y+=h.vy*dt;h.vy+=1100*dt;
+      if(h.y>408){h.y=408;h.vy=-Math.abs(h.vy)*.63}
+      h.life-=dt;
+      if(hit(player,h)){h.life=0;die()}
+    });
+    hazards=hazards.filter(h=>h.life>0);
+    if(hit(player,boss)){
+      if(player.vy>180&&player.y+player.h<boss.y+42){
+        player.vy=-520;
+        if(boss.flash<=0){
+          boss.flash=.2;S.bossHP--;S.points+=500;S.shake=10;
+          burst(boss.x,boss.y,'#ffda65',22);
+          if(S.bossHP<=0)bossDefeated();
+        }
+      }else die();
+    }
+  }
   const scorePanel=document.getElementById('highScorePanel'),scoreList=document.getElementById('highScoreList'),scoreEntry=document.getElementById('highScoreEntry'),scoreNote=document.getElementById('highScoreNote');
   const scoreApi=window.STUDIO_LADUKE_SCORE_API||'';
   function localScores(){try{return JSON.parse(localStorage.getItem('studioLadukeMavScoresV1')||'[]')}catch(_){return[]}}
@@ -212,6 +253,12 @@
       box(20,55,104,59,o);box(11,72,121,33,'#264d7b');box(25,60,94,50,'#397bad');box(27,78,24,32,'#e5f0e6');box(89,78,24,32,'#e5f0e6');box(34,82,12,17,'#d99f46');box(95,82,12,17,'#d99f46');box(36,86,5,8,'#223044');box(97,86,5,8,'#223044');box(52,91,54,9,'#203d64');box(61,92,7,4,'#fff');box(76,92,7,4,'#fff');box(33,53,16,13,o);box(19,43,16,13,'#f0d68c');box(11,34,12,12,'#e5bf68');box(104,53,16,13,o);box(118,43,16,13,'#f0d68c');box(130,34,12,12,'#e5bf68');box(35,107,22,18,'#294f7b');box(83,107,22,18,'#294f7b');box(53,18,12,20,'#bfe9f4');box(70,7,13,28,'#85d8ec');box(91,17,8,20,'#bfe9f4');
     }else{
       box(24,54,96,62,o);box(14,80,116,34,'#513c6f');box(27,65,90,49,'#7753a0');box(36,73,25,27,'#ffe6a4');box(83,73,25,27,'#ffe6a4');box(41,80,9,13,'#332741');box(91,80,9,13,'#332741');box(42,82,3,5,'#fff');box(92,82,3,5,'#fff');box(52,101,40,8,'#362842');box(58,102,7,7,'#f5f0d9');box(78,102,7,7,'#f5f0d9');box(31,107,20,18,'#4a355f');box(91,107,20,18,'#4a355f');box(17,48,22,15,o);box(22,35,15,15,'#9b6dbb');box(105,48,22,15,o);box(101,35,15,15,'#9b6dbb');box(27,30,24,13,o);box(37,22,17,12,'#f1bf4b');box(54,15,18,19,o);box(59,8,9,14,'#ffd95b');box(72,15,18,19,o);box(78,8,9,14,'#ffd95b');box(88,30,24,13,o);box(42,42,60,10,'#f3cd57');box(62,31,22,13,'#fff1a3');
+    }
+    if(boss.windup>0){
+      ctx.save();ctx.globalAlpha=.6+.25*Math.sin(S.time*24);
+      ctx.strokeStyle='#ffe478';ctx.lineWidth=5;
+      ctx.strokeRect(x+7,y+4,128,115);
+      ctx.restore();text('!',x+71,y+37,30,'#ffe478','center');
     }
   }
   function drawHazard(h){const x=Math.round(h.x-S.cam),y=Math.round(h.y);if(h.kind==='seed'){ctx.fillStyle='#514130';ctx.fillRect(x+5,y+4,25,23);ctx.fillStyle='#9ec35c';ctx.fillRect(x+8,y+2,19,19);ctx.fillStyle='#e2c36e';ctx.fillRect(x+14,y+7,7,9);ctx.fillStyle='#faf0c8';ctx.fillRect(x+12,y+4,3,3)}else if(h.kind==='rain'){ctx.fillStyle='#d9f5ff';ctx.fillRect(x+9,y+3,14,15);ctx.fillStyle='#69c8e9';ctx.fillRect(x+6,y+11,20,9);ctx.fillRect(x+9,y+18,14,7)}else{ctx.fillStyle='#392d45';ctx.fillRect(x+5,y+5,25,20);ctx.fillStyle='#c75e4d';ctx.fillRect(x+9,y+4,18,14);ctx.fillStyle='#f0cd68';ctx.fillRect(x+12,y+10,4,3);ctx.fillRect(x+21,y+10,4,3)}ctx.fillStyle='#fff7cc';ctx.fillRect(x+12,y+9,3,4);ctx.fillRect(x+22,y+9,3,4)}
