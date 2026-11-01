@@ -375,7 +375,23 @@ const spriteSheets={mav:{image:new Image(),src:'game/assets/maverick-sprites.web
   function drawFinn(){if(!drawSheetCharacter('finn'))drawPixelSprite('mav',player.x-S.cam,player.y,player.dir,!player.ground)}
   function drawBob(){if(!drawSheetCharacter('bob'))drawPixelSprite('mav',player.x-S.cam,player.y,player.dir,!player.ground)}
   function drawCape(){const x=Math.round(player.x-S.cam),y=Math.round(player.y);ctx.save();ctx.translate(x+player.w/2,y+32);ctx.scale(player.dir,1);ctx.fillStyle='#633d43';ctx.fillRect(-24,-21,11,39);ctx.fillRect(-19,11,25,13);ctx.fillStyle='#c94f52';ctx.fillRect(-17,-18,9,27);ctx.fillRect(-12,9,22,12);ctx.fillStyle='#f2ae54';ctx.fillRect(-12,-18,4,24);ctx.fillRect(-8,11,14,5);ctx.restore()}
-  function drawPlayer(){const cx=player.x-S.cam+player.w/2;ctx.fillStyle='rgba(18,35,38,.24)';ctx.fillRect(Math.round(cx-23),player.y+player.h-2,46,5);if(player.cape)drawCape();player.bob?drawBob():player.finn?drawFinn():drawHuman();if(player.speedBoost>0){ctx.fillStyle='#dc3447';ctx.fillRect(Math.round(player.x+4-S.cam),player.y+58,17,7);ctx.fillRect(Math.round(player.x+30-S.cam),player.y+58,17,7);ctx.fillStyle='#ffe27a';ctx.fillRect(Math.round(player.x+7-S.cam),player.y+60,8,2);ctx.fillRect(Math.round(player.x+33-S.cam),player.y+60,8,2)}}
+  function drawRunnerShoes(){
+    // Keep Maverick's signature red runners on his feet after the pickup's
+    // temporary speed burst ends. Small pixel layers stay readable at phone size.
+    const x=Math.round(player.x-S.cam),base=Math.round(player.y+player.h-13);
+    const running=player.ground&&Math.abs(player.vx)>45;
+    const stride=running?Math.sin(player.stride*10)*2:0;
+    [[x+5,base+stride],[x+29,base-stride]].forEach(([sx,sy])=>{
+      ctx.fillStyle='#792c37';ctx.fillRect(sx,sy+8,18,3);
+      ctx.fillStyle='#f4cb68';ctx.fillRect(sx+2,sy+6,16,3);
+      ctx.fillStyle='#d73548';ctx.fillRect(sx+3,sy+1,11,7);
+      ctx.fillRect(sx+11,sy+3,8,5);
+      ctx.fillStyle='#ff6870';ctx.fillRect(sx+5,sy,7,3);
+      ctx.fillStyle='#fff0c1';ctx.fillRect(sx+6,sy+3,6,2);
+      ctx.fillStyle='#be263e';ctx.fillRect(sx+2,sy+7,15,2);
+    });
+  }
+  function drawPlayer(){const cx=player.x-S.cam+player.w/2;ctx.fillStyle='rgba(18,35,38,.24)';ctx.fillRect(Math.round(cx-23),player.y+player.h-2,46,5);if(player.cape)drawCape();player.bob?drawBob():player.finn?drawFinn():drawHuman();if(player.runners)drawRunnerShoes();if(player.speedBoost>0){ctx.fillStyle='#ffe27a';ctx.fillRect(Math.round(player.x+2-S.cam),player.y+46,4,3);ctx.fillRect(Math.round(player.x+46-S.cam),player.y+39,4,3)}}
   function drawBone(b){const x=b.x-S.cam;ctx.save();ctx.translate(x+12,b.y+6);ctx.rotate(b.spin);ctx.fillStyle='#fff7d6';ctx.strokeStyle='#5c4833';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(-10,-4,20,8,4);ctx.fill();ctx.stroke();ellipse(-10,-4,5,5,'#fff7d6','#5c4833',2);ellipse(10,4,5,5,'#fff7d6','#5c4833',2);ctx.restore()}
   function drawVine(v){const x=v.x-S.cam;ctx.strokeStyle='#3c8f43';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(x,v.y+10);ctx.quadraticCurveTo(x+v.w/2,v.y-5+Math.sin(S.time*18)*6,x+v.w,v.y+10);ctx.stroke();ellipse(x+(v.dir>0?v.w:0),v.y+10,12,8,'#b93e4f','#352b32',3)}
   function drawItem(i){const x=i.x-S.cam,b=Math.sin(S.time*7+i.x)*4;if(i.kind==='finn'){ellipse(x+19,i.y+19+b,18,18,'#fff0cb','#4d3427',3);ellipse(x+8,i.y+8+b,7,12,'#b96b36','#4d3427',2);ellipse(x+30,i.y+8+b,7,12,'#b96b36','#4d3427',2);text('F',x+19,i.y+27+b,18,'#d04b35','center')}else if(i.kind==='bob'){ellipse(x+19,i.y+19+b,18,18,'#7dcc57','#274f2d',3);text('B',x+19,i.y+27+b,18,'#fff5c9','center')}else if(i.kind==='cape'){ctx.fillStyle='#6a3c46';ctx.fillRect(x+5,i.y+8+b,28,24);ctx.fillStyle='#d94f54';ctx.fillRect(x+8,i.y+5+b,22,23);ctx.fillStyle='#f5b650';ctx.fillRect(x+13,i.y+5+b,4,17);ctx.fillRect(x+9,i.y+26+b,22,4);text('✦',x+19,i.y+19+b,13,'#fff4be','center')}else if(i.kind==='runners'){ctx.fillStyle='#7b2637';ctx.fillRect(x+5,i.y+18+b,25,14);ctx.fillStyle='#ee3c4c';ctx.fillRect(x+7,i.y+13+b,23,14);ctx.fillStyle='#ffd967';ctx.fillRect(x+12,i.y+15+b,4,3);ctx.fillRect(x+9,i.y+25+b,24,5);ctx.fillStyle='#fff0bd';ctx.fillRect(x+10,i.y+27+b,17,2)}else{text('🐾',x+17,i.y+25+b,25,'#79efff','center')}}
@@ -462,3 +478,4 @@ const spriteSheets={mav:{image:new Image(),src:'game/assets/maverick-sprites.web
   window.__mavGameTest={LEVELS,spriteSheets,activeSpriteFrame,drawStoryParty,state:()=>({...S,checkpointX,checkpointIndex,projectiles:hazards.map(h=>({x:h.x,y:h.y,vx:h.vx,life:h.life})),player:{...player},blocks:blocks.map(b=>({type:b.type,used:b.used,broken:b.broken})),counts:{blocks:blocks.length,coins:coins.length,enemies:enemies.filter(e=>e.alive).length,bones:bones.length,vines:vines.length,items:items.length}}),setPlayer:(x,y=330)=>Object.assign(player,{x,y,vx:0,vy:0,inv:0}),input,pressed,step:(dt=.016,n=1)=>{for(let i=0;i<n;i++)update(dt);draw()},loadLevel,activateFinn,activateBob,throwBone,doDash,enterPipe,hitBlockAt:i=>hitBlock(blocks[i]),win,reset,start,stop};
   reset();S.screen='title';S.transition=0;S.messageTime=0;refreshSoundButton();draw();if(new URLSearchParams(location.search).get('gamePreview')==='1')open();
 })();
+
