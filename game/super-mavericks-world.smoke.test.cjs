@@ -94,4 +94,25 @@ run('first optional-route mini-boss activates', () => {
   assert.equal(s.activeMidBoss, true);
   assert.equal(s.bossMax, 4);
 });
+run('grounded Maverick does not re-enter a landing pose while standing', () => {
+  game.loadLevel(0);
+  game.setPlayer(120, 330);
+  game.step(.016, 160);
+  const state = game.state();
+  assert.equal(state.player.ground, true);
+  assert.equal(state.player.land, 0);
+  assert.equal(game.activeSpriteFrame(), 0);
+});
+run('running cycles through strides rather than sliding in the landing pose', () => {
+  game.input.right = true;
+  const poses = new Set();
+  for(let i=0;i<75;i++) {
+    game.step(.016,1);
+    const state=game.state();
+    if(state.player.ground && state.player.vx>45)poses.add(game.activeSpriteFrame());
+  }
+  game.input.right = false;
+  assert(poses.has(1) && poses.has(2) && poses.has(3));
+  assert.equal(poses.has(7), false);
+});
 console.log('All Super Maverick\'s World engine smoke checks passed.');
