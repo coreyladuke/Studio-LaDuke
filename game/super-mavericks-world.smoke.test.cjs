@@ -115,4 +115,31 @@ run('running cycles through strides rather than sliding in the landing pose', ()
   assert(poses.has(1) && poses.has(2) && poses.has(3));
   assert.equal(poses.has(7), false);
 });
+run('Maverick, Finn, and Bob costumes use one physical sprite atlas', () => {
+  assert.deepEqual(Object.keys(game.spriteSheets), ['mav']);
+  const atlas=game.spriteSheets.mav;
+  assert.equal(atlas.w,384);assert.equal(atlas.h,512);
+  game.loadLevel(0);
+  game.setPlayer(280,370);game.step(.016,8);
+  const start=game.state().player;
+  game.activateFinn(false);
+  const finn=game.state().player;
+  assert.equal(finn.finn,true);assert.equal(finn.bob,false);
+  assert.equal(finn.x,start.x);assert.equal(finn.y,start.y);
+  assert.equal(finn.w,start.w);assert.equal(finn.h,start.h);
+  game.activateBob();
+  const bob=game.state().player;
+  assert.equal(bob.bob,true);assert.equal(bob.finn,false);
+  assert.equal(bob.x,start.x);assert.equal(bob.y,start.y);
+  assert.equal(bob.w,start.w);assert.equal(bob.h,start.h);
+});
+run('both costumes preserve abilities and reset old ability cooldowns', () => {
+  game.loadLevel(0);
+  game.activateFinn(false);
+  game.throwBone();
+  assert.equal(game.state().counts.bones,1);
+  game.activateBob();
+  game.throwBone();
+  assert.equal(game.state().counts.vines,1);
+});
 console.log('All Super Maverick\'s World engine smoke checks passed.');
