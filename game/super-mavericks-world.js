@@ -11,7 +11,9 @@
   const tune=[659,0,784,0,988,784,659,0,587,0,698,0,880,698,587,0,523,0,659,0,784,659,523,0,587,0,698,0,784,0,988,0];
   const bgFiles=["game/assets/chapter-1.webp", "game/assets/chapter-2.webp", "game/assets/chapter-3.webp", "game/assets/chapter-4.webp"];
   const bgs=bgFiles.map(src=>{const i=new Image();i.src=src;return i});
-  const spriteSheets={mav:{image:new Image(),src:'game/assets/maverick-sprites.webp',w:384,h:512,drawW:88,drawH:118},finn:{image:new Image(),src:'game/assets/finn-suit-sprites.webp',w:443.5,h:443.5,drawW:116,drawH:124},bob:{image:new Image(),src:'game/assets/bob-sprites.webp',w:384,h:512,drawW:96,drawH:118}};
+  // Every power-up uses Maverick's own eight animation frames; suits are layers,
+// not separate protagonists with incompatible faces, proportions or padding.
+const spriteSheets={mav:{image:new Image(),src:'game/assets/maverick-sprites.webp',w:384,h:512,drawW:88,drawH:118}};
   let running=false,raf=0,last=0,restartArm=0;
   const S={level:0,mode:'world',screen:'title',coins:0,points:0,lives:3,tags:0,cam:0,time:0,won:false,transition:2.2,message:'',messageTime:0,shake:0,bossHP:9,bossMax:9,midBossDone:false,activeMidBoss:false};
   const player={x:120,y:330,w:52,h:68,vx:0,vy:0,dir:1,ground:false,coyote:0,jumpBuffer:0,hold:0,skid:0,land:0,punch:0,inv:0,finn:false,bob:false,blend:0,double:true,dash:0,dashCD:0,boneCD:0,cape:false,glide:false,runners:false,speedBoost:0,stride:0};
@@ -118,8 +120,8 @@
   function loadLevel(index,keep=true){S.level=index;S.mode='world';level=LEVELS[index];checkpointIndex=0;checkpointX=level.start[0];S.cam=0;S.transition=2.15;S.won=false;S.midBossDone=false;S.activeMidBoss=false;S.bossMax=level.boss?.hp||level.miniBoss?.hp||9;S.bossHP=S.bossMax;Object.assign(player,{x:level.start[0],y:level.start[1],vx:0,vy:0,dir:1,ground:false,inv:1,blend:0,dash:0,dashCD:0,boneCD:0,glide:false,runners:false,speedBoost:0,stride:0});blocks=level.blocks.map(makeBlock);coins=level.coins.map((a,i)=>({x:a[0],y:a[1],w:25,h:34,taken:false,id:i}));enemies=level.enemies.map((a,i)=>({x:a[0],y:a[1],w:50,h:43,vx:i%2?75:-75,alive:true,stun:0}));bones=[];vines=[];particles=[];items=[];hazards=[];boss=level.boss?{...level.boss,w:142,h:126,vx:-78,vy:0,ground:true,flash:0,attack:1.2,windup:0,phase:0}:null;if(level.boss&&!player.finn)activateFinn(false);updateScore();msg(level.intro,2.3)}
   function reset(){S.coins=0;S.points=0;S.lives=3;S.tags=0;S.won=false;S.story=null;Object.keys(gearScenesSeen).forEach(key=>gearScenesSeen[key]=false);scorePanel?.classList.remove('show');Object.assign(player,{finn:false,bob:false,blend:0,double:true,cape:false,glide:false,runners:false,speedBoost:0});setAbilityLabels('BONE','FINN DASH',true);loadLevel(0,false)}
   function setAbilityLabels(primary,secondary,locked=false){const a=document.getElementById('gameBone'),b=document.getElementById('gameDash');if(a)a.textContent=primary;if(b)b.textContent=secondary;a?.classList.toggle('locked',locked);b?.classList.toggle('locked',locked)}
-  function activateFinn(audio=true){Object.assign(player,{finn:true,bob:false,blend:0,double:true});setAbilityLabels('BONE','FINN DASH');burst(player.x+24,player.y+30,'#fff4a8',36);S.shake=9;if(audio)speak('FINN POWER',.68);msg('FINN POWER • DOUBLE JUMP • BONES • DASH',2.8);updateScore()}
-  function activateBob(){Object.assign(player,{bob:true,finn:false,blend:0,double:true});setAbilityLabels('VINE','BLEND');burst(player.x+24,player.y+30,'#88e36c',40);S.shake=9;speak('BOB POWER',.64);msg('BOB POWER • VINE GRAB • FLYTRAP HAND • BLEND',3);updateScore()}
+  function activateFinn(audio=true){Object.assign(player,{finn:true,bob:false,blend:0,double:true,boneCD:0,dashCD:0});setAbilityLabels('BONE','FINN DASH');burst(player.x+24,player.y+30,'#fff4a8',36);S.shake=9;if(audio)speak('FINN POWER',.68);msg('FINN POWER • DOUBLE JUMP • BONES • DASH',2.8);updateScore()}
+  function activateBob(){Object.assign(player,{bob:true,finn:false,blend:0,double:true,boneCD:0,dashCD:0});setAbilityLabels('VINE','BLEND');burst(player.x+24,player.y+30,'#88e36c',40);S.shake=9;speak('BOB POWER',.64);msg('BOB POWER • VINE GRAB • FLYTRAP HAND • BLEND',3);updateScore()}
   function floors(){if(S.mode==='bonus')return[{x:0,y:438,w:960,h:102},{x:230,y:350,w:180,h:24},{x:505,y:280,w:190,h:24}];return level.ground.map(g=>({x:g[0],y:g[1],w:g[2],h:H-g[1]})).concat(level.plats.map(p=>({x:p[0],y:p[1],w:p[2],h:26}))).concat(blocks.filter(b=>!b.broken).map(b=>({...b,y:b.y-Math.sin(b.bump*Math.PI)*9}))) }
   function enterPipe(){if(S.mode==='bonus'){S.mode='world';player.x=returnX+90;player.y=320;player.vx=120;S.cam=clamp(player.x-W*.36,0,level.world-W);msg('THE PIPE SAID “GOAT.” VERY HELPFUL.',1.6);return}if(S.level===0&&Math.abs(player.x-1270)<150){returnX=player.x;S.mode='bonus';S.cam=0;Object.assign(player,{x:85,y:340,vx:0,vy:0});bonusCoins=[[180,380],[285,305],[370,305],[535,235],[620,235],[755,350],[820,310]].map((a,i)=>({x:a[0],y:a[1],w:25,h:34,taken:false,id:i}));msg('SECRET COIN CAVE • FAR PIPE RETURNS',2)}else msg('NO PIPE HERE. THE BUTTON REMAINS OPTIMISTIC.',1.2)}
   // Only play the landing animation on an actual air-to-ground transition.
@@ -294,18 +296,78 @@
     return !player.ground?(player.vy<-280?4:player.vy<70?5:6)
       :player.land>0?7:Math.abs(player.vx)<45?0:1+(Math.floor(player.stride)%3);
   }
+  // Gear is sewn onto the same Mav sprite and respects its foot anchor.
+  // Keeping the hair, face, body, gait, and collision box identical makes
+  // pickups read as costumes instead of an unrelated character suddenly
+  // replacing Maverick.
+  function drawCostume(kind,layer,footOffset=0){
+    if(kind==='mav')return;
+    const x=Math.round(player.x-S.cam+player.w/2),y=Math.round(player.y+player.h);
+    const swing=Math.sin(player.stride*Math.PI*.7)*2;
+    ctx.save();ctx.translate(x,y+footOffset);ctx.scale(player.dir,1);
+    ctx.lineJoin='round';ctx.lineCap='round';
+    if(kind==='finn'){
+      if(layer==='under'){
+        // Finn's floppy ears sit behind Maverick's unmistakable blond head.
+        ctx.strokeStyle='#3c2b2c';ctx.lineWidth=3;
+        ctx.fillStyle='#ae683b';
+        ctx.beginPath();ctx.ellipse(-29,-91,13,24,-.22,0,TAU);ctx.fill();ctx.stroke();
+        ctx.beginPath();ctx.ellipse(25,-101,13,21,.3,0,TAU);ctx.fill();ctx.stroke();
+        ctx.fillStyle='#e9b277';ctx.beginPath();ctx.ellipse(-30,-94,6,14,-.16,0,TAU);ctx.fill();
+        // Wagging tail, visible on runs and jumps, always behind his body.
+        ctx.strokeStyle='#42302b';ctx.lineWidth=11;
+        ctx.beginPath();ctx.moveTo(-28,-44);ctx.quadraticCurveTo(-52,-50+swing,-47,-65+swing);ctx.stroke();
+        ctx.strokeStyle='#f2d19a';ctx.lineWidth=6;
+        ctx.beginPath();ctx.moveTo(-30,-44);ctx.quadraticCurveTo(-47,-50+swing,-45,-62+swing);ctx.stroke();
+      }else{
+        // Small dog-hood band, paw badge and mitts on the same Mav.
+        ctx.strokeStyle='#45332c';ctx.lineWidth=3;ctx.fillStyle='#f1d2a4';
+        ctx.beginPath();ctx.roundRect(-21,-104,37,8,4);ctx.fill();ctx.stroke();
+        ctx.fillStyle='#b97847';ctx.beginPath();ctx.ellipse(-4,-106,13,3,0,0,TAU);ctx.fill();
+        ctx.strokeStyle='#54352d';ctx.lineWidth=2;ctx.fillStyle='#ffe0ab';
+        ctx.beginPath();ctx.roundRect(-3,-57,18,13,4);ctx.fill();ctx.stroke();
+        ctx.fillStyle='#aa6440';ctx.beginPath();ctx.ellipse(5,-50,5,4,0,0,TAU);ctx.fill();
+        ctx.fillStyle='#fff3d1';ctx.fillRect(1,-53,2,2);ctx.fillRect(5,-55,2,2);ctx.fillRect(9,-53,2,2);
+      }
+    }else if(kind==='bob'){
+      if(layer==='under'){
+        // Bob's greenhouse power is a leafy costume, not a grown man.
+        ctx.strokeStyle='#234537';ctx.lineWidth=5;
+        ctx.beginPath();ctx.moveTo(-22,-72);ctx.quadraticCurveTo(-48,-57+swing,-40,-28+swing);ctx.stroke();
+        ctx.fillStyle='#76bc56';ctx.strokeStyle='#274f37';ctx.lineWidth=3;
+        ctx.beginPath();ctx.ellipse(-37,-42+swing,15,25,-.45,0,TAU);ctx.fill();ctx.stroke();
+        ctx.fillStyle='#b8e575';ctx.beginPath();ctx.ellipse(-38,-47+swing,5,15,-.45,0,TAU);ctx.fill();
+      }else{
+        // Rounded sprout hood, chlorophyll badge and bright work gloves.
+        ctx.fillStyle='#2f643d';ctx.strokeStyle='#1b4036';ctx.lineWidth=3;
+        ctx.beginPath();ctx.ellipse(-13,-110,7,12,-.6,0,TAU);ctx.fill();ctx.stroke();
+        ctx.beginPath();ctx.ellipse(2,-113,8,13,.46,0,TAU);ctx.fill();ctx.stroke();
+        ctx.fillStyle='#aadf67';ctx.beginPath();ctx.ellipse(-13,-110,3,7,-.6,0,TAU);ctx.fill();
+        ctx.fillStyle='#85c859';ctx.beginPath();ctx.ellipse(2,-113,4,8,.46,0,TAU);ctx.fill();
+        ctx.fillStyle='#2f6e48';ctx.strokeStyle='#c3ee88';ctx.lineWidth=2;
+        ctx.beginPath();ctx.roundRect(-1,-61,18,18,5);ctx.fill();ctx.stroke();
+        ctx.fillStyle='#e6f7a7';ctx.beginPath();ctx.ellipse(8,-53,4,7,0,0,TAU);ctx.fill();
+        ctx.fillStyle='#d0ed91';ctx.fillRect(7,-51,3,8);
+      }
+    }
+    ctx.restore();
+  }
   function drawSheetCharacter(kind){
-    const sheet=spriteSheets[kind],img=sheet.image;
+    // Mav, Finn Suit, and Bob Suit share the identical animator and anchor.
+    const sheet=spriteSheets.mav,img=sheet.image;
     if(!img.src)img.src=sheet.src;
     if(!img.complete||!img.naturalWidth)return false;
     const frame=activeSpriteFrame();
     const sx=(frame%4)*sheet.w,sy=Math.floor(frame/4)*sheet.h;
     const cx=player.x-S.cam+player.w/2,base=player.y+player.h;
     const plantedFoot=player.ground?spriteFootOffset(sheet,frame):0;
+    if(kind!=='mav')drawCostume(kind,'under',plantedFoot);
     ctx.save();ctx.translate(Math.round(cx),Math.round(base));ctx.scale(player.dir,1);
     ctx.imageSmoothingEnabled=false;
     ctx.drawImage(img,sx,sy,sheet.w,sheet.h,-sheet.drawW/2,-sheet.drawH+plantedFoot,sheet.drawW,sheet.drawH);
-    ctx.restore();ctx.imageSmoothingEnabled=true;return true;
+    ctx.restore();ctx.imageSmoothingEnabled=true;
+    if(kind!=='mav')drawCostume(kind,'over',plantedFoot);
+    return true;
   }
   function drawHuman(){if(!drawSheetCharacter('mav'))drawPixelSprite('mav',player.x-S.cam,player.y,player.dir,!player.ground)}
   function drawFinn(){if(!drawSheetCharacter('finn'))drawPixelSprite('finn',player.x-S.cam,player.y,player.dir,!player.ground)}
@@ -338,13 +400,16 @@
   function drawHud(){rr(14,12,370,52,16,'rgba(5,24,38,.82)','rgba(255,255,255,.2)',2);if(S.mode==='bonus')text('SECRET COIN CAVE',29,44,17,'#fff');else{text(`WORLD ${level.worldId+1}  •  CHAPTER ${level.chapter}/2`,29,31,13,'#8fe9ff');text(level.name,29,52,17,'#fff')}rr(W-276,12,262,48,16,'rgba(5,24,38,.82)','rgba(255,255,255,.2)',2);text(`🪙 ${S.coins}   ❤️ ${S.lives}   🐾 ${S.tags}/3`,W-28,43,18,'#ffe175','right');if(boss&&S.mode!=='bonus'){rr(255,70,450,30,12,'rgba(20,12,31,.88)','#fff0c0',3);ctx.fillStyle='#e85161';ctx.fillRect(267,81,426*(S.bossHP/S.bossMax),8);text(`${S.activeMidBoss?'MINI-BOSS':'BOSS'} • ${boss.name}`,W/2,94,14,'#fff','center')}}
   function drawOverlay(){if(S.messageTime>0){const a=Math.min(1,S.messageTime*3);ctx.globalAlpha=a;rr(170,468,620,48,14,'rgba(3,17,28,.88)','rgba(255,255,255,.25)',2);text(S.message,W/2,500,19,'#fff','center');ctx.globalAlpha=1}if(S.transition>0){ctx.fillStyle=`rgba(4,15,25,${Math.min(.82,S.transition*.5)})`;ctx.fillRect(0,0,W,H);text(`WORLD ${level.worldId+1}  •  CHAPTER ${level.chapter}/2`,W/2,220,22,'#7fe6ff','center');text(level.name,W/2,273,46,'#ffe173','center');text(level.boss?`WORLD BOSS: ${level.boss.name}`:level.miniBoss?`MINI-BOSS AHEAD • ${level.worldLook}`:'RUN • JUMP • EXPLORE',W/2,314,17,'#fff','center')}if(S.won){ctx.fillStyle='rgba(4,12,24,.76)';ctx.fillRect(0,0,W,H);text('FORT MAVERICK SAVED!',W/2,210,48,'#ffe26e','center');text('MAV IS NOW LEGALLY ALLOWED TO BRAG.',W/2,260,25,'#fff','center');text('FINN DEMANDS A PARADE.',W/2,301,28,'#8ff4ff','center');text(`3 WORLDS • 3 MINI-BOSSES • 3 WORLD BOSSES • ${S.coins} COINS`,W/2,355,18,'#fff','center');text('RESTART WHEN THE CROWD STOPS CHEERING',W/2,401,15,'#d9ecf7','center')}}
   function drawStoryParty(){
-    const saved={x:player.x,y:player.y,w:player.w,h:player.h,vx:player.vx,ground:player.ground,land:player.land,dash:player.dash,skid:player.skid,finn:player.finn,bob:player.bob};
-    player.w=52;player.h=68;player.vx=0;player.ground=true;player.land=0;player.dash=0;player.skid=0;
-    for(const [kind,x] of [['mav',286],['finn',454],['bob',622]]){
-      player.x=x;player.y=248;player.finn=kind==='finn';player.bob=kind==='bob';
-      drawPixelSprite(kind,x,248,1,false);
-    }
-    Object.assign(player,saved);
+    // Show the very same character models as the playable world, rather
+    // than swapping to unrelated tiny pixel placeholders in cutscenes.
+    const saved={...player},cam=S.cam;
+    try{
+      player.w=52;player.h=68;player.vx=0;player.ground=true;player.land=0;player.dash=0;player.skid=0;S.cam=0;
+      for(const [kind,x] of [['mav',286],['finn',454],['bob',622]]){
+        player.x=x;player.y=248;player.finn=kind==='finn';player.bob=kind==='bob';
+        if(!drawSheetCharacter(kind))drawPixelSprite(kind,x,248,1,false);
+      }
+    }finally{Object.assign(player,saved);S.cam=cam}
   }
   function drawStoryScreen(){if(!S.story)return;const [heading,caption]=S.story.beats[S.story.index]||['THE ADVENTURE CONTINUES','The trail is waiting.'];ctx.fillStyle='rgba(8,26,38,.24)';ctx.fillRect(0,0,W,H);drawStoryParty();ctx.fillStyle='rgba(5,19,31,.9)';ctx.fillRect(34,370,892,136);ctx.fillStyle='#f0bd58';ctx.fillRect(34,370,892,6);ctx.fillStyle='#f0bd58';ctx.fillRect(34,500,892,6);ctx.fillStyle='#fff3ce';ctx.fillRect(34,376,6,124);ctx.fillRect(920,376,6,124);text(S.story.kind==='intro'?'A MAVERICK’S WORLD STORY':S.story.kind==='finale'?'THE LAST PAGE':S.story.kind==='gear'?'DAD’S WORKBENCH':'BETWEEN WORLDS',60,405,14,'#82e6fb');text(heading,60,440,24,'#ffe174');text(caption,60,471,18,'#fff');const remaining=Math.max(0,1-S.story.time/3.2);ctx.fillStyle='#ffe174';ctx.fillRect(60,485,820*remaining,4);text('TAP OR PRESS ENTER TO CONTINUE',W-58,496,12,'#dcecf2','right')}
   function drawBonus(){const cave=ctx.createLinearGradient(0,0,0,H);cave.addColorStop(0,'#205d78');cave.addColorStop(.55,'#10394e');cave.addColorStop(1,'#061722');ctx.fillStyle=cave;ctx.fillRect(0,0,W,H);for(let i=0;i<14;i++){ctx.fillStyle=i%2?'#2d7182':'#245d72';ctx.beginPath();ctx.moveTo(i*75,0);ctx.lineTo(i*75+35,90+(i%3)*22);ctx.lineTo(i*75+75,0);ctx.fill()}for(let i=0;i<35;i++)ellipse((i*137)%W,70+(i*83)%330,2+i%3,2+i%3,i%3?'#76dbe9':'#eaffff');drawGround([0,438,960]);drawPlatform([230,350,180]);drawPlatform([505,280,190]);const old=S.cam;S.cam=0;drawPipe(14);drawPipe(874);bonusCoins.forEach(drawCoin);bones.forEach(drawBone);vines.forEach(drawVine);if(!(player.inv>0&&Math.floor(S.time*12)%2))drawPlayer();drawParticles();S.cam=old;text('PRESS PIPE AT THE FAR END TO RETURN',W/2,110,17,'#e9fbff','center')}
@@ -390,6 +455,6 @@
   document.getElementById('saveHighScore')?.addEventListener('click',saveHighScore);
   document.getElementById('scoreInitials')?.addEventListener('input',e=>e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,3));
   document.getElementById('gameRestart')?.addEventListener('click',e=>{const button=e.currentTarget,now=performance.now();if(now>restartArm){restartArm=now+1800;button.textContent='TAP AGAIN';msg('RESTART ARMED • TAP AGAIN TO CONFIRM',1.7);setTimeout(()=>{if(performance.now()>restartArm&&button.isConnected)button.textContent='RESTART'},1900);return}restartArm=0;button.textContent='RESTART';restartAdventure()});
-  window.__mavGameTest={LEVELS,activeSpriteFrame,state:()=>({...S,checkpointX,checkpointIndex,projectiles:hazards.map(h=>({x:h.x,y:h.y,vx:h.vx,life:h.life})),player:{...player},blocks:blocks.map(b=>({type:b.type,used:b.used,broken:b.broken})),counts:{blocks:blocks.length,coins:coins.length,enemies:enemies.filter(e=>e.alive).length,bones:bones.length,vines:vines.length,items:items.length}}),setPlayer:(x,y=330)=>Object.assign(player,{x,y,vx:0,vy:0,inv:0}),input,pressed,step:(dt=.016,n=1)=>{for(let i=0;i<n;i++)update(dt);draw()},loadLevel,activateFinn,activateBob,throwBone,doDash,enterPipe,hitBlockAt:i=>hitBlock(blocks[i]),win,reset,start,stop};
+  window.__mavGameTest={LEVELS,spriteSheets,activeSpriteFrame,drawStoryParty,state:()=>({...S,checkpointX,checkpointIndex,projectiles:hazards.map(h=>({x:h.x,y:h.y,vx:h.vx,life:h.life})),player:{...player},blocks:blocks.map(b=>({type:b.type,used:b.used,broken:b.broken})),counts:{blocks:blocks.length,coins:coins.length,enemies:enemies.filter(e=>e.alive).length,bones:bones.length,vines:vines.length,items:items.length}}),setPlayer:(x,y=330)=>Object.assign(player,{x,y,vx:0,vy:0,inv:0}),input,pressed,step:(dt=.016,n=1)=>{for(let i=0;i<n;i++)update(dt);draw()},loadLevel,activateFinn,activateBob,throwBone,doDash,enterPipe,hitBlockAt:i=>hitBlock(blocks[i]),win,reset,start,stop};
   reset();S.screen='title';S.transition=0;S.messageTime=0;refreshSoundButton();draw();if(new URLSearchParams(location.search).get('gamePreview')==='1')open();
 })();

@@ -32,7 +32,7 @@ const localStorage = {
   getItem: key => store.get(key) || null,
   setItem: (key, value) => store.set(key, value)
 };
-class FakeImage { constructor() { this.complete = false; this.naturalWidth = 0; this.src = ''; } }
+class FakeImage { constructor() { this.complete = true; this.naturalWidth = 1536; this.naturalHeight = 1024; this.src = ''; } }
 const speechSynthesis = { cancel: noop, speak: noop };
 const engine = fs.readFileSync(path.join(__dirname, 'super-mavericks-world.js'), 'utf8');
 const boot = new Function(
@@ -114,5 +114,44 @@ run('running cycles through strides rather than sliding in the landing pose', ()
   game.input.right = false;
   assert(poses.has(1) && poses.has(2) && poses.has(3));
   assert.equal(poses.has(7), false);
+});
+run('Maverick, Finn, and Bob costumes use one physical sprite atlas', () => {
+  assert.deepEqual(Object.keys(game.spriteSheets), ['mav']);
+  const atlas=game.spriteSheets.mav;
+  assert.equal(atlas.w,384);assert.equal(atlas.h,512);
+  game.loadLevel(0);
+  game.setPlayer(280,370);game.step(.016,8);
+  const start=game.state().player;
+  game.activateFinn(false);
+  const finn=game.state().player;
+  assert.equal(finn.finn,true);assert.equal(finn.bob,false);
+  assert.equal(finn.x,start.x);assert.equal(finn.y,start.y);
+  assert.equal(finn.w,start.w);assert.equal(finn.h,start.h);
+  game.activateBob();
+  const bob=game.state().player;
+  assert.equal(bob.bob,true);assert.equal(bob.finn,false);
+  assert.equal(bob.x,start.x);assert.equal(bob.y,start.y);
+  assert.equal(bob.w,start.w);assert.equal(bob.h,start.h);
+});
+run('both costumes preserve abilities and reset old ability cooldowns', () => {
+  game.loadLevel(0);
+  game.activateFinn(false);
+  game.throwBone();
+  assert.equal(game.state().counts.bones,1);
+  game.activateBob();
+  game.throwBone();
+  assert.equal(game.state().counts.vines,1);
+});
+run('costume cutscenes draw with loaded sprites without moving the real player', () => {
+  game.loadLevel(0);
+  game.setPlayer(380,330);game.step(.016,10);
+  game.activateFinn(false);
+  const before=game.state().player;
+  game.drawStoryParty();
+  assert.deepEqual(game.state().player,before);
+  game.activateBob();
+  game.step(.016,1);
+  game.drawStoryParty();
+  assert.equal(game.state().player.bob,true);
 });
 console.log('All Super Maverick\'s World engine smoke checks passed.');
