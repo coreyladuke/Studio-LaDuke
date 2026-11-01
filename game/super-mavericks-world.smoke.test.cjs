@@ -14,8 +14,9 @@ const elements = new Map();
 function element(id) {
   if (!elements.has(id)) {
     elements.set(id, {
-      id, style: {}, hidden: false, textContent: '', value: '', isConnected: true,
+      id, style: {}, hidden: false, textContent: '', innerHTML: '', value: '', dataset: {}, isConnected: true,
       addEventListener: noop, setAttribute: noop, blur: noop, focus: noop,
+      querySelector: () => null, querySelectorAll: () => [],
       requestFullscreen: () => Promise.resolve(), getContext: () => ctx,
       classList: { toggle: noop, add: noop, remove: noop, contains: () => false }
     });
@@ -24,6 +25,7 @@ function element(id) {
 }
 const document = {
   hidden: false, getElementById: element, querySelector: () => element('close'),
+  querySelectorAll: () => [],
   fullscreenElement: null, exitFullscreen: () => Promise.resolve()
 };
 const window = {};
