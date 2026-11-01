@@ -32,7 +32,7 @@ const localStorage = {
   getItem: key => store.get(key) || null,
   setItem: (key, value) => store.set(key, value)
 };
-class FakeImage { constructor() { this.complete = false; this.naturalWidth = 0; this.src = ''; } }
+class FakeImage { constructor() { this.complete = true; this.naturalWidth = 1536; this.naturalHeight = 1024; this.src = ''; } }
 const speechSynthesis = { cancel: noop, speak: noop };
 const engine = fs.readFileSync(path.join(__dirname, 'super-mavericks-world.js'), 'utf8');
 const boot = new Function(
@@ -141,5 +141,17 @@ run('both costumes preserve abilities and reset old ability cooldowns', () => {
   game.activateBob();
   game.throwBone();
   assert.equal(game.state().counts.vines,1);
+});
+run('costume cutscenes draw with loaded sprites without moving the real player', () => {
+  game.loadLevel(0);
+  game.setPlayer(380,330);game.step(.016,10);
+  game.activateFinn(false);
+  const before=game.state().player;
+  game.drawStoryParty();
+  assert.deepEqual(game.state().player,before);
+  game.activateBob();
+  game.step(.016,1);
+  game.drawStoryParty();
+  assert.equal(game.state().player.bob,true);
 });
 console.log('All Super Maverick\'s World engine smoke checks passed.');
