@@ -2012,7 +2012,7 @@
     #gameModal .mav-halloween-letter p{margin:0;font:700 clamp(12px,2.8vw,14px)/1.48 "Trebuchet MS",sans-serif;color:#fff5e6;}
     #gameModal .mav-halloween-letter .mav-halloween-signature{margin-top:10px;font-weight:900;color:#ffda94;font-size:14px;}
     #gameModal .mav-halloween-letter .mav-halloween-secret{font:900 11px/1.25 ui-monospace,monospace;letter-spacing:.06em;color:#ffcd8e;}
-  <link rel="stylesheet" href="game/super-mavericks-world.css">
+  <link rel="stylesheet" href="game/super-mavericks-world.css?v=20261031-launchfix">
 </head>
 <body>
   <div class="hud">
@@ -2319,7 +2319,7 @@
       <button class="game-control pause" id="mavPauseButton" type="button" aria-label="Pause game">Ⅱ</button>
       <button class="game-control pause sound-toggle" id="mavSoundButton" type="button" aria-label="Toggle game sound" aria-pressed="true">♫</button>
       <section class="mav-screen mav-title-screen" id="mavTitleScreen" aria-label="Super Maverick's World title screen">
-        <div class="mav-screen-card"><p class="mav-kicker">STUDIO LADUKE PRESENTS</p><h1>SUPER<br><span>MAVERICK'S</span><br>WORLD</h1><p class="mav-tagline">A little hero. A very big adventure.</p><div class="mav-halloween-letter" id="mavHalloween2026" hidden aria-label="Halloween message from Dad"><div class="mav-halloween-secret">🎃 SECRET MESSAGE FROM DAD 🎃</div><strong>HAPPY HALLOWEEN, MAV!</strong><p>I hope you had an awesome Halloween, buddy. I thought about you all day. I'm really sorry I couldn't be there with you. I wanted to leave this little surprise in your world so you'd know I was thinking about you. I love you more than all the oceans, past every star, and back again.</p><div class="mav-halloween-signature">Love you forever, Dad 💛</div></div><button class="mav-primary" id="mavStartButton" type="button">START ADVENTURE <span>▶</span></button><p class="mav-hint">ARROWS / A D TO MOVE · SPACE TO JUMP · P OR ESC TO PAUSE</p></div>
+        <div class="mav-screen-card"><p class="mav-kicker">STUDIO LADUKE PRESENTS</p><h1>SUPER<br><span>MAVERICK'S</span><br>WORLD</h1><p class="mav-tagline">A little hero. A very big adventure.</p><button class="mav-primary" id="mavStartButton" type="button">PLAY NOW <span>▶</span></button><button class="mav-intro-link" id="mavStoryButton" type="button">Watch the story intro</button><details class="mav-halloween-letter" id="mavHalloween2026" hidden aria-label="Halloween message from Dad"><summary>🎃 A HALLOWEEN SURPRISE FROM DAD</summary><div class="mav-halloween-note-body"><div class="mav-halloween-secret">🎃 SECRET MESSAGE FROM DAD 🎃</div><strong>HAPPY HALLOWEEN, MAV!</strong><p>I hope you had an awesome Halloween, buddy. I thought about you all day. I'm really sorry I couldn't be there with you. I wanted to leave this little surprise in your world so you'd know I was thinking about you. I love you more than all the oceans, past every star, and back again.</p><div class="mav-halloween-signature">Love you forever, Dad 💛</div></div></details><p class="mav-hint">ARROWS / A D TO MOVE · SPACE TO JUMP · P OR ESC TO PAUSE</p></div>
       </section>
       <section class="mav-screen mav-pause-screen" id="mavPauseScreen" aria-label="Game paused" hidden>
         <div class="mav-screen-card"><p class="mav-kicker">TAKE YOUR TIME, MAV</p><h2>PAUSED</h2><button class="mav-primary" id="mavResumeButton" type="button">RESUME <span>▶</span></button><button class="mav-secondary" id="mavRestartButton" type="button">RESTART ADVENTURE</button><p class="mav-hint">PRESS P OR ESC TO KEEP PLAYING</p></div>
@@ -3175,6 +3175,6 @@
     })();
   </script>
 
-  <script src="game/super-mavericks-world.js?v=e567244" defer></script>
+  <script src="game/super-mavericks-world.js?v=20261031-launchfix" defer></script>
 </body>
 </html>
