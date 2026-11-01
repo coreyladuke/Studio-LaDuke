@@ -283,7 +283,8 @@
   function frame(t){if(!running)return;const dt=Math.min(.033,(t-last)/1000||.016);last=t;if(S.screen==='playing')update(dt);else S.time+=dt;draw();raf=requestAnimationFrame(frame)}
   function start(){if(running)return;running=true;last=performance.now();raf=requestAnimationFrame(frame)}
   function stop(){if(S.screen==='playing')S.screen='paused';stopMusic();syncScreens();running=false;cancelAnimationFrame(raf);Object.assign(input,{left:false,right:false,jump:false,down:false});if(document.fullscreenElement===modal)document.exitFullscreen?.().catch(()=>{})}
-  function beginAdventure(){if(S.screen==='title'){S.screen='playing';startStory('intro')}else if(S.screen==='paused')S.screen='playing';else if(S.screen==='won'){reset();S.screen='playing'}syncScreens();start();if(!S.story)startMusic();tone(523,.09);document.getElementById('mavStartButton')?.blur()}
+  function beginAdventure(){if(S.screen==='title'){S.screen='playing';S.story=null}else if(S.screen==='paused')S.screen='playing';else if(S.screen==='won'){reset();S.screen='playing'}syncScreens();start();if(!S.story)startMusic();tone(523,.09);document.getElementById('mavStartButton')?.blur()}
+  function watchIntro(){if(S.screen!=='title')return;S.screen='playing';startStory('intro');syncScreens();start();tone(523,.09);document.getElementById('mavStoryButton')?.blur()}
   function togglePause(){if(S.screen==='playing'){S.screen='paused';stopMusic()}else if(S.screen==='paused'){S.screen='playing';startMusic()}syncScreens()}
   function restartAdventure(){reset();S.screen='playing';syncScreens();start();startMusic()}
   function open(){window.openModal?.('gameModal');if(S.screen==='closed')S.screen='paused';start();draw();if(matchMedia('(orientation: landscape)').matches&&modal.requestFullscreen)modal.requestFullscreen().catch(()=>{})}
@@ -297,6 +298,7 @@
   hold('gameLeft','left');hold('gameRight','right');hold('gameJump','jump',()=>pressed.jump=true);hold('gameBone',null,()=>pressed.bone=true);hold('gameDash',null,()=>pressed.dash=true);hold('gamePipe','down',enterPipe);
   canvas.addEventListener('pointerdown',e=>{if(S.story){e.preventDefault();advanceStory()}});
   document.getElementById('mavStartButton')?.addEventListener('click',beginAdventure);
+  document.getElementById('mavStoryButton')?.addEventListener('click',watchIntro);
   document.getElementById('mavResumeButton')?.addEventListener('click',beginAdventure);
   document.getElementById('mavAgainButton')?.addEventListener('click',restartAdventure);
   document.getElementById('mavTryAgainButton')?.addEventListener('click',restartAdventure);
