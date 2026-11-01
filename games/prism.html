@@ -42,7 +42,7 @@ button:hover,.back:hover{transform:translateY(-2px);filter:brightness(1.15)}butt
 (()=>{const intro=document.getElementById('intro'),studio=document.getElementById('studio'),games=document.getElementById('games'),title=document.getElementById('title'),skip=document.getElementById('skip'),frame=document.getElementById('game'),shelf=document.getElementById('shelf');let timer;
 function showTitle(){clearTimeout(timer);studio.hidden=true;games.hidden=true;title.hidden=false;skip.hidden=true}
 function showGames(){studio.hidden=true;games.hidden=false;timer=setTimeout(showTitle,1750)}
-function start(){clearTimeout(timer);intro.hidden=true;frame.hidden=false;shelf.hidden=false;frame.src='https://prism-pals-playtest.vercel.app/'}
+function start(){clearTimeout(timer);intro.hidden=true;frame.hidden=false;shelf.hidden=true;frame.src='https://prism-pals-playtest.vercel.app/'}
 timer=setTimeout(showGames,1750);skip.addEventListener('click',showTitle);document.getElementById('start').addEventListener('click',start);
 })();
 </script>
