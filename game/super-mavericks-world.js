@@ -287,7 +287,17 @@
   function watchIntro(){if(S.screen!=='title')return;S.screen='playing';startStory('intro');syncScreens();start();tone(523,.09);document.getElementById('mavStoryButton')?.blur()}
   function togglePause(){if(S.screen==='playing'){S.screen='paused';stopMusic()}else if(S.screen==='paused'){S.screen='playing';startMusic()}syncScreens()}
   function restartAdventure(){reset();S.screen='playing';syncScreens();start();startMusic()}
-  function open(){window.openModal?.('gameModal');if(S.screen==='closed')S.screen='paused';start();draw();if(matchMedia('(orientation: landscape)').matches&&modal.requestFullscreen)modal.requestFullscreen().catch(()=>{})}
+  // The Fort modal already covers the viewport. Forcing element fullscreen while
+  // Safari rotates can detach or blank its Canvas 2D surface in in-app browsers.
+  function open(){window.openModal?.('gameModal');if(S.screen==='closed')S.screen='paused';start();draw()}
+  function refreshVisibleCanvas(){
+    if(!modal.classList.contains('show'))return;
+    if(!running)start();
+    draw();
+  }
+  addEventListener('pageshow',refreshVisibleCanvas);
+  addEventListener('resize',refreshVisibleCanvas);
+  addEventListener('orientationchange',()=>setTimeout(refreshVisibleCanvas,180));
   function openLibrary(detail=''){window.openModal?.('gameModal');if(S.screen==='playing')stopMusic();S.screen=detail||'library';syncScreens();start();draw()}
   function launchCartridge(){window.openModal?.('gameModal');reset();S.screen='title';syncScreens();start();draw()}
   document.getElementById('gameBtn')?.addEventListener('click',open);document.getElementById('consoleBtn')?.addEventListener('click',()=>openLibrary());document.getElementById('mavCartridge')?.addEventListener('click',launchCartridge);document.getElementById('heimrCartridge')?.addEventListener('click',()=>openLibrary('library-heimr'));document.getElementById('prismCartridge')?.addEventListener('click',()=>openLibrary('library-prism'));document.getElementById('mavLibraryPlayButton')?.addEventListener('click',launchCartridge);document.getElementById('mavLibraryHeimrButton')?.addEventListener('click',()=>openLibrary('library-heimr'));document.getElementById('mavLibraryPrismButton')?.addEventListener('click',()=>openLibrary('library-prism'));document.getElementById('mavHeimrBackButton')?.addEventListener('click',()=>openLibrary());document.getElementById('mavPrismBackButton')?.addEventListener('click',()=>openLibrary());document.querySelector('[data-close="gameModal"]')?.addEventListener('click',stop);modal.addEventListener('click',e=>{if(e.target===modal)stop()});
