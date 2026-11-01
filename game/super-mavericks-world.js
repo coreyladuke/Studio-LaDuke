@@ -370,8 +370,10 @@ const spriteSheets={mav:{image:new Image(),src:'game/assets/maverick-sprites.web
     return true;
   }
   function drawHuman(){if(!drawSheetCharacter('mav'))drawPixelSprite('mav',player.x-S.cam,player.y,player.dir,!player.ground)}
-  function drawFinn(){if(!drawSheetCharacter('finn'))drawPixelSprite('finn',player.x-S.cam,player.y,player.dir,!player.ground)}
-  function drawBob(){if(!drawSheetCharacter('bob'))drawPixelSprite('bob',player.x-S.cam,player.y,player.dir,!player.ground)}
+  // Even when an image has not finished loading, the controllable hero is
+  // still Maverick; companion cutscene portraits use their own designs.
+  function drawFinn(){if(!drawSheetCharacter('finn'))drawPixelSprite('mav',player.x-S.cam,player.y,player.dir,!player.ground)}
+  function drawBob(){if(!drawSheetCharacter('bob'))drawPixelSprite('mav',player.x-S.cam,player.y,player.dir,!player.ground)}
   function drawCape(){const x=Math.round(player.x-S.cam),y=Math.round(player.y);ctx.save();ctx.translate(x+player.w/2,y+32);ctx.scale(player.dir,1);ctx.fillStyle='#633d43';ctx.fillRect(-24,-21,11,39);ctx.fillRect(-19,11,25,13);ctx.fillStyle='#c94f52';ctx.fillRect(-17,-18,9,27);ctx.fillRect(-12,9,22,12);ctx.fillStyle='#f2ae54';ctx.fillRect(-12,-18,4,24);ctx.fillRect(-8,11,14,5);ctx.restore()}
   function drawPlayer(){const cx=player.x-S.cam+player.w/2;ctx.fillStyle='rgba(18,35,38,.24)';ctx.fillRect(Math.round(cx-23),player.y+player.h-2,46,5);if(player.cape)drawCape();player.bob?drawBob():player.finn?drawFinn():drawHuman();if(player.speedBoost>0){ctx.fillStyle='#dc3447';ctx.fillRect(Math.round(player.x+4-S.cam),player.y+58,17,7);ctx.fillRect(Math.round(player.x+30-S.cam),player.y+58,17,7);ctx.fillStyle='#ffe27a';ctx.fillRect(Math.round(player.x+7-S.cam),player.y+60,8,2);ctx.fillRect(Math.round(player.x+33-S.cam),player.y+60,8,2)}}
   function drawBone(b){const x=b.x-S.cam;ctx.save();ctx.translate(x+12,b.y+6);ctx.rotate(b.spin);ctx.fillStyle='#fff7d6';ctx.strokeStyle='#5c4833';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(-10,-4,20,8,4);ctx.fill();ctx.stroke();ellipse(-10,-4,5,5,'#fff7d6','#5c4833',2);ellipse(10,4,5,5,'#fff7d6','#5c4833',2);ctx.restore()}
@@ -400,14 +402,16 @@ const spriteSheets={mav:{image:new Image(),src:'game/assets/maverick-sprites.web
   function drawHud(){rr(14,12,370,52,16,'rgba(5,24,38,.82)','rgba(255,255,255,.2)',2);if(S.mode==='bonus')text('SECRET COIN CAVE',29,44,17,'#fff');else{text(`WORLD ${level.worldId+1}  •  CHAPTER ${level.chapter}/2`,29,31,13,'#8fe9ff');text(level.name,29,52,17,'#fff')}rr(W-276,12,262,48,16,'rgba(5,24,38,.82)','rgba(255,255,255,.2)',2);text(`🪙 ${S.coins}   ❤️ ${S.lives}   🐾 ${S.tags}/3`,W-28,43,18,'#ffe175','right');if(boss&&S.mode!=='bonus'){rr(255,70,450,30,12,'rgba(20,12,31,.88)','#fff0c0',3);ctx.fillStyle='#e85161';ctx.fillRect(267,81,426*(S.bossHP/S.bossMax),8);text(`${S.activeMidBoss?'MINI-BOSS':'BOSS'} • ${boss.name}`,W/2,94,14,'#fff','center')}}
   function drawOverlay(){if(S.messageTime>0){const a=Math.min(1,S.messageTime*3);ctx.globalAlpha=a;rr(170,468,620,48,14,'rgba(3,17,28,.88)','rgba(255,255,255,.25)',2);text(S.message,W/2,500,19,'#fff','center');ctx.globalAlpha=1}if(S.transition>0){ctx.fillStyle=`rgba(4,15,25,${Math.min(.82,S.transition*.5)})`;ctx.fillRect(0,0,W,H);text(`WORLD ${level.worldId+1}  •  CHAPTER ${level.chapter}/2`,W/2,220,22,'#7fe6ff','center');text(level.name,W/2,273,46,'#ffe173','center');text(level.boss?`WORLD BOSS: ${level.boss.name}`:level.miniBoss?`MINI-BOSS AHEAD • ${level.worldLook}`:'RUN • JUMP • EXPLORE',W/2,314,17,'#fff','center')}if(S.won){ctx.fillStyle='rgba(4,12,24,.76)';ctx.fillRect(0,0,W,H);text('FORT MAVERICK SAVED!',W/2,210,48,'#ffe26e','center');text('MAV IS NOW LEGALLY ALLOWED TO BRAG.',W/2,260,25,'#fff','center');text('FINN DEMANDS A PARADE.',W/2,301,28,'#8ff4ff','center');text(`3 WORLDS • 3 MINI-BOSSES • 3 WORLD BOSSES • ${S.coins} COINS`,W/2,355,18,'#fff','center');text('RESTART WHEN THE CROWD STOPS CHEERING',W/2,401,15,'#d9ecf7','center')}}
   function drawStoryParty(){
-    // Show the very same character models as the playable world, rather
-    // than swapping to unrelated tiny pixel placeholders in cutscenes.
+    // Cutscenes show the *three separate friends*: Maverick, Finn the dog,
+    // and Bob the greenhouse creature. Power-up suits are Maverick wearing
+    // their gifts, not additional copies of Maverick in the story.
     const saved={...player},cam=S.cam;
     try{
-      player.w=52;player.h=68;player.vx=0;player.ground=true;player.land=0;player.dash=0;player.skid=0;S.cam=0;
+      player.w=52;player.h=68;player.vx=0;player.ground=true;
+      player.land=0;player.dash=0;player.skid=0;player.dir=1;S.cam=0;
       for(const [kind,x] of [['mav',286],['finn',454],['bob',622]]){
-        player.x=x;player.y=248;player.finn=kind==='finn';player.bob=kind==='bob';
-        if(!drawSheetCharacter(kind))drawPixelSprite(kind,x,248,1,false);
+        player.x=x;player.y=248;player.finn=false;player.bob=false;
+        drawPixelSprite(kind,x,248,1,false);
       }
     }finally{Object.assign(player,saved);S.cam=cam}
   }
