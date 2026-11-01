@@ -2059,7 +2059,7 @@
         <button class="hotspot game-hotspot" id="gameBtn" style="left:72%;top:6%;width:28%;height:40%;" data-tip="Play Super Maverick's World" aria-label="Play Super Maverick's World"></button>
         <button class="hotspot game-hotspot console-hotspot" id="consoleBtn" style="left:74%;top:47%;width:21%;height:14%;" data-tip="Cartridge console • insert & play" aria-label="Retro cartridge console"></button>
         <button class="fort-cartridge mav-cartridge" id="mavCartridge" style="left:67.2%;top:67%;" type="button" aria-label="Super Maverick's World cartridge — play now"><span>SUPER<br>MAVERICK</span></button>
-        <button class="fort-cartridge heimr-cartridge" id="heimrCartridge" style="left:76.5%;top:67%;" type="button" aria-label="HEIMR: The Shard Remembers cartridge — in development"><span>HEIMR<br>SHARD</span></button>
+        <button class="fort-cartridge heimr-cartridge" id="heimrCartridge" style="left:76.5%;top:67%;" type="button" aria-label="HEIMR: The Shard Remembers cartridge — play now"><span>HEIMR<br>SHARD</span></button>
         <button class="fort-cartridge prism-cartridge" id="prismCartridge" style="left:85.8%;top:67%;" type="button" aria-label="Prism Pals cartridge — in development"><span>PRISM<br>PALS</span></button>
 
         <button class="hotspot lava-lamp" id="lavaLampBtn" style="left:67.4%;top:51%;width:3.8%;height:13%;" data-tip="Red lava lamp" aria-label="Red lava lamp"><span class="lava-glass"><i class="lava-a"></i><i class="lava-b"></i></span><span class="lava-cap"></span></button>
@@ -2334,7 +2334,7 @@
       <section class="mav-screen mav-library-screen" id="mavLibraryScreen" aria-label="Maverick's cartridge collection" hidden>
         <div class="mav-screen-card mav-library-card"><p class="mav-kicker">THE FORT CARTRIDGE SHELF</p><h2>CHOOSE YOUR ADVENTURE</h2><div class="mav-library-grid">
           <button class="mav-cart-tile mav-cart-play" id="mavLibraryPlayButton" type="button"><span class="mav-cart-label">STUDIO LADUKE</span><b>SUPER MAVERICK'S WORLD</b><small>PLATFORM ADVENTURE · PLAY NOW</small></button>
-          <button class="mav-cart-tile mav-cart-heimr" id="mavLibraryHeimrButton" type="button"><span class="mav-cart-label">STUDIO LADUKE STORY GAME</span><b>HEIMR: THE SHARD REMEMBERS</b><small>COREY + MAVERICK · IN DEVELOPMENT</small></button>
+          <button class="mav-cart-tile mav-cart-heimr" id="mavLibraryHeimrButton" type="button"><span class="mav-cart-label">STUDIO LADUKE STORY GAME</span><b>HEIMR: THE SHARD REMEMBERS</b><small>COREY + MAVERICK · PLAY NOW</small></button>
           <button class="mav-cart-tile mav-cart-prism" id="mavLibraryPrismButton" type="button"><span class="mav-cart-label">STUDIO LADUKE ARCADE</span><b>PRISM PALS</b><small>ARCADE ADVENTURE · IN DEVELOPMENT</small></button>
         </div><p class="mav-hint">More original cartridges will join the shelf as their games are built.</p></div>
       </section>
@@ -3176,6 +3176,6 @@
     })();
   </script>
 
-  <script src="game/super-mavericks-world.js?v=20261101-campaign-saves3" defer></script>
+  <script src="game/super-mavericks-world.js?v=20261101-heimr-launch4" defer></script>
 <div id="sharedGameOpening" role="dialog" aria-label="Studio LaDuke game opening"><section class="sgPanel" id="sgStudio"><div class="sgMark">SL</div><p class="sgEyebrow">A Studio LaDuke production</p><h2 class="sgWord">STUDIO LADUKE</h2><p class="sgSub">Stories made close to home</p></section><section class="sgPanel" id="sgGames" hidden><p class="sgGames">MAVERICK<br>GAMES</p><p class="sgSub">Made for the next adventure</p></section><button class="sgSkip" id="sgSkip">SKIP INTRO</button></div><script>(()=>{const o=document.getElementById('sharedGameOpening'),a=document.getElementById('sgStudio'),b=document.getElementById('sgGames'),skip=document.getElementById('sgSkip');let t1=setTimeout(()=>{a.hidden=true;b.hidden=false},1700),t2=setTimeout(()=>o.remove(),3400);function finish(){clearTimeout(t1);clearTimeout(t2);o.remove()}skip.onclick=finish;o.addEventListener('pointerdown',e=>{if(e.target===o)finish()});window.addEventListener('keydown',e=>{if(!o.isConnected)return;if(e.key==='Enter'||e.key==='Escape'){finish()}},{once:true})})();</script></body>
 </html>
