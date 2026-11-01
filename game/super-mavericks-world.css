@@ -140,3 +140,24 @@
 #gameModal .mav-campaign-trail.complete .mav-world i{border-color:#fff3ad;background:#f3b544}
 #gameModal .mav-campaign-status{margin:0;color:#91e6ff;font:900 8px/1.3 ui-monospace,monospace;letter-spacing:.08em}
 @media(max-width:480px){#gameModal .mav-campaign-trail{gap:3px;padding:7px 5px}#gameModal .mav-world b{font-size:6px}}
+
+/* Phone portrait: controller floats over the game instead of occupying a second screen. */
+@media (orientation:portrait) and (max-width:760px){
+  #gameModal,#gameModal .game-panel{width:100vw!important;height:100dvh!important;min-width:100vw!important;min-height:100dvh!important;inset:0!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:#02070c!important}
+  #gameModal .game-panel{display:block!important}
+  #mavGameCanvas{position:fixed!important;left:0!important;top:50%!important;transform:translateY(-50%)!important;width:100vw!important;height:auto!important;max-width:none!important;max-height:100dvh!important;margin:0!important;border:0!important;border-radius:0!important;object-fit:contain!important;background:#07111a!important}
+  #gameModal .game-title-row{position:fixed!important;left:10px!important;top:max(8px,env(safe-area-inset-top))!important;z-index:73!important;display:block!important;width:auto!important;padding:0!important;text-align:left!important;pointer-events:none!important;opacity:.74}
+  #gameModal .game-title-row h2{display:none!important}
+  #gameModal .game-controls{position:fixed!important;inset:0!important;z-index:72!important;display:block!important;width:100vw!important;height:100dvh!important;margin:0!important;padding:0!important;pointer-events:none!important}
+  #gameModal .game-control:not(.pause){position:absolute!important;display:grid!important;place-items:center!important;width:62px!important;height:62px!important;min-width:62px!important;min-height:62px!important;margin:0!important;padding:2px!important;border:2px solid rgba(255,255,255,.38)!important;border-radius:50%!important;background:rgba(10,28,43,.34)!important;color:#fff!important;box-shadow:0 3px 12px #0005,inset 0 1px #ffffff28!important;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);font-size:11px!important;opacity:.64!important;pointer-events:auto!important;touch-action:none!important}
+  #gameModal .game-control.pressed,#gameModal .game-control:active{opacity:.98!important;background:rgba(73,139,187,.62)!important;transform:scale(.92)!important}
+  #gameLeft,#gameRight{bottom:max(22px,env(safe-area-inset-bottom))!important;font-size:25px!important;background:rgba(10,28,43,.24)!important}
+  #gameLeft{left:max(18px,env(safe-area-inset-left))!important}
+  #gameRight{left:max(88px,calc(env(safe-area-inset-left) + 88px))!important}
+  #gameJump{right:max(18px,env(safe-area-inset-right))!important;bottom:max(18px,env(safe-area-inset-bottom))!important;width:72px!important;height:72px!important;min-width:72px!important;min-height:72px!important;font-size:13px!important;background:rgba(179,77,76,.44)!important}
+  #gameBone{right:max(98px,calc(env(safe-area-inset-right) + 98px))!important;bottom:max(22px,calc(env(safe-area-inset-bottom) + 22px))!important;background:rgba(123,84,56,.4)!important}
+  #gameDash{right:max(18px,env(safe-area-inset-right))!important;bottom:max(98px,calc(env(safe-area-inset-bottom) + 98px))!important;background:rgba(110,62,134,.42)!important}
+  #gamePipe{right:max(88px,calc(env(safe-area-inset-right) + 88px))!important;bottom:max(92px,calc(env(safe-area-inset-bottom) + 92px))!important;background:rgba(38,125,112,.4)!important}
+  #gameModal .game-control.pause{top:max(10px,env(safe-area-inset-top))!important}
+  #gameModal .mav-screen{z-index:90!important}
+}
