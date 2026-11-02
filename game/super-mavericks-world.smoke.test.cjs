@@ -13,13 +13,28 @@ const ctx = new Proxy({ createLinearGradient: () => ({ addColorStop: noop }) }, 
 const elements = new Map();
 function element(id) {
   if (!elements.has(id)) {
-    elements.set(id, {
+    const listeners = new Map();
+    const classes = new Set();
+    const node = {
       id, style: {}, hidden: false, textContent: '', innerHTML: '', value: '', dataset: {}, isConnected: true,
-      addEventListener: noop, setAttribute: noop, blur: noop, focus: noop,
+      addEventListener: (type, handler) => {
+        if (!listeners.has(type)) listeners.set(type, []);
+        listeners.get(type).push(handler);
+      },
+      click: () => (listeners.get('click') || []).forEach(handler => handler({ currentTarget: node, target: node })),
+      setAttribute: noop, blur: noop, focus: noop,
       querySelector: () => null, querySelectorAll: () => [],
       requestFullscreen: () => Promise.resolve(), getContext: () => ctx,
-      classList: { toggle: noop, add: noop, remove: noop, contains: () => false }
-    });
+      classList: {
+        toggle: (name, force) => force === undefined
+          ? (classes.has(name) ? (classes.delete(name), false) : (classes.add(name), true))
+          : (force ? classes.add(name) : classes.delete(name), force),
+        add: (...names) => names.forEach(name => classes.add(name)),
+        remove: (...names) => names.forEach(name => classes.delete(name)),
+        contains: name => classes.has(name)
+      }
+    };
+    elements.set(id, node);
   }
   return elements.get(id);
 }
@@ -155,5 +170,21 @@ run('costume cutscenes draw with loaded sprites without moving the real player',
   game.step(.016,1);
   game.drawStoryParty();
   assert.equal(game.state().player.bob,true);
+});
+run('every Super Maverick Fort entry returns to the title screen', () => {
+  element('consoleBtn').click();
+  assert.equal(game.state().screen, 'library');
+  element('gameBtn').click();
+  assert.equal(game.state().screen, 'title');
+
+  element('prismCartridge').click();
+  assert.equal(game.state().screen, 'library-prism');
+  element('mavCartridge').click();
+  assert.equal(game.state().screen, 'title');
+
+  element('consoleBtn').click();
+  assert.equal(game.state().screen, 'library');
+  element('mavLibraryPlayButton').click();
+  assert.equal(game.state().screen, 'title');
 });
 console.log('All Super Maverick\'s World engine smoke checks passed.');
