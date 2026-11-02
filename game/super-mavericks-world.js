@@ -436,7 +436,18 @@ const player={x:120,y:330,w:52,h:68,vx:0,vy:0,dir:1,ground:false,coyote:0,jumpBu
   function restartAdventure(){reset();S.screen='playing';syncScreens();start();startMusic();writeRunSave();refreshSaveSlots()} function saveAndTitle(){writeRunSave();stopMusic();S.screen='title';S.story=null;Object.assign(input,{left:false,right:false,jump:false,down:false});refreshSaveSlots();syncScreens();tone(659,.08)} function continueCheckpoint(){const saved=readRunSave();if(saved&&!saved.completed)restoreRunSave(saved);else reset();S.screen='playing';S.story=null;syncScreens();start();startMusic();writeRunSave();tone(523,.09)}
   // The Fort modal already covers the viewport. Forcing element fullscreen while
   // Safari rotates can detach or blank its Canvas 2D surface in in-app browsers.
-  function open(){window.openModal?.('gameModal');if(S.screen==='closed')S.screen='paused';start();draw()}
+  function launchMaverick(){
+    window.openModal?.('gameModal');
+    stopMusic();
+    S.screen='title';
+    S.story=null;
+    Object.assign(input,{left:false,right:false,jump:false,down:false});
+    Object.assign(pressed,{jump:false,bone:false,dash:false});
+    refreshSaveSlots();
+    syncScreens();
+    start();
+    draw();
+  }
   function refreshVisibleCanvas(){
     if(!modal.classList.contains('show'))return;
     if(!running)start();
@@ -446,9 +457,8 @@ const player={x:120,y:330,w:52,h:68,vx:0,vy:0,dir:1,ground:false,coyote:0,jumpBu
   addEventListener('resize',refreshVisibleCanvas);
   addEventListener('orientationchange',()=>setTimeout(refreshVisibleCanvas,180));
   function openLibrary(detail=''){window.openModal?.('gameModal');if(S.screen==='playing')stopMusic();S.screen=detail||'library';syncScreens();start();draw()}
-  function launchCartridge(){window.openModal?.('gameModal');reset();S.screen='title';syncScreens();start();draw()}
   function launchHeimr(){stopMusic();running=false;cancelAnimationFrame(raf);window.location.assign('games/heimr.html')}
-  document.getElementById('gameBtn')?.addEventListener('click',open);document.getElementById('consoleBtn')?.addEventListener('click',()=>openLibrary());document.getElementById('mavCartridge')?.addEventListener('click',launchCartridge);document.getElementById('heimrCartridge')?.addEventListener('click',launchHeimr);document.getElementById('prismCartridge')?.addEventListener('click',()=>openLibrary('library-prism'));document.getElementById('mavLibraryPlayButton')?.addEventListener('click',launchCartridge);document.getElementById('mavLibraryHeimrButton')?.addEventListener('click',launchHeimr);document.getElementById('mavLibraryPrismButton')?.addEventListener('click',()=>openLibrary('library-prism'));document.getElementById('mavHeimrBackButton')?.addEventListener('click',()=>openLibrary());document.getElementById('mavPrismBackButton')?.addEventListener('click',()=>openLibrary());document.querySelector('[data-close="gameModal"]')?.addEventListener('click',stop);modal.addEventListener('click',e=>{if(e.target===modal)stop()});
+  document.getElementById('gameBtn')?.addEventListener('click',launchMaverick);document.getElementById('consoleBtn')?.addEventListener('click',()=>openLibrary());document.getElementById('mavCartridge')?.addEventListener('click',launchMaverick);document.getElementById('heimrCartridge')?.addEventListener('click',launchHeimr);document.getElementById('prismCartridge')?.addEventListener('click',()=>openLibrary('library-prism'));document.getElementById('mavLibraryPlayButton')?.addEventListener('click',launchMaverick);document.getElementById('mavLibraryHeimrButton')?.addEventListener('click',launchHeimr);document.getElementById('mavLibraryPrismButton')?.addEventListener('click',()=>openLibrary('library-prism'));document.getElementById('mavHeimrBackButton')?.addEventListener('click',()=>openLibrary());document.getElementById('mavPrismBackButton')?.addEventListener('click',()=>openLibrary());document.querySelector('[data-close="gameModal"]')?.addEventListener('click',stop);modal.addEventListener('click',e=>{if(e.target===modal)stop()});
   function kd(e){if(!modal.classList.contains('show'))return;const k=e.key;if(S.screen==='title'&&['Enter',' ','ArrowUp','w','W'].includes(k)){beginAdventure();e.preventDefault();return}if(S.story&&['Enter',' ','ArrowRight','e','E'].includes(k)){advanceStory();e.preventDefault();return}if(['Escape','p','P'].includes(k)){if(!e.repeat)togglePause();e.preventDefault();return}if(S.screen!=='playing')return;if(['ArrowLeft','a','A'].includes(k)){input.left=true;e.preventDefault()}if(['ArrowRight','d','D'].includes(k)){input.right=true;e.preventDefault()}if(['ArrowUp','w','W',' '].includes(k)){if(!input.jump)pressed.jump=true;input.jump=true;e.preventDefault()}if(['ArrowDown','s','S'].includes(k)){input.down=true;enterPipe();e.preventDefault()}if(['f','F','x','X'].includes(k)&&!e.repeat){pressed.bone=true;e.preventDefault()}if(['Shift','e','E'].includes(k)&&!e.repeat){pressed.dash=true;e.preventDefault()}}
   function ku(e){const k=e.key;if(['ArrowLeft','a','A'].includes(k))input.left=false;if(['ArrowRight','d','D'].includes(k))input.right=false;if(['ArrowUp','w','W',' '].includes(k))input.jump=false;if(['ArrowDown','s','S'].includes(k))input.down=false}addEventListener('keydown',kd);addEventListener('keyup',ku);addEventListener('blur',()=>Object.assign(input,{left:false,right:false,jump:false,down:false}));
   let controllerTimer=0;function wakeController(){modal.classList.add('controller-visible');clearTimeout(controllerTimer);controllerTimer=setTimeout(()=>modal.classList.remove('controller-visible'),850)}
