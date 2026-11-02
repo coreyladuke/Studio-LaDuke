@@ -132,6 +132,35 @@ run('running cycles through strides rather than sliding in the landing pose', ()
   assert(poses.has(1) && poses.has(2) && poses.has(3));
   assert.equal(poses.has(7), false);
 });
+run('the Cedar Runner Loop always has a safe walking bypass', () => {
+  const level=game.LEVELS[0],loop=level.speedLoops[0];
+  assert(loop);
+  assert(level.plats.some(([x,y,w]) => y===438 && x<=3200 && x+w>=3330));
+  game.loadLevel(0);
+  game.setPlayer(loop.x-32,370);
+  game.input.right=true;
+  game.step(.016,20);
+  game.input.right=false;
+  assert.equal(game.state().speedLoop,null);
+  assert(game.state().player.x>loop.x);
+});
+run('Red Runners turn enough approach speed into a complete loop and reward', () => {
+  const loop=game.LEVELS[0].speedLoops[0];
+  game.loadLevel(0);
+  game.setPlayer(loop.x-90,370);
+  game.activateRunners(false);
+  game.input.right=true;
+  for(let i=0;i<80&&!game.state().speedLoop;i++)game.step(.016,1);
+  assert(game.state().speedLoop,'the loop should catch a qualified runner');
+  game.input.right=false;
+  for(let i=0;i<100&&game.state().speedLoop;i++)game.step(.016,1);
+  const state=game.state();
+  assert.equal(state.speedLoop,null);
+  assert(state.player.x>=loop.x+loop.r*2);
+  assert(state.player.speedBoost>2);
+  assert(state.points>=750);
+  assert(state.coins>=3);
+});
 run('Maverick, Finn, and Bob costumes use one physical sprite atlas', () => {
   assert.deepEqual(Object.keys(game.spriteSheets), ['mav']);
   const atlas=game.spriteSheets.mav;
