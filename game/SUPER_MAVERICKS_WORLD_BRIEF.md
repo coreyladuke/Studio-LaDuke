@@ -52,7 +52,7 @@ The YouTube video stayed at 0:00 and Dailymotion returned a playback error. A Bi
 ### Dad as Maverick’s companion
 
 - Corey’s character is Maverick’s supportive dad and builder. He appears briefly at the workbench when a new piece of gear is introduced, explains why he made it, and lets Maverick react; the scene is skippable and never takes control away from Maverick.
-- The current pass adds that presentation for the Finn Suit and cape, plus original red “field-test” runners as a timed speed pickup. The next movement pass should give those shoes a proper speed-built loop route with a forgiving alternate path, so the player chooses the challenge rather than being forced into it.
+- The current pass adds that presentation for the Finn Suit and cape, plus original red “field-test” runners. The runners now unlock a proper speed-built Cedar Runner Loop in the opening course. A full-width walking bridge stays open underneath, so the fast route is a rewarding choice rather than a forced hazard.
 - The broad Genesis reference is *Sonic the Hedgehog 2*’s temporary Power Sneakers and Tails following Sonic; *Sonic 3* adds a co-op assist where Tails can briefly fly with Sonic. These are mechanic references only. Studio LaDuke will use its own red runner design, Dad/Maverick scenes, route shapes, animation, and rules. SEGA’s [Sonic 2 manual](https://manuals.sega.com/megadrivemini/pdf/SONIC_THE_HEDGEHOG2.pdf) describes the Power Sneakers, and the [Sonic Origins manual](https://manuals.sega.com/origins/en/index.html) documents the Tails carry action in *Sonic 3 & Knuckles*.
 
 All references are for broad interaction and pacing ideas only. Studio LaDuke’s art, characters, courses, encounters, ability rules and music remain original.
@@ -61,6 +61,6 @@ All references are for broad interaction and pacing ideas only. Studio LaDuke’
 
 - Implemented: one consolidated active platform engine, three world identities, six courses, three mini-bosses and three world bosses, chapter/world HUD and world-end progression.
 - Retained: original character abilities and story hooks, the TV/console entry points, cartridge shelf, high scores, pause/restart/game-over and sound preference.
-- Added in the active engine: an optional cape pickup and hold-to-glide control, a silent captioned opening cartoon, one brief vignette after each mini-boss, and a three-beat final victory sequence.
-- Still needs founder-grade play review: tune each new arena through play, verify all six boss encounters and every transition, compare the current game capture to the actual TV-art crop, test the Red Runners and loop route, and check desktop plus phone portrait/landscape behavior. No physical iPhone result should be inferred from desktop testing.
+- Added in the active engine: an optional cape pickup and hold-to-glide control, the Red Runners and optional Cedar Runner Loop, a silent captioned opening cartoon, one brief vignette after each mini-boss, and a three-beat final victory sequence.
+- Still needs founder-grade play review: tune each new arena through play, verify all six boss encounters and every transition, compare the current game capture to the actual TV-art crop, feel-test the Red Runners route timing, and check desktop plus phone portrait/landscape behavior. No physical iPhone result should be inferred from desktop testing.
 - Future expansion: world-map/select presentation and additional courses/secrets should come after this six-course route is enjoyable and tested end to end.
