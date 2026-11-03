@@ -13,6 +13,8 @@ assert.match(html, /height:100dvh/, 'mobile game should fill the viewport');
 assert.match(html, /if\(phase==='briefing'&&!introSeen\)enterWoodline\(\)/, 'fresh launch must enter the top-down Woodline directly');
 assert.doesNotMatch(html, /play\.onclick=.*phase='intro'/, 'launch must not return to the side-view intro');
 assert.match(html, /function bindTap\(/, 'touch actions need pointer and click fallback');
+assert.match(html, /phase,objective,inventory/, 'save data must include the current objective');
+assert.match(html, /saved\.objective\|\|resumeObjective\(phase\)/, 'older saves must rebuild the correct objective');
 
 const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match => match[1]);
 assert.ok(scripts.length, 'expected an inline game script');
