@@ -11,9 +11,9 @@ for (const direction of ['w', 'a', 's', 'd']) {
 assert.doesNotMatch(html, /\.dpad\{display:none!important\}/, 'mobile D-pad must stay visible');
 assert.match(html, /height:100dvh/, 'mobile game should fill the viewport');
 assert.match(html, /if\(phase==='briefing'&&!introSeen\)enterWoodline\(\)/, 'fresh launch must begin the egg cinematic');
-assert.match(html, /function enterWoodline\(\)\{phase='intro';introStep=0;introFrame=0\}/, 'fresh launch must reset the cinematic');
+assert.match(html, /function enterWoodline\(\)\{phase='intro';introStep=0;introFrame=0;introStartedAt=performance\.now\(\)\}/, 'fresh launch must reset the cinematic clock');
 assert.match(html, /drawTopDownIntroScene\(\)/, 'egg cinematic must use the top-down renderer');
-assert.match(html, /introFrame>270\|\|pressed\.e\|\|pressed\.enter/, 'egg cinematic must auto-finish and remain skippable');
+assert.match(html, /elapsed>4800\|\|pressed\.e\|\|pressed\.enter/, 'egg cinematic must auto-finish by elapsed time and remain skippable');
 assert.match(html, /function bindTap\(/, 'touch actions need pointer and click fallback');
 assert.match(html, /phase,objective,inventory/, 'save data must include the current objective');
 assert.match(html, /saved\.objective\|\|resumeObjective\(phase\)/, 'older saves must rebuild the correct objective');
