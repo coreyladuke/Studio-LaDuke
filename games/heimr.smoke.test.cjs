@@ -8,7 +8,12 @@ for (const direction of ['w', 'a', 's', 'd']) {
   assert.match(html, new RegExp(`data-hold="${direction}"`), `missing ${direction} D-pad control`);
 }
 
-assert.doesNotMatch(html, /\.dpad\{display:none!important\}/, 'mobile D-pad must stay visible');
+assert.ok(html.includes('class="joystick" id="moveJoystick"'), 'floating joystick markup must exist');
+assert.ok(html.includes('.touch-controls.joystick-ready .dpad{display:none!important}'), 'D-pad should hide only when joystick is ready');
+assert.ok(html.includes('joyArea.setPointerCapture'), 'thumb movement must stay captured');
+assert.ok(html.includes('if(analog.pointer!==null){dx=analog.x;dy=analog.y}'), 'analog axes must drive world motion');
+assert.ok(html.includes('let speed=1.75*strength'), 'continuous analog speed required');
+assert.ok(html.includes("document.addEventListener('visibilitychange'"), 'reset when app hidden');
 assert.match(html, /height:100dvh/, 'mobile game should fill the viewport');
 assert.match(html, /if\(phase==='briefing'&&!introSeen\)enterWoodline\(\)/, 'fresh launch must begin the egg cinematic');
 assert.match(html, /function enterWoodline\(\)\{phase='intro';introStep=0;introFrame=0;introStartedAt=performance\.now\(\)\}/, 'fresh launch must reset the cinematic clock');
