@@ -30,5 +30,5 @@ assert.ok(before(820,460),'unbraced log should physically block crossing');
 assert.ok(!html.includes('winged-sword-combat'),'retain original non-sword combat');
 assert.match(html,/foodFound=!!saved\.foodFound/,'food progress must survive reload');
 assert.match(html,/flightStage=Number\(saved\.flightStage\)\|\|0/,'flight progress must survive reload');
-assert.match(html,/wonderTalk,foodFound,flightStage,introSeen/,'progress fields must be written to saves');
+assert.match(html,/wonderTalk,foodFound,flightStage,shadowRepelled,introSeen/,'progress fields must be written to saves');
 console.log('HEIMR terrain gating, item access, and progress persistence: OK');

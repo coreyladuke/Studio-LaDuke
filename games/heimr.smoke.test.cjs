@@ -25,6 +25,10 @@ assert.match(html, /saved\.objective\|\|resumeObjective\(phase\)/, 'older saves 
 
 assert.ok(html.includes('function drawContextAction(){'), 'nearby objectives must show a contextual action cue');
 assert.ok(html.includes("if(phase==='flight')return[dragon.x,dragon.y,'HEIMR']"), 'first-flight interaction must have a visible mission marker');
+assert.ok(html.includes("['shard','return','careprep','food','done','lamp','wonder','flight','attack','runend','run'].includes(phase))dragonSprite"), 'Heimr must remain visible through discovery, flight, and escape');
+assert.ok(html.includes("['briefing','gear','meetFinn','search','return','flight','attack','runend'].includes(phase)"), 'Dad must remain visible during yard and escape scenes');
+assert.ok(html.includes("if(!shadowRepelled){toastMsg('The shadow blocks the crossing."), 'escape must require the star lamp milestone');
+assert.ok(html.includes('id="gameStatus" role="status"'), 'runtime phase and objective need an accessible live status');
 
 const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match => match[1]);
 assert.ok(scripts.length, 'expected an inline game script');
