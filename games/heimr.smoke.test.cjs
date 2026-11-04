@@ -23,6 +23,9 @@ assert.match(html, /function bindTap\(/, 'touch actions need pointer and click f
 assert.match(html, /phase,objective,inventory/, 'save data must include the current objective');
 assert.match(html, /saved\.objective\|\|resumeObjective\(phase\)/, 'older saves must rebuild the correct objective');
 
+assert.ok(html.includes('function drawContextAction(){'), 'nearby objectives must show a contextual action cue');
+assert.ok(html.includes("if(phase==='flight')return[dragon.x,dragon.y,'HEIMR']"), 'first-flight interaction must have a visible mission marker');
+
 const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match => match[1]);
 assert.ok(scripts.length, 'expected an inline game script');
 for (const source of scripts) new Function(source);
