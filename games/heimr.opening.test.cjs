@@ -34,8 +34,8 @@ assert.ok(html.includes("if(phase==='gear')return Math.hypot(player.x-475,player
 assert.match(html,/pickupFx=90/, 'hatchet pickup must trigger visible feedback');
 assert.match(html,/CAMP HATCHET  \+1/, 'hatchet pickup must identify the obtained item');
 
-assert.match(html,/@media\(max-width:600px\) and \(orientation:portrait\).*canvas\{height:50%;width:100%;object-fit:cover;object-position:center top\}/s, 'portrait layout must use a readable cropped playfield above controls');
-assert.match(html,/bottom:max\(17%,env\(safe-area-inset-bottom\)\)/, 'portrait controls must respect a deliberate lower control deck and safe area');
+assert.match(html,/@media\(max-width:600px\) and \(orientation:portrait\).*canvas\{height:58%;width:100%;object-fit:cover;object-position:center top\}/s, 'portrait layout must devote more of the phone to a readable playfield');
+assert.match(html,/bottom:max\(8%,calc\(env\(safe-area-inset-bottom\) \+ 10px\)\)/, 'portrait controls must use the lower deck while respecting the safe area');
 assert.match(html,/function drawPortraitHud\(\)/, 'portrait crop must have a dedicated readable HUD composition');
 assert.match(html,/function portraitDialogPanel\(\)/, 'portrait crop must keep dialogue and its button in view');
 assert.match(html,/storageKey=key=>qaRun\?/, 'published fresh-save verification must be isolated from player saves');

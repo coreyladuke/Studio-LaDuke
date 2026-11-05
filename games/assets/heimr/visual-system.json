@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "title": "HEIMR Master Visual System",
+  "camera": {
+    "projection": "three-quarter overhead",
+    "referenceViewport": [800, 450],
+    "worldSize": [1536, 1024],
+    "spriteCell": [72, 72],
+    "pixelRule": "nearest-neighbor only; no smoothing",
+    "lighting": "cool overcast ambient from upper left; warm practical lights; restrained blue magic"
+  },
+  "palette": {
+    "rainInk": "#111c1b",
+    "deepSpruce": "#102e2e",
+    "wetBlue": "#25515a",
+    "creekBlue": "#48728d",
+    "mossDark": "#304d2f",
+    "moss": "#5c6425",
+    "mossLight": "#708734",
+    "cedar": "#4a3726",
+    "stone": "#5c5e57",
+    "stoneLight": "#878877",
+    "raincoat": "#d59b27",
+    "windowGold": "#e4b56b",
+    "magicBlue": "#48bfd1",
+    "dialogCream": "#efe9d8"
+  },
+  "directions": {
+    "rows": ["down", "up", "left", "right"],
+    "columns": ["contact-a", "idle-passing", "contact-b"],
+    "walkLoop": [0, 1, 2, 1]
+  },
+  "characters": {
+    "maverick": {
+      "sheet": "maverick-walk.png",
+      "renderHeight": 60,
+      "groundShadow": [9, 2.4],
+      "role": "child protagonist",
+      "proportionRule": "normal child anatomy; never chibi or giant-headed"
+    },
+    "dad": {
+      "sheet": "dad-walk.png",
+      "renderHeight": 74,
+      "groundShadow": [11, 2.8],
+      "role": "adult companion",
+      "proportionRule": "23 percent taller than Maverick at shared ground scale"
+    },
+    "finn": {
+      "sheet": "finn-trot.png",
+      "renderHeight": 48,
+      "groundShadow": [9, 2.2],
+      "role": "trail-finding companion"
+    },
+    "heimr": {
+      "sheet": "heimr-walk.png",
+      "renderHeight": 52,
+      "groundShadow": [11, 2.7],
+      "role": "small dragon companion",
+      "proportionRule": "small enough for Maverick to protect and carry in Chapter One"
+    },
+    "shadow": {
+      "frames": [
+        "reference/shadow-0.webp",
+        "reference/shadow-1.webp",
+        "reference/shadow-2.webp",
+        "reference/shadow-3.webp"
+      ],
+      "renderHeight": 60,
+      "groundShadow": [27, 6],
+      "role": "Chapter One pursuing threat"
+    }
+  },
+  "futureCharacterSlots": [
+    {"id": "southeast-alaska-community-npc", "heightRange": [54, 76], "status": "design provision"},
+    {"id": "forest-threat-small", "heightRange": [32, 52], "status": "design provision"},
+    {"id": "mini-boss", "heightRange": [82, 128], "status": "design provision"},
+    {"id": "chapter-boss", "heightRange": [120, 190], "status": "design provision"}
+  ],
+  "worldSources": {
+    "forest": "world/forest-master-v1.webp",
+    "home": "world/home-master-v1.webp"
+  },
+  "environmentMotifs": [
+    {"id": "cabin-porch", "source": "forest", "crop": [0, 300, 620, 570], "collision": "authored polygon and rectangles", "depth": "roof, porch posts and foreground plants"},
+    {"id": "salmon-creek", "source": "forest", "crop": [0, 0, 930, 340], "collision": "water line with explicit bridge gate", "depth": "water below rocks and logs"},
+    {"id": "cedar-log-crossing", "source": "forest", "crop": [350, 0, 620, 230], "collision": "blocked until cedar wedge is placed", "depth": "player passes behind upper bank and over log"},
+    {"id": "spruce-cluster-a", "source": "forest", "crop": [370, 250, 390, 470], "collision": "circular trunk solids", "depth": "canopy foreground occluder"},
+    {"id": "spruce-cluster-b", "source": "forest", "crop": [850, 170, 430, 530], "collision": "circular trunk solids", "depth": "canopy foreground occluder"},
+    {"id": "muddy-trail", "source": "forest", "crop": [600, 300, 540, 620], "collision": "walkable ground bordered by rock and vegetation", "depth": "ground layer"},
+    {"id": "rock-root-gate", "source": "forest", "crop": [1080, 220, 456, 520], "collision": "rock circles and root wall", "depth": "rock face above player"},
+    {"id": "shore-dock", "source": "forest", "crop": [1050, 620, 486, 404], "collision": "shoreline and dock rectangles", "depth": "dock above water; foreground reeds"},
+    {"id": "woodpile-side-path", "source": "forest", "crop": [0, 650, 470, 374], "collision": "woodpile and fence rectangles", "depth": "fence and young spruce occluders"},
+    {"id": "home-fireplace", "source": "home", "crop": [0, 0, 520, 470], "collision": "wall and hearth rectangle", "depth": "furniture foreground edge"},
+    {"id": "home-kitchen", "source": "home", "crop": [900, 0, 636, 470], "collision": "counter and appliance rectangles", "depth": "counter foreground edge"},
+    {"id": "home-entry", "source": "home", "crop": [500, 540, 700, 484], "collision": "wall, door and storage rectangles", "depth": "entry wall foreground layer"}
+  ],
+  "interactionStates": {
+    "alder": ["blocked", "cut"],
+    "rock": ["blocked", "movable-after-ability"],
+    "bush": ["blocked", "cut-after-ability"],
+    "cedarCrossing": ["unstable", "wedged", "crossable"],
+    "cache": ["sealed", "blue-root-awakened", "opened"]
+  },
+  "referenceArt": {
+    "characterMaster": "reference/chapter-one-character-master-v1.png",
+    "promotionalMaster": "reference/heimr-promotional-master-v1.webp",
+    "gameplayCameraTarget": "reference/gameplay-camera-target-v1.webp",
+    "environmentScenes": "reference/environment-scenes-v1.webp"
+  }
+}
