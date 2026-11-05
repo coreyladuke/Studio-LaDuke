@@ -28,7 +28,7 @@ const store=new Map(),localStorage={getItem:k=>store.get(k)||null,
   setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)};
 const window={PointerEvent:function(){},addEventListener(){}};
 class FakeImage{constructor(){this.complete=false;this.naturalWidth=0;this.naturalHeight=0;this.src=''}}
-const source=match[1].replace(/\}\)\(\);\s*$/, 'window.__probe={player,dragon,dad,finn,inventory,get phase(){return phase},get dialog(){return dialog},get completed(){return completed},get bridgeFixed(){return bridgeFixed},get foodFound(){return foodFound},get flightStage(){return flightStage},get shadowRepelled(){return shadowRepelled},interact,closeDialog,useStarLamp,save};})();');
+const source=match[1].replace(/\}\)\(\);\s*$/, 'window.__probe={player,dragon,dad,finn,inventory,get phase(){return phase},get dialog(){return dialog},get completed(){return completed},get bridgeFixed(){return bridgeFixed},get foodFound(){return foodFound},get flightStage(){return flightStage},get shadowHits(){return shadowHits},get shadowRepelled(){return shadowRepelled},testReadyLamp(){lampCooldown=0},interact,closeDialog,useStarLamp,save};})();');
 assert.ok(source.includes('window.__probe'),'game test instrumentation should attach');
 new Function('window','document','Image','localStorage','performance','requestAnimationFrame','setTimeout','clearTimeout','confirm',source)
   (window,document,FakeImage,localStorage,{now:()=>1000},()=>{},()=>0,()=>{},()=>true);
@@ -74,7 +74,14 @@ act('Shadow appears',g.dragon.x,g.dragon.y,'attack');
 next();g.player.x=820;g.player.y=460;g.interact();check('Crossing blocked before lamp','attack');
 g.player.x=g.dragon.x;g.player.y=g.dragon.y;
 g.useStarLamp();
-assert.equal(g.shadowRepelled,true,'star lamp must repel the shadow before escape');
+assert.equal(g.shadowHits,1,'first star-lamp pulse must stagger, not finish, the shadow');
+assert.equal(g.shadowRepelled,false,'one pulse must not clear the crossing');
+g.testReadyLamp();g.useStarLamp();
+assert.equal(g.shadowHits,2,'second star-lamp pulse must advance the encounter');
+assert.equal(g.shadowRepelled,false,'two pulses must not clear the crossing');
+g.testReadyLamp();g.useStarLamp();
+assert.equal(g.shadowHits,3,'third star-lamp pulse must complete the encounter');
+assert.equal(g.shadowRepelled,true,'three star-lamp pulses must repel the shadow before escape');
 act('Cross back to safety',820,460,'runend');
 assert.equal(g.completed,false,'the chapter remains incomplete until the closing scene is acknowledged');
 const resumedWindow={PointerEvent:function(){},addEventListener(){}};
