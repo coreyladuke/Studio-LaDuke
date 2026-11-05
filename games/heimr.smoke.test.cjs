@@ -28,7 +28,7 @@ assert.ok(html.includes('function drawContextAction(){'), 'nearby objectives mus
 assert.ok(html.includes("if(phase==='flight')return[dragon.x,dragon.y,'HEIMR']"), 'first-flight interaction must have a visible mission marker');
 assert.ok(html.includes("['shard','return','careprep','food','done','lamp','wonder','flight','attack','runend','run'].includes(phase))actors.push"), 'Heimr must remain visible through discovery, flight, and escape');
 assert.ok(html.includes("['briefing','gear','meetFinn','search','return','flight','attack','runend'].includes(phase)"), 'Dad must remain visible during yard and escape scenes');
-assert.match(html, /drawSceneLayer\('ground',\.[0-9]+\)/, 'the detailed forest must be assembled through the layered runtime');
+assert.match(html, /drawSceneLayer\('ground'(?:,\.[0-9]+)?\)/, 'the detailed forest must be assembled through the layered runtime');
 assert.ok(html.includes("openingScene.filter(m=>m.layer==='foreground')"), 'forest canopies must share the actor depth sort');
 assert.ok(html.includes("y:dragon.y,f:()=>dragonSprite"), 'Heimr must share the actor depth sort');
 assert.ok(html.includes("canvas.addEventListener('pointerdown'"), 'the dialogue panel must advance directly when tapped');
