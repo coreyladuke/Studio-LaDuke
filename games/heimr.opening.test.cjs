@@ -1,0 +1,41 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+
+const root=__dirname;
+const html=fs.readFileSync(path.join(root,'heimr.html'),'utf8');
+const assets=['maverick-walk.png','dad-walk.png','finn-trot.png','heimr-walk.png'];
+
+for(const file of assets){
+  const full=path.join(root,'assets','heimr',file);
+  assert.ok(fs.existsSync(full),`${file} must ship with the game`);
+  const png=fs.readFileSync(full);
+  assert.equal(png.toString('ascii',1,4),'PNG',`${file} must be PNG`);
+  assert.equal(png.readUInt32BE(16),216,`${file} must use three 72px columns`);
+  assert.equal(png.readUInt32BE(20),288,`${file} must use four 72px direction rows`);
+}
+
+assert.match(html,/const SPRITE_CELL=72/, 'walk sheets must use a shared pixel grid');
+assert.match(html,/\[0,1,2,1\]\[Math\.floor\(walk\*2\)%4\]/, 'walk animation must use two contact poses and a passing pose');
+assert.match(html,/row=directionFrame\(dir\),col=walkColumn/, 'all actors must select a directional row and gait column');
+assert.match(html,/player\.moving=true/, 'Maverick movement must drive the gait');
+assert.match(html,/finn\.walk\+=\.12;finn\.moving=true/, 'Finn must visibly trot while following');
+assert.match(html,/dad\.dir=Math\.atan2\(player\.y-dad\.y,player\.x-dad\.x\)/, 'Dad must turn toward Maverick');
+
+assert.match(html,/const openingSolids=/, 'opening art needs authored solid geometry');
+assert.match(html,/openingSolids\.some\(o=>insideSolid/, 'opening solids must participate in collision');
+assert.match(html,/const openingDepthLayers=/, 'opening art needs explicit foreground layers');
+assert.match(html,/openingDepthLayers\.forEach\(o=>actors\.push/, 'foreground layers must share the actor depth sort');
+
+assert.match(html,/canvas\.addEventListener\('pointerdown'.*if\(!dialog\)return/s, 'dialogue panel must be tappable');
+assert.match(html,/return dialog\.choices\?'CHOOSE':dialog\.kind==='comic'\?'PAGE':'NEXT'/, 'dialogue must expose a clear forward action');
+for(const verb of ['TALK','TAKE','USE','ACT'])assert.ok(html.includes(`return'${verb}'`)||html.includes(`:'${verb}'`),`A button must support ${verb}`);
+assert.match(html,/pickupFx=90/, 'hatchet pickup must trigger visible feedback');
+assert.match(html,/CAMP HATCHET  \+1/, 'hatchet pickup must identify the obtained item');
+
+assert.match(html,/@media\(max-width:600px\) and \(orientation:portrait\).*canvas\{height:58%;object-position:center top\}/s, 'portrait layout must compose playfield above controls');
+assert.match(html,/bottom:max\(8\.5%,env\(safe-area-inset-bottom\)\)/, 'portrait controls must respect a deliberate lower control deck and safe area');
+assert.match(html,/storageKey=key=>qaRun\?/, 'published fresh-save verification must be isolated from player saves');
+assert.match(html,/localStorage\.setItem\(slotKey\(activeSlot\)/, 'normal save slots must remain persistent');
+
+console.log('HEIMR opening sprite, depth, dialogue, pickup, mobile, and save regressions: OK');

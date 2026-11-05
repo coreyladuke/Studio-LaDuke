@@ -32,8 +32,8 @@ assert.ok(html.includes("drawLitImage(art.forest,0,0,world.w/2,world.h/2)"), 'th
 assert.ok(html.includes("forestOccluders.forEach(o=>actors.push"), 'forest canopies must share the actor depth sort');
 assert.ok(html.includes("y:dragon.y,f:()=>dragonSprite"), 'Heimr must share the actor depth sort');
 assert.ok(html.includes("canvas.addEventListener('pointerdown'"), 'the dialogue panel must advance directly when tapped');
-assert.ok(html.includes("eb.className=next?'primary dialog-next':'primary'"), 'the mobile action button must clearly change to NEXT during dialogue');
-assert.ok(html.includes("drawCharacter('maverick',x,y+bob,50"), 'Maverick must be large enough to read against the detailed environment');
+assert.ok(html.includes("eb.className=next?'primary dialog-next':'primary'"), 'the mobile action button must clearly change during dialogue');
+assert.ok(html.includes("drawWalkSheet('maverick',x,y,60"), 'Maverick must remain readable while staying child-sized beside Dad');
 assert.ok(html.includes('function groundShadow('), 'characters need contact shadows that anchor their feet to the terrain');
 assert.ok(html.includes("if(!shadowRepelled){toastMsg('The shadow blocks the crossing."), 'escape must require the star lamp milestone');
 assert.ok(html.includes('id="gameStatus" role="status"'), 'runtime phase and objective need an accessible live status');
