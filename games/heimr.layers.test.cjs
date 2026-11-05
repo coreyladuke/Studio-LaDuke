@@ -12,6 +12,8 @@ assert.deepEqual(system.runtimeLayers,['ground','terrain','structure','interacti
   'visual system must lock the complete runtime layer order');
 assert.match(html,/const SCENE_LAYER_ORDER=\['ground','terrain','structure','interactive','actors','foreground','atmosphere','ui'\]/,
   'game must use the authoritative runtime layer order');
+assert.match(html,/drawLitImage\(art\.forest,0,0,world\.w\/2,world\.h\/2\)/,
+  'the 1536×1024 master must stay aligned to the game’s 2× world transform');
 
 const required=['cabin-porch','woodpile-side-path','muddy-trail','spruce-cluster-a','spruce-cluster-b',
   'alder-brush-barrier','rock-root-gate','creek-bank','cedar-log-crossing','shore-dock-edge',
@@ -21,6 +23,7 @@ for(const id of required){
   assert.ok(motif,`${id} must be a playable runtime motif`);
   assert.ok(Array.isArray(motif.source)&&motif.source.length===4,`${id} needs a source crop`);
   assert.ok(Array.isArray(motif.dest)&&motif.dest.length===4,`${id} needs world dimensions`);
+  assert.deepEqual(motif.dest,motif.source,`${id} source and world crop must remain pixel-aligned`);
   assert.ok(Array.isArray(motif.anchor)&&motif.anchor.length===2,`${id} needs an anchor`);
   assert.equal(typeof motif.occlusion,'string',`${id} needs depth behavior`);
   assert.equal(typeof motif.state,'string',`${id} needs a state`);
