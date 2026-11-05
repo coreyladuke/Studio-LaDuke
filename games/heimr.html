@@ -172,7 +172,7 @@ clueSpots.forEach((o,i)=>{if(!trailClues[i]){let a=.45+.28*Math.sin(frame*.09+i)
 }
 const forestOccluders=[{y:610,parts:[[465,405,118,152],[585,410,120,160]]},{y:815,parts:[[752,555,205,250],[610,590,118,165],[905,575,125,185]]},{y:685,parts:[[1110,410,178,225],[1260,445,135,205]]},{y:1000,parts:[[190,860,205,155],[470,895,150,140]]}];
 function drawForestOccluder(o){if(!art.forest.complete||!art.forest.naturalWidth)return;ctx.save();ctx.beginPath();for(const p of o.parts)ctx.ellipse(p[0],p[1],p[2],p[3],0,0,Math.PI*2);ctx.clip();drawLitImage(art.forest,0,0,world.w/2,world.h/2);ctx.restore()}
-const openingDepthLayers=[{y:756,rects:[[472,548,43,205]]},{y:794,rects:[[205,690,274,112]]},{y:862,rects:[[120,780,305,165]]},{y:930,rects:[[0,748,216,276]]}];
+const openingDepthLayers=[{y:756,rects:[[472,548,43,205]]},{y:794,rects:[[205,728,82,88],[387,700,92,114]]},{y:862,rects:[[120,780,70,150],[195,830,118,95],[334,820,91,120]]},{y:930,rects:[[0,748,216,276]]}];
 function drawOpeningDepth(o){if(!art.forest.complete||!art.forest.naturalWidth)return;ctx.save();ctx.beginPath();o.rects.forEach(r=>ctx.rect(r[0],r[1],r[2],r[3]));ctx.clip();drawLitImage(art.forest,0,0,world.w/2,world.h/2);ctx.restore()}
 function drawHome(){if(art.home.complete)drawLitImage(art.home,0,0,world.w/2,world.h/2);else R(0,0,world.w,world.h,'#39291f');
 // Bed and care markers drawn over clear floor
