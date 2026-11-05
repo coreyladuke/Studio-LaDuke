@@ -38,6 +38,7 @@ assert.match(html,/@media\(max-width:600px\) and \(orientation:portrait\).*canva
 assert.match(html,/bottom:max\(8%,calc\(env\(safe-area-inset-bottom\) \+ 10px\)\)/, 'portrait controls must use the lower deck while respecting the safe area');
 assert.match(html,/function drawPortraitHud\(\)/, 'portrait crop must have a dedicated readable HUD composition');
 assert.match(html,/function portraitDialogPanel\(\)/, 'portrait crop must keep dialogue and its button in view');
+assert.match(html,/function drawIntroCaption\(text,prompt\).*x=portrait\?222:42/s, 'egg-cinematic captions must fit the same portrait crop as gameplay');
 assert.match(html,/storageKey=key=>qaRun\?/, 'published fresh-save verification must be isolated from player saves');
 assert.match(html,/localStorage\.setItem\(storageKey\('heimr-active-slot'\),String\(n\)\)/, 'save-slot selection must remain isolated during published QA runs');
 assert.match(html,/localStorage\.setItem\(slotKey\(activeSlot\)/, 'normal save slots must remain persistent');
