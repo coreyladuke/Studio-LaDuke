@@ -3,9 +3,12 @@ const fs=require('node:fs');
 const path=require('node:path');
 
 const html=fs.readFileSync(path.join(__dirname,'heimr.html'),'utf8');
-const readArray=name=>Function(`return ${html.match(new RegExp(`const ${name}=(\\[[^;]+\\]);`))[1]}`)();
-const openingSolids=readArray('openingSolids');
-const forestSolids=readArray('forestSolids');
+const sceneMatch=html.match(/const openingScene=(\[[\s\S]*?\n\]);\nfunction segmentDistance/);
+assert.ok(sceneMatch,'layered opening scene must be readable by route regression');
+const scene=Function(`return ${sceneMatch[1]}`)();
+const collisions=scene.flatMap(m=>m.collision);
+const openingSolids=collisions.filter(o=>o.type==='rect');
+const forestSolids=collisions.filter(o=>o.type==='circle'&&!o.gate);
 
 const blocked=(x,y)=>openingSolids.some(o=>x>o.x1-9&&x<o.x2+9&&y>o.y1-7&&y<o.y2+8)||
   forestSolids.some(o=>Math.hypot(x-o.x,y-o.y)<o.r+10);

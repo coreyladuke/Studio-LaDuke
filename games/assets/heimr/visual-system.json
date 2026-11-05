@@ -94,6 +94,22 @@
     {"id": "home-kitchen", "source": "home", "crop": [900, 0, 636, 470], "collision": "counter and appliance rectangles", "depth": "counter foreground edge"},
     {"id": "home-entry", "source": "home", "crop": [500, 540, 700, 484], "collision": "wall, door and storage rectangles", "depth": "entry wall foreground layer"}
   ],
+  "runtimeLayers": ["ground", "terrain", "structure", "interactive", "actors", "foreground", "atmosphere", "ui"],
+  "openingRuntimeMotifs": [
+    {"id": "cabin-porch", "layer": "structure", "anchor": [310, 730], "state": "fixed"},
+    {"id": "woodpile-side-path", "layer": "structure", "anchor": [475, 710], "state": "hatchet-pickup"},
+    {"id": "muddy-trail", "layer": "terrain", "anchor": [820, 520], "state": "wet"},
+    {"id": "spruce-cluster-a", "layer": "foreground", "anchor": [565, 610], "state": "fixed"},
+    {"id": "spruce-cluster-b", "layer": "foreground", "anchor": [1065, 685], "state": "fixed"},
+    {"id": "alder-brush-barrier", "layer": "interactive", "anchor": [995, 520], "state": "blocked/cut"},
+    {"id": "rock-root-gate", "layer": "structure", "anchor": [1308, 610], "state": "fixed"},
+    {"id": "creek-bank", "layer": "ground", "anchor": [600, 300], "state": "deep-water"},
+    {"id": "cedar-log-crossing", "layer": "interactive", "anchor": [820, 460], "state": "unstable/wedged/crossable"},
+    {"id": "shore-dock-edge", "layer": "ground", "anchor": [1293, 820], "state": "fixed"},
+    {"id": "fern-salmonberry", "layer": "foreground", "anchor": [230, 900], "state": "fixed"},
+    {"id": "trail-sign-clearing", "layer": "terrain", "anchor": [610, 620], "state": "unread/read"},
+    {"id": "blue-light-discovery", "layer": "interactive", "anchor": [1265, 188], "state": "dormant/awakened"}
+  ],
   "interactionStates": {
     "alder": ["blocked", "cut"],
     "rock": ["blocked", "movable-after-ability"],

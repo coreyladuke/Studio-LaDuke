@@ -21,3 +21,13 @@ The named crops in `visual-system.json` are the reusable motif library. Collisio
 4. `reference/heimr-promotional-master-v1.webp` governs mood and character relationships, not gameplay scale.
 
 Concept references never override the exact proportions or collision rules in `visual-system.json`.
+
+## Layered opening runtime
+
+The porch-to-creek route is assembled through the ordered runtime layers in
+`visual-system.json`: ground, terrain, structure, interactive objects, actors,
+foreground occluders, atmosphere, and UI. The playable file contains the exact
+world anchors and collision shapes for each opening motif. Press `Q` in a
+desktop review build to inspect collision geometry, interaction range, mission
+direction, motif ownership, and layer classification. The debug view is never
+stored in a player save.

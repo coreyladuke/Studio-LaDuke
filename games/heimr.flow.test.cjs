@@ -28,7 +28,7 @@ const store=new Map(),localStorage={getItem:k=>store.get(k)||null,
   setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)};
 const window={PointerEvent:function(){},addEventListener(){}};
 class FakeImage{constructor(){this.complete=false;this.naturalWidth=0;this.naturalHeight=0;this.src=''}}
-const source=match[1].replace(/\}\)\(\);\s*$/, 'window.__probe={player,dragon,dad,finn,inventory,get phase(){return phase},get dialog(){return dialog},get completed(){return completed},get bridgeFixed(){return bridgeFixed},get foodFound(){return foodFound},get flightStage(){return flightStage},get shadowHits(){return shadowHits},get shadowRepelled(){return shadowRepelled},testReadyLamp(){lampCooldown=0},interact,closeDialog,useStarLamp,save};})();');
+const source=match[1].replace(/\}\)\(\);\s*$/, 'window.__probe={player,dragon,dad,finn,inventory,get phase(){return phase},get dialog(){return dialog},get completed(){return completed},get bridgeFixed(){return bridgeFixed},get trailClues(){return trailClues},get foodFound(){return foodFound},get flightStage(){return flightStage},get shadowHits(){return shadowHits},get shadowRepelled(){return shadowRepelled},testReadyLamp(){lampCooldown=0},interact,closeDialog,useStarLamp,save};})();');
 assert.ok(source.includes('window.__probe'),'game test instrumentation should attach');
 new Function('window','document','Image','localStorage','performance','requestAnimationFrame','setTimeout','clearTimeout','confirm',source)
   (window,document,FakeImage,localStorage,{now:()=>1000},()=>{},()=>0,()=>{},()=>true);
@@ -44,6 +44,12 @@ act('Talk Dad',318,725,'gear');
 act('Hatchet',475,710,'meetFinn');
 act('Meet Finn',418,738,'search');
 act('First sign',610,620,'search');
+const openingResumeWindow={PointerEvent:function(){},addEventListener(){}};
+new Function('window','document','Image','localStorage','performance','requestAnimationFrame','setTimeout','clearTimeout','confirm',source)
+  (openingResumeWindow,document,FakeImage,localStorage,{now:()=>1000},()=>{},()=>0,()=>{},()=>true);
+assert.equal(openingResumeWindow.__probe.phase,'search','layered opening checkpoint must reload on the trail');
+assert.deepEqual([openingResumeWindow.__probe.player.x,openingResumeWindow.__probe.player.y],[610,620],'opening checkpoint must restore the exact trail position');
+assert.equal(openingResumeWindow.__probe.trailClues[0],true,'opening checkpoint must restore the first sign');
 act('Second sign',930,405,'search');
 act('Take wedge',720,485,'search');
 act('Bridge repair',820,460,'search');

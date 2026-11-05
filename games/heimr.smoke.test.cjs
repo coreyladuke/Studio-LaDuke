@@ -28,12 +28,12 @@ assert.ok(html.includes('function drawContextAction(){'), 'nearby objectives mus
 assert.ok(html.includes("if(phase==='flight')return[dragon.x,dragon.y,'HEIMR']"), 'first-flight interaction must have a visible mission marker');
 assert.ok(html.includes("['shard','return','careprep','food','done','lamp','wonder','flight','attack','runend','run'].includes(phase))actors.push"), 'Heimr must remain visible through discovery, flight, and escape');
 assert.ok(html.includes("['briefing','gear','meetFinn','search','return','flight','attack','runend'].includes(phase)"), 'Dad must remain visible during yard and escape scenes');
-assert.ok(html.includes("drawLitImage(art.forest,0,0,world.w/2,world.h/2)"), 'the brightened detailed forest painting must render as the outdoor world');
-assert.ok(html.includes("forestOccluders.forEach(o=>actors.push"), 'forest canopies must share the actor depth sort');
+assert.ok(html.includes("drawSceneLayer('ground')"), 'the detailed forest must be assembled through the layered runtime');
+assert.ok(html.includes("openingScene.filter(m=>m.layer==='foreground')"), 'forest canopies must share the actor depth sort');
 assert.ok(html.includes("y:dragon.y,f:()=>dragonSprite"), 'Heimr must share the actor depth sort');
 assert.ok(html.includes("canvas.addEventListener('pointerdown'"), 'the dialogue panel must advance directly when tapped');
 assert.ok(html.includes("eb.className=next?'primary dialog-next':'primary'"), 'the mobile action button must clearly change during dialogue');
-assert.ok(html.includes("drawWalkSheet('maverick',x,y,60"), 'Maverick must remain readable while staying child-sized beside Dad');
+assert.ok(html.includes("drawWalkSheet('maverick',0,0,60"), 'Maverick must remain readable while staying child-sized beside Dad');
 assert.ok(html.includes('function groundShadow('), 'characters need contact shadows that anchor their feet to the terrain');
 assert.ok(html.includes("if(!shadowRepelled){toastMsg('The shadow blocks the crossing."), 'escape must require the star lamp milestone');
 assert.ok(html.includes('id="gameStatus" role="status"'), 'runtime phase and objective need an accessible live status');

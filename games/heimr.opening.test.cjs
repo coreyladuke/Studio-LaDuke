@@ -23,9 +23,9 @@ assert.match(html,/finn\.walk\+=\.12;finn\.moving=true/, 'Finn must visibly trot
 assert.match(html,/dad\.dir=Math\.atan2\(player\.y-dad\.y,player\.x-dad\.x\)/, 'Dad must turn toward Maverick');
 
 assert.match(html,/const openingSolids=/, 'opening art needs authored solid geometry');
-assert.match(html,/openingSolids\.some\(o=>insideSolid/, 'opening solids must participate in collision');
-assert.match(html,/const openingDepthLayers=/, 'opening art needs explicit foreground layers');
-assert.match(html,/openingDepthLayers\.forEach\(o=>actors\.push/, 'foreground layers must share the actor depth sort');
+assert.match(html,/sceneCollisions\.some\(o=>sceneBlocksPoint/, 'opening solids must participate in collision');
+assert.match(html,/const SCENE_LAYER_ORDER=/, 'opening art needs an explicit layer order');
+assert.match(html,/openingScene\.filter\(m=>m\.layer==='foreground'\)/, 'foreground motifs must share the actor depth sort');
 
 assert.match(html,/canvas\.addEventListener\('pointerdown'.*if\(!dialog\)return/s, 'dialogue panel must be tappable');
 assert.match(html,/return dialog\.choices\?'CHOOSE':dialog\.kind==='comic'\?'PAGE':'NEXT'/, 'dialogue must expose a clear forward action');
