@@ -18,6 +18,7 @@ assert.match(html, /height:100dvh/, 'mobile game should fill the viewport');
 assert.match(html, /if\(phase==='briefing'&&!introSeen\)enterWoodline\(\)/, 'fresh launch must begin the egg cinematic');
 assert.match(html, /function enterWoodline\(\)\{phase='intro';introStep=0;introFrame=0;introStartedAt=performance\.now\(\)\}/, 'fresh launch must reset the cinematic clock');
 assert.match(html, /drawTopDownIntroScene\(\)/, 'egg cinematic must use the top-down renderer');
+assert.match(html, /drawDetailedIntroScene\(\)/, 'egg cinematic must share the detailed forest renderer when art is ready');
 assert.match(html, /elapsed>4800\|\|pressed\.e\|\|pressed\.enter/, 'egg cinematic must auto-finish by elapsed time and remain skippable');
 assert.match(html, /function bindTap\(/, 'touch actions need pointer and click fallback');
 assert.match(html, /phase,objective,inventory/, 'save data must include the current objective');
@@ -25,6 +26,17 @@ assert.match(html, /saved\.objective\|\|resumeObjective\(phase\)/, 'older saves 
 
 assert.ok(html.includes('function drawContextAction(){'), 'nearby objectives must show a contextual action cue');
 assert.ok(html.includes("if(phase==='flight')return[dragon.x,dragon.y,'HEIMR']"), 'first-flight interaction must have a visible mission marker');
+assert.ok(html.includes("['shard','return','careprep','food','done','lamp','wonder','flight','attack','runend','run'].includes(phase))actors.push"), 'Heimr must remain visible through discovery, flight, and escape');
+assert.ok(html.includes("['briefing','gear','meetFinn','search','return','flight','attack','runend'].includes(phase)"), 'Dad must remain visible during yard and escape scenes');
+assert.match(html, /drawSceneLayer\('ground'(?:,\.[0-9]+)?\)/, 'the detailed forest must be assembled through the layered runtime');
+assert.ok(html.includes("openingScene.filter(m=>m.layer==='foreground')"), 'forest canopies must share the actor depth sort');
+assert.ok(html.includes("y:dragon.y,f:()=>dragonSprite"), 'Heimr must share the actor depth sort');
+assert.ok(html.includes("canvas.addEventListener('pointerdown'"), 'the dialogue panel must advance directly when tapped');
+assert.ok(html.includes("eb.className=next?'primary dialog-next':'primary'"), 'the mobile action button must clearly change during dialogue');
+assert.ok(html.includes("drawWalkSheet('maverick',0,0,60"), 'Maverick must remain readable while staying child-sized beside Dad');
+assert.ok(html.includes('function groundShadow('), 'characters need contact shadows that anchor their feet to the terrain');
+assert.ok(html.includes("if(!shadowRepelled){toastMsg('The shadow blocks the crossing."), 'escape must require the star lamp milestone');
+assert.ok(html.includes('id="gameStatus" role="status"'), 'runtime phase and objective need an accessible live status');
 
 const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match => match[1]);
 assert.ok(scripts.length, 'expected an inline game script');
