@@ -30,6 +30,7 @@ assert.match(html,/openingDepthLayers\.forEach\(o=>actors\.push/, 'foreground la
 assert.match(html,/canvas\.addEventListener\('pointerdown'.*if\(!dialog\)return/s, 'dialogue panel must be tappable');
 assert.match(html,/return dialog\.choices\?'CHOOSE':dialog\.kind==='comic'\?'PAGE':'NEXT'/, 'dialogue must expose a clear forward action');
 for(const verb of ['TALK','TAKE','USE','ACT'])assert.ok(html.includes(`return'${verb}'`)||html.includes(`:'${verb}'`),`A button must support ${verb}`);
+assert.ok(html.includes("if(phase==='gear')return Math.hypot(player.x-475,player.y-710)<90?'TAKE':'ACT'"),'hatchet label must use the same pickup radius as the interaction');
 assert.match(html,/pickupFx=90/, 'hatchet pickup must trigger visible feedback');
 assert.match(html,/CAMP HATCHET  \+1/, 'hatchet pickup must identify the obtained item');
 
