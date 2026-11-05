@@ -39,6 +39,7 @@ assert.match(html,/bottom:max\(8%,calc\(env\(safe-area-inset-bottom\) \+ 10px\)\
 assert.match(html,/function drawPortraitHud\(\)/, 'portrait crop must have a dedicated readable HUD composition');
 assert.match(html,/function portraitDialogPanel\(\)/, 'portrait crop must keep dialogue and its button in view');
 assert.match(html,/storageKey=key=>qaRun\?/, 'published fresh-save verification must be isolated from player saves');
+assert.match(html,/localStorage\.setItem\(storageKey\('heimr-active-slot'\),String\(n\)\)/, 'save-slot selection must remain isolated during published QA runs');
 assert.match(html,/localStorage\.setItem\(slotKey\(activeSlot\)/, 'normal save slots must remain persistent');
 
 console.log('HEIMR opening sprite, depth, dialogue, pickup, mobile, and save regressions: OK');
