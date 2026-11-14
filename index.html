@@ -722,7 +722,7 @@
 
     <a class="picture-nav nav-studio" href="index.html" aria-label="Studio front room"></a>
     <a class="picture-nav nav-library" href="books.html" aria-label="Library"></a>
-    <button class="picture-nav nav-music" id="musicNav" type="button" aria-label="Music room"></button>
+    <a class="picture-nav nav-music" href="music.html" aria-label="Enter the Music Room"></a>
     <a class="picture-nav nav-workshop" href="workshop.html" aria-label="Workshop"></a>
     <a class="picture-nav nav-gallery" href="gallery.html" aria-label="Gallery"></a>
     <a class="picture-nav nav-bob" href="bob.html" aria-label="Bob's Room"></a>
@@ -779,6 +779,10 @@
         Books
       </a>
 
+      <a class="menu-link" href="music.html">
+        Music Room
+      </a>
+
       <a class="menu-link" href="bob.html">
         Bob’s Room
       </a>
@@ -808,7 +812,6 @@
     const guitarHotspot = document.getElementById("guitarHotspot");
     const bobHotspot = document.getElementById("bobHotspot");
     const windowHotspot = document.getElementById("windowHotspot");
-    const musicNav = document.getElementById("musicNav");
 
     let toastTimer;
     let audioContext;
@@ -987,11 +990,6 @@
     });
 
     guitarHotspot.addEventListener("click", playGuitarChord);
-
-    musicNav.addEventListener("click", () => {
-      playGuitarChord();
-      showFrontToast("The music room is tuning up. The guitar works right now.", 2800);
-    });
 
     bobHotspot.addEventListener("click", () => {
       if (bobReadyForDoor) {
