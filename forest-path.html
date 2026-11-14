@@ -102,6 +102,8 @@
     const scene=document.getElementById("scene");
     const toast=document.getElementById("toast");
     const audioToggle=document.getElementById("audioToggle");
+    const raven=document.getElementById("raven");
+    let hasReceipt=window.location.hash==="#raven";
     let toastTimer=null,audioContext=null,rainSource=null,rainGain=null,crackleTimer=null,audioOn=false,fireHigh=false;
     let panX=0,maxPan=0,dragging=false,dragPointer=null,dragStartX=0,panStartX=0;
 
@@ -117,7 +119,12 @@
     document.getElementById("firepit").addEventListener("click",tendFire);
     document.getElementById("fireButton").addEventListener("click",tendFire);
     audioToggle.addEventListener("click",toggleAudio);
-    document.getElementById("raven").addEventListener("click",()=>{
+    raven.addEventListener("click",()=>{
+      if(hasReceipt){
+        hasReceipt=false;
+        showToast("The raven eyes the receipt. “No refunds.”");
+        return;
+      }
       if(audioOn){
         tone(180,.08,"sawtooth",.024);
         setTimeout(()=>{if(audioOn)tone(115,.15,"sawtooth",.02)},80);
@@ -155,7 +162,11 @@
 
     for(let i=0;i<22;i++){const light=document.createElement("i");light.className="firefly";light.style.left=`${18+Math.random()*64}%`;light.style.top=`${18+Math.random()*56}%`;light.style.setProperty("--speed",`${2.2+Math.random()*4}s`);light.style.setProperty("--delay",`${-Math.random()*5}s`);light.style.setProperty("--dx",`${-18+Math.random()*36}px`);light.style.setProperty("--dy",`${-14+Math.random()*28}px`);scene.appendChild(light)}
     updatePanBounds();
-    setTimeout(()=>showToast(maxPan>4?"Swipe to look around. Three paths. One raven with no useful information.":"Three paths. One greenhouse. One raven with no useful information.",3200),700);
+    if(hasReceipt){
+      raven.focus({preventScroll:true});
+    }else{
+      setTimeout(()=>showToast(maxPan>4?"Swipe to look around. Three paths. One raven with no useful information.":"Three paths. One greenhouse. One raven with no useful information.",3200),700);
+    }
     window.addEventListener("pagehide",stopRain);
   </script>
 </body>
