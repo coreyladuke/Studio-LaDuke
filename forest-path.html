@@ -65,7 +65,8 @@
       .scene{width:calc(100svh * 1.7779);height:100svh}
       .wayfinder a,.wayfinder button{padding:7px 8px;font-size:9px}
     }
-    @media(hover:none),(pointer:coarse){.hotspot::after{display:none}.hotspot:hover,.hotspot:focus,.hotspot:active{outline:0;background:transparent}}
+    @media(hover:none),(pointer:coarse){.hotspot::after{display:none}.hotspot:hover,.hotspot:active{background:transparent}}
+    .hotspot:focus-visible{outline:2px solid #f0c56f;outline-offset:-2px}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
   </style>
 </head>
@@ -116,8 +117,23 @@
     document.getElementById("firepit").addEventListener("click",tendFire);
     document.getElementById("fireButton").addEventListener("click",tendFire);
     audioToggle.addEventListener("click",toggleAudio);
-    document.getElementById("raven").addEventListener("click",()=>{tone(180,.08,"sawtooth",.024);setTimeout(()=>tone(115,.15,"sawtooth",.02),80);try{const line=new SpeechSynthesisUtterance("goat");line.rate=.76;line.pitch=.58;line.volume=.9;speechSynthesis.cancel();speechSynthesis.speak(line)}catch(error){}showToast("The raven considers your question carefully and says: GOAT.")});
-    document.getElementById("token").addEventListener("click",event=>{event.currentTarget.classList.add("token-found");try{localStorage.setItem("studioLadukeAdventureToken","found")}catch(error){}tone(523,.08,"triangle",.025);setTimeout(()=>tone(784,.12,"triangle",.025),90);showToast("ADVENTURE TOKEN FOUND: GOOD FOR ONE QUESTIONABLE DECISION.",3400)});
+    document.getElementById("raven").addEventListener("click",()=>{
+      if(audioOn){
+        tone(180,.08,"sawtooth",.024);
+        setTimeout(()=>{if(audioOn)tone(115,.15,"sawtooth",.02)},80);
+        try{const line=new SpeechSynthesisUtterance("goat");line.rate=.76;line.pitch=.58;line.volume=.9;speechSynthesis.cancel();speechSynthesis.speak(line)}catch(error){}
+      }
+      showToast("The raven considers your question carefully and says: GOAT.");
+    });
+    document.getElementById("token").addEventListener("click",event=>{
+      event.currentTarget.classList.add("token-found");
+      try{localStorage.setItem("studioLadukeAdventureToken","found")}catch(error){}
+      if(audioOn){
+        tone(523,.08,"triangle",.025);
+        setTimeout(()=>{if(audioOn)tone(784,.12,"triangle",.025)},90);
+      }
+      showToast("ADVENTURE TOKEN FOUND: GOOD FOR ONE QUESTIONABLE DECISION.",3400);
+    });
 
     function updatePanBounds(){maxPan=Math.max(0,(scene.offsetWidth-window.innerWidth)/2);panX=Math.max(-maxPan,Math.min(maxPan,panX));scene.style.setProperty("--pan-x",`${panX}px`);sceneShell.classList.toggle("pannable",maxPan>4)}
     function beginPan(event){if(maxPan<=4||event.target.closest("a,button"))return;dragging=true;dragPointer=event.pointerId;dragStartX=event.clientX;panStartX=panX;sceneShell.classList.add("dragging");sceneShell.setPointerCapture(event.pointerId)}
@@ -128,6 +144,13 @@
     sceneShell.addEventListener("pointerup",endPan);
     sceneShell.addEventListener("pointercancel",endPan);
     sceneShell.addEventListener("lostpointercapture",()=>endPan());
+    scene.addEventListener("focusin",event=>{
+      const bounds=event.target.getBoundingClientRect();
+      if((bounds.left>=0&&bounds.right<=window.innerWidth)||maxPan<=4)return;
+      const centered=panX+window.innerWidth/2-(bounds.left+bounds.width/2);
+      panX=Math.max(-maxPan,Math.min(maxPan,centered));
+      scene.style.setProperty("--pan-x", panX + "px");
+    });
     window.addEventListener("resize",updatePanBounds);
 
     for(let i=0;i<22;i++){const light=document.createElement("i");light.className="firefly";light.style.left=`${18+Math.random()*64}%`;light.style.top=`${18+Math.random()*56}%`;light.style.setProperty("--speed",`${2.2+Math.random()*4}s`);light.style.setProperty("--delay",`${-Math.random()*5}s`);light.style.setProperty("--dx",`${-18+Math.random()*36}px`);light.style.setProperty("--dy",`${-14+Math.random()*28}px`);scene.appendChild(light)}

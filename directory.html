@@ -20,7 +20,10 @@
     .hero::after{content:"";position:absolute;right:8%;top:-30px;width:240px;height:240px;border-radius:50%;border:18px solid rgba(255,255,255,.035);box-shadow:0 0 0 36px rgba(255,255,255,.02),0 0 0 72px rgba(255,255,255,.012)}
     .eyebrow{margin:0 0 12px;color:var(--gold);font-size:12px;font-weight:900;letter-spacing:.2em;text-transform:uppercase}
     h1{position:relative;z-index:2;max-width:740px;margin:0;font-family:Georgia,serif;font-size:clamp(3.4rem,10vw,7.8rem);line-height:.78;letter-spacing:-.07em;text-shadow:0 10px 30px rgba(0,0,0,.55)}
-    .hero-copy{position:relative;z-index:2}.hero-copy p:last-child{max-width:610px;margin:24px 0 0;color:#dfd4c1;font-size:clamp(16px,2vw,20px);line-height:1.5}
+    .hero-copy{position:relative;z-index:2}.hero-copy>p:not(.eyebrow){max-width:610px;margin:24px 0 0;color:#dfd4c1;font-size:clamp(16px,2vw,20px);line-height:1.5}
+    .directory-jumps{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:14px}
+    .directory-jumps a{display:inline-flex;align-items:center;min-height:44px;color:#ffe3a1;text-underline-offset:4px}
+    .directory-jumps a:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
     .control-panel{position:relative;z-index:2;padding:20px;border:2px solid #3d3228;border-radius:16px;color:var(--ink);background:linear-gradient(145deg,#d7c7a7,#99886b);box-shadow:inset 0 0 0 3px rgba(255,255,255,.18),0 18px 30px rgba(0,0,0,.35);transform:rotate(1.2deg)}
     .panel-label{display:flex;justify-content:space-between;gap:10px;font-size:11px;font-weight:900;letter-spacing:.13em;text-transform:uppercase}.status-light{display:inline-block;width:10px;height:10px;border-radius:50%;background:#55d36f;box-shadow:0 0 12px #55d36f}body.power-out .status-light{background:#772e2e;box-shadow:none}
     .surprise{width:100%;margin-top:18px;border:0;border-radius:12px;padding:16px;color:#fff9ea;background:linear-gradient(#dd593e,#9c2d24);box-shadow:0 7px 0 #682019,0 12px 18px rgba(0,0,0,.28);font:900 16px/1 "Trebuchet MS",sans-serif;cursor:pointer;transition:transform .12s,box-shadow .12s}.surprise:active{transform:translateY(6px);box-shadow:0 1px 0 #682019}.panel-note{margin:17px 0 0;font-family:"Courier New",monospace;font-size:12px;line-height:1.4}
@@ -46,16 +49,16 @@
   <header class="topbar"><a class="brand" href="index.html">STUDIO LADUKE</a><div class="top-actions"><span class="tiny-button" id="clock">Ketchikan time</span><button class="tiny-button" id="powerButton" type="button">Lights: ON</button></div></header>
   <main>
     <section class="hero">
-      <div class="hero-copy"><p class="eyebrow">Building directory / absolutely not a normal website</p><h1>Pick a door.</h1><p>Every finished room in Studio LaDuke is open from here. Some contain art. Some contain games. At least one contains Bob.</p></div>
+      <div class="hero-copy"><p class="eyebrow">Studio directory</p><h1>Pick a door.</h1><p>Some rooms contain art. Some contain games. At least one contains Bob.</p><nav class="directory-jumps" aria-label="Jump to a section"><a href="#rooms">The rooms ↓</a><a href="#cartridges">Game cartridges ↓</a></nav></div>
       <div class="control-panel"><div class="panel-label"><span>Navigation roulette</span><span><i class="status-light"></i> Online</span></div><button class="surprise" id="surpriseButton" type="button">SEND ME SOMEWHERE WEIRD</button><p class="panel-note">CAUTION: button may choose a hidden brain, an arcade, a wet forest, a swimming pool, or a fort governed by a child.</p></div>
     </section>
-    <div class="section-head"><h2>Game cartridges</h2><p>Three worlds, one familiar front door. Pick up a controller and jump in.</p></div>
+    <div class="section-head"><h2 id="cartridges" tabindex="-1">Game cartridges</h2><p>Three worlds, one familiar front door. Pick up a controller and jump in.</p></div>
     <nav class="game-shelf" aria-label="Studio LaDuke games">
       <a class="game-cart mav" href="mavericks-fort.html?gamePreview=1" aria-label="Play Super Maverick’s World"><span class="cart-label"><span class="cart-studio">Maverick Games · 16-bit adventure</span><strong class="cart-title">SUPER MAVERICK’S WORLD</strong><span class="cart-caption">Run fast. Find Finn. Make the fort yours.</span></span><span class="cart-open">Insert · Start</span><span class="cart-teeth" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></a>
       <a class="game-cart prism" href="games/prism.html" aria-label="Play Prism Pals"><span class="cart-label"><span class="cart-studio">Maverick Games · color arcade</span><strong class="cart-title">PRISM PALS</strong><span class="cart-caption">Bring the living spectrum back into tune.</span></span><span class="cart-open">Insert · Start</span><span class="cart-teeth" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></a>
       <a class="game-cart heimr" href="games/heimr.html" aria-label="Play HEIMR: The Woodline"><span class="cart-label"><span class="cart-studio">Maverick Games · story adventure</span><strong class="cart-title">HEIMR</strong><span class="cart-caption">A rain-soaked trail. A small blue light. Home.</span></span><span class="cart-open">Insert · Start</span><span class="cart-teeth" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></a>
     </nav>
-    <div class="section-head"><h2>The rooms</h2><p>Every door below opens. Apparently the building has standards.</p></div>
+    <div class="section-head"><h2 id="rooms" tabindex="-1">The rooms</h2><p>Every door below opens. Apparently the building has standards.</p></div>
     <nav class="rooms" aria-label="Studio LaDuke rooms">
       <a class="room-card wide tall orange" href="workshop.html"><span class="room-number">Room 01 · Main hub <i class="open-dot"></i></span><span class="room-icon">⚙</span><h3>The Workshop</h3><p>The living center of the studio: objects, hidden doors, current work, and the route into nearly everything else.</p><span class="arrow">→</span></a>
       <a class="room-card tall green" href="forest-path.html"><span class="room-number">Room 01½ · Technically outside <i class="open-dot"></i></span><span class="room-icon">♣</span><h3>The Back Forty</h3><p>A rain-wet forest crossing with Bob’s greenhouse, the fire pit, a trail to Mav’s Fort, and a raven providing unusable directions.</p><span class="arrow">→</span></a>

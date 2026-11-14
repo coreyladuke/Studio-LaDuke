@@ -276,6 +276,7 @@
     .bob-hotspot {
       left: 29.1%;
       top: 29.7%;
+      z-index: 16;
       width: 11.4%;
       height: 17.2%;
       border-radius: 45%;
@@ -295,6 +296,30 @@
       height: 42.3%;
     }
 
+    .window-trail {
+      position: absolute;
+      top: 8%;
+      left: 50%;
+      z-index: 17;
+      display: grid;
+      place-items: center;
+      min-height: 44px;
+      padding: 0 13px;
+      transform: translateX(-50%);
+      border: 1px solid #d5b782;
+      border-radius: 6px;
+      color: #fff0d1;
+      background: #1d251e;
+      font: 700 0.83rem system-ui, sans-serif;
+      text-decoration: none;
+    }
+
+    .window-trail[hidden] { display: none; }
+    .window-trail:hover, .window-trail:focus-visible {
+      outline: 2px solid #ffe4a4;
+      outline-offset: 3px;
+    }
+
     .brain-secret {
       left: 45.7%;
       top: 57.2%;
@@ -306,6 +331,8 @@
       pointer-events: none;
       transition: opacity 350ms ease, filter 350ms ease;
     }
+
+    .brain-secret[hidden] { display: none; }
 
     .brain-secret::before {
       content: "✦";
@@ -482,6 +509,7 @@
       z-index: 50;
 
       width: min(310px, 84vw);
+      overflow-y: auto;
       padding:
         calc(88px + env(safe-area-inset-top))
         24px
@@ -561,10 +589,7 @@
     }
 
     .menu-footer {
-      position: absolute;
-      left: 24px;
-      right: 24px;
-      bottom: calc(22px + env(safe-area-inset-bottom));
+      margin-top: 24px;
 
       color: rgba(245, 234, 215, 0.48);
       font-size: 0.78rem;
@@ -686,6 +711,8 @@
       }
 
       .front-room.raining .rain-layer,
+      .rain-layer::before,
+      .rain-drop,
       .front-room.lamp-off .brain-secret {
         animation: none;
       }
@@ -718,7 +745,8 @@
     <button class="room-hotspot bob-hotspot" id="bobHotspot" type="button" aria-label="Talk to Bob"></button>
     <a class="room-hotspot book-hotspot" href="books.html" aria-label="Open Everybody Deserves to Go Home"></a>
     <button class="room-hotspot window-hotspot" id="windowHotspot" type="button" aria-label="Change the weather outside"></button>
-    <a class="room-hotspot brain-secret" href="brain.html" aria-label="Enter the hidden room inside my head"></a>
+    <a class="window-trail" id="windowTrail" href="forest-path.html" hidden>Follow the trail</a>
+    <a class="room-hotspot brain-secret" id="brainSecret" href="brain.html" aria-label="Enter the hidden room inside my head" hidden></a>
 
     <a class="picture-nav nav-studio" href="index.html" aria-label="Studio front room"></a>
     <a class="picture-nav nav-library" href="books.html" aria-label="Library"></a>
@@ -734,7 +762,7 @@
     class="menu-button"
     id="menuButton"
     type="button"
-    aria-label="Open navigation menu"
+    aria-label="Open studio doors"
     aria-controls="menuPanel"
     aria-expanded="false"
   >
@@ -751,6 +779,7 @@
     class="menu-panel"
     id="menuPanel"
     aria-label="Studio LaDuke navigation"
+    inert
   >
     <h2 class="menu-title">Studio LaDuke</h2>
 
@@ -808,6 +837,8 @@
     const guitarHotspot = document.getElementById("guitarHotspot");
     const bobHotspot = document.getElementById("bobHotspot");
     const windowHotspot = document.getElementById("windowHotspot");
+    const windowTrail = document.getElementById("windowTrail");
+    const brainSecret = document.getElementById("brainSecret");
     const musicNav = document.getElementById("musicNav");
 
     let toastTimer;
@@ -978,6 +1009,7 @@
     lampHotspot.addEventListener("click", () => {
       frontRoom.classList.toggle("lamp-off");
       const lampIsOff = frontRoom.classList.contains("lamp-off");
+      brainSecret.hidden = !lampIsOff;
 
       showFrontToast(
         lampIsOff
@@ -1011,9 +1043,10 @@
     windowHotspot.addEventListener("click", () => {
       frontRoom.classList.toggle("raining");
       const raining = frontRoom.classList.contains("raining");
+      windowTrail.hidden = !raining;
 
       if (raining) {
-        buildForestRain();
+        if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) buildForestRain();
         startRainSound();
       } else {
         stopRainSound();
@@ -1043,8 +1076,9 @@
       menuShade.classList.add("open");
 
       menuButton.setAttribute("aria-expanded", "true");
-      menuButton.setAttribute("aria-label", "Close navigation menu");
-      menuShade.setAttribute("aria-hidden", "false");
+      menuButton.setAttribute("aria-label", "Close studio doors");
+      menuPanel.inert = false;
+      frontRoom.inert = true;
     }
 
     function closeMenu() {
@@ -1053,8 +1087,10 @@
       menuShade.classList.remove("open");
 
       menuButton.setAttribute("aria-expanded", "false");
-      menuButton.setAttribute("aria-label", "Open navigation menu");
-      menuShade.setAttribute("aria-hidden", "true");
+      menuButton.setAttribute("aria-label", "Open studio doors");
+      menuPanel.inert = true;
+      frontRoom.inert = false;
+      menuButton.focus({ preventScroll: true });
     }
 
     function toggleMenu() {
@@ -1071,13 +1107,13 @@
     menuShade.addEventListener("click", closeMenu);
 
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
+      if (event.key === "Escape" && menuButton.getAttribute("aria-expanded") === "true") {
         closeMenu();
       }
     });
 
-    document.querySelectorAll(".menu-link").forEach((link) => {
-      link.addEventListener("click", closeMenu);
+    window.addEventListener("pageshow", event => {
+      if (event.persisted && menuButton.getAttribute("aria-expanded") === "true") closeMenu();
     });
   </script>
 

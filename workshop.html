@@ -224,23 +224,28 @@
     .memory-modal {
       position: fixed;
       inset: 0;
-      z-index: 340;
-      display: grid;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      max-height: none;
+      margin: 0;
       place-items: center;
       padding: 18px;
-      background: rgba(3,6,8,.82);
-      backdrop-filter: blur(12px);
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity .2s ease,visibility .2s ease;
+      border: 0;
+      background: transparent;
     }
 
-    .memory-modal.open { opacity:1; visibility:visible; }
+    .memory-modal::backdrop {
+      background: rgba(3,6,8,.82);
+      backdrop-filter: blur(12px);
+    }
+
+    .memory-modal[open] { display: grid; }
 
     .memory-box {
       position: relative;
-      width: min(780px,95vw);
-      max-height: 90dvh;
+      width: min(780px,100%);
+      max-height: calc(100dvh - 36px);
       overflow: auto;
       padding: clamp(24px,5vw,48px);
       border: 7px solid #5e391f;
@@ -256,6 +261,11 @@
     .memory-box h2 { margin:0 44px 5px 0; color:#fff0c2; font-size:clamp(24px,5vw,42px); text-shadow:0 2px #321a0c; }
     .memory-box > p { margin:0 0 22px; color:#f7ddb0; font-weight:800; }
     .memory-close { position:absolute;right:12px;top:12px;width:42px;height:42px;border:2px solid rgba(255,255,255,.35);border-radius:50%;background:#2f190c;color:#fff;font:900 24px/1 Arial;cursor:pointer; }
+    .drawer-receipt { margin-top: 18px; color: #f7ddb0; line-height: 1.5; }
+    .drawer-receipt summary { display: list-item; min-height: 44px; padding: 10px 0; cursor: pointer; }
+    .drawer-receipt p { max-width: 36ch; padding: 12px; background: #f3dfb5; color: #291b10; }
+    .drawer-receipt a { color: #382109; font-weight: 700; }
+    .drawer-receipt a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
     .ticket-stack { display:grid; gap:14px; }
     .ticket {
       position: relative;
@@ -1694,6 +1704,7 @@
     id="menuButton"
     type="button"
     aria-label="Open navigation menu"
+    aria-controls="menuPanel"
     aria-expanded="false"
   >
     <span class="menu-lines"></span>
@@ -1702,12 +1713,14 @@
   <div
     class="menu-overlay"
     id="menuOverlay"
+    aria-hidden="true"
   ></div>
 
   <aside
     class="menu-panel"
     id="menuPanel"
     aria-label="Studio LaDuke navigation"
+    inert
   >
 
     <h1 class="menu-title">
@@ -1850,7 +1863,7 @@
     </section>
   </div>
 
-  <div class="memory-modal" id="memoryModal" role="dialog" aria-modal="true" aria-labelledby="memoryTitle">
+  <dialog class="memory-modal" id="memoryModal" aria-labelledby="memoryTitle">
     <section class="memory-box">
       <button class="memory-close" id="memoryClose" type="button" aria-label="Close the memory drawer">×</button>
       <h2 id="memoryTitle">THE DRAWER THAT MOVED FOUR TIMES</h2>
@@ -1861,8 +1874,12 @@
         <article class="ticket foo"><div><strong>FOO FIGHTERS</strong><span>FAIRBANKS · 08.21.21 · RAVENS OVERHEAD</span></div><b>STILL HERE</b></article>
       </div>
       <p class="drawer-note">Also inside: one dead Sharpie, three mystery screws, and a key that has confidently refused to identify itself.</p>
+      <details class="drawer-receipt">
+        <summary>Unfold the receipt</summary>
+        <p>One bag of birdseed. One flashlight. Directions from the raven: $0. <strong>Overpaid.</strong><br><a href="forest-path.html">Find the raven out back</a></p>
+      </details>
     </section>
-  </div>
+  </dialog>
 
   <div
     class="toast"
@@ -2413,6 +2430,15 @@
       updateRoomIndicator();
     }
 
+    sceneViewport.addEventListener("focusin", event => {
+      const bounds = event.target.getBoundingClientRect();
+      if ((bounds.left >= 0 && bounds.right <= window.innerWidth) || maxRoomX === 0) return;
+
+      const centered = roomX + window.innerWidth / 2 - (bounds.left + bounds.width / 2);
+      roomX = Math.max(minRoomX, Math.min(maxRoomX, centered));
+      renderRoomPosition();
+    });
+
     function updateRoomIndicator() {
       const range =
         maxRoomX - minRoomX;
@@ -2581,6 +2607,9 @@
       menuButton.classList.add("open");
       menuPanel.classList.add("open");
       menuOverlay.classList.add("open");
+      menuPanel.inert = false;
+      sceneViewport.inert = true;
+      menuButton.setAttribute("aria-label", "Close navigation menu");
 
       menuButton.setAttribute(
         "aria-expanded",
@@ -2589,9 +2618,14 @@
     }
 
     function closeMenu() {
+      if (menuPanel.inert) return;
       menuButton.classList.remove("open");
       menuPanel.classList.remove("open");
       menuOverlay.classList.remove("open");
+      menuPanel.inert = true;
+      sceneViewport.inert = false;
+      menuButton.setAttribute("aria-label", "Open navigation menu");
+      menuButton.focus({ preventScroll: true });
 
       menuButton.setAttribute(
         "aria-expanded",
@@ -2837,14 +2871,9 @@
       }
     );
 
-    document
-      .querySelectorAll(".menu-link")
-      .forEach(link => {
-        link.addEventListener(
-          "click",
-          closeMenu
-        );
-      });
+    window.addEventListener("pageshow", event => {
+      if (event.persisted) closeMenu();
+    });
 
     stereoHotspot.addEventListener(
       "click",
@@ -2940,7 +2969,7 @@
 
     const memoryModal = document.getElementById("memoryModal");
     const memoryDrawer = document.getElementById("memoryDrawer");
-    const closeMemoryDrawer = () => memoryModal.classList.remove("open");
+    const closeMemoryDrawer = () => memoryModal.close();
 
     function drawerThump() {
       try {
@@ -2964,7 +2993,7 @@
 
     memoryDrawer.addEventListener("click", event => {
       event.stopPropagation();
-      memoryModal.classList.add("open");
+      memoryModal.showModal();
       drawerThump();
       showToast("You found the drawer Corey keeps meaning to organize.");
     });
@@ -2972,9 +3001,6 @@
     document.getElementById("memoryClose").addEventListener("click", closeMemoryDrawer);
     memoryModal.addEventListener("click", event => {
       if (event.target === memoryModal) closeMemoryDrawer();
-    });
-    window.addEventListener("keydown", event => {
-      if (event.key === "Escape") closeMemoryDrawer();
     });
 
     document
