@@ -123,8 +123,7 @@
       opacity: 0;
     }
 
-    /* Real pieces from Corey's walls replace the generic frame filler.
-       Their order changes on each visit, like a tiny rehung gallery. */
+    /* Authentic Studio LaDuke artwork in fixed positions; each piece opens the gallery. */
     .personal-art-wall {
       position: absolute;
       inset: 0;
@@ -138,16 +137,31 @@
       padding: .38%;
       border: .28vw solid #161616;
       background: #e7dfcf;
-      object-fit: cover;
+      object-fit: contain;
       box-shadow: 0 .5vw 1.1vw rgba(0,0,0,.5);
       filter: saturate(1.08) contrast(1.03) brightness(.94);
     }
 
-    .personal-art.art-a { left:71.45%; top:2.9%; width:12.55%; height:19.25%; transform:rotate(-.35deg); }
-    .personal-art.art-b { left:85.35%; top:2.1%; width:11.9%; height:20.2%; transform:rotate(.4deg); }
-    .personal-art.art-c { left:71.15%; top:23.25%; width:14.65%; height:18.45%; transform:rotate(-.2deg); }
-    .personal-art.art-d { left:86.25%; top:23.7%; width:8.85%; height:17.8%; transform:rotate(.55deg); }
-    .personal-art.art-e { left:71.25%; top:42.2%; width:10.7%; height:10.45%; transform:rotate(-.5deg); }
+    .personal-art-link {
+      position: absolute;
+      z-index: 1;
+      display: block;
+      pointer-events: auto;
+      cursor: pointer;
+      border-radius: 2px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .personal-art-link:hover,
+    .personal-art-link:focus-visible {
+      outline: 2px solid rgba(245, 205, 125, .9);
+      outline-offset: 2px;
+      background: rgba(255, 210, 120, .08);
+    }
+    .personal-art.art-a, .personal-art-link.art-a { left:71.45%; top:2.9%; width:12.55%; height:19.25%; transform:rotate(-.35deg); }
+    .personal-art.art-b, .personal-art-link.art-b { left:85.35%; top:2.1%; width:11.9%; height:20.2%; transform:rotate(.4deg); }
+    .personal-art.art-c, .personal-art-link.art-c { left:71.15%; top:23.25%; width:14.65%; height:18.45%; transform:rotate(-.2deg); }
+    .personal-art.art-d, .personal-art-link.art-d { left:86.25%; top:23.7%; width:8.85%; height:17.8%; transform:rotate(.55deg); }
+    .personal-art.art-e, .personal-art-link.art-e { left:71.25%; top:42.2%; width:10.7%; height:10.45%; transform:rotate(-.5deg); }
 
     .front-room.raining .personal-art {
       filter: saturate(.82) contrast(1.06) brightness(.74);
@@ -699,12 +713,17 @@
     <div class="room-dimmer" aria-hidden="true"></div>
     <div class="lamp-glow" aria-hidden="true"></div>
     <div class="rain-layer" aria-hidden="true"></div>
-    <div class="personal-art-wall" aria-hidden="true">
+    <div class="personal-art-wall">
       <img class="personal-art art-a" alt="">
       <img class="personal-art art-b" alt="">
       <img class="personal-art art-c" alt="">
       <img class="personal-art art-d" alt="">
       <img class="personal-art art-e" alt="">
+      <a class="personal-art-link art-a" href="gallery.html" aria-label="View framed artwork 1 in the gallery"></a>
+      <a class="personal-art-link art-b" href="gallery.html" aria-label="View framed artwork 2 in the gallery"></a>
+      <a class="personal-art-link art-c" href="gallery.html" aria-label="View framed artwork 3 in the gallery"></a>
+      <a class="personal-art-link art-d" href="gallery.html" aria-label="View framed artwork 4 in the gallery"></a>
+      <a class="personal-art-link art-e" href="gallery.html" aria-label="View framed artwork 5 in the gallery"></a>
     </div>
 
     <a
@@ -834,15 +853,10 @@
     ];
 
     function hangPersonalArt() {
-      const shuffled = [...personalArt];
-
-      for (let index = shuffled.length - 1; index > 0; index -= 1) {
-        const other = Math.floor(Math.random() * (index + 1));
-        [shuffled[index], shuffled[other]] = [shuffled[other], shuffled[index]];
-      }
-
+      // Keep original artwork in a consistent frame, rather than reassigning
+      // images of different proportions on each page visit.
       document.querySelectorAll(".personal-art").forEach((image, index) => {
-        image.src = shuffled[index % shuffled.length];
+        image.src = personalArt[index % personalArt.length];
       });
     }
 
