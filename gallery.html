@@ -111,6 +111,7 @@
       height: min(78svh, 850px);
 
       display: grid;
+      grid-template: minmax(0, 1fr) / minmax(0, 1fr);
       place-items: center;
     }
 
@@ -131,6 +132,10 @@
       transition:
         opacity 170ms ease,
         transform 170ms ease;
+    }
+
+    .artwork[hidden] {
+      display: none;
     }
 
     .artwork.changing {
@@ -210,6 +215,12 @@
         0 8px 25px rgba(0, 0, 0, 0.48);
     }
 
+    .return-button:focus-visible,
+    .arrow:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 3px;
+    }
+
     .counter {
       position: fixed;
 
@@ -240,24 +251,27 @@
       font-family: Arial, sans-serif;
       line-height: 1.5;
 
-      opacity: 0;
       pointer-events: none;
-    }
-
-    .loading-error.show {
-      opacity: 1;
     }
 
     @media (max-width: 650px) {
       .art-stage {
-        width: 86vw;
-        height: 74svh;
+        width: 92vw;
+        height: min(74svh, calc(100svh - 155px - env(safe-area-inset-top) - env(safe-area-inset-bottom)));
+        transform: translateY(-15px);
       }
 
       .arrow {
-        width: 43px;
-        height: 72px;
+        top: auto;
+        bottom: calc(12px + env(safe-area-inset-bottom));
+        width: 44px;
+        height: 44px;
+        transform: none;
       }
+
+      .arrow:active { transform: scale(0.94); }
+      .previous { left: calc(50% - 49px); }
+      .next { right: calc(50% - 49px); }
 
       .return-button {
         padding: 9px 12px;
@@ -288,9 +302,9 @@
     aria-label="Studio LaDuke full artwork gallery"
   >
 
-    <div class="gallery-title">
+    <h1 class="gallery-title">
       Studio LaDuke Gallery
-    </div>
+    </h1>
 
     <button
       class="arrow previous"
@@ -312,6 +326,8 @@
       <div
         class="loading-error"
         id="loadingError"
+        role="status"
+        hidden
       >
         This image could not be loaded.
       </div>
@@ -382,6 +398,18 @@
     const gallery =
       document.getElementById("gallery");
 
+    const returnButton = document.querySelector(".return-button");
+    if (document.referrer) {
+      const previousPage = new URL(document.referrer);
+      const frontRoom = new URL("index.html", window.location.href);
+      const entrance = new URL("./", window.location.href);
+      if (previousPage.origin === frontRoom.origin &&
+          [frontRoom.pathname, entrance.pathname].includes(previousPage.pathname)) {
+        returnButton.href = "index.html";
+        returnButton.textContent = "← Front Room";
+      }
+    }
+
     let currentIndex = 0;
 
     let touchStartX = 0;
@@ -404,23 +432,15 @@
 
     function displayArtwork() {
       artwork.classList.add("changing");
-      loadingError.classList.remove("show");
+      loadingError.hidden = true;
+      artwork.hidden = false;
 
       const filename =
         artworkFiles[currentIndex];
 
-      window.setTimeout(() => {
-        artwork.src = filename;
-
-        artwork.alt =
-          "Studio LaDuke artwork " +
-          (currentIndex + 1);
-
-        counter.textContent =
-          (currentIndex + 1) +
-          " / " +
-          artworkFiles.length;
-      }, 100);
+      artwork.alt = "Studio LaDuke artwork " + (currentIndex + 1);
+      counter.textContent = (currentIndex + 1) + " / " + artworkFiles.length;
+      artwork.src = filename;
     }
 
     function showPrevious() {
@@ -448,7 +468,7 @@
       "load",
       () => {
         artwork.classList.remove("changing");
-        loadingError.classList.remove("show");
+        loadingError.hidden = true;
       }
     );
 
@@ -456,7 +476,8 @@
       "error",
       () => {
         artwork.classList.remove("changing");
-        loadingError.classList.add("show");
+        artwork.hidden = true;
+        loadingError.hidden = false;
       }
     );
 
@@ -482,8 +503,7 @@
         }
 
         if (event.key === "Escape") {
-          window.location.href =
-            "workshop.html";
+          window.location.href = returnButton.href;
         }
       }
     );
