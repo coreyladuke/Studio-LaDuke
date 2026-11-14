@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#221b16">
+<title>Projects | Studio LaDuke</title>
+<style>
+  * { box-sizing: border-box; }
+  :root { color-scheme: dark; --paper:#f1e1c7; --gold:#f0c780; --muted:#cebda7; --line:#64513f; }
+  body { margin:0; background:radial-gradient(ellipse at 68% 0%,#453322,transparent 32rem),#211a15; color:var(--paper); font-family:Georgia,serif; }
+  a { color:var(--gold); text-underline-offset:.23em; }
+  a:focus-visible, summary:focus-visible { outline:2px solid #ffe4a8; outline-offset:4px; }
+  header, main { width:min(100% - 36px,960px); margin:auto; }
+  header { display:flex; flex-wrap:wrap; gap:10px 24px; padding:16px 0; border-bottom:1px solid var(--line); }
+  header a, .jump a { display:inline-flex; align-items:center; min-height:44px; font:650 .875rem system-ui,sans-serif; }
+  main { padding:48px 0 72px; }
+  h1 { margin:0; font-size:clamp(3rem,9vw,6.4rem); font-weight:400; line-height:.94; letter-spacing:-.06em; }
+  .intro { max-width:42ch; margin:18px 0 22px; color:var(--muted); font-size:clamp(1.05rem,3vw,1.35rem); line-height:1.45; }
+  .jump { display:flex; flex-wrap:wrap; gap:2px 20px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .categories { display:grid; grid-template-columns:1fr 1fr; gap:35px 46px; margin-top:36px; align-items:start; }
+  .category { min-width:0; scroll-margin-top:16px; }
+  h2 { margin:0 0 12px; font-size:1.8rem; font-weight:400; }
+  details { border-top:1px solid var(--line); }
+  details:last-child { border-bottom:1px solid var(--line); }
+  summary { display:flex; gap:8px 14px; align-items:baseline; padding:13px 0; min-height:44px; cursor:pointer; font-size:1.08rem; }
+  summary::-webkit-details-marker { display:none; }
+  summary::before { content:"+"; flex:none; width:.8em; color:var(--gold); font-family:system-ui,sans-serif; }
+  details[open] summary::before { content:"−"; }
+  summary span { flex:1; }
+  summary small { flex:none; color:var(--muted); font:600 .69rem system-ui,sans-serif; }
+  .entry { margin:0 0 15px 26px; max-width:46ch; color:var(--muted); line-height:1.5; }
+  footer { margin-top:44px; border-top:1px solid var(--line); padding:16px 0 0; }
+  footer a { display:inline-flex; min-height:44px; align-items:center; }
+  @media (max-width:650px) { main { padding-top:31px; } .categories { grid-template-columns:1fr; gap:30px; } }
+</style>
+</head>
+<body>
+<header aria-label="Studio navigation"><a href="index.html">Studio LaDuke</a><a href="directory.html">Room directory</a><a href="workshop.html">Workshop</a></header>
+<main>
+  <h1>Projects</h1>
+  <p class="intro">Books, games, music, and things taking shape in the workshop. Open any entry to see where it leads.</p>
+  <nav class="jump" aria-label="Project categories">
+    <a href="#workshop">Workshop</a><a href="#books">Books</a><a href="#games">Games and rooms</a><a href="#music">Music</a><a href="forgotten-works.html">Forgotten Works</a>
+  </nav>
+  <div class="categories">
+    <section class="category" id="workshop" aria-labelledby="making">
+      <h2 id="making">From the workshop</h2>
+      <details open><summary><span>Fieldfront Studio</span><small>Websites</small></summary><p class="entry">A separate studio for building small-business websites. The Build &amp; Own idea is simple: the business gets a site and controls its domain, hosting, and files.</p></details>
+      <details><summary><span>Rain Blankets</span><small>Concept</small></summary><p class="entry">Exploring how a weather-resistant outer layer could help protect regalia in Southeast Alaska rain. Design, materials, and collaboration are still being explored.</p></details>
+      <details><summary><span>Original artwork</span><small>Gallery</small></summary><p class="entry">See the <a href="gallery.html">Studio LaDuke Gallery</a>.</p></details>
+      <details><summary><span>Magnets, stickers, and enamel pins</span><small>Small runs</small></summary><p class="entry">Ketchikan-inspired artwork, custom pin layouts, and small objects made to go home with somebody.</p></details>
+      <details><summary><span>Miniature skateboard decks</span><small>Concept</small></summary><p class="entry">A small-deck art series with a sea cucumber among the first ideas.</p></details>
+      <details><summary><span>Marine canvas and upholstery</span><small>Craft</small></summary><p class="entry">Patterning and sewing for boats. The sewing machine in the <a href="workshop.html">Workshop</a> points to ProSEAK.</p></details>
+    </section>
+    <section class="category" id="books" aria-labelledby="writing">
+      <h2 id="writing">On the bookshelf</h2>
+      <details><summary><span>Everybody Deserves to Go Home</span><small>Memoir</small></summary><p class="entry">A memoir in progress. <a href="books.html">Open the book on the desk</a> for the studio introduction.</p></details>
+      <details><summary><span>Live in the House</span><small>Manuscript</small></summary><p class="entry">A second book in progress, with its own manuscript and shelf space.</p></details>
+      <details><summary><span>HEIMR</span><small>Fiction</small></summary><p class="entry">A Southeast Alaska fantasy about a family, an unlikely hatchling, and what waits in the woods. There is a <a href="games/heimr.html">playable game set in its world</a>, too.</p></details>
+    </section>
+    <section class="category" id="games" aria-labelledby="playing">
+      <h2 id="playing">Games and rooms</h2>
+      <details><summary><span>Super Maverick’s World</span><small>Playable</small></summary><p class="entry">A side-scrolling adventure with Maverick, Dad, and Finn. <a href="mavericks-fort.html?gamePreview=1">Insert the cartridge</a>.</p></details>
+      <details><summary><span>HEIMR</span><small>Playable</small></summary><p class="entry"><a href="games/heimr.html">Play the opening chapter</a> of the forest adventure.</p></details>
+      <details><summary><span>Prism Pals</span><small>Playtest</small></summary><p class="entry"><a href="games/prism.html">Launch the Prism Pals playtest</a> and help Pip bring the spectrum back into tune.</p></details>
+      <details><summary><span>Mortal KomPlant</span><small>Playable</small></summary><p class="entry"><a href="mcbrides.html">Insert a coin at McBride’s</a> and start a greenhouse brawl.</p></details>
+      <details><summary><span>Teddy’s Pool Room</span><small>Playable</small></summary><p class="entry"><a href="pool.html">Rack up a game</a> of local two-player eight-ball.</p></details>
+      <details><summary><span>Bob’s World and the Back Forty</span><small>Explore</small></summary><p class="entry">Start <a href="forest-path.html">outside in the rain</a>, then step into <a href="bob.html">Bob’s greenhouse</a>. The plant has opinions.</p></details>
+      <details><summary><span>Maverick’s Fort</span><small>Explore</small></summary><p class="entry"><a href="mavericks-fort.html">Climb up to the fort</a> for comics, Fort FM, and a suspicious amount of laundry.</p></details>
+      <details><summary><span>The Room Inside My Head</span><small>Explore</small></summary><p class="entry"><a href="brain.html">Follow the gold seam</a> into the room with the light, a red book, and a few rules of its own.</p></details>
+      <details><summary><span>Higher Ground</span><small>In development</small></summary><p class="entry">A quieter interactive project built around a reflection pond, short trails, and prompts for thinking things through.</p></details>
+      <details><summary><span>Maverick’s Shark Quest</span><small>On the shelf</small></summary><p class="entry">A third-person underwater adventure concept. <a href="forgotten-works.html#folders">Find its folder</a>.</p></details>
+    </section>
+    <section class="category" id="music" aria-labelledby="recording">
+      <h2 id="recording">Songs and keepsakes</h2>
+      <details><summary><span>Moments</span><small>Album in progress</small></summary><p class="entry">Original songs being written and arranged for guitar and voice. <a href="workshop.html">Visit the workshop stereo</a> for the room’s current playlist.</p></details>
+      <details><summary><span>Concert keepsakes</span><small>Collection</small></summary><p class="entry"><a href="workshop.html">Open the workshop drawer</a> to look through the concert-ticket mementos.</p></details>
+    </section>
+  </div>
+  <footer><a href="forgotten-works.html">Open the Forgotten Works closet</a></footer>
+</main>
+</body>
+</html>
