@@ -829,44 +829,43 @@
       }
     }
 
-    /* A quiet arcade glow so the machine feels alive without
-       turning the room into a neon sign. */
+    /* A slightly richer CRT glow without changing the workshop artwork. */
     .arcade-hotspot::before {
       content: "";
       position: absolute;
-      inset: 10% 12%;
+      inset: 4% 4%;
       z-index: -1;
       border-radius: 18%;
       pointer-events: none;
       background:
         radial-gradient(
           ellipse at 50% 46%,
-          rgba(166, 255, 92, 0.34) 0%,
-          rgba(111, 239, 66, 0.18) 34%,
-          rgba(69, 196, 52, 0.06) 58%,
-          transparent 76%
+          rgba(171, 255, 118, 0.58) 0%,
+          rgba(105, 247, 80, 0.35) 34%,
+          rgba(56, 203, 53, 0.14) 60%,
+          transparent 80%
         );
-      filter: blur(8px);
-      opacity: 0.62;
-      transform: scale(0.94);
+      filter: blur(10px);
+      opacity: 0.83;
+      transform: scale(1.0);
       animation: arcadePulse 3.1s ease-in-out infinite;
     }
 
     .arcade-hotspot:hover::before,
     .arcade-hotspot:focus-visible::before {
-      opacity: 0.95;
+      opacity: 1;
     }
 
     @keyframes arcadePulse {
       0%,
       100% {
-        opacity: 0.42;
-        transform: scale(0.92);
+        opacity: 0.68;
+        transform: scale(0.96);
       }
 
       50% {
-        opacity: 0.78;
-        transform: scale(1.035);
+        opacity: 0.99;
+        transform: scale(1.09);
       }
     }
 
