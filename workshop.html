@@ -1462,84 +1462,74 @@
         <i class="mess-piece tape" data-zone="bench"></i>
       </div>
 
-      <button
-        class="art-frame frame-1"
+      <a
+        class="art-frame frame-1" href="gallery.html?art=5009BA2B-780C-4A6C-A6AA-4B5CDD3174C6.png" aria-label="View this artwork in the gallery"
         data-frame-shape="landscape"
-        type="button"
       >
         <img src="5009BA2B-780C-4A6C-A6AA-4B5CDD3174C6.png" alt="Studio LaDuke artwork">
-      </button>
+      </a>
 
-      <button
-        class="art-frame frame-2"
+      <a
+        class="art-frame frame-2" href="gallery.html?art=9EAA20AB-901D-41E1-AC98-64455D1A291D.png" aria-label="View this artwork in the gallery"
         data-frame-shape="landscape"
-        type="button"
       >
         <img src="9EAA20AB-901D-41E1-AC98-64455D1A291D.png" alt="Studio LaDuke artwork">
-      </button>
+      </a>
 
-      <button
-        class="art-frame frame-3"
+      <a
+        class="art-frame frame-3" href="gallery.html?art=IMG_0082.jpeg" aria-label="View this artwork in the gallery"
         data-frame-shape="portrait"
-        type="button"
       >
         <img src="IMG_0082.jpeg" alt="Studio LaDuke artwork">
-      </button>
+      </a>
 
-      <button
-        class="art-frame frame-4"
+      <a
+        class="art-frame frame-4" href="gallery.html?art=IMG_0014.jpeg" aria-label="View this artwork in the gallery"
         data-frame-shape="portrait"
-        type="button"
       >
         <img src="IMG_0014.jpeg" alt="Studio LaDuke artwork">
-      </button>
+      </a>
 
-      <button
-        class="art-frame frame-5"
+      <a
+        class="art-frame frame-5" href="gallery.html?art=9F7F0E8D-FD9F-43F4-863E-308974B7AD58.jpeg" aria-label="View this artwork in the gallery"
         data-frame-shape="portrait"
-        type="button"
       >
         <img src="9F7F0E8D-FD9F-43F4-863E-308974B7AD58.jpeg" alt="Studio LaDuke artwork">
-      </button>
+      </a>
 
-      <button
-        class="art-frame frame-6"
+      <a
+        class="art-frame frame-6" href="gallery.html?art=03DE2160-F40A-4D77-BA2F-030FAC8C7AE7.png" aria-label="View this artwork in the gallery"
         data-frame-shape="portrait"
-        type="button"
       >
         <img src="03DE2160-F40A-4D77-BA2F-030FAC8C7AE7.png" alt="Studio LaDuke artwork">
-      </button>
+      </a>
 
-      <button
-        class="art-frame frame-7"
+      <a
+        class="art-frame frame-7" href="gallery.html?art=D649A1E7-F73A-4529-8F41-05A5524C4C8E.png" aria-label="View this artwork in the gallery"
         data-frame-shape="portrait"
-        type="button"
       >
         <img src="D649A1E7-F73A-4529-8F41-05A5524C4C8E.png" alt="Studio LaDuke artwork">
-      </button>
+      </a>
 
-      <button
-        class="art-frame frame-8"
+      <a
+        class="art-frame frame-8" href="gallery.html?art=650B0A6A-1B85-4665-82D7-95FF79C8761E.png" aria-label="View this artwork in the gallery"
         data-frame-shape="portrait"
-        type="button"
       >
         <img src="650B0A6A-1B85-4665-82D7-95FF79C8761E.png" alt="Studio LaDuke artwork">
-      </button>
+      </a>
 
-      <button
-        class="art-frame frame-9"
+      <a
+        class="art-frame frame-9" href="gallery.html?art=193005A4-396A-42B8-895F-3D32037BB744.png" aria-label="View this artwork in the gallery"
         data-frame-shape="portrait"
-        type="button"
       >
         <img src="193005A4-396A-42B8-895F-3D32037BB744.png" alt="Studio LaDuke artwork">
-      </button>
-      <button
-        class="art-frame frame-10"
+      </a>
+      <a
+        class="art-frame frame-10" href="gallery.html?art=650E29C5-1949-4A2D-9B0C-9F2B31BB3934.png" aria-label="View this artwork in the gallery"
         data-frame-shape="portrait"
-        type="button"
       >
         <img src="650E29C5-1949-4A2D-9B0C-9F2B31BB3934.png" alt="Studio LaDuke artwork">
-      </button>
+      </a>
 
       <button
         class="memory-drawer"
@@ -2192,12 +2182,7 @@
       });
     }
 
-    async function loadArtworkData() {
-      artworkData =
-        (await Promise.all(
-          artworkFiles.map(inspectArtwork)
-        )).filter(Boolean);
-
+    function loadArtworkData() {
       populateFrames();
       window.requestAnimationFrame(applyAllPerspectiveFrames);
     }
@@ -2230,64 +2215,22 @@
     }
 
     function populateFrames() {
-      let available =
-        shuffle(artworkData);
-
+      // Fixed artwork matches the size and angle of each frame.
+      // Never reassign randomly: that produced awkward aspect ratios.
       frames.forEach((frame, index) => {
-        if (available.length === 0) {
-          available =
-            shuffle(artworkData);
+        const image = frame.querySelector("img");
+        if (!image) return;
+        const filename = image.getAttribute("src");
+        frame.dataset.filename = filename;
+        frame.href = "gallery.html?art=" + encodeURIComponent(filename);
+        image.alt = "Studio LaDuke artwork " + (index + 1);
+        if (image.complete && image.naturalWidth > 0) {
+          applyPerspectiveToFrame(frame);
+        } else {
+          image.addEventListener("load", () => applyPerspectiveToFrame(frame), { once: true });
         }
-
-        const selected =
-          findBestArtwork(
-            frame.dataset.frameShape,
-            available
-          );
-
-        const image =
-          frame.querySelector("img");
-
-        if (!selected) {
-          frame.style.display = "none";
-          return;
-        }
-
-        available =
-          available.filter(
-            item =>
-              item.filename !== selected.filename
-          );
-
-        image.addEventListener(
-          "load",
-          () => applyPerspectiveToFrame(frame),
-          { once: true }
-        );
-
-        image.src =
-          selected.filename;
-
-        image.alt =
-          "Studio LaDuke artwork " +
-          (index + 1);
-
-        frame.dataset.filename =
-          selected.filename;
-
-        frame.onclick = event => {
-          if (pointerTravel > 8) {
-            event.preventDefault();
-            return;
-          }
-
-          openViewer(
-            selected.filename
-          );
-        };
       });
     }
-
 
     /*
       Projective image warp.  CSS clip-path alone only trims a rectangle;
