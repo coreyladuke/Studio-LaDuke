@@ -238,14 +238,22 @@ canvas{
 .rules{
   position:fixed;
   inset:0;
-  z-index:50;
-  display:none;
+  width:100%;
+  height:100%;
+  max-width:none;
+  max-height:none;
+  margin:0;
   place-items:center;
   padding:20px;
+  border:0;
+  color:inherit;
+  background:transparent;
+}
+.rules::backdrop{
   background:rgba(0,0,0,.72);
   backdrop-filter:blur(5px);
 }
-.rules.open{display:grid}
+.rules[open]{display:grid}
 .rules-card{
   width:min(540px,100%);
   max-height:80vh;
@@ -485,6 +493,7 @@ canvas{
     <div class="center-controls">
       <button class="small-btn" id="newGame" type="button">New rack</button>
       <button class="small-btn" id="undoAim" type="button">Reset aim</button>
+      <button class="small-btn" id="musicButton" type="button" aria-pressed="false">Music</button>
     </div>
 
     <div class="player" id="player1">
@@ -494,9 +503,9 @@ canvas{
   </div>
 </div>
 
-<div class="rules" id="rulesPanel" aria-hidden="true">
+<dialog class="rules" id="rulesPanel" aria-labelledby="rulesTitle">
   <div class="rules-card">
-    <h2>Eight Ball</h2>
+    <h2 id="rulesTitle">Eight Ball</h2>
     <p>This is local two-player, pass-the-phone pool. The table stays open after the break. The first legally pocketed solid or stripe afterward assigns groups.</p>
     <ul>
       <li>Hit one of your own balls first once groups are assigned.</li>
@@ -508,12 +517,12 @@ canvas{
     <p><strong>Controls:</strong> put your finger behind the cue ball, on the cue side. Drag the back of the cue around the ball until the aiming line points where you want. Pull the left power meter downward and release to shoot.</p>
     <button class="rules-close" id="rulesClose" type="button">Back to the table</button>
   </div>
-</div>
+</dialog>
 
 <audio
   id="backgroundMusic"
   src="audio/vjgalaxy-garage-indie-rock-background-music-570902.mp3"
-  preload="metadata"
+  preload="none"
   loop
 ></audio>
 
@@ -536,6 +545,7 @@ const pEls=[document.getElementById("player0"),document.getElementById("player1"
 const gEls=[document.getElementById("group0"),document.getElementById("group1")];
 const rulesPanel=document.getElementById("rulesPanel");
 const bgMusic=document.getElementById("backgroundMusic");
+const musicButton=document.getElementById("musicButton");
 
 const W=1200;
 const H=624;
@@ -601,7 +611,6 @@ let lastTime=performance.now();
 let audioCtx=null;
 let noiseBuffer=null;
 let lastClackAt=0;
-let musicStarted=false;
 
 /* One tiny felt texture tile, generated once instead of redrawn every frame. */
 const feltTile=document.createElement("canvas");
@@ -731,11 +740,6 @@ function ensureAudio(){
     audioCtx.resume().catch(()=>{});
   }
 
-  if(!musicStarted){
-    musicStarted=true;
-    bgMusic.volume=.085;
-    bgMusic.play().catch(()=>{});
-  }
 }
 
 function playClick(kind,strength=.5){
@@ -1616,26 +1620,30 @@ document.getElementById("undoAim").addEventListener("click",()=>{
   draw();
 });
 
-document.getElementById("rulesButton").addEventListener("click",()=>{
-  ensureAudio();
-  rulesPanel.classList.add("open");
-  rulesPanel.setAttribute("aria-hidden","false");
-});
-
-document.getElementById("rulesClose").addEventListener("click",()=>{
-  rulesPanel.classList.remove("open");
-  rulesPanel.setAttribute("aria-hidden","true");
-});
-
-rulesPanel.addEventListener("click",e=>{
-  if(e.target===rulesPanel){
-    rulesPanel.classList.remove("open");
-    rulesPanel.setAttribute("aria-hidden","true");
+bgMusic.volume=.085;
+bgMusic.addEventListener("play",()=>musicButton.setAttribute("aria-pressed","true"));
+function resetMusicButton(){
+  musicButton.setAttribute("aria-pressed","false");
+}
+bgMusic.addEventListener("pause",resetMusicButton);
+bgMusic.addEventListener("error",resetMusicButton);
+musicButton.addEventListener("click",()=>{
+  if(bgMusic.paused){
+    bgMusic.play().catch(resetMusicButton);
+  }else{
+    bgMusic.pause();
   }
 });
 
-/* Any ordinary first touch can wake the quiet workshop music on iOS. */
-document.addEventListener("pointerdown",ensureAudio,{once:true,capture:true});
+document.getElementById("rulesButton").addEventListener("click",()=>{
+  rulesPanel.showModal();
+});
+document.getElementById("rulesClose").addEventListener("click",()=>{
+  rulesPanel.close();
+});
+rulesPanel.addEventListener("click",e=>{
+  if(e.target===rulesPanel) rulesPanel.close();
+});
 
 resetRack();
 requestAnimationFrame(loop);
