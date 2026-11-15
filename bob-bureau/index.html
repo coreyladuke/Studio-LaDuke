@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#25271e">
+  <title>Bob’s Bureau of Unsolicited Opinions | Studio LaDuke</title>
+  <meta name="description" content="Bring Bob a tiny problem. Leave with a Certificate of Unwanted Advice from the least qualified plant in Ketchikan.">
+  <link rel="canonical" href="https://studioladuke.com/bob-bureau/">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://studioladuke.com/bob-bureau/">
+  <meta property="og:title" content="Bob’s Bureau of Unsolicited Opinions">
+  <meta property="og:description" content="Bring Bob a tiny problem. Leave with a Certificate of Unwanted Advice.">
+  <meta property="og:image" content="https://studioladuke.com/assets/bob-greenhouse.webp">
+  <meta property="og:image:alt" content="Bob gives a skeptical look from his flowerpot in the illustrated greenhouse">
+  <link rel="stylesheet" href="../assets/bob-bureau.css">
+  <script type="module" src="../assets/bob-bureau.mjs"></script>
+</head>
+<body>
+  <header class="masthead">
+    <a href="../index.html">Studio LaDuke</a>
+    <a href="../bob.html">Bob’s greenhouse <span aria-hidden="true">↗</span></a>
+  </header>
+  <main class="bureau">
+    <div class="portrait">
+      <img id="bobInk" src="../assets/bob-greenhouse.webp" width="1672" height="941" alt="Bob peers out of his flowerpot in the greenhouse" fetchpriority="high">
+      <p>“This will go on your permanent record.”</p>
+    </div>
+    <div class="paper">
+      <h1>Bob’s Bureau <span>of Unsolicited Opinions</span></h1>
+      <form id="caseFile" hidden>
+        <fieldset>
+          <legend>What’s your problem?</legend>
+          <label><input type="radio" name="topic" value="plans" required> I want to cancel plans.</label>
+          <label><input type="radio" name="topic" value="laundry" required> I’m avoiding the laundry.</label>
+          <label><input type="radio" name="topic" value="project" required> I can’t start my project.</label>
+          <label><input type="radio" name="topic" value="meeting" required> This meeting could’ve been an email.</label>
+        </fieldset>
+        <button class="stamp-action" type="submit">Ask Bob</button>
+      </form>
+      <noscript><p>Turn on JavaScript to get a verdict, or <a href="../bob.html">visit Bob’s greenhouse</a>.</p></noscript>
+      <section id="result" class="result" hidden aria-labelledby="resultTitle">
+        <div class="certificate">
+          <p class="case-number" id="caseNumber"></p>
+          <h2 id="resultTitle" tabindex="-1">Certificate of Unwanted Advice</h2>
+          <p class="subject" id="subject"></p>
+          <blockquote id="verdict"></blockquote>
+          <p class="signoff"><span class="ink-stamp" aria-hidden="true">BOB</span><span>Bob, acting without permission<br><small>Studio LaDuke · Ketchikan, Alaska</small></span></p>
+        </div>
+        <div class="actions">
+          <button id="share" type="button">Share verdict</button>
+          <button id="save" type="button">Save certificate</button>
+          <button id="again" type="button">Another opinion</button>
+        </div>
+        <label id="shareFallback" class="fallback" hidden>Copy this verdict link <input id="shareLink" readonly></label>
+        <p id="notice" class="notice" role="status"></p>
+      </section>
+    </div>
+  </main>
+  <footer class="footer"><a href="../gallery.html">See Corey’s artwork</a><a href="../directory.html#cartridges">Play a studio game</a><a href="../commissions/">Commission artwork</a></footer>
+</body>
+</html>
