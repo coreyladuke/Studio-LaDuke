@@ -68,38 +68,56 @@
   #gameModal .mav-screen-card h1{font-size:clamp(34px,8vh,52px)}#gameModal .mav-tagline{margin:8px 0 12px}#gameModal .mav-hint{margin-top:10px}
 }
 
-/* Physical cartridge labels sit over the photographed shelf below the Fort TV. */
-.fort-cartridge{position:absolute;z-index:34;width:8.4%;height:6.5%;min-width:74px;max-width:132px;border:2px solid rgba(16,14,12,.9);border-radius:5px 5px 2px 2px;padding:4px 5px 7px;color:#fff7d7;cursor:pointer;box-shadow:0 5px 0 rgba(18,13,9,.7),0 7px 11px rgba(0,0,0,.42);transform:perspective(300px) rotateX(-3deg);transition:filter .16s,transform .16s}
-.fort-cartridge span{display:grid;place-content:center;width:100%;height:100%;border:1px solid rgba(255,255,255,.45);border-radius:2px;background:rgba(12,20,27,.86);font:1000 clamp(6px,.62vw,10px)/1.1 ui-monospace,monospace;letter-spacing:.02em;text-shadow:0 1px #000}
-.fort-cartridge:hover,.fort-cartridge:focus-visible{outline:2px solid #ffe27a;outline-offset:2px;filter:brightness(1.25);transform:perspective(300px) rotateX(-3deg) translateY(-4px)}
-.mav-cartridge{background:linear-gradient(100deg,#222d38,#66727a 16%,#293847 23%,#17232d 80%,#05090d)}
-.mav-cartridge span{color:#fff0a1;border-color:#d49338;background:linear-gradient(135deg,rgba(36,70,111,.96),rgba(87,45,39,.94))}
-.heimr-cartridge{background:linear-gradient(100deg,#283c3b,#799268 16%,#3e5544 23%,#1b322f 80%,#070d0b)}
-.heimr-cartridge span{color:#d8edbc;border-color:#b0c988;background:linear-gradient(135deg,rgba(30,79,72,.96),rgba(65,61,80,.94))}
-.prism-cartridge{background:linear-gradient(100deg,#30264b,#8b70bd 16%,#523d76 23%,#291e48 80%,#0c0816)}
-.prism-cartridge span{color:#e9deff;border-color:#c2a4ff;background:linear-gradient(135deg,rgba(74,48,126,.96),rgba(26,81,102,.94))}
-#gameModal .mav-library-card{width:min(760px,94vw)}
-#gameModal .mav-library-card h2{font-size:clamp(25px,4vw,36px)}
-#gameModal .mav-library-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
-#gameModal .mav-cart-tile{min-height:150px;padding:14px 10px;border:3px solid #c89448;border-radius:9px;background:linear-gradient(155deg,#263e4d,#121d2c);color:#fff4cb;box-shadow:inset 0 0 0 3px rgba(255,255,255,.08),0 6px 0 #342b32;cursor:pointer;text-align:left;display:flex;flex-direction:column;justify-content:space-between;gap:10px}
-#gameModal .mav-cart-play{border-color:#e6c35c;background:linear-gradient(155deg,#294f69,#162743)}
-#gameModal .mav-cart-heimr{border-color:#94b77c;background:linear-gradient(155deg,#315b52,#182d37)}
-#gameModal .mav-cart-prism{border-color:#ad91e7;background:linear-gradient(155deg,#574079,#1b2947)}
-#gameModal .mav-cart-label{font:900 9px/1 ui-monospace,monospace;letter-spacing:.08em;color:#9ce3ed}
-#gameModal .mav-cart-tile b{font:1000 clamp(14px,2vw,20px)/1.05 Trebuchet MS,sans-serif}
-#gameModal .mav-cart-tile small{font:800 9px/1.3 ui-monospace,monospace;color:#e4d5a3}
-#gameModal .mav-cart-tile:hover,#gameModal .mav-cart-tile:focus-visible{outline:3px solid #ffe27a;outline-offset:2px;transform:translateY(-3px)}
-#gameModal .mav-screen.mav-library-screen .mav-screen-card{width:min(760px,94vw)}
-#gameModal .mav-screen[hidden]{display:none!important}
-#gameModal.mav-library-open .game-controls,#gameModal.mav-library-detail-open .game-controls{opacity:0;pointer-events:none!important}
-#gameModal.mav-library-open .game-control.pause:not(.sound-toggle),#gameModal.mav-library-detail-open .game-control.pause:not(.sound-toggle){display:none!important}
-#gameModal.mav-library-open #gameScore,#gameModal.mav-library-detail-open #gameScore{visibility:hidden}
-@media (orientation:portrait){
-  .fort-cartridge{min-width:44px;height:5.6%;padding:2px 3px 4px;border-width:1px}
-  .fort-cartridge span{font-size:clamp(5px,1.45vw,8px)}
-  #gameModal .mav-library-grid{grid-template-columns:1fr;gap:8px;margin-top:8px}
-  #gameModal .mav-cart-tile{min-height:78px;padding:8px 10px;gap:5px}
+/* The same cartridge objects on the Fort shelf and in the collection. */
+.fort-cartridge {
+  position:absolute;
+  z-index:34;
+  display:grid;
+  place-items:center;
+  width:8.4%;
+  min-width:44px;
+  min-height:44px;
+  max-width:125px;
+  padding:0;
+  border:0;
+  background:none;
+  cursor:pointer;
 }
+.fort-cartridge img { width:100%; height:auto; display:block; filter:drop-shadow(1px 4px 2px #000b) }
+.fort-cartridge:is(:hover,:focus-visible) img { filter:brightness(1.18) drop-shadow(1px 4px 2px #000b) }
+#gameModal .mav-library-card{width:min(760px,94vw)}
+#gameModal .mav-library-card h2 { font-size:clamp(24px,4vw,36px); color:#ffebc8; text-shadow:0 2px 3px #1e0f09 }
+#gameModal .mav-screen.mav-library-screen .mav-screen-card {
+  width:min(760px,94vw);
+  border:1px solid #ad805a;
+  border-radius:2px;
+  background:linear-gradient(#3c251af2,#22140dcc), #3e2819 url("../assets/cartridge-shelf-wood.webp") center / cover;
+}
+#gameModal .mav-library-grid {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(.35rem,2vw,1rem);
+  margin-top:1rem;
+  padding:0 .2rem .25rem;
+  border-bottom:6px solid #936642;
+  box-shadow:0 6px 8px -4px #080503;
+}
+#gameModal .mav-cart-tile {
+  display:grid;
+  place-items:center;
+  min-height:44px;
+  padding:0;
+  border:0;
+  background:none;
+  cursor:pointer;
+}
+#gameModal .mav-cart-tile img { display:block; width:100%; height:auto; filter:drop-shadow(0 5px 4px #090504) }
+#gameModal .mav-cart-tile:hover img { filter:brightness(1.14) drop-shadow(0 5px 4px #090504) }
+#gameModal .mav-cart-tile:focus-visible, .fort-cartridge:focus-visible { outline:2px solid #ffe27a; outline-offset:2px }
+#gameModal .mav-screen[hidden]{display:none!important}
+#gameModal.mav-library-open .game-controls{opacity:0;pointer-events:none!important}
+#gameModal.mav-library-open .game-control.pause:not(.sound-toggle){display:none!important}
+#gameModal.mav-library-open #gameScore{visibility:hidden}
 
 /* Launch fix: play is always visible, story optional, and Dad's note stays discoverable. */
 #gameModal .mav-intro-link{display:block;margin:12px auto 8px;padding:6px 12px;border:0;background:transparent;color:#a8eaff;font:800 12px/1.35 "Trebuchet MS",sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer}

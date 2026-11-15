@@ -43,7 +43,7 @@ const document = {
   querySelectorAll: () => [],
   fullscreenElement: null, exitFullscreen: () => Promise.resolve()
 };
-const window = {};
+const window = { openModal: id => element(id).classList.add('show') };
 const store = new Map();
 const localStorage = {
   getItem: key => store.get(key) || null,
@@ -58,11 +58,16 @@ const boot = new Function(
   'clearTimeout','setInterval','clearInterval','matchMedia','URLSearchParams',engine
 );
 boot(document, window, FakeImage, localStorage, noop, () => 1, noop,
-  { now: () => 1000 }, { search: '' }, speechSynthesis, noop, noop, () => 1,
-  noop, () => ({ matches: false }), class { get() { return null; } });
+  { now: () => 1000 }, { search: '?gamePreview=1' }, speechSynthesis, noop, noop, () => 1,
+  noop, () => ({ matches: false }), URLSearchParams);
 
 const game = window.__mavGameTest;
 function run(name, test) { test(); console.log('PASS ' + name); }
+run('the Directory’s direct game route opens the save-slot screen', () => {
+  assert.equal(game.state().screen, 'title');
+  assert(element('gameModal').classList.contains('show'));
+  assert.equal(element('mavTitleScreen').hidden, false);
+});
 run('six authored chapters and six boss encounters', () => {
   assert.equal(game.LEVELS.length, 6);
   assert.equal(game.LEVELS.filter(l => l.boss).length, 3);
@@ -206,8 +211,6 @@ run('every Super Maverick Fort entry returns to the title screen', () => {
   element('gameBtn').click();
   assert.equal(game.state().screen, 'title');
 
-  element('prismCartridge').click();
-  assert.equal(game.state().screen, 'library-prism');
   element('mavCartridge').click();
   assert.equal(game.state().screen, 'title');
 

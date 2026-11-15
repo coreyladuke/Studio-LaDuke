@@ -7,6 +7,15 @@
     content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
   >
   <title>Studio LaDuke Workshop</title>
+  <script>
+    try {
+      const bench = sessionStorage.getItem("studioWorkshopBench") === "in-use" ? "cleared" : "in-use";
+      document.documentElement.dataset.bench = bench;
+      sessionStorage.setItem("studioWorkshopBench", bench);
+    } catch {
+      // The in-use bench is also the fallback when storage is unavailable.
+    }
+  </script>
 
   <style>
     :root {
@@ -56,7 +65,7 @@
           rgba(0, 0, 0, 0.4),
           rgba(0, 0, 0, 0.64)
         ),
-        url("7B84A8A4-56B8-4572-ABA7-FA9FFD983B3F.png")
+        url("assets/workshop-in-use.webp")
         center / cover no-repeat;
 
       filter: blur(22px) brightness(0.46);
@@ -103,6 +112,10 @@
       user-select: none;
     }
 
+    [data-bench="cleared"] .workshop {
+      background-image: url("assets/workshop-cleared.webp");
+    }
+
     @media (max-width: 700px) and (orientation: portrait) {
       .workshop {
         width: calc(100svh * 1170 / 844);
@@ -117,72 +130,6 @@
         width: 100vw;
         height: calc(100vw * 844 / 1170);
       }
-    }
-
-    /* The room is in use, not waiting for a catalog photographer.
-       These lightweight scraps are reshuffled into believable work surfaces
-       every time the page opens. */
-    .lived-in-layer {
-      position: absolute;
-      inset: 0;
-      z-index: 7;
-      overflow: hidden;
-      pointer-events: none;
-    }
-
-    .mess-piece {
-      position: absolute;
-      left: var(--mx, 50%);
-      top: var(--my, 50%);
-      width: var(--mw, 5%);
-      height: var(--mh, 2%);
-      opacity: var(--mo, .94);
-      transform: translate(-50%,-50%) rotate(var(--mr, 0deg));
-      transform-origin: center;
-      filter: saturate(1.25) drop-shadow(0 2px 2px rgba(0,0,0,.55));
-    }
-
-    .mess-piece.wood {
-      border: 1px solid rgba(62,32,12,.8);
-      border-radius: 2px 5px 2px 3px;
-      background:
-        repeating-linear-gradient(6deg,rgba(76,34,12,.24) 0 1px,transparent 1px 7px),
-        linear-gradient(90deg,#d19343,#f1bd69 46%,#9f5927);
-    }
-
-    .mess-piece.canvas {
-      border: 1px solid rgba(62,53,39,.7);
-      border-radius: 2px;
-      background:
-        repeating-linear-gradient(45deg,rgba(255,255,255,.18) 0 1px,transparent 1px 3px),
-        hsl(var(--hue,38) 52% 67%);
-      clip-path: polygon(2% 5%,94% 0,100% 82%,68% 100%,5% 92%);
-    }
-
-    .mess-piece.vinyl {
-      border: 1px solid rgba(203,247,255,.75);
-      border-radius: 48% 8% 40% 12%;
-      background:
-        linear-gradient(120deg,rgba(255,255,255,.58),transparent 22% 58%,rgba(150,235,255,.34)),
-        rgba(79,203,224,.18);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.22);
-      backdrop-filter: blur(.4px);
-    }
-
-    .mess-piece.paint {
-      border-radius: 44% 56% 38% 62%;
-      background:
-        radial-gradient(circle at 16% 20%,#ffd64d 0 8%,transparent 9%),
-        radial-gradient(circle at 73% 38%,#f05b74 0 11%,transparent 12%),
-        radial-gradient(circle at 54% 80%,#34c7b1 0 9%,transparent 10%),
-        hsl(var(--hue,192) 72% 48%);
-      mix-blend-mode: screen;
-    }
-
-    .mess-piece.tape {
-      border-radius: 999px;
-      background: repeating-linear-gradient(90deg,#f5d34a 0 6%,#1f1c14 6% 7%);
-      box-shadow: inset 0 -2px rgba(143,92,15,.5);
     }
 
     .memory-drawer {
@@ -224,67 +171,181 @@
     .memory-modal {
       position: fixed;
       inset: 0;
-      z-index: 340;
-      display: grid;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      max-height: none;
+      margin: 0;
       place-items: center;
       padding: 18px;
-      background: rgba(3,6,8,.82);
-      backdrop-filter: blur(12px);
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity .2s ease,visibility .2s ease;
+      border: 0;
+      background: transparent;
     }
 
-    .memory-modal.open { opacity:1; visibility:visible; }
+    .memory-modal::backdrop {
+      background: rgba(3,6,8,.82);
+      backdrop-filter: blur(12px);
+    }
+
+    .memory-modal[open] { display: grid; }
 
     .memory-box {
       position: relative;
-      width: min(780px,95vw);
-      max-height: 90dvh;
+      width: min(100%, 1080px, calc((100dvh - 88px) * 1.5));
+      max-height: calc(100dvh - 36px);
       overflow: auto;
-      padding: clamp(24px,5vw,48px);
-      border: 7px solid #5e391f;
-      border-radius: 18px 18px 28px 28px;
-      background:
-        repeating-linear-gradient(90deg,rgba(74,39,16,.15) 0 2px,transparent 2px 28px),
-        linear-gradient(#b77a3d,#75431f);
-      box-shadow: inset 0 0 0 2px #d5a269,0 30px 90px #000;
-      color: #241306;
-      font-family: Arial,sans-serif;
+      color: #f3e1c5;
+      background: #17110c;
+      box-shadow: 0 26px 100px #000;
     }
 
-    .memory-box h2 { margin:0 44px 5px 0; color:#fff0c2; font-size:clamp(24px,5vw,42px); text-shadow:0 2px #321a0c; }
-    .memory-box > p { margin:0 0 22px; color:#f7ddb0; font-weight:800; }
-    .memory-close { position:absolute;right:12px;top:12px;width:42px;height:42px;border:2px solid rgba(255,255,255,.35);border-radius:50%;background:#2f190c;color:#fff;font:900 24px/1 Arial;cursor:pointer; }
-    .ticket-stack { display:grid; gap:14px; }
-    .ticket {
-      position: relative;
-      display:grid;
-      grid-template-columns:1fr auto;
-      gap:12px;
-      align-items:center;
-      min-height:92px;
-      padding:17px 22px;
-      border:2px solid currentColor;
-      border-radius:9px;
-      background:#f5e8c7;
-      box-shadow:0 6px 12px rgba(45,21,5,.34);
-      transform:rotate(var(--ticket-tilt));
-      overflow:hidden;
+    .memory-box:has(.drawer-object:not([hidden])) {
+      width: min(100%, 840px);
     }
-    .ticket::before { content:"";position:absolute;right:78px;top:0;bottom:0;border-left:2px dashed currentColor;opacity:.35; }
-    .ticket strong { display:block;font-size:clamp(20px,4.8vw,36px);letter-spacing:.04em;line-height:.92; }
-    .ticket span { display:block;margin-top:6px;font:800 11px/1.2 ui-monospace,monospace;letter-spacing:.11em; }
-    .ticket b { writing-mode:vertical-rl;font-size:12px;letter-spacing:.13em; }
-    .ticket.blink { --ticket-tilt:-1.1deg;color:#ae332b;background:linear-gradient(100deg,#f4ead6,#d8f1ef); }
-    .ticket.gorge { --ticket-tilt:.7deg;color:#236b78;background:linear-gradient(100deg,#f3dfb6,#f8f0d9); }
-    .ticket.foo { --ticket-tilt:-.35deg;color:#151515;background:linear-gradient(100deg,#e7d451,#f2e7b7); }
-    .drawer-note { margin:22px 0 0!important;padding:12px 15px;border-radius:10px;background:rgba(50,24,8,.28);color:#fff0c2!important;font:italic 700 14px/1.4 Georgia,serif!important; }
 
-    /* REAL ARTWORK */
+    .memory-close, .drawer-back {
+      min-width: 44px;
+      min-height: 44px;
+      border: 1px solid #d2b285;
+      border-radius: 5px;
+      background: #21180f;
+      color: #fff0d5;
+      cursor: pointer;
+    }
 
-    /* ARTWORK — mapped to the actual blank frame interiors in the room image */
-    /* ARTWORK — black mats plus real perspective mapping for the angled wall. */
+    .memory-close {
+      position: absolute;
+      z-index: 2;
+      top: 10px;
+      right: 10px;
+      font: 24px/1 system-ui, sans-serif;
+    }
+
+    .drawer-back { padding: 0 14px; font-size: .93rem; }
+
+    .drawer-scene { position: relative; }
+    .drawer-scene[hidden], .drawer-object[hidden] { display: none; }
+
+    .drawer-scene-image { display: none; width: 100%; height: auto; }
+    .drawer-scene.has-image .drawer-scene-image { display: block; }
+
+    .drawer-objects {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 66px 14px 14px;
+    }
+
+    .drawer-hit {
+      min-width: 44px;
+      min-height: 44px;
+      padding: 7px 11px;
+      border: 1px solid #d2b285;
+      border-radius: 6px;
+      color: #f3e1c5;
+      background: #261c13;
+      cursor: pointer;
+    }
+
+    .has-image .drawer-objects { position: absolute; inset: 0; padding: 0; pointer-events: none; }
+
+    .has-image .drawer-hit {
+      position: absolute;
+      padding: 0;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      pointer-events: auto;
+    }
+
+    .has-image .drawer-hit span {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translate(-50%, 50%);
+      padding: 6px 10px;
+      border-radius: 4px;
+      color: #fff0d5;
+      background: #21180f;
+      font: 600 .8rem/1.2 system-ui, sans-serif;
+      white-space: nowrap;
+      opacity: 0;
+    }
+
+    .drawer-hit[data-item="tickets"] { left: 11%; top: 18%; width: 30%; height: 41%; }
+    .drawer-hit[data-item="receipt"] { left: 58%; top: 20%; width: 22%; height: 40%; }
+    .drawer-hit[data-item="key"] { left: 39%; top: 55%; width: 18%; height: 18%; }
+
+    .has-image .drawer-hit:hover span,
+    .has-image .drawer-hit:focus-visible span { opacity: 1; }
+
+    .memory-box :focus-visible {
+      outline: 2px solid #ffda93;
+      outline-offset: 3px;
+    }
+
+    .drawer-hint {
+      padding: 9px 14px 11px;
+      color: #dcc39e;
+      text-align: center;
+      font-size: .9rem;
+      font-style: italic;
+    }
+
+    .drawer-object {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      align-items: center;
+    }
+
+    .drawer-object-photo {
+      aspect-ratio: 4 / 3;
+      background: url("assets/workshop-drawer.webp") no-repeat;
+    }
+
+    .drawer-object[data-item="tickets"] .drawer-object-photo { background-size: 240% auto; background-position: 11% 31%; }
+    .drawer-object[data-item="receipt"] .drawer-object-photo { background-size: 256% auto; background-position: 81% 32%; }
+    .drawer-object[data-item="key"] .drawer-object-photo { background-size: 320% auto; background-position: 47% 72%; }
+
+    .drawer-object-copy { padding: 56px clamp(21px, 4vw, 38px) 24px; }
+    .drawer-object-copy h3 { margin-bottom: 12px; font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: normal; }
+    .drawer-object-copy p { margin-bottom: 16px; font-size: 1rem; line-height: 1.55; }
+    .drawer-object-copy ul { margin: 0 0 20px 1.1rem; line-height: 1.6; }
+    .drawer-object-copy a { color: #ffe0a9; text-underline-offset: 4px; }
+    .drawer-receipt-note {
+      padding: 10px 12px;
+      border-inline-start: 2px solid #b28e5e;
+      background: #392818;
+      font-style: italic;
+    }
+
+    .drawer-receipt-note a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      font-style: normal;
+    }
+
+    .drawer-object-copy .drawer-back { margin-top: 3px; }
+    .drawer-object-copy h3:focus { outline: none; }
+
+    .drawer-title {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    @media (max-width: 620px) {
+      .memory-modal { padding: 12px; }
+      .memory-box { max-height: calc(100dvh - 24px); }
+      .drawer-object { grid-template-columns: 1fr; }
+      .drawer-object-copy { padding: 18px 20px 22px; }
+    }
+
+    /* Fixed artwork sits inside the existing frames. */
     .art-frame {
       position: absolute;
       z-index: 8;
@@ -293,7 +354,7 @@
       padding: 0;
       border: 0;
       border-radius: 1px;
-      background: #080706;
+      background: #302418;
       cursor: pointer;
       isolation: isolate;
       transform-origin: center;
@@ -302,8 +363,6 @@
         0 2px 7px rgba(0,0,0,.18);
     }
 
-    .art-frame::before { content: none; }
-
     .art-frame::after {
       content: "";
       position: absolute;
@@ -311,8 +370,8 @@
       z-index: 3;
       pointer-events: none;
       background:
-        linear-gradient(118deg,rgba(255,232,184,.055),transparent 28%,transparent 74%,rgba(0,0,0,.17));
-      box-shadow: inset 0 0 7px rgba(0,0,0,.30);
+        linear-gradient(118deg, #ffd9a414, transparent 33%, #4a2e1526 78%, #1c100933);
+      box-shadow: inset 0 0 6px 1px #160f08a8;
     }
 
     .art-frame img {
@@ -324,10 +383,10 @@
       height: 100%;
       object-fit: contain;
       object-position: center;
-      padding: clamp(2px,.18vw,4px);
-      background: #080706;
+      padding: 4%;
+      background: #302418;
       pointer-events: none;
-      filter: brightness(.97) contrast(1.04) saturate(1.03);
+      filter: brightness(.80) contrast(.94) saturate(.88);
       transform-origin: 0 0;
       transition: filter 160ms ease;
       backface-visibility: hidden;
@@ -335,7 +394,7 @@
 
     .art-frame:hover img,
     .art-frame:focus-visible img {
-      filter: brightness(1.035) contrast(1.055) saturate(1.07);
+      filter: brightness(.91) contrast(.98) saturate(.93);
     }
 
     .art-frame:focus-visible {
@@ -343,7 +402,7 @@
       outline-offset: 3px;
     }
 
-    /* The three flatter/front-facing frames already looked good. */
+    /* Front-facing frames. */
     .frame-1 { left:5.45%; top:8.45%; width:7.65%; height:9.35%; transform:rotate(-.18deg); }
     .frame-2 { left:19.55%; top:11.85%; width:9.95%; height:6.35%; transform:rotate(.12deg); }
     .frame-3 { left:50.45%; top:11.25%; width:8.70%; height:15.80%; transform:rotate(-.10deg); }
@@ -358,17 +417,9 @@
       left:74.5299%; top:12.4408%; width:6.0684%; height:13.1517%;
       clip-path:polygon(0% 16.22%,100% 0%,100% 98.20%,0% 100%);
     }
-    .frame-5 {
-      left:83.0769%; top:18.6019%; width:3.0769%; height:13.8626%;
-      clip-path:polygon(0% 3.42%,100% 0%,100% 100%,0% 98.29%);
-    }
     .frame-6 {
       left:88.0342%; top:17.5355%; width:3.6752%; height:15.4028%;
       clip-path:polygon(0% 4.62%,100% 0%,100% 100%,0% 98.46%);
-    }
-    .frame-7 {
-      left:93.8462%; top:16.3507%; width:4.5299%; height:17.1801%;
-      clip-path:polygon(1.89% 4.14%,100% 0%,98.11% 100%,0% 97.93%);
     }
     .frame-8 {
       left:85.8974%; top:35.9005%; width:5.2991%; height:8.6493%;
@@ -383,7 +434,6 @@
     .frame-10 {
       left:66.6667%; top:27.4882%; width:9.8291%; height:19.7867%;
       clip-path:polygon(9.57% 0%,100% 0%,83.48% 100%,0% 92.22%);
-      background:#080706;
     }
 
     /* HOTSPOTS */
@@ -613,62 +663,6 @@
       }
     }
 
-    .proseak-modal {
-      position: fixed;
-      inset: 0;
-      z-index: 320;
-      display: grid;
-      place-items: center;
-      padding: 20px;
-      background: rgba(3, 8, 11, 0.78);
-      backdrop-filter: blur(12px);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 190ms ease;
-    }
-
-    .proseak-modal.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .proseak-card {
-      position: relative;
-      width: min(520px, 94vw);
-      max-height: 88dvh;
-      overflow: auto;
-      padding: clamp(25px, 5vw, 42px);
-      border: 2px solid #5fa9ba;
-      border-radius: 26px;
-      background:
-        radial-gradient(circle at 50% 0, rgba(70, 153, 170, 0.28), transparent 38%),
-        linear-gradient(145deg, #17333b, #081419 70%);
-      box-shadow: 0 28px 90px #000, 0 0 42px rgba(74, 185, 202, 0.18);
-      color: #effcff;
-      text-align: center;
-      font-family: Arial, sans-serif;
-    }
-
-    .proseak-mark {
-      margin-bottom: 8px;
-      color: #f8d574;
-      font-size: clamp(32px, 8vw, 55px);
-      font-weight: 1000;
-      letter-spacing: 0.055em;
-      text-shadow: 0 4px 0 #173b45;
-    }
-
-    .proseak-card h2 { margin: 0 0 8px; font-size: clamp(19px, 4vw, 27px); }
-    .proseak-card p { margin: 7px 0; color: #c9e2e6; line-height: 1.45; }
-    .proseak-tagline { color: #f8d574 !important; font-weight: 900; letter-spacing: .05em; }
-    .proseak-contact { margin: 20px 0; padding: 15px; border: 1px solid rgba(176,232,240,.2); border-radius: 16px; background: rgba(0,0,0,.2); }
-    .proseak-contact a { color: #fff; font-weight: 800; text-decoration-color: #f8d574; text-underline-offset: 3px; }
-    .proseak-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .proseak-action { display: grid; place-items: center; min-height: 49px; padding: 10px 14px; border: 1px solid #79bdc9; border-radius: 999px; background: #17677a; color: #fff; text-decoration: none; font-weight: 900; }
-    .proseak-action.facebook { background: #285a9d; }
-    .proseak-close { position: absolute; right: 12px; top: 12px; width: 42px; height: 42px; border: 1px solid rgba(255,255,255,.3); border-radius: 50%; background: rgba(0,0,0,.3); color: #fff; font: 800 24px/1 Arial,sans-serif; cursor: pointer; }
-    @media(max-width:520px){.proseak-actions{grid-template-columns:1fr}.proseak-card{padding-top:48px}}
-
     .arcade-hotspot {
       left: 59.65%;
       top: 26.4%;
@@ -829,45 +823,48 @@
       }
     }
 
-    /* A quiet arcade glow so the machine feels alive without
-       turning the room into a neon sign. */
+    /* Light stays on the cabinet glass and its marquee. */
+    .arcade-hotspot {
+      container-type: inline-size;
+    }
+
     .arcade-hotspot::before {
       content: "";
       position: absolute;
-      inset: 10% 12%;
-      z-index: -1;
-      border-radius: 18%;
+      top: 17%;
+      left: 12%;
+      width: 71%;
+      height: 36%;
+      clip-path: polygon(12% 0, 97% 7%, 93% 100%, 0 97%);
       pointer-events: none;
       background:
-        radial-gradient(
-          ellipse at 50% 46%,
-          rgba(166, 255, 92, 0.34) 0%,
-          rgba(111, 239, 66, 0.18) 34%,
-          rgba(69, 196, 52, 0.06) 58%,
-          transparent 76%
-        );
-      filter: blur(8px);
-      opacity: 0.62;
-      transform: scale(0.94);
-      animation: arcadePulse 3.1s ease-in-out infinite;
+        radial-gradient(ellipse at 46% 63%, #a7e25d80, #389d425c 48%, #142218cc 90%),
+        repeating-linear-gradient(0deg, #141c1955 0 1px, transparent 1px 3px);
+      opacity: .88;
+    }
+
+    .arcade-marquee {
+      position: absolute;
+      top: 4%;
+      left: 9%;
+      width: 83%;
+      height: 13%;
+      display: grid;
+      place-content: center;
+      transform: rotate(1deg);
+      color: #f6edb0;
+      background: linear-gradient(#19251a, #3f5e34 55%, #233b2c);
+      box-shadow: inset 0 0 4px #b4d65c8c, 0 0 8px #adff514f;
+      font: 900 clamp(6px, 10cqw, 13px)/.86 Georgia, serif;
+      text-align: center;
+      text-transform: uppercase;
+      text-shadow: 0 1px 2px #101a0d;
+      pointer-events: none;
     }
 
     .arcade-hotspot:hover::before,
     .arcade-hotspot:focus-visible::before {
-      opacity: 0.95;
-    }
-
-    @keyframes arcadePulse {
-      0%,
-      100% {
-        opacity: 0.42;
-        transform: scale(0.92);
-      }
-
-      50% {
-        opacity: 0.78;
-        transform: scale(1.035);
-      }
+      opacity: 1;
     }
 
     /* FIN FETCH — side-view running sprite plus a pixel-aligned empty-bed patch. */
@@ -1449,96 +1446,59 @@
       aria-label="Studio LaDuke creative workshop"
     >
 
-      <div class="lived-in-layer" id="livedInLayer" aria-hidden="true">
-        <i class="mess-piece wood" data-zone="bench"></i>
-        <i class="mess-piece wood" data-zone="sewing"></i>
-        <i class="mess-piece canvas" data-zone="bench"></i>
-        <i class="mess-piece canvas" data-zone="sewing"></i>
-        <i class="mess-piece canvas" data-zone="sewing"></i>
-        <i class="mess-piece vinyl" data-zone="bench"></i>
-        <i class="mess-piece vinyl" data-zone="sewing"></i>
-        <i class="mess-piece paint" data-zone="bench"></i>
-        <i class="mess-piece paint" data-zone="sewing"></i>
-        <i class="mess-piece tape" data-zone="bench"></i>
-      </div>
-
       <button
         class="art-frame frame-1"
-        data-frame-shape="landscape"
         type="button"
       >
-        <img src="5009BA2B-780C-4A6C-A6AA-4B5CDD3174C6.png" alt="Studio LaDuke artwork">
+        <img src="5009BA2B-780C-4A6C-A6AA-4B5CDD3174C6.png" alt="King Salmon">
       </button>
 
       <button
         class="art-frame frame-2"
-        data-frame-shape="landscape"
         type="button"
       >
-        <img src="9EAA20AB-901D-41E1-AC98-64455D1A291D.png" alt="Studio LaDuke artwork">
+        <img src="4F9C4F6E-34A2-494D-847B-AB3DDA3E75AA.png" alt="Living the Flat Life">
       </button>
 
       <button
         class="art-frame frame-3"
-        data-frame-shape="portrait"
         type="button"
       >
-        <img src="IMG_0082.jpeg" alt="Studio LaDuke artwork">
+        <img src="9F7F0E8D-FD9F-43F4-863E-308974B7AD58.jpeg" alt="Blue painted panel">
       </button>
 
       <button
         class="art-frame frame-4"
-        data-frame-shape="portrait"
         type="button"
       >
-        <img src="IMG_0014.jpeg" alt="Studio LaDuke artwork">
-      </button>
-
-      <button
-        class="art-frame frame-5"
-        data-frame-shape="portrait"
-        type="button"
-      >
-        <img src="9F7F0E8D-FD9F-43F4-863E-308974B7AD58.jpeg" alt="Studio LaDuke artwork">
+        <img src="IMG_0014.jpeg" alt="Patterned painted panel">
       </button>
 
       <button
         class="art-frame frame-6"
-        data-frame-shape="portrait"
         type="button"
       >
-        <img src="03DE2160-F40A-4D77-BA2F-030FAC8C7AE7.png" alt="Studio LaDuke artwork">
-      </button>
-
-      <button
-        class="art-frame frame-7"
-        data-frame-shape="portrait"
-        type="button"
-      >
-        <img src="D649A1E7-F73A-4529-8F41-05A5524C4C8E.png" alt="Studio LaDuke artwork">
+        <img src="IMG_0082.jpeg" alt="Tree painting">
       </button>
 
       <button
         class="art-frame frame-8"
-        data-frame-shape="portrait"
         type="button"
       >
-        <img src="650B0A6A-1B85-4665-82D7-95FF79C8761E.png" alt="Studio LaDuke artwork">
+        <img src="7528563F-9204-4651-A65A-2A7450DCE740.png" alt="Nightlight">
       </button>
 
       <button
         class="art-frame frame-9"
-        data-frame-shape="portrait"
         type="button"
       >
-        <img src="193005A4-396A-42B8-895F-3D32037BB744.png" alt="Studio LaDuke artwork">
+        <img src="52095D7B-9D55-4D6C-A87C-DA519D179B9A.png" alt="Geoduck">
       </button>
       <button
         class="art-frame frame-10"
-        data-frame-shape="portrait"
         type="button"
       >
-        <img src="650E29C5-1949-4A2D-9B0C-9F2B31BB3934.png" alt="Studio LaDuke artwork">
+        <img src="650E29C5-1949-4A2D-9B0C-9F2B31BB3934.png" alt="UFO and salmon">
       </button>
 
       <button
@@ -1546,6 +1506,8 @@
         id="memoryDrawer"
         type="button"
         aria-label="Open the workshop memory drawer"
+        aria-haspopup="dialog"
+        aria-controls="memoryModal"
       ></button>
 
       <a
@@ -1561,8 +1523,10 @@
       <a
         class="hotspot arcade-hotspot"
         href="mcbrides.html"
-        aria-label="Enter McBride’s Arcade"
-      ></a>
+        aria-label="Enter McBride’s Arcade to play Mortal KomPlant"
+      >
+        <span class="arcade-marquee" aria-hidden="true">Mortal<br>KomPlant</span>
+      </a>
 
       <a
         class="hotspot pool-hotspot"
@@ -1571,12 +1535,11 @@
         aria-label="Play pool"
       ></a>
 
-      <button
+      <a
         class="hotspot sewing-hotspot"
-        id="sewingHotspot"
-        type="button"
-        aria-label="Open ProSEAK contact information"
-      ></button>
+        href="https://www.proseak.com/"
+        aria-label="Visit ProSEAK Canvas &amp; Upholstery"
+      ></a>
 
       <button
         class="hotspot dog-hotspot"
@@ -1694,6 +1657,7 @@
     id="menuButton"
     type="button"
     aria-label="Open navigation menu"
+    aria-controls="menuPanel"
     aria-expanded="false"
   >
     <span class="menu-lines"></span>
@@ -1702,12 +1666,14 @@
   <div
     class="menu-overlay"
     id="menuOverlay"
+    aria-hidden="true"
   ></div>
 
   <aside
     class="menu-panel"
     id="menuPanel"
     aria-label="Studio LaDuke navigation"
+    inert
   >
 
     <h1 class="menu-title">
@@ -1734,6 +1700,14 @@
 
       <a class="menu-link" href="directory.html">
         Directory
+      </a>
+
+      <a class="menu-link" href="projects.html">
+        Projects
+      </a>
+
+      <a class="menu-link" href="commissions/">
+        Commission Mission Control
       </a>
 
       <a class="menu-link" href="mavericks-fort.html">
@@ -1829,40 +1803,52 @@
 
   </div>
 
-  <div class="proseak-modal" id="proseakModal" role="dialog" aria-modal="true" aria-labelledby="proseakTitle">
-    <section class="proseak-card">
-      <button class="proseak-close" id="proseakClose" type="button" aria-label="Close ProSEAK information">×</button>
-      <div class="proseak-mark">ProSEAK</div>
-      <h2 id="proseakTitle">Canvas &amp; Upholstery</h2>
-      <p class="proseak-tagline">BUILT FOR SALT. STITCHED FOR SOUTHEAST ALASKA.</p>
-      <p>That JUKI is not decorative. This is where boat canvas, cushions, covers, and other stubborn pieces of fabric learn some discipline.</p>
-      <div class="proseak-contact">
-        <p><strong>7446 N. Tongass Highway<br>Ketchikan, Alaska 99901</strong></p>
-        <p><a href="tel:+19072259200">907-225-9200</a><br><a href="mailto:Contact@ProSEAK.com">Contact@ProSEAK.com</a></p>
-        <p>Monday–Friday · 9:00 AM–5:00 PM</p>
-      </div>
-      <div class="proseak-actions">
-        <a class="proseak-action" href="https://www.proseak.com/contact" target="_blank" rel="noopener">Visit ProSEAK</a>
-        <a class="proseak-action facebook" href="https://www.facebook.com/61560654611667/" target="_blank" rel="noopener">Open Facebook</a>
-        <a class="proseak-action" href="tel:+19072259200">Call the Shop</a>
-        <a class="proseak-action" href="mailto:Contact@ProSEAK.com">Send an Email</a>
-      </div>
-    </section>
-  </div>
-
-  <div class="memory-modal" id="memoryModal" role="dialog" aria-modal="true" aria-labelledby="memoryTitle">
+  <dialog class="memory-modal" id="memoryModal" aria-labelledby="memoryTitle">
     <section class="memory-box">
-      <button class="memory-close" id="memoryClose" type="button" aria-label="Close the memory drawer">×</button>
-      <h2 id="memoryTitle">THE DRAWER THAT MOVED FOUR TIMES</h2>
-      <p>Old shows, bent corners, and enough proof that Corey has always been willing to drive an unreasonable distance for loud guitars.</p>
-      <div class="ticket-stack">
-        <article class="ticket blink"><div><strong>BLINK-182</strong><span>SEATTLE · JUNE 25 · KEEP FOREVER</span></div><b>ADMIT ONE</b></article>
-        <article class="ticket gorge"><div><strong>BLINK-182</strong><span>THE GORGE · SUNBURN INCLUDED</span></div><b>LOUD SEAT</b></article>
-        <article class="ticket foo"><div><strong>FOO FIGHTERS</strong><span>FAIRBANKS · 08.21.21 · RAVENS OVERHEAD</span></div><b>STILL HERE</b></article>
+      <h2 class="drawer-title" id="memoryTitle">The workshop drawer</h2>
+      <button class="memory-close" id="memoryClose" type="button" aria-label="Close the workshop drawer" autofocus>×</button>
+
+      <div class="drawer-scene" id="drawerScene">
+        <img class="drawer-scene-image" id="drawerImage" width="1536" height="1024" alt="">
+        <div class="drawer-objects">
+          <button class="drawer-hit" type="button" data-item="tickets" aria-controls="drawerTickets"><span>Ticket stubs</span></button>
+          <button class="drawer-hit" type="button" data-item="receipt" aria-controls="drawerReceipt"><span>Folded receipt</span></button>
+          <button class="drawer-hit" type="button" data-item="key" aria-controls="drawerKey"><span>Brass key</span></button>
+        </div>
+        <p class="drawer-hint">Pick something up.</p>
       </div>
-      <p class="drawer-note">Also inside: one dead Sharpie, three mystery screws, and a key that has confidently refused to identify itself.</p>
+
+      <section class="drawer-object" id="drawerTickets" data-item="tickets" hidden>
+        <div class="drawer-object-photo" aria-hidden="true"></div>
+        <div class="drawer-object-copy">
+          <h3 tabindex="-1">Concert keepsakes</h3>
+          <p>Blink-182, Foo Fighters, and a stub from the Gorge. The printed details are illustrative.</p>
+          <button class="drawer-back" type="button">Put them back</button>
+        </div>
+      </section>
+
+      <section class="drawer-object" id="drawerReceipt" data-item="receipt" hidden>
+        <div class="drawer-object-photo" aria-hidden="true"></div>
+        <div class="drawer-object-copy">
+          <h3 tabindex="-1">Folded receipt</h3>
+          <p>Birdseed. One flashlight.<br>Directions from the raven: $0.<br>Someone wrote <em>Overpaid</em> in pencil.</p>
+          <p><a href="forest-path.html#raven">Find the raven out back</a></p>
+          <p class="drawer-receipt-note">On the back, in green ink: “Complaints accepted. Satisfaction is outside our remit.”<br><a href="bob-bureau/">File a case with Bob’s Bureau</a></p>
+          <button class="drawer-back" type="button">Put it back</button>
+        </div>
+      </section>
+
+      <section class="drawer-object" id="drawerKey" data-item="key" hidden>
+        <div class="drawer-object-photo" aria-hidden="true"></div>
+        <div class="drawer-object-copy">
+          <h3 tabindex="-1">Brass key</h3>
+          <p>It feels heavier than it looks. There’s a note scratched into the bow: <em>Try the front-room lamp after dark.</em></p>
+          <p><a href="index.html">Go to the front room</a></p>
+          <button class="drawer-back" type="button">Put it back</button>
+        </div>
+      </section>
     </section>
-  </div>
+  </dialog>
 
   <div
     class="toast"
@@ -2071,7 +2057,6 @@
     const roomDotRight =
       document.getElementById("roomDotRight");
 
-    let artworkData = [];
     let activeArtworkIndex = 0;
     let toastTimer = null;
 
@@ -2093,201 +2078,12 @@
 
     let viewerTouchStartX = 0;
 
-    const messRanges = {
-      bench: { minX: 31, maxX: 58, minY: 44.4, maxY: 51.3 },
-      sewing: { minX: 63, maxX: 91, minY: 67.3, maxY: 74.4 }
-    };
-
-    function randomBetween(minimum, maximum) {
-      return minimum + Math.random() * (maximum - minimum);
-    }
-
-    function refreshWorkshopMess() {
-      document.querySelectorAll(".mess-piece").forEach((piece, index) => {
-        const zone = messRanges[piece.dataset.zone] || messRanges.bench;
-        const isWood = piece.classList.contains("wood");
-        const isCanvas = piece.classList.contains("canvas");
-        const isVinyl = piece.classList.contains("vinyl");
-        const isTape = piece.classList.contains("tape");
-        const width = isWood
-          ? randomBetween(3.8, 7.4)
-          : isCanvas || isVinyl
-            ? randomBetween(3.2, 6.3)
-            : isTape
-              ? randomBetween(4.4, 7.2)
-              : randomBetween(1.3, 2.5);
-        const height = isWood || isTape
-          ? randomBetween(.65, 1.2)
-          : isCanvas || isVinyl
-            ? randomBetween(1.6, 3.4)
-            : randomBetween(1.1, 2.2);
-
-        piece.style.setProperty("--mx", randomBetween(zone.minX, zone.maxX).toFixed(2) + "%");
-        piece.style.setProperty("--my", randomBetween(zone.minY, zone.maxY).toFixed(2) + "%");
-        piece.style.setProperty("--mw", width.toFixed(2) + "%");
-        piece.style.setProperty("--mh", height.toFixed(2) + "%");
-        piece.style.setProperty("--mr", randomBetween(-23, 23).toFixed(1) + "deg");
-        piece.style.setProperty("--hue", Math.floor(randomBetween(6, 210)));
-        piece.style.setProperty("--mo", index > 5 && Math.random() < .18 ? "0" : randomBetween(.78, .98).toFixed(2));
+    frames.forEach(frame => {
+      frame.addEventListener("click", event => {
+        if (event.detail && pointerTravel > 8) return;
+        openViewer(frame.querySelector("img").getAttribute("src"));
       });
-    }
-
-    refreshWorkshopMess();
-
-    function shuffle(items) {
-      const copy = [...items];
-
-      for (
-        let index = copy.length - 1;
-        index > 0;
-        index -= 1
-      ) {
-        const randomIndex =
-          Math.floor(
-            Math.random() * (index + 1)
-          );
-
-        [copy[index], copy[randomIndex]] =
-          [copy[randomIndex], copy[index]];
-      }
-
-      return copy;
-    }
-
-    function getImageShape(width, height) {
-      const ratio = width / height;
-
-      if (ratio > 1.18) {
-        return "landscape";
-      }
-
-      if (ratio < 0.84) {
-        return "portrait";
-      }
-
-      return "square";
-    }
-
-    function inspectArtwork(filename) {
-      return new Promise(resolve => {
-        const image = new Image();
-
-        image.onload = () => {
-          resolve({
-            filename,
-            width: image.naturalWidth,
-            height: image.naturalHeight,
-            shape: getImageShape(
-              image.naturalWidth,
-              image.naturalHeight
-            )
-          });
-        };
-
-        image.onerror = () => {
-          resolve(null);
-        };
-
-        image.src = filename;
-      });
-    }
-
-    async function loadArtworkData() {
-      artworkData =
-        (await Promise.all(
-          artworkFiles.map(inspectArtwork)
-        )).filter(Boolean);
-
-      populateFrames();
-      window.requestAnimationFrame(applyAllPerspectiveFrames);
-    }
-
-    function findBestArtwork(
-      desiredShape,
-      available
-    ) {
-      const exactMatches =
-        available.filter(
-          item =>
-            item.shape === desiredShape
-        );
-
-      if (exactMatches.length > 0) {
-        return shuffle(exactMatches)[0];
-      }
-
-      const squareMatches =
-        available.filter(
-          item =>
-            item.shape === "square"
-        );
-
-      if (squareMatches.length > 0) {
-        return shuffle(squareMatches)[0];
-      }
-
-      return available.length ? shuffle(available)[0] : null;
-    }
-
-    function populateFrames() {
-      let available =
-        shuffle(artworkData);
-
-      frames.forEach((frame, index) => {
-        if (available.length === 0) {
-          available =
-            shuffle(artworkData);
-        }
-
-        const selected =
-          findBestArtwork(
-            frame.dataset.frameShape,
-            available
-          );
-
-        const image =
-          frame.querySelector("img");
-
-        if (!selected) {
-          frame.style.display = "none";
-          return;
-        }
-
-        available =
-          available.filter(
-            item =>
-              item.filename !== selected.filename
-          );
-
-        image.addEventListener(
-          "load",
-          () => applyPerspectiveToFrame(frame),
-          { once: true }
-        );
-
-        image.src =
-          selected.filename;
-
-        image.alt =
-          "Studio LaDuke artwork " +
-          (index + 1);
-
-        frame.dataset.filename =
-          selected.filename;
-
-        frame.onclick = event => {
-          if (pointerTravel > 8) {
-            event.preventDefault();
-            return;
-          }
-
-          openViewer(
-            selected.filename
-          );
-        };
-      });
-    }
-
+    });
 
     /*
       Projective image warp.  CSS clip-path alone only trims a rectangle;
@@ -2296,9 +2092,7 @@
     */
     const perspectiveFrameQuads = {
       "frame-4": [[0,18],[71,0],[71,109],[0,111]],
-      "frame-5": [[0,4],[36,0],[36,117],[0,115]],
       "frame-6": [[0,6],[43,0],[43,130],[0,128]],
-      "frame-7": [[1,6],[53,0],[52,145],[0,142]],
       "frame-8": [[0,0],[62,7],[62,73],[0,59]],
       "frame-9": [[0,0],[63,7],[63,82],[0,68]],
       "frame-10": [[11,0],[115,0],[96,167],[0,154]]
@@ -2306,9 +2100,7 @@
 
     const perspectiveFrameSourceSizes = {
       "frame-4": [71,111],
-      "frame-5": [36,117],
       "frame-6": [43,130],
-      "frame-7": [53,145],
       "frame-8": [62,73],
       "frame-9": [63,82],
       "frame-10": [115,167]
@@ -2412,6 +2204,15 @@
 
       updateRoomIndicator();
     }
+
+    sceneViewport.addEventListener("focusin", event => {
+      const bounds = event.target.getBoundingClientRect();
+      if ((bounds.left >= 0 && bounds.right <= window.innerWidth) || maxRoomX === 0) return;
+
+      const centered = roomX + window.innerWidth / 2 - (bounds.left + bounds.width / 2);
+      roomX = Math.max(minRoomX, Math.min(maxRoomX, centered));
+      renderRoomPosition();
+    });
 
     function updateRoomIndicator() {
       const range =
@@ -2581,6 +2382,9 @@
       menuButton.classList.add("open");
       menuPanel.classList.add("open");
       menuOverlay.classList.add("open");
+      menuPanel.inert = false;
+      sceneViewport.inert = true;
+      menuButton.setAttribute("aria-label", "Close navigation menu");
 
       menuButton.setAttribute(
         "aria-expanded",
@@ -2589,9 +2393,14 @@
     }
 
     function closeMenu() {
+      if (menuPanel.inert) return;
       menuButton.classList.remove("open");
       menuPanel.classList.remove("open");
       menuOverlay.classList.remove("open");
+      menuPanel.inert = true;
+      sceneViewport.inert = false;
+      menuButton.setAttribute("aria-label", "Open navigation menu");
+      menuButton.focus({ preventScroll: true });
 
       menuButton.setAttribute(
         "aria-expanded",
@@ -2837,14 +2646,9 @@
       }
     );
 
-    document
-      .querySelectorAll(".menu-link")
-      .forEach(link => {
-        link.addEventListener(
-          "click",
-          closeMenu
-        );
-      });
+    window.addEventListener("pageshow", event => {
+      if (event.persisted) closeMenu();
+    });
 
     stereoHotspot.addEventListener(
       "click",
@@ -2916,31 +2720,40 @@
       }
     );
 
-    document
-      .getElementById("sewingHotspot")
-      .addEventListener(
-        "click",
-        () => {
-          if (pointerTravel <= 8) {
-            document.getElementById("proseakModal").classList.add("open");
-            showToast("The JUKI has transferred you to the sales department.");
-          }
-        }
-      );
-
-    const proseakModal = document.getElementById("proseakModal");
-    const closeProseak = () => proseakModal.classList.remove("open");
-    document.getElementById("proseakClose").addEventListener("click", closeProseak);
-    proseakModal.addEventListener("click", event => {
-      if (event.target === proseakModal) closeProseak();
-    });
-    window.addEventListener("keydown", event => {
-      if (event.key === "Escape") closeProseak();
-    });
-
     const memoryModal = document.getElementById("memoryModal");
     const memoryDrawer = document.getElementById("memoryDrawer");
-    const closeMemoryDrawer = () => memoryModal.classList.remove("open");
+    const drawerScene = document.getElementById("drawerScene");
+    const drawerImage = document.getElementById("drawerImage");
+    const drawerBox = memoryModal.querySelector(".memory-box");
+    let pickedUp = null;
+
+    drawerImage.addEventListener("load", () => drawerScene.classList.add("has-image"));
+    drawerImage.addEventListener("error", () => drawerScene.classList.remove("has-image"));
+
+    function resetDrawer(restoreFocus) {
+      if (!pickedUp) return;
+
+      document.getElementById(pickedUp.getAttribute("aria-controls")).hidden = true;
+      drawerScene.hidden = false;
+      drawerBox.scrollTop = 0;
+      if (restoreFocus) pickedUp.focus({ preventScroll: true });
+      pickedUp = null;
+    }
+
+    memoryModal.querySelectorAll(".drawer-hit").forEach(button => {
+      button.addEventListener("click", () => {
+        const item = document.getElementById(button.getAttribute("aria-controls"));
+        pickedUp = button;
+        item.hidden = false;
+        drawerScene.hidden = true;
+        drawerBox.scrollTop = 0;
+        item.querySelector("h3").focus({ preventScroll: true });
+      });
+    });
+
+    memoryModal.querySelectorAll(".drawer-back").forEach(button => {
+      button.addEventListener("click", () => resetDrawer(true));
+    });
 
     function drawerThump() {
       try {
@@ -2964,17 +2777,23 @@
 
     memoryDrawer.addEventListener("click", event => {
       event.stopPropagation();
-      memoryModal.classList.add("open");
+      if (!drawerImage.getAttribute("src")) drawerImage.src = "assets/workshop-drawer.webp";
+      memoryModal.showModal();
       drawerThump();
-      showToast("You found the drawer Corey keeps meaning to organize.");
     });
 
-    document.getElementById("memoryClose").addEventListener("click", closeMemoryDrawer);
+    document.getElementById("memoryClose").addEventListener("click", () => memoryModal.close());
     memoryModal.addEventListener("click", event => {
-      if (event.target === memoryModal) closeMemoryDrawer();
+      if (event.target === memoryModal) memoryModal.close();
     });
-    window.addEventListener("keydown", event => {
-      if (event.key === "Escape") closeMemoryDrawer();
+    memoryModal.addEventListener("cancel", event => {
+      if (!pickedUp) return;
+      event.preventDefault();
+      resetDrawer(true);
+    });
+    memoryModal.addEventListener("close", () => {
+      resetDrawer(false);
+      memoryDrawer.focus({ preventScroll: true });
     });
 
     document
@@ -3030,7 +2849,7 @@
       }
     );
 
-    loadArtworkData();
+    window.requestAnimationFrame(applyAllPerspectiveFrames);
     loadStereoTrack(0, false);
 
     window.setTimeout(() => {

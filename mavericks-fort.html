@@ -2013,7 +2013,22 @@
   
 /* Shared Studio LaDuke / Maverick Games opening */
 #sharedGameOpening{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:18px;background:radial-gradient(ellipse at 50% 28%,rgba(40,69,61,.86),rgba(4,8,12,.94) 72%);overflow:hidden;color:#f3eedb;text-align:center;font-family:Georgia,serif;animation:sgFade .5s ease both}#sharedGameOpening:before{content:"";position:absolute;inset:-35%;pointer-events:none;background:repeating-linear-gradient(112deg,transparent 0 40px,rgba(190,219,208,.04) 41px 42px,transparent 43px 82px);animation:sgRain 8s linear infinite}.sgPanel{position:relative;width:min(94vw,650px);min-height:310px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 18px;border:1px solid #d7bd7855;border-radius:18px;background:linear-gradient(145deg,#12231fe8,#080e13ed);box-shadow:0 24px 90px #000a}.sgPanel[hidden]{display:none}.sgMark{width:78px;height:78px;border:2px solid #d4b878;border-radius:50%;display:grid;place-items:center;color:#ead8a0;font:700 29px Georgia,serif;letter-spacing:-.1em;box-shadow:0 0 32px #7ed9d355,inset 0 0 20px #88e3d333;animation:sgRise 1s ease both}.sgEyebrow{margin:17px 0 4px;color:#c2d4c7;font:11px system-ui;letter-spacing:.27em;text-transform:uppercase}.sgWord{margin:5px 0;color:#f1ecd9;font:700 clamp(24px,5vw,38px) Georgia,serif;letter-spacing:.13em}.sgGames{font:900 clamp(36px,8vw,62px)/.98 system-ui,sans-serif;letter-spacing:.05em;color:#f0d888;text-shadow:0 3px #754833,0 8px 30px #8c604c88;animation:sgRise 1s ease both}.sgSub{margin-top:18px;color:#bdd7ce;font:11px system-ui;letter-spacing:.28em;text-transform:uppercase}.sgSkip{position:absolute;right:20px;top:15px;border:0;background:transparent;color:#d6ddd1;font:700 11px system-ui;letter-spacing:.12em;cursor:pointer}@keyframes sgFade{from{opacity:0}to{opacity:1}}@keyframes sgRise{from{opacity:0;transform:translateY(16px) scale(.84)}to{opacity:1;transform:none}}@keyframes sgRain{from{transform:translateY(-4%)}to{transform:translateY(4%)}}</style>
-  <link rel="stylesheet" href="game/super-mavericks-world.css?v=20261101-ios-canvas5">
+  <link rel="stylesheet" href="game/super-mavericks-world.css?v=20261114-physical-shelf">
+  <link rel="stylesheet" href="game/fort-physical-ui.css?v=20261115-crate-and-crt">
+  <style>
+    #sharedGameOpening {
+      background:linear-gradient(#07314b4f, #111d36c7), #133d5e url("game/assets/chapter-1.webp") center / cover;
+    }
+    #sharedGameOpening::before { display:none }
+    #sharedGameOpening .sgPanel {
+      border:0;
+      border-radius:0;
+      background:radial-gradient(ellipse at center,#0b2549ba,transparent 74%);
+      box-shadow:none;
+      text-shadow:0 3px 6px #10203a;
+    }
+    #sharedGameOpening .sgSkip { min-height:44px; padding-inline:.5rem; background:#122b49; color:#ffeeca }
+  </style>
 </head>
 <body>
   <div class="hud">
@@ -2058,9 +2073,11 @@
 
         <button class="hotspot game-hotspot" id="gameBtn" style="left:72%;top:6%;width:28%;height:40%;" data-tip="Play Super Maverick's World" aria-label="Play Super Maverick's World"></button>
         <button class="hotspot game-hotspot console-hotspot" id="consoleBtn" style="left:74%;top:47%;width:21%;height:14%;" data-tip="Cartridge console • insert & play" aria-label="Retro cartridge console"></button>
-        <button class="fort-cartridge mav-cartridge" id="mavCartridge" style="left:67.2%;top:67%;" type="button" aria-label="Super Maverick's World cartridge — play now"><span>SUPER<br>MAVERICK</span></button>
-        <button class="fort-cartridge heimr-cartridge" id="heimrCartridge" style="left:76.5%;top:67%;" type="button" aria-label="HEIMR: The Shard Remembers cartridge — play now"><span>HEIMR<br>SHARD</span></button>
-        <button class="fort-cartridge prism-cartridge" id="prismCartridge" style="left:85.8%;top:67%;" type="button" aria-label="Prism Pals cartridge — in development"><span>PRISM<br>PALS</span></button>
+        <div class="fort-game-crate" aria-label="Milk crate containing three playable games">
+          <button class="fort-cartridge" id="mavCartridge" type="button" aria-label="Take out Super Maverick’s World and play it"><img src="assets/cartridge-maverick.webp" alt="" width="493" height="491"></button>
+          <button class="fort-cartridge" id="heimrCartridge" type="button" aria-label="Take out HEIMR and play it"><img src="assets/cartridge-heimr.webp" alt="" width="503" height="490"></button>
+          <a class="fort-cartridge" id="prismCartridge" href="games/prism.html" aria-label="Take out Prism Pals and play it"><img src="assets/cartridge-prism.webp" alt="" width="497" height="489"></a>
+        </div>
 
         <button class="hotspot lava-lamp" id="lavaLampBtn" style="left:67.4%;top:51%;width:3.8%;height:13%;" data-tip="Red lava lamp" aria-label="Red lava lamp"><span class="lava-glass"><i class="lava-a"></i><i class="lava-b"></i></span><span class="lava-cap"></span></button>
       </div>
@@ -2332,17 +2349,11 @@
         <div class="mav-screen-card"><p class="mav-kicker">EVEN HEROES NEED A SNACK BREAK</p><h2>OUT OF HEARTS</h2><p class="mav-tagline">Mav had a good run. Finn is already asking for a rematch.</p><button class="mav-primary" id="mavTryAgainButton" type="button">CONTINUE FROM CHECKPOINT <span>▶</span></button></div>
       </section>
       <section class="mav-screen mav-library-screen" id="mavLibraryScreen" aria-label="Maverick's cartridge collection" hidden>
-        <div class="mav-screen-card mav-library-card"><p class="mav-kicker">THE FORT CARTRIDGE SHELF</p><h2>CHOOSE YOUR ADVENTURE</h2><div class="mav-library-grid">
-          <button class="mav-cart-tile mav-cart-play" id="mavLibraryPlayButton" type="button"><span class="mav-cart-label">STUDIO LADUKE</span><b>SUPER MAVERICK'S WORLD</b><small>PLATFORM ADVENTURE · PLAY NOW</small></button>
-          <button class="mav-cart-tile mav-cart-heimr" id="mavLibraryHeimrButton" type="button"><span class="mav-cart-label">STUDIO LADUKE STORY GAME</span><b>HEIMR: THE SHARD REMEMBERS</b><small>COREY + MAVERICK · PLAY NOW</small></button>
-          <button class="mav-cart-tile mav-cart-prism" id="mavLibraryPrismButton" type="button"><span class="mav-cart-label">STUDIO LADUKE ARCADE</span><b>PRISM PALS</b><small>ARCADE ADVENTURE · IN DEVELOPMENT</small></button>
-        </div><p class="mav-hint">More original cartridges will join the shelf as their games are built.</p></div>
-      </section>
-      <section class="mav-screen mav-heimr-screen" id="mavHeimrScreen" aria-label="HEIMR game concept" hidden>
-        <div class="mav-screen-card"><p class="mav-kicker">NEXT ADVENTURE IN THE WORKSHOP</p><h2>HEIMR</h2><p class="mav-tagline">Corey and Maverick step into the dragon story together. Explore an original 3/4-view world, find the memory shards, and discover what the hatchling remembers.</p><p class="mav-hint">A separate original game based on the HEIMR book. Its art, world, characters, and music will be made for this game.</p><button class="mav-primary" id="mavHeimrBackButton" type="button">BACK TO THE CARTRIDGES</button></div>
-      </section>
-      <section class="mav-screen mav-prism-screen" id="mavPrismScreen" aria-label="Prism Pals game" hidden>
-        <div class="mav-screen-card"><p class="mav-kicker">ARCADE CARTRIDGE IN PROGRESS</p><h2>PRISM PALS</h2><p class="mav-tagline">A bright, original arcade adventure. This cartridge will launch when its playable game is ready.</p><button class="mav-primary" id="mavPrismBackButton" type="button">BACK TO THE CARTRIDGES</button></div>
+        <div class="mav-screen-card mav-library-card"><h2>The Fort cartridge shelf</h2><div class="mav-library-grid">
+          <button class="mav-cart-tile" id="mavLibraryPlayButton" type="button" aria-label="Play Super Maverick’s World"><img src="assets/cartridge-maverick.webp" alt="" width="493" height="491"></button>
+          <button class="mav-cart-tile" id="mavLibraryHeimrButton" type="button" aria-label="Play HEIMR"><img src="assets/cartridge-heimr.webp" alt="" width="503" height="490"></button>
+          <a class="mav-cart-tile" id="mavLibraryPrismButton" href="games/prism.html" aria-label="Play Prism Pals"><img src="assets/cartridge-prism.webp" alt="" width="497" height="489"></a>
+        </div></div>
       </section>
       <canvas id="mavGameCanvas" width="960" height="540" aria-label="Super Maverick's World game"></canvas>
       <div class="game-controls">
@@ -3135,8 +3146,9 @@
     document.getElementById('havocBackBtn').addEventListener('click', event => triggerHavoc(event.currentTarget));
 
     document.getElementById('arcadeBtn').addEventListener('click', () => {
-      toast('Arcade cabinet powered up. The high score is suspicious.');
+      toast('Cabinet booting Super Maverick’s World. The high score is still suspicious.');
       jingle();
+      setTimeout(() => document.getElementById('gameBtn').click(), 260);
     });
 
     /* =========================================================
@@ -3176,6 +3188,6 @@
     })();
   </script>
 
-  <script src="game/super-mavericks-world.js?v=20261103-snes-polish8" defer></script>
+  <script src="game/super-mavericks-world.js?v=20261114-physical-shelf" defer></script>
 <div id="sharedGameOpening" role="dialog" aria-label="Studio LaDuke game opening"><section class="sgPanel" id="sgStudio"><div class="sgMark">SL</div><p class="sgEyebrow">A Studio LaDuke production</p><h2 class="sgWord">STUDIO LADUKE</h2><p class="sgSub">Stories made close to home</p></section><section class="sgPanel" id="sgGames" hidden><p class="sgGames">MAVERICK<br>GAMES</p><p class="sgSub">Made for the next adventure</p></section><button class="sgSkip" id="sgSkip">SKIP INTRO</button></div><script>(()=>{const o=document.getElementById('sharedGameOpening'),a=document.getElementById('sgStudio'),b=document.getElementById('sgGames'),skip=document.getElementById('sgSkip');let t1=setTimeout(()=>{a.hidden=true;b.hidden=false},1700),t2=setTimeout(()=>o.remove(),3400);function finish(){clearTimeout(t1);clearTimeout(t2);o.remove()}skip.onclick=finish;o.addEventListener('pointerdown',e=>{if(e.target===o)finish()});window.addEventListener('keydown',e=>{if(!o.isConnected)return;if(e.key==='Enter'||e.key==='Escape'){finish()}},{once:true})})();</script></body>
 </html>

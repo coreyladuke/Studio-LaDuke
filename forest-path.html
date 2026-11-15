@@ -65,7 +65,13 @@
       .scene{width:calc(100svh * 1.7779);height:100svh}
       .wayfinder a,.wayfinder button{padding:7px 8px;font-size:9px}
     }
-    @media(hover:none),(pointer:coarse){.hotspot::after{display:none}.hotspot:hover,.hotspot:focus,.hotspot:active{outline:0;background:transparent}}
+    @media(hover:none),(pointer:coarse){.hotspot::after{display:none}.hotspot:hover,.hotspot:active{background:transparent}}
+    .hotspot:focus-visible{outline:2px solid #f0c56f;outline-offset:-2px}
+    .ink-threshold{position:fixed;inset:0;z-index:100;display:grid;place-items:center;overflow:hidden;pointer-events:none;opacity:0;background:#f3efdf;color:#25271d;clip-path:circle(0 at 78% 40%)}
+    .ink-threshold::before{content:"";position:absolute;inset:-8%;opacity:.24;background-image:radial-gradient(#1d2117 .7px,transparent .8px);background-size:5px 5px;transform:rotate(-1deg)}
+    .ink-threshold::after{content:"THE GREENHOUSE HAS ITS OWN RULES";position:relative;padding:13px 20px 11px;border:3px solid #25271d;border-radius:49% 51% 47% 53%;background:#f7f2e4;box-shadow:6px 7px 0 #25271d30;font:900 clamp(13px,2vw,20px)/1.1 "Comic Sans MS","Segoe Print",system-ui,sans-serif;letter-spacing:.06em;text-align:center;transform:rotate(-1deg)}
+    .ink-threshold.entering{opacity:1;animation:crossIntoInk .72s cubic-bezier(.55,0,.25,1) forwards}
+    @keyframes crossIntoInk{0%{clip-path:circle(0 at 78% 40%)}74%,100%{clip-path:circle(150% at 78% 40%)}}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
   </style>
 </head>
@@ -80,7 +86,7 @@
       <button class="hotspot firepit" id="firepit" type="button" data-tip="Wake up the fire" aria-label="Tend the covered fire pit"></button>
       <button class="hotspot raven" id="raven" type="button" data-tip="Ask the raven" aria-label="Ask the raven for directions"></button>
       <a class="hotspot fort-trail" href="mavericks-fort.html" data-tip="Trail to Mav's Fort" aria-label="Follow the trail to Maverick's Fort"></a>
-      <a class="hotspot greenhouse" href="bob.html" data-tip="Enter Bob's greenhouse" aria-label="Enter Bob's World greenhouse"></a>
+      <a class="hotspot greenhouse bob-threshold" href="bob.html" data-tip="Enter Bob's greenhouse" aria-label="Enter Bob's World greenhouse"></a>
       <button class="hotspot token" id="token" type="button" data-tip="Questionable coin" aria-label="Pick up the copper adventure token"></button>
     </div>
   </main>
@@ -90,10 +96,11 @@
   <nav class="wayfinder" aria-label="Outdoor paths">
     <a href="workshop.html">← Workshop</a>
     <button id="fireButton" type="button">🔥 Fire</button>
-    <a href="bob.html">Greenhouse →</a>
+    <a class="bob-threshold" href="bob.html">Greenhouse →</a>
     <a href="mavericks-fort.html">Mav’s Fort ↗</a>
   </nav>
   <div class="toast" id="toast" aria-live="polite"></div>
+  <div class="ink-threshold" id="inkThreshold" aria-hidden="true"></div>
 
   <script>
     "use strict";
@@ -101,6 +108,9 @@
     const scene=document.getElementById("scene");
     const toast=document.getElementById("toast");
     const audioToggle=document.getElementById("audioToggle");
+    const raven=document.getElementById("raven");
+    const inkThreshold=document.getElementById("inkThreshold");
+    let hasReceipt=window.location.hash==="#raven";
     let toastTimer=null,audioContext=null,rainSource=null,rainGain=null,crackleTimer=null,audioOn=false,fireHigh=false;
     let panX=0,maxPan=0,dragging=false,dragPointer=null,dragStartX=0,panStartX=0;
 
@@ -116,8 +126,35 @@
     document.getElementById("firepit").addEventListener("click",tendFire);
     document.getElementById("fireButton").addEventListener("click",tendFire);
     audioToggle.addEventListener("click",toggleAudio);
-    document.getElementById("raven").addEventListener("click",()=>{tone(180,.08,"sawtooth",.024);setTimeout(()=>tone(115,.15,"sawtooth",.02),80);try{const line=new SpeechSynthesisUtterance("goat");line.rate=.76;line.pitch=.58;line.volume=.9;speechSynthesis.cancel();speechSynthesis.speak(line)}catch(error){}showToast("The raven considers your question carefully and says: GOAT.")});
-    document.getElementById("token").addEventListener("click",event=>{event.currentTarget.classList.add("token-found");try{localStorage.setItem("studioLadukeAdventureToken","found")}catch(error){}tone(523,.08,"triangle",.025);setTimeout(()=>tone(784,.12,"triangle",.025),90);showToast("ADVENTURE TOKEN FOUND: GOOD FOR ONE QUESTIONABLE DECISION.",3400)});
+    document.querySelectorAll(".bob-threshold").forEach(link=>link.addEventListener("click",event=>{
+      if(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+      if(window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+      event.preventDefault();
+      inkThreshold.classList.add("entering");
+      setTimeout(()=>{window.location.href=link.href},610);
+    }));
+    raven.addEventListener("click",()=>{
+      if(hasReceipt){
+        hasReceipt=false;
+        showToast("The raven eyes the receipt. “No refunds.”");
+        return;
+      }
+      if(audioOn){
+        tone(180,.08,"sawtooth",.024);
+        setTimeout(()=>{if(audioOn)tone(115,.15,"sawtooth",.02)},80);
+        try{const line=new SpeechSynthesisUtterance("goat");line.rate=.76;line.pitch=.58;line.volume=.9;speechSynthesis.cancel();speechSynthesis.speak(line)}catch(error){}
+      }
+      showToast("The raven considers your question carefully and says: GOAT.");
+    });
+    document.getElementById("token").addEventListener("click",event=>{
+      event.currentTarget.classList.add("token-found");
+      try{localStorage.setItem("studioLadukeAdventureToken","found")}catch(error){}
+      if(audioOn){
+        tone(523,.08,"triangle",.025);
+        setTimeout(()=>{if(audioOn)tone(784,.12,"triangle",.025)},90);
+      }
+      showToast("ADVENTURE TOKEN FOUND: GOOD FOR ONE QUESTIONABLE DECISION.",3400);
+    });
 
     function updatePanBounds(){maxPan=Math.max(0,(scene.offsetWidth-window.innerWidth)/2);panX=Math.max(-maxPan,Math.min(maxPan,panX));scene.style.setProperty("--pan-x",`${panX}px`);sceneShell.classList.toggle("pannable",maxPan>4)}
     function beginPan(event){if(maxPan<=4||event.target.closest("a,button"))return;dragging=true;dragPointer=event.pointerId;dragStartX=event.clientX;panStartX=panX;sceneShell.classList.add("dragging");sceneShell.setPointerCapture(event.pointerId)}
@@ -128,11 +165,22 @@
     sceneShell.addEventListener("pointerup",endPan);
     sceneShell.addEventListener("pointercancel",endPan);
     sceneShell.addEventListener("lostpointercapture",()=>endPan());
+    scene.addEventListener("focusin",event=>{
+      const bounds=event.target.getBoundingClientRect();
+      if((bounds.left>=0&&bounds.right<=window.innerWidth)||maxPan<=4)return;
+      const centered=panX+window.innerWidth/2-(bounds.left+bounds.width/2);
+      panX=Math.max(-maxPan,Math.min(maxPan,centered));
+      scene.style.setProperty("--pan-x", panX + "px");
+    });
     window.addEventListener("resize",updatePanBounds);
 
     for(let i=0;i<22;i++){const light=document.createElement("i");light.className="firefly";light.style.left=`${18+Math.random()*64}%`;light.style.top=`${18+Math.random()*56}%`;light.style.setProperty("--speed",`${2.2+Math.random()*4}s`);light.style.setProperty("--delay",`${-Math.random()*5}s`);light.style.setProperty("--dx",`${-18+Math.random()*36}px`);light.style.setProperty("--dy",`${-14+Math.random()*28}px`);scene.appendChild(light)}
     updatePanBounds();
-    setTimeout(()=>showToast(maxPan>4?"Swipe to look around. Three paths. One raven with no useful information.":"Three paths. One greenhouse. One raven with no useful information.",3200),700);
+    if(hasReceipt){
+      raven.focus({preventScroll:true});
+    }else{
+      setTimeout(()=>showToast(maxPan>4?"Swipe to look around. Three paths. One raven with no useful information.":"Three paths. One greenhouse. One raven with no useful information.",3200),700);
+    }
     window.addEventListener("pagehide",stopRain);
   </script>
 </body>

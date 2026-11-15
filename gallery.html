@@ -1,527 +1,64 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  >
-
-  <title>Studio LaDuke Gallery</title>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#24150d">
+  <meta name="description" content="Original artwork by Corey LaDuke in a walk-through Studio LaDuke gallery room.">
+  <title>The Gallery | Studio LaDuke</title>
   <style>
-    :root {
-      --gold: #d6a851;
-      --cream: #f4dfb5;
-      --dark: #050504;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: var(--dark);
-    }
-
-    body {
-      color: var(--cream);
-      font-family: Georgia, "Times New Roman", serif;
-      touch-action: pan-y;
-    }
-
-    button,
-    a {
-      color: inherit;
-      font: inherit;
-    }
-
-    .gallery {
-      position: fixed;
-      inset: 0;
-
-      display: grid;
-      place-items: center;
-
-      overflow: hidden;
-
-      background:
-        radial-gradient(
-          circle at center,
-          rgba(101, 72, 38, 0.2),
-          transparent 48%
-        ),
-        linear-gradient(
-          145deg,
-          #15100c,
-          #030303 68%
-        );
-    }
-
-    .gallery::before {
-      content: "";
-
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-
-      opacity: 0.16;
-
-      background:
-        repeating-linear-gradient(
-          to bottom,
-          rgba(255, 255, 255, 0.035) 0,
-          rgba(255, 255, 255, 0.035) 1px,
-          transparent 1px,
-          transparent 4px
-        );
-    }
-
-    .gallery-title {
-      position: fixed;
-
-      top: calc(18px + env(safe-area-inset-top));
-      left: 50%;
-      z-index: 20;
-
-      transform: translateX(-50%);
-
-      width: max-content;
-
-      color: rgba(246, 223, 181, 0.84);
-
-      font-size: clamp(0.85rem, 3vw, 1.05rem);
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-    }
-
-    .art-stage {
-      position: relative;
-      z-index: 5;
-
-      width: min(82vw, 1100px);
-      height: min(78svh, 850px);
-
-      display: grid;
-      place-items: center;
-    }
-
-    .artwork {
-      display: block;
-
-      max-width: 100%;
-      max-height: 100%;
-
-      object-fit: contain;
-
-      border-radius: 3px;
-
-      box-shadow:
-        0 24px 80px rgba(0, 0, 0, 0.82),
-        0 0 0 1px rgba(247, 221, 170, 0.14);
-
-      transition:
-        opacity 170ms ease,
-        transform 170ms ease;
-    }
-
-    .artwork.changing {
-      opacity: 0;
-      transform: scale(0.985);
-    }
-
-    .arrow {
-      position: fixed;
-      top: 50%;
-      z-index: 30;
-
-      transform: translateY(-50%);
-
-      width: clamp(48px, 8vw, 72px);
-      height: clamp(78px, 14vw, 116px);
-
-      display: grid;
-      place-items: center;
-
-      color: #f5dba5;
-      background: rgba(23, 16, 11, 0.72);
-
-      border: 1px solid rgba(222, 177, 91, 0.5);
-      border-radius: 9px;
-
-      cursor: pointer;
-
-      font-family: Arial, sans-serif;
-      font-size: clamp(2rem, 7vw, 3.5rem);
-
-      backdrop-filter: blur(6px);
-
-      transition:
-        background 150ms ease,
-        transform 150ms ease;
-    }
-
-    .arrow:hover,
-    .arrow:focus-visible {
-      background: rgba(63, 39, 22, 0.93);
-    }
-
-    .arrow:active {
-      transform:
-        translateY(-50%)
-        scale(0.94);
-    }
-
-    .previous {
-      left: max(8px, env(safe-area-inset-left));
-    }
-
-    .next {
-      right: max(8px, env(safe-area-inset-right));
-    }
-
-    .return-button {
-      position: fixed;
-
-      left: calc(16px + env(safe-area-inset-left));
-      bottom: calc(16px + env(safe-area-inset-bottom));
-
-      z-index: 40;
-
-      padding: 11px 15px;
-
-      color: #f3ddb1;
-      background: rgba(31, 20, 13, 0.93);
-
-      border: 1px solid rgba(224, 181, 102, 0.7);
-      border-radius: 7px;
-
-      text-decoration: none;
-
-      box-shadow:
-        0 8px 25px rgba(0, 0, 0, 0.48);
-    }
-
-    .counter {
-      position: fixed;
-
-      right: calc(17px + env(safe-area-inset-right));
-      bottom: calc(19px + env(safe-area-inset-bottom));
-
-      z-index: 30;
-
-      color: rgba(243, 220, 177, 0.68);
-
-      font-family: Arial, sans-serif;
-      font-size: 0.78rem;
-      letter-spacing: 0.08em;
-    }
-
-    .loading-error {
-      position: fixed;
-      left: 50%;
-      top: 50%;
-
-      transform: translate(-50%, -50%);
-
-      width: min(80vw, 470px);
-
-      color: rgba(245, 223, 181, 0.8);
-
-      text-align: center;
-      font-family: Arial, sans-serif;
-      line-height: 1.5;
-
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .loading-error.show {
-      opacity: 1;
-    }
-
-    @media (max-width: 650px) {
-      .art-stage {
-        width: 86vw;
-        height: 74svh;
-      }
-
-      .arrow {
-        width: 43px;
-        height: 72px;
-      }
-
-      .return-button {
-        padding: 9px 12px;
-        font-size: 0.76rem;
-      }
-
-      .counter {
-        font-size: 0.69rem;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        animation: none !important;
-        transition: none !important;
-      }
-    }
+    :root{--paper:#efe3ca;--ink:#21170f;--safe-top:max(12px,env(safe-area-inset-top));--safe-bottom:max(12px,env(safe-area-inset-bottom))}
+    *{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#1d120c}body{color:var(--paper);font-family:Georgia,"Times New Roman",serif;touch-action:pan-y;-webkit-tap-highlight-color:transparent}button,a{font:inherit;color:inherit}button{cursor:pointer}:is(button,a):focus-visible{outline:3px solid #ffe0a0;outline-offset:4px}
+    .gallery-room{position:fixed;inset:0;overflow:hidden;isolation:isolate;background:#2b190f url("assets/gallery-room-v2.webp") center/cover no-repeat}.gallery-room::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at 50% 44%,transparent 28%,rgba(25,11,5,.06) 58%,rgba(12,6,3,.56) 112%),linear-gradient(180deg,rgba(4,2,1,.08),transparent 24%,transparent 76%,rgba(8,4,2,.25))}.gallery-room::after{content:"";position:absolute;inset:-5%;z-index:2;pointer-events:none;opacity:.12;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.76' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.28'/%3E%3C/svg%3E");mix-blend-mode:soft-light}
+    .room-heading{position:fixed;left:max(16px,env(safe-area-inset-left));top:var(--safe-top);z-index:30;display:flex;align-items:center;gap:12px;margin:0;padding:7px 13px 8px;border:1px solid #845b2e;border-radius:3px;background:linear-gradient(#4a2e1d,#27180f);box-shadow:0 3px 0 #120a06,0 11px 25px #0007,inset 0 1px #b68149;color:#f0d7a8;font-size:clamp(.78rem,1.4vw,1.02rem);letter-spacing:.17em;text-transform:uppercase;text-shadow:0 1px #000}.room-heading::before,.room-heading::after{content:"";width:5px;height:5px;border-radius:50%;background:#a97935;box-shadow:inset 1px 1px #e4c277,inset -1px -1px #5e3d18}
+    .frame{position:absolute;z-index:8;display:grid;place-items:center;border:clamp(7px,1vw,15px) solid #2a180f;background:#dfd0b1;box-shadow:0 20px 35px #0008,0 3px 7px #0009,inset 0 0 0 2px #fff8,inset 0 0 0 7px #8d6f47;transition:width .25s ease,height .25s ease,transform .3s ease,opacity .25s ease,filter .25s ease}.frame::before{content:"";position:absolute;inset:calc(clamp(7px,1vw,15px)*-1);pointer-events:none;box-shadow:inset 2px 2px 2px #d1a15b66,inset -3px -3px 4px #070402aa}.frame img{display:block;width:100%;height:100%;object-fit:contain;background:#eee2ca;transition:opacity .18s ease,transform .24s ease;user-select:none;-webkit-user-drag:none}.frame img.changing{opacity:.08;transform:scale(.985)}
+    .main-frame{left:50%;top:49%;transform:translate(-50%,-50%);width:min(47vw,730px);height:min(60vh,650px);padding:clamp(10px,1.45vw,22px)}.main-frame[data-shape="portrait"]{width:min(31vw,430px);height:min(64vh,680px)}.main-frame[data-shape="square"]{width:min(48vmin,610px);height:min(48vmin,610px)}.main-frame[data-shape="landscape"]{width:min(52vw,790px);height:min(58vh,610px)}.main-frame button{position:absolute;inset:0;border:0;background:transparent;color:transparent}.main-frame:hover{transform:translate(-50%,-50%) scale(1.012)}.main-frame .caption{position:absolute;left:50%;top:calc(100% + 16px);transform:translateX(-50%);min-width:180px;max-width:92%;padding:6px 15px 7px;border:1px solid #7d5b2e;background:linear-gradient(#c89b53,#8b612d);box-shadow:0 3px 7px #0009,inset 0 1px #f4d996;color:#22150d;text-align:center;font:700 clamp(.69rem,1.1vw,.86rem)/1.15 system-ui,sans-serif;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
+    .side-frame{top:39%;width:min(13vw,200px);height:min(31vh,320px);padding:8px;filter:saturate(.82) brightness(.78)}.side-frame img{pointer-events:none}.side-frame button{position:absolute;inset:0;border:0;background:transparent;color:transparent}.side-frame.previous-art{left:8.6%;transform:translateY(-50%) perspective(600px) rotateY(12deg) rotate(-.45deg)}.side-frame.next-art{right:8.6%;transform:translateY(-50%) perspective(600px) rotateY(-12deg) rotate(.45deg)}.side-frame:hover{filter:saturate(1) brightness(1)}
+    .rail{position:fixed;left:50%;bottom:var(--safe-bottom);z-index:32;transform:translateX(-50%);display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid #73502c;border-radius:4px;background:linear-gradient(#513320,#29190f);box-shadow:0 4px 0 #130a05,0 14px 28px #0008,inset 0 1px #ad7845}.rail button{width:46px;height:42px;border:1px solid #6d481f;border-radius:50%;background:radial-gradient(circle at 35% 28%,#e0bd72,#9c6e2f 46%,#4b2d13 75%);box-shadow:0 3px 0 #241307,inset 0 1px #ffe0a0;color:#24150b;font:900 1.45rem/1 system-ui,sans-serif;text-shadow:0 1px #f7d78d}.rail button:active{transform:translateY(2px);box-shadow:0 1px 0 #241307,inset 0 1px #ffe0a0}.counter{min-width:72px;color:#ead4ac;text-align:center;font:800 .72rem/1 system-ui,sans-serif;letter-spacing:.14em;text-shadow:0 1px #000}
+    .back,.commissions{position:fixed;z-index:34;display:flex;align-items:center;min-height:44px;text-decoration:none}.back{left:max(16px,env(safe-area-inset-left));bottom:var(--safe-bottom);padding:8px 13px 9px;border:1px solid #79552f;border-radius:2px;background:#342014;box-shadow:0 3px 0 #160b06,0 9px 20px #0006;color:#efd6aa}.commissions{right:max(18px,env(safe-area-inset-right));bottom:calc(var(--safe-bottom) + 2px);padding:8px 15px 9px;transform:rotate(-1.2deg);border:1px solid #ae9367;background:#e5d3ab url("assets/notice-paper.webp") center/360px auto;box-shadow:2px 4px 0 #1c0f07,0 10px 22px #0007;color:#271a10;font:800 .78rem/1.1 system-ui,sans-serif;letter-spacing:.04em}.commissions::before{content:"";position:absolute;left:43%;top:-8px;width:36px;height:12px;background:#c6a873aa;box-shadow:0 1px 2px #0005;transform:rotate(3deg)}.hint{position:fixed;left:50%;bottom:calc(var(--safe-bottom) + 63px);z-index:18;transform:translateX(-50%);color:#3c2819;font:italic .78rem/1.2 Georgia,serif;text-shadow:0 1px #efca91;opacity:.78}.loading-error{position:absolute;z-index:16;left:50%;top:50%;transform:translate(-50%,-50%);width:min(340px,70vw);padding:14px;background:#24160fdd;color:#efd9b1;text-align:center}
+    .close-up .main-frame{width:min(78vw,1040px);height:min(78vh,820px);z-index:40}.close-up .main-frame[data-shape="portrait"]{width:min(48vw,610px);height:min(80vh,850px)}.close-up .side-frame,.close-up .room-heading,.close-up .commissions,.close-up .hint{opacity:0;pointer-events:none}.close-up.gallery-room::before{background:rgba(10,5,2,.62)}
+    .arrival{position:fixed;inset:0;z-index:90;pointer-events:none;background:#120a06;animation:doorOpen .75s cubic-bezier(.4,0,.2,1) forwards}@keyframes doorOpen{0%{opacity:1}100%{opacity:0}}
+    @media(max-width:700px){.gallery-room{background-position:center top}.gallery-room::before{background:linear-gradient(180deg,#160d0766,transparent 22%,transparent 70%,#10080499),radial-gradient(ellipse at 50% 43%,transparent 32%,#120a0755 92%)}.room-heading{left:50%;transform:translateX(-50%);font-size:.7rem;white-space:nowrap}.side-frame{display:none}.main-frame,.main-frame[data-shape="landscape"]{top:45%;width:min(88vw,590px);height:min(52vh,520px);padding:9px;border-width:8px}.main-frame[data-shape="portrait"]{top:46%;width:min(66vw,390px);height:min(61vh,570px)}.main-frame[data-shape="square"]{top:46%;width:min(80vw,500px);height:min(80vw,500px)}.main-frame .caption{top:calc(100% + 11px);min-width:150px;font-size:.62rem;padding:5px 10px}.hint{bottom:calc(var(--safe-bottom) + 59px);font-size:.68rem;color:#ecd1a1;text-shadow:0 1px #000}.back{left:max(8px,env(safe-area-inset-left));padding:7px 9px;font-size:.7rem}.commissions{right:max(8px,env(safe-area-inset-right));padding:7px 9px;font-size:.65rem}.rail{bottom:calc(var(--safe-bottom) + 1px);gap:6px;padding:6px 8px}.rail button{width:42px;height:39px}.counter{min-width:60px;font-size:.65rem}.close-up .main-frame,.close-up .main-frame[data-shape="landscape"]{top:46%;width:94vw;height:73vh}.close-up .main-frame[data-shape="portrait"]{width:82vw;height:76vh}.close-up .back,.close-up .rail{opacity:.22}}
+    @media(max-height:570px) and (orientation:landscape){.room-heading{font-size:.64rem}.main-frame,.main-frame[data-shape="landscape"]{top:45%;height:61vh}.main-frame[data-shape="portrait"]{height:67vh}.main-frame .caption{top:calc(100% + 7px)}.hint{display:none}.rail{padding:5px 9px}.rail button{height:35px;width:39px}.back,.commissions{font-size:.65rem;min-height:38px}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.arrival{display:none}}
   </style>
 </head>
-
 <body>
-
-  <main
-    class="gallery"
-    id="gallery"
-    aria-label="Studio LaDuke full artwork gallery"
-  >
-
-    <div class="gallery-title">
-      Studio LaDuke Gallery
-    </div>
-
-    <button
-      class="arrow previous"
-      id="previous"
-      type="button"
-      aria-label="Previous artwork"
-    >
-      ‹
-    </button>
-
-    <section class="art-stage">
-
-      <img
-        class="artwork"
-        id="artwork"
-        alt="Studio LaDuke artwork"
-      >
-
-      <div
-        class="loading-error"
-        id="loadingError"
-      >
-        This image could not be loaded.
-      </div>
-
-    </section>
-
-    <button
-      class="arrow next"
-      id="next"
-      type="button"
-      aria-label="Next artwork"
-    >
-      ›
-    </button>
-
-    <a
-      class="return-button"
-      href="workshop.html"
-    >
-      ← Workshop
-    </a>
-
-    <div
-      class="counter"
-      id="counter"
-      aria-live="polite"
-    ></div>
-
+  <main class="gallery-room" id="gallery" aria-label="Studio LaDuke gallery room">
+    <div class="arrival" aria-hidden="true"></div><h1 class="room-heading">The Gallery</h1>
+    <section class="frame side-frame previous-art" aria-label="Previous artwork on the left wall"><img id="previousArtwork" alt="" decoding="async"><button id="previousFrame" type="button" aria-label="Go to previous artwork">Previous artwork</button></section>
+    <section class="frame main-frame" id="mainFrame" data-shape="landscape"><img id="artwork" alt="Studio LaDuke original artwork" decoding="async"><button id="closer" type="button" aria-label="Step closer to the artwork">Step closer</button><div class="caption" id="caption" aria-live="polite"></div></section>
+    <section class="frame side-frame next-art" aria-label="Next artwork on the right wall"><img id="nextArtwork" alt="" decoding="async"><button id="nextFrame" type="button" aria-label="Go to next artwork">Next artwork</button></section>
+    <div class="loading-error" id="loadingError" role="status" hidden>This piece could not be loaded.</div><p class="hint" id="hint">Tap the frame to step closer</p>
+    <nav class="rail" aria-label="Artwork controls"><button id="previous" type="button" aria-label="Previous artwork">‹</button><span class="counter" id="counter" aria-live="polite"></span><button id="next" type="button" aria-label="Next artwork">›</button></nav>
+    <a class="back" id="returnButton" href="workshop.html">← Workshop</a><a class="commissions" href="commissions/">Ask about a commission</a>
   </main>
-
   <script>
-    "use strict";
-
-    const artworkFiles = [
-      "IMG_3211.jpeg",
-      "9EAA20AB-901D-41E1-AC98-64455D1A291D.png",
-      "8E115567-F28C-456A-8E51-6EB4BA67B0A3.png",
-      "5009BA2B-780C-4A6C-A6AA-4B5CDD3174C6.png",
-      "03DE2160-F40A-4D77-BA2F-030FAC8C7AE7.png",
-      "650B0A6A-1B85-4665-82D7-95FF79C8761E.png",
-      "D649A1E7-F73A-4529-8F41-05A5524C4C8E.png",
-      "7528563F-9204-4651-A65A-2A7450DCE740.png",
-      "193005A4-396A-42B8-895F-3D32037BB744.png",
-      "650E29C5-1949-4A2D-9B0C-9F2B31BB3934.png",
-      "3ABA2FB4-184C-4FB1-8D85-4118FA503931.png",
-      "4F9C4F6E-34A2-494D-847B-AB3DDA3E75AA.png",
-      "52095D7B-9D55-4D6C-A87C-DA519D179B9A.png",
-      "IMG_0082.jpeg",
-      "IMG_0014.jpeg",
-      "9F7F0E8D-FD9F-43F4-863E-308974B7AD58.jpeg"
-    ];
-
-    const artwork =
-      document.getElementById("artwork");
-
-    const previous =
-      document.getElementById("previous");
-
-    const next =
-      document.getElementById("next");
-
-    const counter =
-      document.getElementById("counter");
-
-    const loadingError =
-      document.getElementById("loadingError");
-
-    const gallery =
-      document.getElementById("gallery");
-
-    let currentIndex = 0;
-
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    function findRequestedArtwork() {
-      const parameters =
-        new URLSearchParams(window.location.search);
-
-      const requested =
-        parameters.get("art");
-
-      const requestedIndex =
-        artworkFiles.indexOf(requested);
-
-      if (requestedIndex >= 0) {
-        currentIndex = requestedIndex;
+  (()=>{"use strict";
+    const files=["IMG_3211.jpeg","9EAA20AB-901D-41E1-AC98-64455D1A291D.png","8E115567-F28C-456A-8E51-6EB4BA67B0A3.png","5009BA2B-780C-4A6C-A6AA-4B5CDD3174C6.png","03DE2160-F40A-4D77-BA2F-030FAC8C7AE7.png","650B0A6A-1B85-4665-82D7-95FF79C8761E.png","D649A1E7-F73A-4529-8F41-05A5524C4C8E.png","7528563F-9204-4651-A65A-2A7450DCE740.png","193005A4-396A-42B8-895F-3D32037BB744.png","650E29C5-1949-4A2D-9B0C-9F2B31BB3934.png","3ABA2FB4-184C-4FB1-8D85-4118FA503931.png","4F9C4F6E-34A2-494D-847B-AB3DDA3E75AA.png","52095D7B-9D55-4D6C-A87C-DA519D179B9A.png","IMG_0082.jpeg","IMG_0014.jpeg","9F7F0E8D-FD9F-43F4-863E-308974B7AD58.jpeg","9258DAB5-6EFA-4099-8DC9-EAD700BDA166.png"];
+    const known={"9EAA20AB-901D-41E1-AC98-64455D1A291D.png":"Hump Day","8E115567-F28C-456A-8E51-6EB4BA67B0A3.png":"Feel the Burn","5009BA2B-780C-4A6C-A6AA-4B5CDD3174C6.png":"King Salmon","650B0A6A-1B85-4665-82D7-95FF79C8761E.png":"Oh Buoy","7528563F-9204-4651-A65A-2A7450DCE740.png":"Nightlight","3ABA2FB4-184C-4FB1-8D85-4118FA503931.png":"Ketchikan Crab"};
+    const gallery=document.getElementById("gallery"),art=document.getElementById("artwork"),left=document.getElementById("previousArtwork"),right=document.getElementById("nextArtwork"),frame=document.getElementById("mainFrame"),caption=document.getElementById("caption"),counter=document.getElementById("counter"),error=document.getElementById("loadingError"),back=document.getElementById("returnButton"),hint=document.getElementById("hint");let index=1,startX=0,close=false;
+    const requested=new URLSearchParams(location.search).get("art");if(files.includes(requested))index=files.indexOf(requested);
+    if (document.referrer) {
+      const from = new URL(document.referrer);
+      const front = new URL("index.html", location.href);
+      const root = new URL("./", location.href);
+      const about = new URL("about.html", location.href);
+      if (from.origin === about.origin && from.pathname === about.pathname) {
+        back.href = "about.html#workbench-notebook";
+        back.textContent = "← About Corey";
+      } else if (from.origin === front.origin && [front.pathname, root.pathname].includes(from.pathname)) {
+        back.href = "index.html";
+        back.textContent = "← Front Room";
       }
     }
-
-    function displayArtwork() {
-      artwork.classList.add("changing");
-      loadingError.classList.remove("show");
-
-      const filename =
-        artworkFiles[currentIndex];
-
-      window.setTimeout(() => {
-        artwork.src = filename;
-
-        artwork.alt =
-          "Studio LaDuke artwork " +
-          (currentIndex + 1);
-
-        counter.textContent =
-          (currentIndex + 1) +
-          " / " +
-          artworkFiles.length;
-      }, 100);
-    }
-
-    function showPrevious() {
-      currentIndex =
-        (
-          currentIndex -
-          1 +
-          artworkFiles.length
-        ) % artworkFiles.length;
-
-      displayArtwork();
-    }
-
-    function showNext() {
-      currentIndex =
-        (
-          currentIndex +
-          1
-        ) % artworkFiles.length;
-
-      displayArtwork();
-    }
-
-    artwork.addEventListener(
-      "load",
-      () => {
-        artwork.classList.remove("changing");
-        loadingError.classList.remove("show");
-      }
-    );
-
-    artwork.addEventListener(
-      "error",
-      () => {
-        artwork.classList.remove("changing");
-        loadingError.classList.add("show");
-      }
-    );
-
-    previous.addEventListener(
-      "click",
-      showPrevious
-    );
-
-    next.addEventListener(
-      "click",
-      showNext
-    );
-
-    document.addEventListener(
-      "keydown",
-      event => {
-        if (event.key === "ArrowLeft") {
-          showPrevious();
-        }
-
-        if (event.key === "ArrowRight") {
-          showNext();
-        }
-
-        if (event.key === "Escape") {
-          window.location.href =
-            "workshop.html";
-        }
-      }
-    );
-
-    gallery.addEventListener(
-      "touchstart",
-      event => {
-        touchStartX =
-          event.changedTouches[0].screenX;
-      },
-      { passive: true }
-    );
-
-    gallery.addEventListener(
-      "touchend",
-      event => {
-        touchEndX =
-          event.changedTouches[0].screenX;
-
-        const distance =
-          touchEndX - touchStartX;
-
-        if (Math.abs(distance) < 55) {
-          return;
-        }
-
-        if (distance < 0) {
-          showNext();
-        } else {
-          showPrevious();
-        }
-      },
-      { passive: true }
-    );
-
-    findRequestedArtwork();
-    displayArtwork();
+    const at=n=>(n+files.length)%files.length;const titleFor=file=>known[file]||"Original work";
+    function draw(){const file=files[index];art.classList.add("changing");error.hidden=true;art.hidden=false;art.alt=titleFor(file)+", original artwork by Corey LaDuke";art.src=file;left.src=files[at(index-1)];right.src=files[at(index+1)];left.alt="Previous piece, "+titleFor(files[at(index-1)]);right.alt="Next piece, "+titleFor(files[at(index+1)]);caption.textContent=titleFor(file)+" · "+(index+1)+" of "+files.length;counter.textContent=(index+1)+" / "+files.length;const url=new URL(location.href);url.searchParams.set("art",file);history.replaceState({},"",url)}
+    function move(amount){index=at(index+amount);close=false;gallery.classList.remove("close-up");hint.textContent="Tap the frame to step closer";draw()}
+    art.addEventListener("load",()=>{const ratio=art.naturalWidth/art.naturalHeight;frame.dataset.shape=ratio<.78?"portrait":ratio>1.28?"landscape":"square";art.classList.remove("changing")});art.addEventListener("error",()=>{art.classList.remove("changing");art.hidden=true;error.hidden=false});
+    document.getElementById("previous").addEventListener("click",()=>move(-1));document.getElementById("previousFrame").addEventListener("click",()=>move(-1));document.getElementById("next").addEventListener("click",()=>move(1));document.getElementById("nextFrame").addEventListener("click",()=>move(1));document.getElementById("closer").addEventListener("click",()=>{close=!close;gallery.classList.toggle("close-up",close);hint.textContent=close?"Tap the frame to step back":"Tap the frame to step closer"});
+    gallery.addEventListener("touchstart",e=>{startX=e.changedTouches[0].screenX},{passive:true});gallery.addEventListener("touchend",e=>{const d=e.changedTouches[0].screenX-startX;if(Math.abs(d)>58)move(d<0?1:-1)},{passive:true});document.addEventListener("keydown",e=>{if(e.key==="ArrowLeft")move(-1);if(e.key==="ArrowRight")move(1);if(e.key==="Escape"){if(close){close=false;gallery.classList.remove("close-up")}else location.href=back.href}});draw();
+  })();
   </script>
-
 </body>
 </html>
