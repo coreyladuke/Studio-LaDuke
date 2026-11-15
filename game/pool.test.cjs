@@ -110,3 +110,13 @@ test("the number and stripe roll with distance and reverse direction together", 
     assert.ok(b.right[2]<-.999);
   `);
 });
+
+test("a full break settles and passes play even when frames arrive slowly", () => {
+  runGame(`
+    lastTime=0;
+    shoot(1);
+    for(let now=125;now<=7000&&ballsMoving;now+=125) loop(now);
+    assert.equal(ballsMoving,false);
+    assert.equal(statusEl.textContent,"Player 2's turn.");
+  `);
+});

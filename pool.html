@@ -1596,7 +1596,8 @@ function draw(){
 }
 
 function loop(now){
-  const dt=Math.min(34,now-lastTime);
+  // Catch up after a slow render without simulating a long background pause.
+  const dt=clamp(now-lastTime,0,500);
   lastTime=now;
   if(ballsMoving){
     physicsTime+=dt;
