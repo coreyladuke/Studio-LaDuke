@@ -312,6 +312,20 @@
     .drawer-object-copy p { margin-bottom: 16px; font-size: 1rem; line-height: 1.55; }
     .drawer-object-copy ul { margin: 0 0 20px 1.1rem; line-height: 1.6; }
     .drawer-object-copy a { color: #ffe0a9; text-underline-offset: 4px; }
+    .drawer-receipt-note {
+      padding: 10px 12px;
+      border-inline-start: 2px solid #b28e5e;
+      background: #392818;
+      font-style: italic;
+    }
+
+    .drawer-receipt-note a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      font-style: normal;
+    }
+
     .drawer-object-copy .drawer-back { margin-top: 3px; }
     .drawer-object-copy h3:focus { outline: none; }
 
@@ -1819,6 +1833,7 @@
           <h3 tabindex="-1">Folded receipt</h3>
           <p>Birdseed. One flashlight.<br>Directions from the raven: $0.<br>Someone wrote <em>Overpaid</em> in pencil.</p>
           <p><a href="forest-path.html#raven">Find the raven out back</a></p>
+          <p class="drawer-receipt-note">On the back, in green ink: “Complaints accepted. Satisfaction is outside our remit.”<br><a href="bob-bureau/">File a case with Bob’s Bureau</a></p>
           <button class="drawer-back" type="button">Put it back</button>
         </div>
       </section>
