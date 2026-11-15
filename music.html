@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#17120f">
+<meta name="description" content="The Studio LaDuke music room: songs in progress, the album Moments, and a simple guitar chord transposer.">
+<title>Music Room | Studio LaDuke</title>
+<style>
+:root{color-scheme:dark;--paper:#f1ddbb;--muted:#b8a990;--gold:#e8ba6d;--wood:#4e3225;--ink:#17120f}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;color:var(--paper);font-family:Georgia,"Times New Roman",serif;background:radial-gradient(ellipse at 75% -10%,#4b2e20 0%,transparent 46%),radial-gradient(ellipse at 9% 80%,#2a2922 0%,transparent 40%),#17120f}
+.room-photo{min-height:32rem;display:grid;align-items:center;background:linear-gradient(90deg,#201712 0%,#201712dc 36%,#24170c3d 80%),url("assets/corey-studio.webp") center 54% / cover;box-shadow:0 12px 32px #09050399}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.1;background:repeating-linear-gradient(0deg,transparent 0 3px,#edc184 4px,transparent 5px);z-index:0}
+button,textarea,input{font:inherit}
+a{color:inherit}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
+.wrap{position:relative;z-index:1;width:min(1100px,calc(100% - 36px));margin:auto}
+.top{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:24px 0;border-bottom:1px solid #77563d}
+.brand{text-decoration:none;color:var(--gold);font:bold .82rem/1.4 system-ui,sans-serif;letter-spacing:.16em}
+.top nav{display:flex;flex-wrap:wrap;gap:15px;font:.82rem/1.4 system-ui,sans-serif}
+.top nav a{display:inline-flex;align-items:center;min-height:44px;color:#e0c9a5;text-decoration:none}
+.top nav a:hover{text-decoration:underline}
+.hero{display:grid;grid-template-columns:1.2fr .8fr;align-items:center;gap:35px;padding:54px clamp(18px,5vw,64px)}
+.kicker{font:700 .75rem/1.5 system-ui,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
+h1{font-size:clamp(3.2rem,9vw,7.5rem);letter-spacing:-.065em;line-height:.9;margin:20px 0}
+h1 em{display:block;font-weight:normal;color:#e7b97c}
+.lead{color:#e4d3b9;font:clamp(1.05rem,2.3vw,1.4rem)/1.5 Georgia,serif;max-width:560px}
+.note{font: .85rem/1.6 system-ui,sans-serif;color:var(--muted)}
+.record-wrap{display:grid;place-items:center;padding:15px}
+.record{width:min(34vw,350px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;position:relative;box-shadow:0 18px 45px #0009,0 0 0 12px #38271f,0 0 0 13px #926340;background:repeating-radial-gradient(circle,#25201e 0px,#25201e 2px,#0e0d0c 3px,#0e0d0c 5px)}
+.record:before{content:"";position:absolute;inset:30%;border-radius:50%;background:radial-gradient(circle at 40% 35%,#d4a363,#6f3e2f 75%);border:1px solid #dbac6b}
+.record:after{content:"";position:absolute;width:11px;height:11px;background:#150f0e;border-radius:50%;z-index:2}
+.record span{position:relative;z-index:1;text-align:center;font-size:clamp(1rem,2.9vw,2rem);letter-spacing:-.03em;font-style:italic;color:#fff0d0;transform:rotate(-12deg)}
+.divider{height:1px;background:linear-gradient(90deg,transparent,#c28d55,transparent);margin:0 0 50px}
+.rehearsal{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start;margin-bottom:66px}
+.panel{background:linear-gradient(145deg,#2f2018,#1e1713);border:1px solid #71513d;box-shadow:0 25px 55px #0005;border-radius:0;padding:clamp(20px,4vw,32px)}
+.panel h2{font-size:clamp(1.8rem,4vw,2.8rem);line-height:1;letter-spacing:-.04em;margin:0 0 12px}
+.panel p{font: .92rem/1.6 system-ui,sans-serif;color:#d4c4b0}
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:21px 0}
+.step{width:48px;height:48px;font:700 1.5rem system-ui,sans-serif;border:1px solid #a67b52;background:#37261e;color:#f8dcac;border-radius:8px;cursor:pointer}
+.step:hover{background:#65412c}
+.pitch{min-width:130px;text-align:center;font:700 1.05rem system-ui,sans-serif;color:#ffe0ad}
+label{display:block;font:700 .75rem/1.5 system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin:15px 0 7px}
+textarea{display:block;width:100%;min-height:163px;resize:vertical;padding:12px;border:1px solid #846044;border-radius:6px;background:#0e100f;color:#f5e2c5;font: .95rem/1.55 "Courier New",monospace;tab-size:4}
+textarea[readonly]{color:#e8c783}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
+.action{border:1px solid #d8a96e;border-radius:6px;background:#d8a96e;color:#25150f;padding:11px 17px;font:700 .83rem system-ui,sans-serif;cursor:pointer}
+.action.alt{background:transparent;color:#f2cc93}
+.action:hover{filter:brightness(1.13)}
+.small{margin:12px 0 0;color:#b9a994!important;font-size:.78rem!important}
+.below{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:0 0 60px}
+.below article{padding:22px 25px;border-top:2px solid #bd8d59;background:#221b18}
+.below h3{margin:0 0 9px;font-size:1.45rem}
+.below p{margin:0;font:.9rem/1.65 system-ui,sans-serif;color:#c5b6a1}
+footer{padding:25px 0 50px;border-top:1px solid #6b4c36;color:var(--muted);font:.8rem/1.6 system-ui,sans-serif}
+footer a{color:var(--gold)}
+@media(max-width:760px){.hero{grid-template-columns:1fr;padding:48px 0 38px}.record-wrap{justify-content:center}.record{width:130px}h1{margin-top:15px}.rehearsal,.below{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.wrap{width:min(100% - 28px,1100px)}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><a class="brand" href="index.html">STUDIO LADUKE / MUSIC</a><nav aria-label="Studio navigation"><a href="index.html">Front Room</a><a href="workshop.html">Workshop</a><a href="directory.html">Directory</a><a href="books.html">Books</a></nav></header>
+  <main>
+    <div class="room-photo"><section class="hero" aria-labelledby="musicTitle">
+      <div><h1 id="musicTitle">Music Room</h1><p class="lead"><em>Moments</em> is a collection of original songs I’m writing and arranging for guitar and voice.</p><a href="#rehearsal">Try the chord bench ↓</a></div>
+      <div class="record-wrap" aria-hidden="true"><div class="record"><span>Moments<br><small>STUDIO LADUKE</small></span></div></div>
+    </section></div>
+    <div class="divider" aria-hidden="true"></div>
+    <section id="rehearsal" class="rehearsal" aria-label="Rehearsal bench">
+      <div class="panel"><h2>Chord bench</h2><p>Paste a chord chart and move it to a key that fits your voice.</p>
+        <div class="controls" aria-label="Transpose semitones"><button type="button" id="down" class="step" aria-label="Lower one semitone">−</button><output id="shift" class="pitch" aria-live="polite">Original key</output><button type="button" id="up" class="step" aria-label="Raise one semitone">+</button></div>
+        <label for="original">Your chord chart</label>
+        <textarea id="original" spellcheck="false" aria-describedby="pasteHelp">C        G
+Am       F
+
+Verse goes here. Keep the words as written.
+
+F        G        C</textarea>
+        <p id="pasteHelp" class="small">Put chords on their own lines above the lyrics. Use two spaces between chords. For a single-chord line, put the chord between bars, like | C |.</p>
+      </div>
+      <div class="panel"><h2>New key</h2>
+        <label for="transposed">Transposed chord chart</label><textarea id="transposed" readonly spellcheck="false" aria-live="off"></textarea>
+        <div class="actions"><button class="action" type="button" id="copy">Copy new chords</button><button class="action alt" type="button" id="reset">Reset</button></div>
+        <p class="small" id="copyStatus" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+  </main>
+  <footer>Made in Ketchikan, Alaska. Still tuning up. &nbsp; <a href="directory.html">Find another room</a></footer>
+</div>
+<script>
+(function(){
+  "use strict";
+  var source=document.getElementById("original"), result=document.getElementById("transposed");
+  var display=document.getElementById("shift"), status=document.getElementById("copyStatus");
+  var delta=0;
+  var sharps=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+  var flats=["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"];
+  var indices={C:0,"C#":1,Db:1,D:2,"D#":3,Eb:3,E:4,F:5,"F#":6,Gb:6,G:7,"G#":8,Ab:8,A:9,"A#":10,Bb:10,B:11};
+  var chord=/^([A-G](?:#|b)?)(m(?:aj)?|maj|M|dim|aug|sus|add)?(\d+)?([+#b-]\d+)?(\([^)]*\))?(?:\/([A-G](?:#|b)?))?$/;
+  function note(n){var index=indices[n];return index===undefined?n:(n.includes("#") ? sharps : flats)[(index+delta+12)%12];}
+  function shiftChord(token){var m=token.match(chord);if(!m)return token;return note(m[1])+(m[2]||"")+(m[3]||"")+(m[4]||"")+(m[5]||"")+(m[6]?"/"+note(m[6]):"");}
+  function shiftLine(line){
+    if (delta === 0) return line;
+    var parts = line.trim().split(/[|\s]+/).filter(Boolean);
+    var styledAsChords = line.includes("|") || /\S[ \t]{2,}\S/.test(line);
+    if (!styledAsChords || !parts.length || !parts.every(function(word){return chord.test(word);})) return line;
+    return line.replace(/[^|\s]+/g, shiftChord);
+  }
+  function render(){
+    result.value=source.value.split("\n").map(shiftLine).join("\n");
+    display.textContent=delta===0?"Original key":(delta<0?Math.abs(delta)+" lower":delta+" higher");
+    status.textContent="";
+  }
+  document.getElementById("down").addEventListener("click",function(){delta=Math.max(-6,delta-1);render();});
+  document.getElementById("up").addEventListener("click",function(){delta=Math.min(6,delta+1);render();});
+  document.getElementById("reset").addEventListener("click",function(){delta=0;render();});
+  document.getElementById("copy").addEventListener("click",function(){
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(result.value).then(function(){status.textContent="Copied. Go make some noise.";},function(){status.textContent="Copy unavailable. Select the text above instead.";});}
+    else{result.focus();result.select();status.textContent="Selected the chords. Choose Copy from your device menu.";}
+  });
+  source.addEventListener("input",render);
+  render();
+})();
+</script>
+</body>
+</html>
