@@ -1,48 +1,71 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#18140f">
-<title>Forgotten Works | Studio LaDuke</title>
-<style>
-  * { box-sizing:border-box; }
-  :root { color-scheme:dark; }
-  body { margin:0; color:#f2e0c2; background:#19140f; font-family:Georgia,serif; }
-  header, main { width:min(100% - 28px,1080px); margin:auto; }
-  header { display:flex; flex-wrap:wrap; gap:8px 23px; padding:10px 0; }
-  a { color:#ffe0a0; text-underline-offset:.24em; }
-  a:focus-visible, summary:focus-visible { outline:2px solid #ffdc8b; outline-offset:4px; }
-  header a { display:inline-flex; min-height:44px; align-items:center; font:650 .85rem system-ui,sans-serif; }
-  h1 { margin:17px 0 9px; font-weight:400; font-size:clamp(2.1rem,6vw,4.6rem); letter-spacing:-.05em; }
-  .intro { margin:0 0 18px; color:#d8c4a7; font-style:italic; }
-  .closet { position:relative; margin:0; border:1px solid #604b34; box-shadow:0 18px 40px #0e0c09; }
-  .closet img { display:block; width:100%; height:auto; }
-  .shelf-link { position:absolute; display:flex; justify-content:center; align-items:flex-end; left:25%;top:40%;width:22%;height:20%; min-height:44px; border-radius:5px; text-decoration:none; }
-  .shelf-link span { padding:7px 10px; color:#ffebca; background:#21170e; border:1px solid #aa8a58; font:700 .78rem system-ui,sans-serif; }
-  .shelf-link:hover { outline:1px solid #ffdc8b; }
-  .folders { max-width:650px; padding:33px 0 67px; scroll-margin-top:12px; }
-  .folders h2 { font-weight:400; font-size:1.65rem; margin:0 0 8px; }
-  .folders details { border-top:1px solid #775f45; }
-  .folders details:last-child { border-bottom:1px solid #775f45; }
-  summary { cursor:pointer; min-height:44px; padding:12px 0; }
-  .folders p { color:#d8c4a7; max-width:55ch; line-height:1.5; margin:0 0 16px; }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#19140f">
+  <meta name="description" content="Open the boxes in Studio LaDuke’s archive closet and see what Corey left on the shelves.">
+  <title>Forgotten Works | Studio LaDuke</title>
+  <link rel="stylesheet" href="assets/archive-closet.css">
+  <script src="assets/archive-closet.js" defer></script>
 </head>
 <body>
-<header><a href="projects.html">Back to projects</a><a href="workshop.html">Workshop</a></header>
-<main>
-  <h1>Forgotten Works</h1>
-  <p class="intro">The bulb still works. The folders are where I left them.</p>
-  <figure class="closet">
-    <img src="assets/forgotten-works.webp" width="1536" height="1024" alt="Metal shelves and manila folders under a bare bulb in a rough wooden closet">
-    <a class="shelf-link" href="#folders"><span>Pull a folder</span></a>
-  </figure>
-  <section class="folders" id="folders" aria-labelledby="folder-heading">
-    <h2 id="folder-heading" tabindex="-1">On the shelf</h2>
-    <details><summary>Maverick’s Shark Quest</summary><p>An underwater game concept about Aqua and the Octoverlord. The third-person prototype is on the shelf for now.</p></details>
-    <details><summary>Early Super Maverick prototypes</summary><p>First passes at the look of Maverick’s adventure. The <a href="game/visual-comparison.html">sprite comparison</a> shows one step along the way.</p></details>
-  </section>
-</main>
+  <header class="room-nav"><a href="projects.html">← Projects</a><a href="workshop.html">Workshop</a></header>
+  <main>
+    <h1>Forgotten Works</h1>
+    <p class="room-hint">Try the light. Open a box.</p>
+    <figure class="closet" id="closet">
+      <img class="room" src="assets/forgotten-works.webp" width="1536" height="1024" alt="Wooden closet with a bare bulb and worn boxes on metal shelves">
+      <div class="shelf-actions" id="shelf-actions" hidden>
+        <button class="box shark" type="button" data-case="shark" aria-label="Open the green metal box" aria-haspopup="dialog"></button>
+        <button class="box maverick" type="button" data-case="maverick" aria-label="Open the cardboard carton" aria-haspopup="dialog"></button>
+        <button class="box utility" type="button" data-case="utility" aria-label="Open the silver tool case" aria-haspopup="dialog"></button>
+        <button id="light" class="light" type="button" aria-label="Closet light" aria-pressed="true"><span aria-hidden="true"></span></button>
+      </div>
+    </figure>
+    <noscript>
+      <section class="plain-archive">
+        <h2>On the shelf</h2>
+        <p>Maverick’s Shark Quest is an underwater prototype about Aqua and the Octoverlord.</p>
+        <p><a href="game/visual-comparison.html">See the early Super Maverick sprite comparison</a>.</p>
+      </section>
+    </noscript>
+  </main>
+
+  <dialog id="shark" class="box-view" aria-labelledby="shark-title">
+    <div class="inspection">
+      <img src="assets/archive-shark.webp" width="1080" height="720" alt="Looking down into an open green tool box with a shark sketch, pencil, and folded chart">
+    </div>
+    <div class="field-note">
+      <h2 id="shark-title">Maverick’s Shark Quest</h2>
+      <p>An early third-person adventure about Aqua and the Octoverlord. The prototype is on the shelf for now.</p>
+      <form method="dialog"><button class="text-action" autofocus>← Put the lid back</button></form>
+    </div>
+  </dialog>
+
+  <dialog id="maverick" class="box-view" aria-labelledby="maverick-title">
+    <div class="inspection">
+      <img src="assets/archive-maverick.webp" width="1080" height="720" alt="Looking down into an open cardboard carton of design notes, a pencil, and level sketches">
+    </div>
+    <div class="field-note">
+      <h2 id="maverick-title">Early Super Maverick prototypes</h2>
+      <p>Some of the first passes at the look of Maverick’s adventure.</p>
+      <a href="game/visual-comparison.html">Look at the sprite comparison</a>
+      <form method="dialog"><button class="text-action" autofocus>← Put the lid back</button></form>
+    </div>
+  </dialog>
+
+  <dialog id="utility" class="box-view" aria-labelledby="utility-title">
+    <div class="inspection utility-inspection">
+      <img src="assets/archive-utilities.webp" width="1080" height="720" alt="Looking down into an old silver case containing a pump impeller, gasket, tools, and a folded tag">
+      <button class="tag-spot" type="button" id="read-tag" aria-controls="tag-story" aria-expanded="false" aria-label="Turn over the maintenance tag"></button>
+    </div>
+    <div class="field-note">
+      <h2 id="utility-title">The silver tool case</h2>
+      <p class="tag-hint" id="tag-hint">There’s a tag tucked next to the wrench.</p>
+      <p class="maintenance-tag" id="tag-story" tabindex="-1" hidden>I used to work in wastewater utilities. That metal wheel is an impeller. When a water pump failed, I replaced the impeller and brought the system back up to pressure.</p>
+      <form method="dialog"><button class="text-action" autofocus>← Put the lid back</button></form>
+    </div>
+  </dialog>
 </body>
 </html>
