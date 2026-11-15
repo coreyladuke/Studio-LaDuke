@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Commission Mission Control | Studio LaDuke, Ketchikan</title>
+  <meta name="description" content="Plan an original formline art commission with Corey LaDuke in Ketchikan, Alaska. Prepare a project brief for an artist-led design.">
+  <link rel="canonical" href="https://studioladuke.com/commissions/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Commission Mission Control | Studio LaDuke">
+  <meta property="og:description" content="Bring an idea to the studio. Prepare a brief for a custom, artist-led design.">
+  <meta property="og:url" content="https://studioladuke.com/commissions/">
+  <meta property="og:image" content="https://studioladuke.com/assets/commission-station.webp">
+  <meta property="og:image:alt" content="A handmade metal and timber workbench with switches and project folders">
+  <link rel="stylesheet" href="station.css">
+  <script type="module" src="station.mjs"></script>
+</head>
+<body>
+  <header class="studio-nav">
+    <a href="../index.html">Studio LaDuke</a>
+    <nav aria-label="Around the studio">
+      <a href="../workshop.html">Workshop</a>
+      <a href="../gallery.html">Gallery</a>
+      <a href="../directory.html">Directory</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="entrance" aria-labelledby="page-title">
+      <div class="faceplate">
+        <h1 id="page-title">Commission<br>Mission Control</h1>
+        <p>Bring an idea to Corey LaDuke’s workshop in Ketchikan, Alaska. Start with a few details for an original, artist-led design.</p>
+        <a class="start" href="#mission-sheet">Open the mission folder ↓</a>
+      </div>
+      <picture>
+        <img src="../assets/commission-station.webp" alt="" width="1440" height="960" fetchpriority="high">
+      </picture>
+    </section>
+
+    <div id="mission-sheet" class="mission-area">
+      <form id="mission" class="paper" data-endpoint="" hidden aria-labelledby="folder-title">
+        <h2 id="folder-title">Project brief</h2>
+        <p id="required-note">Required fields are marked below.</p>
+        <p id="intake-state" class="intake-state">Online intake is currently closed. You can prepare a brief and save a copy to share with Corey later.</p>
+        <fieldset aria-describedby="required-note">
+          <legend>Choose a mission</legend>
+          <div id="service-options" class="folders"></div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Describe the project</legend>
+          <label for="project">What would you like Corey to create? (required)</label>
+          <textarea id="project" name="project" required minlength="10" maxlength="2000" rows="4" placeholder="Tell us what it’s for, what you picture, and any subjects, colors, or style you have in mind."></textarea>
+          <label for="usage">How will the artwork be used? (required)</label>
+          <select id="usage" name="usage" required>
+            <option value="">Choose an option</option>
+            <option value="personal">Personal use</option>
+            <option value="commercial">Business or commercial use</option>
+            <option value="unsure">Still deciding</option>
+          </select>
+          <label for="deliverables">Size, format, or physical deliverable</label>
+          <input id="deliverables" name="deliverables" maxlength="300" placeholder="For example, a 12 × 16 print or a vector file for a logo">
+          <label for="references">References or permissions to discuss</label>
+          <textarea id="references" name="references" maxlength="500" rows="2" aria-describedby="reference-hint"></textarea>
+          <small id="reference-hint">Describe references, nearby examples, or clan imagery Corey should know about. Keep client files and sensitive information out of this brief.</small>
+          <div class="two-fields">
+            <div>
+              <label for="deadline">Timing</label>
+              <input id="deadline" name="deadline" maxlength="100" placeholder="A date or “flexible”">
+            </div>
+            <div>
+              <label for="budget">Budget range</label>
+              <input id="budget" name="budget" maxlength="100" placeholder="A range or “unsure”">
+            </div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Where to reply</legend>
+          <label for="email">Email (required)</label>
+          <input id="email" name="email" type="email" autocomplete="email" maxlength="254" required>
+        </fieldset>
+        <div class="actions"><button type="submit">Review brief</button></div>
+        <p id="form-error" tabindex="-1" role="alert" hidden></p>
+      </form>
+
+      <section id="review" class="paper" aria-labelledby="review-title" hidden>
+        <h2 id="review-title" tabindex="-1">Review your brief</h2>
+        <dl id="review-fields"></dl>
+        <p id="review-hint">Save a copy of your brief. It stays on this device until you share it.</p>
+        <div class="actions">
+          <button id="send" type="button" hidden>Send request</button>
+          <button id="download" type="button">Download brief</button>
+          <button id="edit" type="button" class="secondary">Edit brief</button>
+        </div>
+        <p id="review-status" role="status"></p>
+      </section>
+
+      <section id="receipt" class="paper" aria-labelledby="receipt-title" hidden>
+        <h2 id="receipt-title" tabindex="-1">Mission received</h2>
+        <p>Your request has been saved for artist review. Keep this reference for your records.</p>
+        <p id="receipt-reference" class="reference"></p>
+        <p>Corey will review the project before confirming scope, price, or timing.</p>
+      </section>
+
+      <noscript><p class="paper">The interactive brief needs JavaScript. To prepare offline, note the type of project, how it will be used, size or format, references, timing, budget, and a reply email.</p></noscript>
+
+      <aside class="field-notes" aria-labelledby="notes-title">
+        <h2 id="notes-title">On the workbench</h2>
+        <p><strong>Artist review.</strong> Corey reviews each request, including the intended use and any cultural permissions. Some imagery requires permission or may be outside the scope of the commission.</p>
+        <p><strong>Quote first.</strong> Complexity, deliverables, usage rights, revisions, and timing determine the quote. Final scope, price, and schedule are agreed before work starts.</p>
+        <p><a href="../gallery.html">Look through the Gallery</a></p>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>
