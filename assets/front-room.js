@@ -97,3 +97,24 @@ function placeFrontRoom() {
 placeFrontRoom();
 new ResizeObserver(placeFrontRoom).observe(room);
 narrowRoom.addEventListener("change", placeFrontRoom);
+
+
+const movingView = matchMedia("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)");
+
+function resetViewpoint() {
+  for (const property of ["--room-drift-x", "--room-drift-y", "--entry-drift-x", "--entry-drift-y"]) {
+    room.style.removeProperty(property);
+  }
+}
+
+room.addEventListener("pointermove", (event) => {
+  if (!movingView.matches || event.pointerType !== "mouse") return;
+  const x = (event.clientX / innerWidth - .5) * 2;
+  const y = (event.clientY / innerHeight - .5) * 2;
+  room.style.setProperty("--room-drift-x", `${x * -.32}%`);
+  room.style.setProperty("--room-drift-y", `${y * -.3}%`);
+  room.style.setProperty("--entry-drift-x", `${x * -2}px`);
+  room.style.setProperty("--entry-drift-y", `${y * -1.5}px`);
+}, { passive: true });
+room.addEventListener("pointerleave", resetViewpoint);
+movingView.addEventListener("change", resetViewpoint);

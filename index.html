@@ -53,66 +53,52 @@
       font: inherit;
     }
 
-    /* COME IN hotspot over the button inside the artwork */
-
     .enter {
       position: absolute;
       left: 47.45%;
-      top: 70%;
+      top: 70.2%;
       z-index: 20;
-
-      width: 12.5%;
-      height: 6%;
-
-      transform: translate(-50%, -50%);
-
       display: grid;
       place-items: center;
-      border: 4px solid #2c190e;
-      border-radius: 2px;
-      overflow: hidden;
-      background:
-        linear-gradient(90deg,transparent 0 47%,#2a160a 48% 52%,transparent 53%),
-        repeating-linear-gradient(90deg,#5a321a 0 17%,#704322 18% 32%,#4d2a16 33% 49%);
-      box-shadow: inset 0 0 0 2px #9a6632, inset 0 0 18px #120905, 0 8px 12px #000a;
-      color: transparent;
-
+      min-width: max(100px, 10%);
+      min-height: 48px;
+      color: #f6deb0;
+      font-size: clamp(28px, 3.25vw, 55px);
+      font-weight: 700;
+      line-height: 1;
+      text-decoration: none;
+      text-shadow: 0 1px #543118, 0 2px 4px #1e1009, 0 5px 13px #261409;
+      transform: translate(calc(-50% + var(--entry-drift-x, 0px)), calc(-50% + var(--entry-drift-y, 0px)));
       -webkit-tap-highlight-color: transparent;
     }
 
-    .enter::before {
-      content: "STUDIO";
-      position: absolute;
-      left: 12%;
-      top: 18%;
-      padding: .22em .45em;
-      color: #26190e;
-      background: #bc9a5f;
-      border: 1px solid #4d351b;
-      box-shadow: 0 2px 2px #0008;
-      font: 700 clamp(5px, .62vw, 10px)/1 Georgia, serif;
-      letter-spacing: .08em;
-      transform: rotate(-1deg);
-    }
-
-    .enter::after {
-      content: "";
-      position: absolute;
-      right: 12%;
-      top: 42%;
-      width: 12%;
-      aspect-ratio: 1;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 30%, #ffe5a1, #9b681f 48%, #352008 75%);
-      box-shadow: 0 2px 3px #000b, 0 0 5px #ffd87355;
+    .enter span {
+      display: block;
+      transform: perspective(420px) rotateY(-8deg) rotateZ(-4deg);
     }
 
     .enter:hover,
     .enter:focus-visible {
-      outline: 2px solid rgba(245, 205, 125, 0.8);
-      outline-offset: 3px;
-      filter: brightness(1.18);
-      transform: translate(-50%, -50%) perspective(100px) rotateY(-4deg);
+      color: #fff2d3;
+    }
+
+    .enter:focus-visible {
+      outline: none;
+    }
+
+    .enter:focus-visible span {
+      text-decoration: underline;
+      text-decoration-thickness: .08em;
+      text-underline-offset: .18em;
+    }
+
+    @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+      .front-room {
+        transform: translate(calc(-50% + var(--room-drift-x, 0%)), calc(-50% + var(--room-drift-y, 0%))) scale(1.01);
+        transition: transform 420ms ease-out;
+      }
+
+      .enter { transition: transform 420ms ease-out, color 150ms ease; }
     }
 
     /* Front-room interactions */
@@ -647,13 +633,12 @@
       }
 
       .enter {
-        left: 50%;
-        top: 57.4%;
-        width: 31.1%;
-        height: 6.2%;
-        border-width: 3px;
+        left: 49.5%;
+        top: 57.6%;
+        font-size: clamp(29px, 8vw, 42px);
       }
-      .enter::before { font-size: 8px; }
+
+      .enter span { transform: perspective(350px) rotateY(-10deg) rotateZ(-5deg); }
 
       .lamp-glow {
         left: -3%;
@@ -780,11 +765,7 @@
       <a class="mounted-art mount-tall hump-day" style="left:82.534247%;top:16.434540%;width:12.557078%;height:4.122563%" href="gallery.html?from=front-room&amp;art=9EAA20AB-901D-41E1-AC98-64455D1A291D.png"><img src="assets/front-art/hump-day.webp" alt="Hump Day" decoding="async"></a>
     </div>
 
-    <a
-      class="enter"
-      href="workshop.html"
-      aria-label="Come into Studio LaDuke"
-    ></a>
+    <a class="enter" href="workshop.html" aria-label="Enter the Studio LaDuke workshop"><span>Enter</span></a>
 
     <button class="room-hotspot lamp-hotspot" id="lampHotspot" type="button" aria-label="Turn the desk lamp off or on"></button>
     <button class="room-hotspot guitar-hotspot" id="guitarHotspot" type="button" aria-label="Play the guitar"></button>
