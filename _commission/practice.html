@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Commission Mission Control · Practice</title>
+<style>
+:root{color:#291d14;background:#271b15;font:1rem/1.5 Georgia,serif}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0}main{width:min(100% - 2rem,54rem);margin:1.2rem auto 3rem}
+header{padding:1rem 1.4rem;background:#3e2b20;color:#fff0d8;border:1px solid #a27a55}
+h1{font-size:clamp(1.9rem,7vw,3.35rem);line-height:1;letter-spacing:-.035em;margin:.25rem 0}
+h2{line-height:1.05}p{margin:.55rem 0 1rem}
+.sheet{margin-top:1rem;padding:clamp(1rem,4vw,2rem);background:#f5e8d2;border:1px solid #987657;box-shadow:3px 5px #120c08}
+.workbar{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem}
+button,select,input,textarea{font:inherit;color:inherit}button{min-height:44px;padding:.35rem .8rem;border:1px solid #68462d;background:#ead3aa;cursor:pointer}
+button[aria-pressed=true],button.submit{background:#573622;color:#fff1da}
+:focus-visible{outline:3px solid #33628d;outline-offset:3px}
+label{display:block;font-weight:bold;margin-top:.9rem}input:not([type=file]),select,textarea{display:block;width:100%;min-height:44px;background:#fff9ee;border:1px solid #8a6d54;padding:.4rem .55rem}
+textarea{resize:vertical}.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 .8rem}
+dl{margin:1rem 0}dt{font-weight:bold}dd{margin:0 0 .65rem;white-space:pre-wrap;overflow-wrap:anywhere}
+#orders{display:grid;gap:.5rem;margin:1rem 0}#orders button{text-align:left}.note{font-size:.94rem;color:#574032}
+#status{color:#fff0d8;min-height:1.5em}#proof{display:block;max-width:100%;max-height:490px;margin-top:.75rem}
+@media(max-width:545px){.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<header><h1>Commission Mission Control</h1><p>Private practice run · sample requests stay in this browser. Use invented contact information.</p>
+<nav class="workbar" aria-label="Practice views">
+<button id="customer-tab" type="button" aria-pressed="true">Make a request</button>
+<button id="artist-tab" type="button" aria-pressed="false">Artist inbox</button>
+</nav></header>
+<section id="customer" class="sheet" aria-labelledby="customer-title">
+<h2 id="customer-title">Try a commission request</h2>
+<div class="workbar" aria-label="Load a sample">
+<button type="button" data-sample="emblem">Load an emblem</button><button type="button" data-sample="logo">Load a logo</button><button type="button" data-sample="glass">Load a painted piece</button>
+</div>
+<form id="brief" hidden>
+<label for="project">What would you like made?</label>
+<textarea id="project" name="project" rows="3" required minlength="10" maxlength="1000"></textarea>
+<div class="row">
+<div><label for="tier">Which scope is closest?</label><select id="tier" name="tier" required>
+<option value="">Choose a practice tier</option><option value="Simple emblem · $50">Simple emblem · $50</option><option value="Custom design · $150">Custom design · $150</option><option value="Detailed design · $250">Detailed design · $250</option><option>Help me choose</option>
+</select></div>
+<div><label for="usage">Intended use</label><select id="usage" name="usage" required><option>Personal use</option><option>Business or commercial use</option><option>Still deciding</option></select></div>
+<div><label for="surface">Physical add-on</label><select id="surface" name="surface" required><option>Digital design only</option><option>Cardstock print</option><option>Hand-painted cardstock</option><option>Hand-painted canvas</option><option>Hand-painted glass</option></select></div>
+<div><label for="portfolio">Portfolio preference</label><select id="portfolio" name="portfolio" required><option value="">Choose a preference</option><option>Yes, after delivery</option><option>Yes, after my launch</option><option>Keep it private</option></select></div>
+</div>
+<p class="note">These are practice prices for digital design. The artist quotes physical work, usage rights, and shipping separately.</p>
+<label for="details">Size, file format, timing or reference notes</label><textarea id="details" name="details" rows="2" maxlength="400"></textarea>
+<div class="workbar"><button class="submit" type="submit">Save practice request</button></div>
+</form>
+<noscript>This practice needs JavaScript enabled.</noscript>
+<p id="receipt" role="status"></p>
+</section>
+<section id="artist" class="sheet" aria-labelledby="artist-title" hidden>
+<h2 id="artist-title">Artist inbox</h2>
+<p class="note">Open a saved brief, work on it in your private tool, then check how long it took and whether the result fits.</p>
+<div id="orders"></div>
+<article id="order" hidden>
+<h3 id="reference" tabindex="-1"></h3><dl id="request-details"></dl>
+<div class="workbar"><button id="export" type="button">Download brief for private art tool</button></div>
+<form id="review">
+<div class="row"><div><label for="minutes">Total minutes spent</label><input id="minutes" name="minutes" type="number" min="0" max="9999"></div>
+<div><label for="fit">Does the result fit the brief?</label><select id="fit" name="fit"><option>Still testing</option><option>Needs clarification</option><option>Needs redraw</option><option>Ready for review</option></select></div></div>
+<label for="changes">What worked or needed changing?</label><textarea id="changes" name="changes" maxlength="1000" rows="3"></textarea>
+<div class="workbar"><button class="submit" type="submit">Save artist notes</button></div>
+</form>
+<label for="image">Compare an artwork from your device</label>
+<input id="image" type="file" accept="image/png,image/jpeg,image/webp">
+<p class="note">The selected image is visible here until you switch requests or close the page.</p>
+<img id="proof" alt="Local artwork preview" hidden>
+</article>
+</section>
+<p id="status" role="status"></p>
+</main>
+<script>
+"use strict";
+
+const key = "studio-laduke-commission-practice-v1";
+const $ = id => document.getElementById(id);
+const status = $("status");
+const form = $("brief");
+const review = $("review");
+const names = {
+  project: "Project", tier: "Digital example", usage: "Intended use",
+  surface: "Physical add-on", portfolio: "Portfolio preference", details: "Other details"
+};
+const samples = {
+  emblem: ["A simple salmon emblem for a personal keepsake. One fish with a clean silhouette.", 1, 0, 0, 1, "Two colors, square digital image. Flexible timing."],
+  logo: ["A compact cedar-and-water logo for a fictional small boat repair business.", 2, 1, 0, 2, "Test a small version for a website header. Ask about commercial usage before quoting."],
+  glass: ["An original raven design for a small window piece. I would like to compare the design on glass.", 3, 0, 4, 3, "Approx. 8 × 10 inches. No clan crests or supplied designs. Ask about local pickup."]
+};
+let rows = [];
+let selected;
+let imageUrl;
+let storageAvailable = true;
+try {
+  const saved = JSON.parse(localStorage.getItem(key) || "[]");
+  if (Array.isArray(saved)) rows = saved;
+} catch {
+  storageAvailable = false;
+  status.textContent = "Browser storage is unavailable. Requests will last until you close this tab.";
+}
+
+function persist(message) {
+  try {
+    if (!storageAvailable) throw new Error();
+    localStorage.setItem(key, JSON.stringify(rows));
+    status.textContent = message;
+    return true;
+  } catch {
+    status.textContent = "Saved for this open tab. Browser storage is unavailable.";
+    return false;
+  }
+}
+
+function showArtist(isArtist) {
+  $("customer").hidden = isArtist;
+  $("artist").hidden = !isArtist;
+  $("customer-tab").setAttribute("aria-pressed", !isArtist);
+  $("artist-tab").setAttribute("aria-pressed", isArtist);
+  if (isArtist) renderOrders();
+}
+
+function renderOrders() {
+  const list = $("orders");
+  list.replaceChildren();
+  if (!rows.length) list.textContent = "Save a practice request to see it here.";
+  for (const row of rows) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = row.id + " · " + row.fields.tier + " · " + (row.notes?.fit || "Received");
+    button.addEventListener("click", () => openOrder(row));
+    list.append(button);
+  }
+}
+
+function clearImage() {
+  if (imageUrl) URL.revokeObjectURL(imageUrl);
+  imageUrl = undefined;
+  $("proof").hidden = true;
+  $("proof").removeAttribute("src");
+  $("image").value = "";
+}
+
+function openOrder(row) {
+  selected = row;
+  clearImage();
+  const list = $("request-details");
+  list.replaceChildren();
+  $("reference").textContent = row.id;
+  for (const [field, label] of Object.entries(names)) {
+    if (!row.fields[field]) continue;
+    const term = document.createElement("dt");
+    const value = document.createElement("dd");
+    term.textContent = label;
+    value.textContent = row.fields[field];
+    list.append(term, value);
+  }
+  for (const field of ["minutes", "fit", "changes"]) review.elements[field].value = row.notes?.[field] ?? (field === "fit" ? "Still testing" : "");
+  $("order").hidden = false;
+  $("reference").focus();
+}
+
+$("customer-tab").addEventListener("click", () => showArtist(false));
+$("artist-tab").addEventListener("click", () => showArtist(true));
+document.querySelectorAll("[data-sample]").forEach(button => button.addEventListener("click", () => {
+  const [project, tier, usage, surface, portfolio, details] = samples[button.dataset.sample];
+  form.elements.project.value = project;
+  for (const [field, value] of Object.entries({ tier, usage, surface, portfolio })) form.elements[field].selectedIndex = value;
+  form.elements.details.value = details;
+  form.elements.project.focus();
+}));
+
+form.addEventListener("submit", event => {
+  event.preventDefault();
+  const fields = Object.fromEntries(new FormData(form));
+  fields.project = fields.project.trim();
+  if (fields.project.length < 10) {
+    $("receipt").textContent = "Add a little more detail about the project.";
+    form.elements.project.focus();
+    return;
+  }
+  const random = new Uint8Array(6);
+  crypto.getRandomValues(random);
+  const id = "PRACTICE-" + Array.from(random, byte => byte.toString(16).padStart(2, "0")).join("").toUpperCase();
+  rows.unshift({ id, fields });
+  persist("Practice request saved.");
+  $("receipt").textContent = "Saved " + id + ". Open Artist inbox to review it.";
+  form.reset();
+});
+
+review.addEventListener("submit", event => {
+  event.preventDefault();
+  selected.notes = Object.fromEntries(new FormData(review));
+  persist("Artist notes saved.");
+  renderOrders();
+});
+
+$("export").addEventListener("click", () => {
+  const description = Object.entries(names)
+    .filter(([field]) => selected.fields[field])
+    .map(([field, label]) => label + ": " + selected.fields[field]).join("\n\n");
+  const url = URL.createObjectURL(new Blob([selected.id + "\n\n" + description], { type: "text/plain;charset=utf-8" }));
+  const a = document.createElement("a");
+  a.download = selected.id + "-brief.txt";
+  a.href = url;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+
+$("image").addEventListener("change", event => {
+  const file = event.target.files[0];
+  clearImage();
+  if (!file) return;
+  if (!["image/png", "image/jpeg", "image/webp"].includes(file.type) || file.size > 15 * 1024 * 1024) {
+    status.textContent = "Use a PNG, JPEG, or WebP image up to 15 MB.";
+    return;
+  }
+  imageUrl = URL.createObjectURL(file);
+  $("proof").src = imageUrl;
+  $("proof").hidden = false;
+  status.textContent = "Artwork opened locally for comparison.";
+});
+form.hidden = false;
+</script>
+</body>
+</html>
