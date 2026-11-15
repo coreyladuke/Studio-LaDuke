@@ -25,7 +25,12 @@ test("intake only acknowledges durable, valid briefs and retries resolve to the 
   const url = origin + "/api/commissions";
   const body = {
     requestId: randomUUID(),
-    brief: { service: "formline", usage: "personal", project: "A small original print for the entryway.", email: "visitor@example.test" }
+    brief: {
+      service: "formline", usage: "personal", material: "cardstock", budgetExample: "example-50",
+      portfolioPermission: "no", project: "A small original print for the entryway.", size: "8 × 10 inches",
+      format: "Painted cardstock", references: "No clan crest.", deadline: "Flexible", budget: "$50 example",
+      email: "visitor@example.test"
+    }
   };
   const headers = { Origin: origin, "Content-Type": "application/json" };
   const post = (data, requestHeaders = headers) => fetch(url, {
@@ -57,4 +62,27 @@ test("intake only acknowledges durable, valid briefs and retries resolve to the 
   assert.equal(queue.update(receipt.reference, "delivered"), false);
   assert.equal(queue.update(receipt.reference, "reviewing"), true);
   assert.equal(queue.update(receipt.reference, "quote-ready"), true);
+});
+
+test("quote, clarification, and decline records obey artist workflow state", t => {
+  const queue = openQueue(":memory:");
+  t.after(() => queue.close());
+  const brief = {
+    service: "formline", usage: "commercial", material: "digital", budgetExample: "example-250",
+    portfolioPermission: "later", project: "A custom formline logo for a synthetic fishing guide.",
+    size: "Horizontal", format: "SVG and PNG", references: "Salmon, cedar, no clan crest.",
+    deadline: "Next month", budget: "$250 example", email: "synthetic@example.test"
+  };
+  const reference = queue.receive(randomUUID(), brief);
+  assert.equal(queue.requestClarification(reference, "Which business name should appear in the final lockup?", "received"), true);
+  assert.equal(queue.show(reference).status, "reviewing");
+  assert.equal(queue.show(reference).latestAction.kind, "clarification");
+  assert.equal(queue.saveQuote(reference, {
+    scope: "One original logo direction with SVG and transparent PNG exports.",
+    priceCents: 25000, depositCents: 5000, timing: "First proof in 3–5 business days",
+    revisions: 2, usageTerms: "Commercial logo use. Corey retains copyright."
+  }, "reviewing"), true);
+  assert.equal(queue.show(reference).status, "quote-ready");
+  assert.equal(queue.show(reference).quote.priceCents, 25000);
+  assert.throws(() => queue.saveQuote(reference, { scope: "too short" }, "quote-ready"));
 });

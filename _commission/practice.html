@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Commission Mission Control · Practice</title>
+<style>
+:root {
+  color-scheme: light;
+  font: 1rem/1.5 "Trebuchet MS", Arial, sans-serif;
+  color:#291e16;
+  background:#1c1510;
+}
+* { box-sizing:border-box }
+[hidden] { display:none!important }
+body { margin:0 }
+main { width:min(100% - 1.2rem, 70rem); margin:.6rem auto 3rem }
+.bench {
+  position:relative;
+  overflow:hidden;
+  display:grid;
+  align-content:end;
+  min-height:clamp(22rem, 55vw, 38rem);
+  isolation:isolate;
+  color:#fff1d6;
+  background:#302116;
+  border:1px solid #5b4636;
+  box-shadow:0 14px 35px #0e0907;
+}
+.bench img, .bench::after { position:absolute; inset:0; width:100%; height:100%; z-index:-1 }
+.bench img { object-fit:cover; object-position:55% 57% }
+.bench::after {
+  content:"";
+  background:linear-gradient(90deg,#17100cf2 0%,#1b100cc5 25%,transparent 63%),
+    linear-gradient(0deg,#201207f0 0%,transparent 42%);
+  pointer-events:none;
+}
+.title { padding:0 clamp(1rem, 4vw, 3.8rem) 1.15rem }
+.brand { display:block; margin:0; color:#ffca80; font-size:.74rem; font-weight:800; letter-spacing:.15em; text-transform:uppercase }
+h1,h2,h3 { font-family:Georgia,serif; line-height:1.05 }
+h1 { font-size:clamp(2rem,6.5vw,4.55rem); letter-spacing:-.04em; margin:.35rem 0 .6rem; text-shadow:0 2px #170d07 }
+h2 { font-size:clamp(1.45rem,3.2vw,2rem); margin:.15rem 0 .75rem }
+p { margin:.55rem 0 1rem }
+.title p { max-width:35ch; margin-bottom:0; color:#f6e5c9 }
+.bench nav {
+  display:flex;
+  gap:clamp(.5rem,2vw,1rem);
+  padding:0 clamp(1rem, 4vw, 3.8rem) 1.15rem;
+}
+button,select,input,textarea { font:inherit; color:inherit }
+button { min-height:44px; padding:.45rem .8rem; cursor:pointer }
+.switch {
+  color:#ffe6bd;
+  border:1px solid #a08059;
+  border-radius:3px;
+  background:linear-gradient(#534e42,#262720 55%,#181913);
+  box-shadow:0 3px #110a05,inset 0 1px #d3a76a65;
+  font-size:.91rem;
+  font-weight:700;
+}
+.switch::before {
+  display:inline-block;
+  content:"";
+  width:.54rem;
+  height:.54rem;
+  border:1px solid #9c7954;
+  margin-right:.4rem;
+  border-radius:50%;
+  background:#372e20;
+}
+.switch[aria-pressed=true]::before { background:#ffc77a; box-shadow:0 0 8px #ffa14d }
+.sheet {
+  position:relative;
+  margin:1rem auto 0;
+  padding:clamp(1rem,4vw,2.45rem);
+  background:
+    repeating-linear-gradient(0deg, transparent 0 28px, #936a4017 29px, transparent 30px),
+    linear-gradient(112deg,#f1debc,#f8edda 40%,#ead4b0);
+  border:1px solid #927151;
+  box-shadow:0 5px #544433,0 9px #302318,0 12px #150e0a;
+}
+.file-strip {
+  display:flex;
+  gap:.5rem;
+  flex-wrap:wrap;
+  margin:.85rem 0 1.15rem;
+  padding:.7rem .55rem 1rem;
+  border-bottom:3px solid #7c5939;
+}
+.folder {
+  padding:.75rem .8rem .45rem;
+  border:0;
+  background:
+    linear-gradient(120deg,#f8e4b7,#e0bf84 90%);
+  clip-path:polygon(0 0, 44% 0, 51% 13%, 100% 13%, 100% 100%, 0 100%);
+  box-shadow:inset 0 -3px #aa7845,inset 1px 1px #fff3cc;
+  font-weight:800;
+  font-size:.9rem;
+}
+.folder:nth-child(2) { background:linear-gradient(120deg,#efd2a2,#d8ac71) }
+.folder:hover,.folder:focus-visible { filter:brightness(1.12) }
+.folder:focus-visible { outline-offset:-5px }
+.workbar { display:flex; gap:.65rem; flex-wrap:wrap; margin-top:1rem }
+.workbar button, #orders button { border:1px solid #8c6b4c; background:#ead3ad; box-shadow:1px 2px #a88860; font-weight:700 }
+.workbar .submit { color:#ffefd3; background:#533823; border-color:#59391d }
+:focus-visible { outline:3px solid #356595; outline-offset:3px }
+.bench :focus-visible { outline-color:#ffd498 }
+label { display:block; font-weight:700; margin-top:.85rem }
+input:not([type=file]),select,textarea { display:block; width:100%; min-height:44px; background:#fff9ee; border:1px solid #8a6d54; border-radius:0; padding:.4rem .55rem }
+textarea { resize:vertical }
+.row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 .8rem }
+dl { margin:1rem 0 } dt { font-weight:700 } dd { margin:0 0 .65rem; white-space:pre-wrap; overflow-wrap:anywhere }
+#orders { display:grid; gap:.5rem; margin:1rem 0 } #orders button { text-align:left }
+.note { font-size:.92rem; color:#574032 }
+.budget-rack { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.55rem; margin:.8rem 0 }
+.budget-card { position:relative; display:block; min-height:9rem; margin:0; cursor:pointer }
+.budget-card input { position:absolute; z-index:2; left:.65rem; top:.65rem; width:auto; min-height:0 }
+.budget-card span { display:block; height:100%; padding:.65rem .65rem .8rem 2rem; background:linear-gradient(135deg,#f0dca9,#d2ad69); border:1px solid #755235; box-shadow:2px 3px #795a3c; clip-path:polygon(0 0,91% 0,100% 16%,100% 100%,0 100%) }
+.budget-card:has(:checked) span { background:#f4ca70; box-shadow:inset 5px 0 #6e2f1f,2px 3px #795a3c }
+.budget-card strong,.budget-card b,.budget-card small { display:block }.budget-card strong{font:700 1.75rem/1 Georgia,serif}.budget-card small{margin-top:.35rem}
+.inbox-layout { display:grid; grid-template-columns:minmax(12rem,.65fr) minmax(0,1.5fr); gap:1rem }
+.inbox-list { padding:.8rem; border:6px solid #453b32; background:#242722; color:#f5e4c8; box-shadow:inset 0 0 15px #000 }
+.inbox-list h3 { margin-top:0 }
+#orders button { width:100%; margin:.3rem 0; color:#2c2118 }
+.request-card { padding:1rem; border:1px solid #8c6b4c; background:#fff7e8 }
+.status-stamp { display:inline-block; padding:.25rem .5rem; border:2px solid #8c3525; color:#8c3525; font-weight:900; letter-spacing:.05em; text-transform:uppercase; transform:rotate(-1deg) }
+.action-panel { margin-top:1rem; padding:1rem; border:1px solid #8c6b4c; background:#ead3ad }
+.action-panel h4 { margin:.1rem 0 .65rem; font:700 1.3rem/1.1 Georgia,serif }
+.quote-paper { margin-top:1rem; padding:1rem; border:4px double #765336; background:#fffaf0; box-shadow:2px 3px #8e7455 }
+.quote-paper .price { font:700 2rem/1 Georgia,serif }
+.private-workspace { margin-top:1rem; padding:1rem; color:#fff0d6; border:9px solid #3d3730; background:linear-gradient(#49504b,#242824); box-shadow:inset 0 0 20px #000 }
+.private-workspace .brief-pin { padding:.8rem; color:#2b2118; background:#f3dfbc; transform:rotate(-.2deg) }
+.private-workspace textarea { color:#261d15 }
+.rights { padding:.7rem; border-left:4px solid #7e3b28; background:#ead3ad }
+#receipt:empty { display:none }
+#status { color:#fff0d8; min-height:1.5em; margin:1.25rem .25rem 0 }
+#proof { display:block; max-width:100%; max-height:490px; margin-top:.75rem }
+#startup { color:#fff0d8; padding:.75rem 1rem }
+@media(max-width:640px) {
+  .bench { min-height:26rem }
+  .bench img { object-position:54% 47% }
+  .bench::after { background:linear-gradient(0deg,#17100c 2%,#1b100cdb 25%,#20130724 65%) }
+  .row { grid-template-columns:1fr }
+  .budget-rack,.inbox-layout { grid-template-columns:1fr }
+}
+</style>
+</head>
+<body>
+<main>
+<header class="bench">
+<img src="../assets/commission-station.webp" width="1440" height="960" alt="" fetchpriority="high">
+<div class="title"><span class="brand">Studio LaDuke</span><h1>Commission<br>Mission Control</h1>
+<p>Private practice bench. Sample requests stay in this browser.</p></div>
+<nav aria-label="Practice views">
+<button class="switch" id="customer-tab" disabled type="button" aria-pressed="true">Make a request</button>
+<button class="switch" id="artist-tab" disabled type="button" aria-pressed="false">Artist inbox</button>
+</nav></header>
+<p id="startup">If this note stays visible, open the hosted practice link in your browser to run the controls.</p>
+<section id="customer" hidden class="sheet" aria-labelledby="customer-title">
+<h2 id="customer-title">Project folders</h2>
+<div class="file-strip" aria-label="Open a sample folder">
+<button class="folder" type="button" data-sample="logo">Load synthetic formline logo</button><button class="folder" type="button" data-sample="glass">Load glass artwork</button>
+</div>
+<form id="brief" hidden>
+<label for="project">What would you like made?</label>
+<textarea id="project" name="project" rows="3" required minlength="10" maxlength="1000"></textarea>
+<div class="row">
+<div><label for="usage">Intended use</label><select id="usage" name="usage" required><option value="">Choose</option><option>Personal use</option><option>Business or commercial use</option><option>Still deciding</option></select></div>
+<div><label for="material">Digital or physical</label><select id="material" name="material" required><option value="">Choose</option><option>Digital artwork</option><option>Artwork on cardstock</option><option>Artwork on canvas</option><option>Artwork on glass</option><option>Help me choose</option></select></div>
+<div><label for="size">Size</label><input id="size" name="size" maxlength="200"></div>
+<div><label for="format">File format or finish</label><input id="format" name="format" maxlength="200"></div>
+</div>
+<label for="references">References and permissions</label><textarea id="references" name="references" rows="2" maxlength="1000"></textarea>
+<div class="row"><div><label for="deadline">Deadline</label><input id="deadline" name="deadline" maxlength="100"></div><div><label for="budget">Budget note</label><input id="budget" name="budget" maxlength="100"></div></div>
+<fieldset><legend>Closest adjustable budget example</legend><p class="note">These examples help Corey understand the customer’s comfort level. They are not automatic quotes.</p>
+<div class="budget-rack">
+<label class="budget-card"><input type="radio" name="budgetExample" value="$50 focused starting point" required><span><strong>$50</strong><b>Focused start</b><small>One simple direction with limited detail.</small></span></label>
+<label class="budget-card"><input type="radio" name="budgetExample" value="$150 developed custom design" required><span><strong>$150</strong><b>Developed design</b><small>More refinement, detail, or usable formats.</small></span></label>
+<label class="budget-card"><input type="radio" name="budgetExample" value="$250 detailed custom design" required><span><strong>$250</strong><b>Detailed design</b><small>Greater complexity, scope, or commercial needs.</small></span></label>
+</div></fieldset>
+<label for="portfolio">Portfolio preference</label><select id="portfolio" name="portfolio" required><option value="">Choose</option><option>Yes, after delivery</option><option>Ask again before showing it</option><option>Keep this project private</option></select>
+<label for="email">Synthetic reply email</label><input id="email" name="email" type="email" required>
+<p class="rights"><strong>Copyright:</strong> Corey retains copyright unless a separate written transfer is agreed. The quote defines purchased usage rights. Portfolio permission is separate.</p>
+<div class="workbar"><button class="submit" type="submit">Save practice request</button></div>
+</form>
+<noscript>This practice needs JavaScript enabled.</noscript>
+<p id="receipt" role="status"></p>
+</section>
+<section id="artist" class="sheet" aria-labelledby="artist-title" hidden>
+<h2 id="artist-title">Artist inbox</h2>
+<p class="note">Synthetic review only. Messaging, customer delivery, proof links, and payment remain disconnected.</p>
+<div class="inbox-layout"><aside class="inbox-list"><h3>Request folders</h3><div id="orders"></div></aside>
+<article id="order" class="request-card" hidden>
+<h3 id="reference" tabindex="-1"></h3><dl id="request-details"></dl>
+<p><span id="request-status" class="status-stamp"></span></p>
+<div class="workbar"><button id="workspace-open" type="button">Open private formline workspace</button></div>
+<section id="workspace" class="private-workspace" hidden><h4>Private formline workspace</h4><p>The selected brief stays pinned here while Corey works. Customers never see this area, generator controls, notes, or working files.</p><div class="brief-pin"><strong id="workspace-title"></strong><p id="workspace-brief"></p></div><label for="workspace-notes">Private working notes</label><textarea id="workspace-notes" rows="4" maxlength="1500"></textarea><div class="workbar"><button id="workspace-save" type="button">Save private notes</button><button id="workspace-close" type="button">Close workspace</button></div></section>
+<section class="action-panel"><h4>Ask for clarification</h4><label for="clarification">What needs answering?</label><textarea id="clarification" rows="3" minlength="10" maxlength="1500"></textarea><button id="clarify" type="button">Save clarification request</button></section>
+<form id="quote" class="action-panel"><h4>Offer a quote</h4><label for="scope">Exact scope</label><textarea id="scope" name="scope" rows="4" minlength="10" maxlength="2000" required></textarea><div class="row"><div><label for="price">Price</label><input id="price" name="price" type="number" min="1" step=".01" required></div><div><label for="deposit">Deposit</label><input id="deposit" name="deposit" type="number" min="0" step=".01" value="0" required></div><div><label for="timing">Estimated timing</label><input id="timing" name="timing" required></div><div><label for="revisions">Included revisions</label><input id="revisions" name="revisions" type="number" min="0" max="20" value="2" required></div></div><label for="usageTerms">Usage and copyright terms</label><textarea id="usageTerms" name="usageTerms" rows="4" minlength="10" required>Corey LaDuke retains copyright. The customer receives the usage rights described in the accepted quote. Copyright transfer requires a separate written agreement. Portfolio permission remains a separate choice.</textarea><button class="submit" type="submit">Save quote</button></form>
+<section id="quote-result" class="quote-paper" hidden></section>
+<section class="action-panel"><h4>Decline request</h4><label for="decline-note">Reason or customer-facing note</label><textarea id="decline-note" rows="3" minlength="10" maxlength="1500"></textarea><button id="decline" type="button">Decline request</button></section>
+</article></div>
+</section>
+<p id="status" role="status"></p>
+</main>
+<script>
+"use strict";
+
+const key = "studio-laduke-commission-practice-v1";
+const $ = id => document.getElementById(id);
+const status = $("status");
+const form = $("brief");
+const names = {
+  project: "Project", usage: "Intended use", material: "Digital or physical",
+  size: "Size", format: "File format or finish", references: "References and permissions",
+  deadline: "Deadline", budgetExample: "Closest budget example", budget: "Budget note",
+  portfolio: "Portfolio preference", email: "Reply email"
+};
+const samples = {
+  logo: {
+    project: "An original formline salmon-and-cedar logo for a fictional Southeast Alaska fishing guide. It should feel strong at small sizes without copying another artist or using a clan crest.",
+    usage: "Business or commercial use", material: "Digital artwork", size: "Horizontal logo plus square social version",
+    format: "Editable vector SVG and transparent PNG", references: "Salmon, cedar, rain, and tide. No clan crest or supplied artwork.",
+    deadline: "Flexible; first proof in about one week would be useful", budget: "$150–$250 if the scope supports it",
+    budgetExample: "$250 detailed custom design", portfolio: "Ask again before showing it", email: "synthetic.customer@example.test"
+  },
+  glass: {
+    project: "An original raven design painted on a small glass panel for a personal window piece.", usage: "Personal use", material: "Artwork on glass",
+    size: "Approximately 8 × 10 inches", format: "Painted glass, local pickup", references: "Original composition only. No clan crest.",
+    deadline: "Flexible", budget: "Please quote materials separately", budgetExample: "$150 developed custom design",
+    portfolio: "Yes, after delivery", email: "synthetic.customer@example.test"
+  }
+};
+let rows = [];
+let selected;
+let storageAvailable = true;
+try {
+  const saved = JSON.parse(localStorage.getItem(key) || "[]");
+  if (Array.isArray(saved)) rows = saved;
+} catch {
+  storageAvailable = false;
+  status.textContent = "Browser storage is unavailable. Requests will last until you close this tab.";
+}
+
+function persist(message) {
+  try {
+    if (!storageAvailable) throw new Error();
+    localStorage.setItem(key, JSON.stringify(rows));
+    status.textContent = message;
+    return true;
+  } catch {
+    status.textContent = "Saved for this open tab. Browser storage is unavailable.";
+    return false;
+  }
+}
+
+function showArtist(isArtist) {
+  $("customer").hidden = isArtist;
+  $("artist").hidden = !isArtist;
+  $("customer-tab").setAttribute("aria-pressed", !isArtist);
+  $("artist-tab").setAttribute("aria-pressed", isArtist);
+  if (isArtist) renderOrders();
+}
+
+function renderOrders() {
+  const list = $("orders");
+  list.replaceChildren();
+  if (!rows.length) list.textContent = "Save a practice request to see it here.";
+  for (const row of rows) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = row.id + " · " + (row.status || "Received") + " · " + row.fields.budgetExample;
+    button.addEventListener("click", () => openOrder(row));
+    list.append(button);
+  }
+}
+
+function openOrder(row) {
+  selected = row;
+  const list = $("request-details");
+  list.replaceChildren();
+  $("reference").textContent = row.id;
+  for (const [field, label] of Object.entries(names)) {
+    if (!row.fields[field]) continue;
+    const term = document.createElement("dt");
+    const value = document.createElement("dd");
+    term.textContent = label;
+    value.textContent = row.fields[field];
+    list.append(term, value);
+  }
+  $("request-status").textContent = row.status || "Received";
+  $("workspace").hidden = true;
+  $("workspace-notes").value = row.workspaceNotes || "";
+  $("workspace-title").textContent = row.id;
+  $("workspace-brief").textContent = row.fields.project;
+  if (row.quote) {
+    for (const field of ["scope", "price", "deposit", "timing", "revisions", "usageTerms"]) $("quote").elements[field].value = row.quote[field];
+  } else {
+    $("quote").reset();
+    $("deposit").value = "0";
+    $("revisions").value = "2";
+    $("usageTerms").value = "Corey LaDuke retains copyright. The customer receives the usage rights described in the accepted quote. Copyright transfer requires a separate written agreement. Portfolio permission remains a separate choice.";
+  }
+  renderQuote(row);
+  $("order").hidden = false;
+  $("reference").focus();
+}
+
+$("customer-tab").addEventListener("click", () => showArtist(false));
+$("artist-tab").addEventListener("click", () => showArtist(true));
+document.querySelectorAll("[data-sample]").forEach(button => button.addEventListener("click", () => {
+  const sample = samples[button.dataset.sample];
+  form.reset();
+  for (const [field, value] of Object.entries(sample)) {
+    if (field === "budgetExample") {
+      form.querySelector(`[name="budgetExample"][value="${CSS.escape(value)}"]`).checked = true;
+    } else form.elements[field].value = value;
+  }
+  form.elements.project.focus();
+}));
+
+form.addEventListener("submit", event => {
+  event.preventDefault();
+  const fields = Object.fromEntries(new FormData(form));
+  fields.project = fields.project.trim();
+  if (fields.project.length < 10) {
+    $("receipt").textContent = "Add a little more detail about the project.";
+    form.elements.project.focus();
+    return;
+  }
+  const random = new Uint8Array(6);
+  crypto.getRandomValues(random);
+  const id = "PRACTICE-" + Array.from(random, byte => byte.toString(16).padStart(2, "0")).join("").toUpperCase();
+  rows.unshift({ id, fields, status: "Received" });
+  persist("Practice request saved.");
+  $("receipt").textContent = "Saved " + id + ". Open Artist inbox to review it.";
+  form.reset();
+});
+
+$("quote").addEventListener("submit", event => {
+  event.preventDefault();
+  selected.quote = Object.fromEntries(new FormData(event.currentTarget));
+  selected.status = "Quote ready";
+  selected.latestAction = "Quote saved for review. Nothing was sent.";
+  persist("Quote saved in this private practice build.");
+  renderOrders();
+  openOrder(selected);
+});
+
+function renderQuote(row) {
+  const result = $("quote-result");
+  if (!row.quote) { result.hidden = true; result.replaceChildren(); return; }
+  const q = row.quote;
+  result.innerHTML = `<h4>Quote on file</h4><p class="price">$${Number(q.price).toFixed(2)}</p><dl><dt>Scope</dt><dd></dd><dt>Timing</dt><dd></dd><dt>Included revisions</dt><dd></dd><dt>Usage terms</dt><dd></dd><dt>Deposit</dt><dd></dd></dl><p class="note">Saved only. Quote delivery, acceptance, deposit, proof access, and payment are not connected.</p>`;
+  const values = [q.scope, q.timing, q.revisions, q.usageTerms, Number(q.deposit) ? "$" + Number(q.deposit).toFixed(2) : "No deposit"];
+  result.querySelectorAll("dd").forEach((node, index) => { node.textContent = values[index]; });
+  result.hidden = false;
+}
+
+$("clarify").addEventListener("click", () => {
+  const message = $("clarification").value.trim();
+  if (message.length < 10) { status.textContent = "Write the clarification question first."; return; }
+  selected.status = "Needs clarification";
+  selected.latestAction = message;
+  persist("Clarification request saved. No message was sent.");
+  renderOrders(); openOrder(selected);
+});
+
+$("decline").addEventListener("click", () => {
+  const message = $("decline-note").value.trim();
+  if (message.length < 10) { status.textContent = "Write a brief decline note first."; return; }
+  selected.status = "Declined";
+  selected.latestAction = message;
+  persist("Decline decision saved. No message was sent.");
+  renderOrders(); openOrder(selected);
+});
+
+$("workspace-open").addEventListener("click", () => { $("workspace").hidden = false; $("workspace-notes").focus(); });
+$("workspace-close").addEventListener("click", () => { $("workspace").hidden = true; $("workspace-open").focus(); });
+$("workspace-save").addEventListener("click", () => { selected.workspaceNotes = $("workspace-notes").value; persist("Private workspace notes saved with this request."); });
+form.hidden = false;
+$("startup").hidden = true;
+$("customer-tab").disabled = false;
+$("artist-tab").disabled = false;
+showArtist(false);
+</script>
+</body>
+</html>

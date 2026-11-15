@@ -16,8 +16,37 @@ const nextStates = {
   declined: []
 };
 
+export function artistTransitions(status) {
+  return (nextStates[status] ?? []).filter(next => next !== "delivered");
+}
+
 const validId = /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/iu;
 const maxBytes = 16 * 1024;
+
+function cleanText(value, name, max, minimum = 1) {
+  if (typeof value !== "string") throw new Error(`Check ${name}.`);
+  const clean = value.trim().replaceAll("\r\n", "\n");
+  if (clean.length < minimum || clean.length > max || /[\x00-\x08\x0B-\x1F\x7F]/u.test(clean)) throw new Error(`Check ${name}.`);
+  return clean;
+}
+
+export function validateQuote(input) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) throw new Error("Enter a quote.");
+  const priceCents = Number(input.priceCents);
+  const depositCents = Number(input.depositCents || 0);
+  const revisions = Number(input.revisions);
+  if (!Number.isSafeInteger(priceCents) || priceCents < 100 || priceCents > 10_000_000) throw new Error("Check price.");
+  if (!Number.isSafeInteger(depositCents) || depositCents < 0 || depositCents > priceCents) throw new Error("Check deposit.");
+  if (!Number.isSafeInteger(revisions) || revisions < 0 || revisions > 20) throw new Error("Check revisions.");
+  return {
+    scope: cleanText(input.scope, "scope", 2000, 10),
+    priceCents,
+    timing: cleanText(input.timing, "timing", 300),
+    revisions,
+    usageTerms: cleanText(input.usageTerms, "usage terms", 1500, 10),
+    depositCents
+  };
+}
 
 export function openQueue(path) {
   const db = new DatabaseSync(path);
@@ -30,10 +59,45 @@ export function openQueue(path) {
       status TEXT NOT NULL DEFAULT 'received',
       created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     ) STRICT;
+    CREATE TABLE IF NOT EXISTS sms_outbox (
+      reference TEXT PRIMARY KEY REFERENCES requests(reference),
+      status TEXT NOT NULL DEFAULT 'pending'
+        CHECK (status IN ('pending', 'sending', 'accepted', 'failed', 'uncertain')),
+      provider_id TEXT
+    ) STRICT;
+    CREATE TABLE IF NOT EXISTS artist_actions (
+      id INTEGER PRIMARY KEY,
+      reference TEXT NOT NULL REFERENCES requests(reference),
+      kind TEXT NOT NULL CHECK (kind IN ('clarification', 'decline')),
+      message TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ) STRICT;
+    CREATE TABLE IF NOT EXISTS quotes (
+      reference TEXT PRIMARY KEY REFERENCES requests(reference),
+      quote TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ) STRICT;
+    CREATE TRIGGER IF NOT EXISTS commission_sms_after_insert
+    AFTER INSERT ON requests
+    BEGIN
+      INSERT INTO sms_outbox (reference) VALUES (NEW.reference);
+    END;
   `);
   const insert = db.prepare("INSERT INTO requests (id, reference, brief) VALUES (?, ?, ?) ON CONFLICT (id) DO NOTHING");
   const findId = db.prepare("SELECT reference, brief FROM requests WHERE id = ?");
   const advance = db.prepare("UPDATE requests SET status = ? WHERE reference = ? AND status = ?");
+  const transaction = work => {
+    db.exec("BEGIN IMMEDIATE");
+    try {
+      const result = work();
+      db.exec("COMMIT");
+      return result;
+    } catch (error) {
+      db.exec("ROLLBACK");
+      throw error;
+    }
+  };
   return {
     receive(id, payload) {
       if (typeof id !== "string" || !validId.test(id)) throw new RequestError(400);
@@ -54,12 +118,73 @@ export function openQueue(path) {
     },
     show(reference) {
       const row = db.prepare("SELECT reference, status, created_at, brief FROM requests WHERE reference = ?").get(reference);
-      return row && { ...row, brief: JSON.parse(row.brief) };
+      if (!row) return undefined;
+      const quote = db.prepare("SELECT quote, created_at, updated_at FROM quotes WHERE reference = ?").get(reference);
+      const action = db.prepare("SELECT kind, message, created_at FROM artist_actions WHERE reference = ? ORDER BY id DESC LIMIT 1").get(reference);
+      return {
+        ...row,
+        brief: JSON.parse(row.brief),
+        quote: quote && { ...JSON.parse(quote.quote), created_at: quote.created_at, updated_at: quote.updated_at },
+        latestAction: action
+      };
     },
-    update(reference, status) {
+    notification(reference) {
+      return db.prepare("SELECT status, provider_id FROM sms_outbox WHERE reference = ?").get(reference);
+    },
+    claimNotification() {
+      return db.prepare(`
+        UPDATE sms_outbox SET status = 'sending'
+        WHERE reference = (
+          SELECT reference FROM sms_outbox WHERE status = 'pending' ORDER BY rowid LIMIT 1
+        ) RETURNING reference
+      `).get();
+    },
+    finishNotification(reference, status, providerId = null) {
+      return db.prepare(`
+        UPDATE sms_outbox SET status = ?, provider_id = ?
+        WHERE reference = ? AND status = 'sending'
+      `).run(status, providerId, reference).changes === 1;
+    },
+    update(reference, status, expectedStatus) {
       const row = this.show(reference);
-      if (!row || !nextStates[row.status].includes(status)) return false;
+      if (!row || (expectedStatus && row.status !== expectedStatus) || !nextStates[row.status].includes(status)) return false;
       return advance.run(status, reference, row.status).changes === 1;
+    },
+    requestClarification(reference, message, expectedStatus) {
+      const row = this.show(reference);
+      if (!row || row.status !== expectedStatus || !["received", "reviewing"].includes(row.status)) return false;
+      const clean = cleanText(message, "clarification", 1500, 10);
+      const save = () => transaction(() => {
+        db.prepare("INSERT INTO artist_actions (reference, kind, message) VALUES (?, 'clarification', ?)").run(reference, clean);
+        if (row.status === "received") advance.run("reviewing", reference, "received");
+      });
+      save();
+      return true;
+    },
+    decline(reference, message, expectedStatus) {
+      const row = this.show(reference);
+      if (!row || row.status !== expectedStatus || !["received", "reviewing", "quote-ready"].includes(row.status)) return false;
+      const clean = cleanText(message, "decline note", 1500, 10);
+      const save = () => transaction(() => {
+        db.prepare("INSERT INTO artist_actions (reference, kind, message) VALUES (?, 'decline', ?)").run(reference, clean);
+        advance.run("declined", reference, row.status);
+      });
+      save();
+      return true;
+    },
+    saveQuote(reference, input, expectedStatus) {
+      const row = this.show(reference);
+      if (!row || row.status !== expectedStatus || !["received", "reviewing", "quote-ready"].includes(row.status)) return false;
+      const quote = validateQuote(input);
+      const save = () => transaction(() => {
+        db.prepare(`
+          INSERT INTO quotes (reference, quote) VALUES (?, ?)
+          ON CONFLICT(reference) DO UPDATE SET quote = excluded.quote, updated_at = CURRENT_TIMESTAMP
+        `).run(reference, JSON.stringify(quote));
+        if (row.status !== "quote-ready") advance.run("quote-ready", reference, row.status);
+      });
+      save();
+      return true;
     },
     close() { db.close(); }
   };

@@ -58,21 +58,50 @@
             <option value="commercial">Business or commercial use</option>
             <option value="unsure">Still deciding</option>
           </select>
-          <label for="deliverables">Size, format, or physical deliverable</label>
-          <input id="deliverables" name="deliverables" maxlength="300" placeholder="For example, a 12 × 16 print or a vector file for a logo">
+          <label for="material">Digital or physical result (required)</label>
+          <select id="material" name="material" required>
+            <option value="">Choose an option</option>
+            <option value="digital">Digital artwork</option>
+            <option value="cardstock">Artwork on cardstock</option>
+            <option value="canvas">Artwork on canvas</option>
+            <option value="glass">Artwork on glass</option>
+            <option value="unsure">Help me choose</option>
+          </select>
+          <div class="two-fields">
+            <div>
+              <label for="size">Size</label>
+              <input id="size" name="size" maxlength="200" placeholder="For example, 12 × 16 inches">
+            </div>
+            <div>
+              <label for="format">File format or physical finish</label>
+              <input id="format" name="format" maxlength="200" placeholder="Vector logo, PNG, painted glass…">
+            </div>
+          </div>
           <label for="references">References or permissions to discuss</label>
           <textarea id="references" name="references" maxlength="500" rows="2" aria-describedby="reference-hint"></textarea>
           <small id="reference-hint">Describe references, nearby examples, or clan imagery Corey should know about. Keep client files and sensitive information out of this brief.</small>
-          <div class="two-fields">
-            <div>
-              <label for="deadline">Timing</label>
-              <input id="deadline" name="deadline" maxlength="100" placeholder="A date or “flexible”">
-            </div>
-            <div>
-              <label for="budget">Budget range</label>
-              <input id="budget" name="budget" maxlength="100" placeholder="A range or “unsure”">
-            </div>
+          <label for="deadline">Timing</label>
+          <input id="deadline" name="deadline" maxlength="100" placeholder="A date or “flexible”">
+        </fieldset>
+        <fieldset>
+          <legend>Choose the closest budget example</legend>
+          <p class="budget-note">These are adjustable examples for review, not automatic prices. Corey sets the quote after checking complexity, scope, size, materials, usage, licensing, and revisions.</p>
+          <div class="budget-examples">
+            <label><input type="radio" name="budgetExample" value="example-50" required><span><strong>$50</strong><b>Focused starting point</b><small>One simple direction with limited detail.</small></span></label>
+            <label><input type="radio" name="budgetExample" value="example-150" required><span><strong>$150</strong><b>Developed custom design</b><small>More refinement, detail, or usable formats.</small></span></label>
+            <label><input type="radio" name="budgetExample" value="example-250" required><span><strong>$250</strong><b>Detailed custom design</b><small>Greater complexity, scope, or commercial needs.</small></span></label>
+            <label><input type="radio" name="budgetExample" value="custom" required><span><strong>?</strong><b>Another budget</b><small>Tell Corey what you need or ask for guidance.</small></span></label>
           </div>
+          <label for="budget">Anything Corey should know about the budget?</label>
+          <input id="budget" name="budget" maxlength="100" placeholder="A firm maximum, a range, or “help me choose”">
+          <label for="portfolioPermission">May Corey show the finished piece in his portfolio? (required)</label>
+          <select id="portfolioPermission" name="portfolioPermission" required>
+            <option value="">Choose a preference</option>
+            <option value="yes">Yes, after delivery</option>
+            <option value="later">Ask me again before showing it</option>
+            <option value="no">Keep this project private</option>
+          </select>
+          <p class="rights-note"><strong>Copyright:</strong> Corey keeps copyright unless a separate written transfer is included in the quote. Your quote explains the usage rights you are purchasing. Portfolio permission is a separate choice.</p>
         </fieldset>
         <fieldset>
           <legend>Where to reply</legend>
