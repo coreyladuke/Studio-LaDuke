@@ -5,16 +5,6 @@ const narrowRoom = matchMedia("(max-width: 650px)");
 const wall = document.querySelector(".mounted-art-wall");
 const rainGlass = document.querySelector(".rain-layer");
 
-const artwork = {
-  "ktn-crab": ["Ketchikan crab", "3ABA2FB4-184C-4FB1-8D85-4118FA503931.png"],
-  nightlight: ["Nightlight", "7528563F-9204-4651-A65A-2A7450DCE740.png"],
-  "hump-day": ["Hump Day", "9EAA20AB-901D-41E1-AC98-64455D1A291D.png"],
-  detail: ["Painted work from the Studio LaDuke gallery", "IMG_0082.jpeg"],
-  salmon: ["King salmon", "5009BA2B-780C-4A6C-A6AA-4B5CDD3174C6.png"],
-  buoy: ["Oh Buoy", "650B0A6A-1B85-4665-82D7-95FF79C8761E.png"],
-  tablet: ["Circular black-and-white design", "9258DAB5-6EFA-4099-8DC9-EAD700BDA166.png"]
-};
-
 // Each mount is measured on its own room plate, clockwise from the upper left.
 const wide = {
   size: [1535, 1024],
@@ -22,9 +12,9 @@ const wide = {
     ["ktn-crab", [[1122, 60], [1267, 52], [1268, 191], [1122, 193]]],
     ["nightlight", [[1330, 51], [1481, 42], [1481, 191], [1332, 195]]],
     ["hump-day", [[1114, 256], [1293, 257], [1294, 367], [1112, 356]]],
-    ["detail", [[1350, 260], [1432, 262], [1431, 377], [1349, 371]], "lamp"],
+    ["detail", [[1350, 260], [1432, 262], [1431, 377], [1349, 371]]],
     ["salmon", [[1107, 410], [1212, 420], [1211, 490], [1107, 486]]],
-    ["buoy", [[1275, 429], [1382, 436], [1378, 520], [1273, 504]], "pencils"],
+    ["buoy", [[1275, 429], [1382, 436], [1378, 520], [1273, 504]]],
     ["tablet", [[1297, 648], [1414, 682], [1341, 752], [1210, 705]]]
   ],
   panes: [[480, 68, 148, 325], [645, 59, 231, 361], [899, 55, 146, 340]]
@@ -58,6 +48,8 @@ function setMount(link, points, scaleX, scaleY) {
   const d = (p1.y - p0.y + g * p1.y) / width;
   const e = (p3.y - p0.y + h * p3.y) / height;
 
+  link.style.left = "0";
+  link.style.top = "0";
   link.style.width = `${width}px`;
   link.style.height = `${height}px`;
   link.style.transform = `matrix3d(${a},${d},0,${g / width},${b},${e},0,${h / height},0,0,1,0,${p0.x},${p0.y},0,1)`;
@@ -68,19 +60,6 @@ function placeFrontRoom() {
   const [width, height] = next.size;
   if (scene !== next) {
     scene = next;
-    wall.replaceChildren(...scene.art.map(([name, , mask]) => {
-      const [label, filename] = artwork[name];
-      const link = document.createElement("a");
-      const image = new Image();
-      link.className = ["mounted-art", name, mask].filter(Boolean).join(" ");
-      link.href = `gallery.html?from=front-room&art=${encodeURIComponent(filename)}`;
-      image.src = `assets/front-art/${name}.webp`;
-      image.alt = label;
-      image.decoding = "async";
-      link.append(image);
-      return link;
-    }));
-
     rainGlass.replaceChildren(...scene.panes.map(([x, y, w, h], i) => {
       const pane = document.createElement("div");
       pane.className = "wet-pane";
@@ -103,7 +82,9 @@ function placeFrontRoom() {
     }));
   }
 
-  Array.from(wall.children).forEach((link, i) => {
+  if (!room.clientWidth || !room.clientHeight) return;
+  const activeMounts = wall.querySelectorAll(next === tall ? ".mount-tall" : ".mount-wide");
+  activeMounts.forEach((link, i) => {
     setMount(link, scene.art[i][1], room.clientWidth / width, room.clientHeight / height);
   });
 }

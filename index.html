@@ -126,7 +126,6 @@
     .mounted-art-wall { position:absolute; inset:0; z-index:4; pointer-events:none }
     .mounted-art {
       position:absolute;
-      left:0; top:0;
       overflow:hidden;
       display:grid;
       place-items:center;
@@ -134,6 +133,12 @@
       transform-origin:0 0;
       background:#c8ab86;
       isolation:isolate;
+    }
+
+    .mounted-art.mount-tall { display:none }
+    @media (max-width: 650px) {
+      .mounted-art.mount-wide { display:none }
+      .mounted-art.mount-tall { display:grid }
     }
 
     .mounted-art img {
@@ -714,7 +719,17 @@
     <div class="room-dimmer" aria-hidden="true"></div>
     <div class="lamp-glow" aria-hidden="true"></div>
     <div class="rain-layer" aria-hidden="true"></div>
-    <div class="mounted-art-wall" aria-label="Artwork in the front room"></div>
+    <div class="mounted-art-wall" aria-label="Artwork in the front room">
+      <a class="mounted-art mount-wide ktn-crab" style="left:73.094463%;top:5.859375%;width:9.446254%;height:12.988281%" href="gallery.html?from=front-room&amp;art=3ABA2FB4-184C-4FB1-8D85-4118FA503931.png"><img src="assets/front-art/ktn-crab.webp" alt="Ketchikan crab" decoding="async"></a>
+      <a class="mounted-art mount-wide nightlight" style="left:86.644951%;top:4.980469%;width:9.837134%;height:14.062500%" href="gallery.html?from=front-room&amp;art=7528563F-9204-4651-A65A-2A7450DCE740.png"><img src="assets/front-art/nightlight.webp" alt="Nightlight" decoding="async"></a>
+      <a class="mounted-art mount-wide hump-day" style="left:72.573290%;top:25.000000%;width:11.661238%;height:9.765625%" href="gallery.html?from=front-room&amp;art=9EAA20AB-901D-41E1-AC98-64455D1A291D.png"><img src="assets/front-art/hump-day.webp" alt="Hump Day" decoding="async"></a>
+      <a class="mounted-art mount-wide detail lamp" style="left:87.947883%;top:25.390625%;width:5.342020%;height:10.839844%" href="gallery.html?from=front-room&amp;art=IMG_0082.jpeg"><img src="assets/front-art/detail.webp" alt="Painted work from the Studio LaDuke gallery" decoding="async"></a>
+      <a class="mounted-art mount-wide salmon" style="left:72.117264%;top:40.039062%;width:6.840391%;height:7.421875%" href="gallery.html?from=front-room&amp;art=5009BA2B-780C-4A6C-A6AA-4B5CDD3174C6.png"><img src="assets/front-art/salmon.webp" alt="King salmon" decoding="async"></a>
+      <a class="mounted-art mount-wide buoy pencils" style="left:83.061889%;top:41.894531%;width:6.970684%;height:7.324219%" href="gallery.html?from=front-room&amp;art=650B0A6A-1B85-4665-82D7-95FF79C8761E.png"><img src="assets/front-art/buoy.webp" alt="Oh Buoy" decoding="async"></a>
+      <a class="mounted-art mount-wide tablet" style="left:84.495114%;top:63.281250%;width:7.622150%;height:5.566406%" href="gallery.html?from=front-room&amp;art=9258DAB5-6EFA-4099-8DC9-EAD700BDA166.png"><img src="assets/front-art/tablet.webp" alt="Circular black-and-white design" decoding="async"></a>
+      <a class="mounted-art mount-tall ktn-crab" style="left:83.333333%;top:6.852368%;width:11.301370%;height:6.406685%" href="gallery.html?from=front-room&amp;art=3ABA2FB4-184C-4FB1-8D85-4118FA503931.png"><img src="assets/front-art/ktn-crab.webp" alt="Ketchikan crab" decoding="async"></a>
+      <a class="mounted-art mount-tall hump-day" style="left:82.534247%;top:16.434540%;width:12.557078%;height:4.122563%" href="gallery.html?from=front-room&amp;art=9EAA20AB-901D-41E1-AC98-64455D1A291D.png"><img src="assets/front-art/hump-day.webp" alt="Hump Day" decoding="async"></a>
+    </div>
 
     <a
       class="enter"

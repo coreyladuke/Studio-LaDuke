@@ -514,7 +514,7 @@ canvas{
       <li>After clearing your group, pocket the 8 ball legally to win.</li>
       <li>Pocketing the 8 early, or scratching while pocketing it, loses the rack.</li>
     </ul>
-    <p><strong>Controls:</strong> put your finger behind the cue ball, on the cue side. Drag the back of the cue around the ball until the aiming line points where you want. Pull the left power meter downward and release to shoot.</p>
+    <p><strong>Controls:</strong> drag around the cue ball to rotate the aim. Lift your finger and resume from another spot without losing your angle. Pull the left power meter downward and release to shoot.</p>
     <button class="rules-close" id="rulesClose" type="button">Back to the table</button>
   </div>
 </dialog>
@@ -535,6 +535,9 @@ root.dataset.ready="1";
 
 const canvas=document.getElementById("table");
 const ctx=canvas.getContext("2d");
+const tableSurface=document.createElement("canvas");
+tableSurface.width=canvas.width;
+tableSurface.height=canvas.height;
 const statusEl=document.getElementById("status");
 const meter=document.getElementById("powerMeter");
 const fill=document.getElementById("powerFill");
@@ -559,10 +562,12 @@ const bottom=H-rail;
 const R=16.0;
 const pocketVisualR=27.0;
 const pocketCaptureR=29.0;
-const pocketMouth=43.0;
+// A center that clears the jaw must also be within capture distance at the rail.
+const pocketMouth=23;
+const physicsTick=1000/120;
 
-const friction=0.9913;
-const stopSpeed=0.042;
+const friction=0.987;
+const stopSpeed=0.10;
 const maxShot=16.0;
 
 const colors={
@@ -598,7 +603,8 @@ let current=0;
 let groups=[null,null];
 let aimAngle=0;
 let ballsMoving=false;
-let aiming=false;
+let aimDrag=null;
+let canvasPointer=null;
 let meterDrag=false;
 let power=0;
 let shot=null;
@@ -607,6 +613,7 @@ let ballInHand=false;
 let cueDrag=false;
 let breakShot=true;
 let lastTime=performance.now();
+let physicsTime=0;
 
 let audioCtx=null;
 let noiseBuffer=null;
@@ -646,9 +653,9 @@ function countRemaining(type){
 function makeBall(n,x,y){
   return {
     n,x,y,vx:0,vy:0,pocketed:false,
-    rollPhase:Math.random()*Math.PI*2,
-    rollDir:0,
-    stripeSpin:Math.random()*Math.PI*2
+    face:[0,0,1],
+    right:[1,0,0],
+    down:[0,1,0]
   };
 }
 
@@ -667,6 +674,7 @@ function updateHud(){
 
 function resetRack(){
   balls=[];
+  physicsTime=0;
   current=0;
   groups=[null,null];
   aimAngle=0;
@@ -692,7 +700,7 @@ function resetRack(){
     }
   }
 
-  setStatus("Player 1 breaks. Grab the cue from behind the cue ball, aim, then pull the power meter and release.");
+  setStatus("Player 1 breaks. Drag around the cue ball to aim, then pull the power meter and release.");
   updateHud();
   updatePower(0);
   draw();
@@ -798,25 +806,23 @@ function playClack(strength){
 /* ---------- INPUT ---------- */
 
 function canvasDown(e){
+  if(gameOver||ballsMoving||canvasPointer!==null||e.button!==0) return;
   ensureAudio();
-  if(gameOver||ballsMoving) return;
-
   const pt=localPoint(e);
+  canvasPointer=e.pointerId;
+  canvas.setPointerCapture(e.pointerId);
 
   if(ballInHand){
     cueDrag=true;
-    canvas.setPointerCapture(e.pointerId);
     moveCueTo(pt.x,pt.y);
     return;
   }
 
-  aiming=true;
-  canvas.setPointerCapture(e.pointerId);
-  setAimFromCueSide(pt.x,pt.y);
+  aimDrag=pt;
 }
 
 function canvasMove(e){
-  if(gameOver||ballsMoving) return;
+  if(e.pointerId!==canvasPointer||gameOver||ballsMoving) return;
   const pt=localPoint(e);
 
   if(ballInHand&&cueDrag){
@@ -824,28 +830,43 @@ function canvasMove(e){
     return;
   }
 
-  if(aiming) setAimFromCueSide(pt.x,pt.y);
+  if(aimDrag){
+    const c=cue();
+    const ax=aimDrag.x-c.x;
+    const ay=aimDrag.y-c.y;
+    const bx=pt.x-c.x;
+    const by=pt.y-c.y;
+    const dot=ax*bx+ay*by;
+    // Ignore crossings of the cue ball where the angle is undefined or jumps.
+    if(Math.hypot(ax,ay)>R&&Math.hypot(bx,by)>R&&dot>0){
+      aimAngle+=Math.atan2(ax*by-ay*bx,dot);
+      draw();
+    }
+    aimDrag=pt;
+  }
 }
 
 function canvasUp(e){
-  if(ballInHand&&cueDrag){
-    cueDrag=false;
-    const pt=localPoint(e);
-    const legal=legalCueSpot(pt.x,pt.y);
+  if(e.pointerId!==canvasPointer) return;
+  canvasPointer=null;
+  aimDrag=null;
+  if(!ballInHand||!cueDrag) return;
+  cueDrag=false;
+  if(e.type!=="pointerup") return;
 
-    if(legal){
-      const c=cue();
-      c.x=legal.x;
-      c.y=legal.y;
-      ballInHand=false;
-      setStatus(`${playerName(current)} placed the cue ball. Grab the cue behind it and aim.`);
-      updateHud();
-      draw();
-    }else{
-      setStatus("That cue-ball spot is blocked. Drag it somewhere clear.");
-    }
+  const pt=localPoint(e);
+  const legal=legalCueSpot(pt.x,pt.y);
+  if(!legal){
+    setStatus("That cue-ball spot is blocked. Drag it somewhere clear.");
+    return;
   }
-  aiming=false;
+  const c=cue();
+  c.x=legal.x;
+  c.y=legal.y;
+  ballInHand=false;
+  setStatus(`${playerName(current)} placed the cue ball. Drag around it to aim.`);
+  updateHud();
+  draw();
 }
 
 function moveCueTo(x,y){
@@ -859,16 +880,6 @@ function moveCueTo(x,y){
     c.x=clamp(x,left+R,right-R);
     c.y=clamp(y,top+R,bottom-R);
   }
-  draw();
-}
-
-/* Finger is on the back of the cue. Aim goes 180° away from the finger. */
-function setAimFromCueSide(x,y){
-  const c=cue();
-  const dx=c.x-x;
-  const dy=c.y-y;
-  if(Math.hypot(dx,dy)<12) return;
-  aimAngle=Math.atan2(dy,dx);
   draw();
 }
 
@@ -926,10 +937,10 @@ function shoot(p){
   const speed=2.2+p*maxShot;
   c.vx=Math.cos(aimAngle)*speed;
   c.vy=Math.sin(aimAngle)*speed;
-  c.rollDir=aimAngle;
 
   playClick("cue",p);
 
+  physicsTime=0;
   ballsMoving=true;
   updatePower(0);
   setStatus(`${playerName(current)} shoots…`);
@@ -970,25 +981,25 @@ function resolveWalls(b){
   if(b.x-R<left && !isSidePocketMouth(b.y)){
     strength=Math.max(strength,Math.abs(b.vx));
     b.x=left+R;
-    b.vx=Math.abs(b.vx)*.91;
+    if(b.vx<0) b.vx*=-.91;
     hit=true;
   }
   if(b.x+R>right && !isSidePocketMouth(b.y)){
     strength=Math.max(strength,Math.abs(b.vx));
     b.x=right-R;
-    b.vx=-Math.abs(b.vx)*.91;
+    if(b.vx>0) b.vx*=-.91;
     hit=true;
   }
   if(b.y-R<top && !isTopBottomPocketMouth(b.x)){
     strength=Math.max(strength,Math.abs(b.vy));
     b.y=top+R;
-    b.vy=Math.abs(b.vy)*.91;
+    if(b.vy<0) b.vy*=-.91;
     hit=true;
   }
   if(b.y+R>bottom && !isTopBottomPocketMouth(b.x)){
     strength=Math.max(strength,Math.abs(b.vy));
     b.y=bottom-R;
-    b.vy=-Math.abs(b.vy)*.91;
+    if(b.vy>0) b.vy*=-.91;
     hit=true;
   }
 
@@ -1036,29 +1047,56 @@ function resolveBallCollision(a,b){
   }
 }
 
+function rollBall(b,dx,dy){
+  const distance=Math.hypot(dx,dy);
+  if(!distance||b.n===0) return;
+  const axisX=-dy/distance;
+  const axisY=dx/distance;
+  const angle=distance/R;
+  const cosine=Math.cos(angle);
+  const sine=Math.sin(angle);
+
+  for(const vector of [b.face,b.right,b.down]){
+    const [x,y,z]=vector;
+    const parallel=(axisX*x+axisY*y)*(1-cosine);
+    vector[0]=x*cosine+axisY*z*sine+axisX*parallel;
+    vector[1]=y*cosine-axisX*z*sine+axisY*parallel;
+    vector[2]=z*cosine+(axisX*y-axisY*x)*sine;
+  }
+}
+
+function capturePocket(b,x,y){
+  const dx=b.x-x;
+  const dy=b.y-y;
+  const distance=dx*dx+dy*dy;
+  for(const pocket of pockets){
+    const along=distance ? clamp(((pocket.x-x)*dx+(pocket.y-y)*dy)/distance,0,1) : 0;
+    const px=x+dx*along-pocket.x;
+    const py=y+dy*along-pocket.y;
+    if(px*px+py*py<=pocketCaptureR*pocketCaptureR){
+      pocketBall(b);
+      return true;
+    }
+  }
+  return false;
+}
+
 function physicsStep(dt){
-  const scale=Math.min(2.1,dt/16.667);
+  const scale=dt/(1000/60);
+  const drag=Math.pow(friction,scale);
 
   for(const b of balls){
     if(b.pocketed) continue;
+    const x=b.x;
+    const y=b.y;
+    b.x+=b.vx*scale;
+    b.y+=b.vy*scale;
 
-    const dx=b.vx*scale;
-    const dy=b.vy*scale;
-    const travel=Math.hypot(dx,dy);
-
-    b.x+=dx;
-    b.y+=dy;
-
-    if(travel>.002){
-      b.rollDir=Math.atan2(dy,dx);
-      b.rollPhase+=travel/(R*.72);
-      b.stripeSpin+=travel/(R*1.25);
-    }
-
-    const f=Math.pow(friction,scale);
-    b.vx*=f;
-    b.vy*=f;
-
+    if(capturePocket(b,x,y)) continue;
+    resolveWalls(b);
+    rollBall(b,b.x-x,b.y-y);
+    b.vx*=drag;
+    b.vy*=drag;
     if(Math.hypot(b.vx,b.vy)<stopSpeed){
       b.vx=0;
       b.vy=0;
@@ -1074,23 +1112,9 @@ function physicsStep(dt){
         resolveBallCollision(a,b);
       }
     }
-  }
-
-  for(const b of balls){
-    if(b.pocketed) continue;
-
-    let pocketed=false;
-
-    for(const p of pockets){
-      const d=Math.hypot(b.x-p.x,b.y-p.y);
-      if(d<pocketCaptureR){
-        pocketBall(b);
-        pocketed=true;
-        break;
-      }
+    for(const b of balls){
+      if(!b.pocketed&&!capturePocket(b,b.x,b.y)) resolveWalls(b);
     }
-
-    if(!pocketed) resolveWalls(b);
   }
 
   const moving=balls.some(
@@ -1372,6 +1396,55 @@ function drawBallShadow(b){
   ctx.restore();
 }
 
+// Sample the visible hemisphere once. The stripe and the number use the
+// same rolling basis, while the light stays fixed above the table.
+const stripeRows=Array.from({length:R*2},(_,row)=>{
+  const y=(row+.5-R)/R;
+  return Array.from({length:R*2},(_,column)=>{
+    const x=(column+.5-R)/R;
+    return Math.sqrt(1-x*x-y*y);
+  });
+});
+
+function drawStripe(b){
+  const [axisX,axisY,axisZ]=b.down;
+  ctx.fillStyle=colors[b.n];
+  ctx.beginPath();
+  for(let row=0;row<stripeRows.length;row++){
+    const vertical=(row+.5-R)*axisY/R;
+    let start=-1;
+    for(let column=0;column<=R*2;column++){
+      const latitude=(column+.5-R)*axisX/R+vertical+stripeRows[row][column]*axisZ;
+      if(Math.abs(latitude)<=.46){
+        if(start===-1) start=column;
+      }else if(start!==-1){
+        ctx.rect(start-R,row-R,column-start,1);
+        start=-1;
+      }
+    }
+  }
+  ctx.fill();
+}
+
+function drawBallNumber(b){
+  const [x,y,z]=b.face;
+  const side=z<0 ? -1 : 1;
+  if(Math.abs(z)<.13) return;
+  ctx.save();
+  ctx.globalAlpha=clamp((Math.abs(z)-.13)/.23,0,1);
+  ctx.transform(b.right[0]*side,b.right[1]*side,b.down[0],b.down[1],x*R*.94*side,y*R*.94*side);
+  ctx.beginPath();
+  ctx.arc(0,0,R*.38,0,Math.PI*2);
+  ctx.fillStyle="#f7f1df";
+  ctx.fill();
+  ctx.fillStyle="#141414";
+  ctx.font=`700 ${R*.66}px Arial`;
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.fillText(String(b.n),0,R*.03);
+  ctx.restore();
+}
+
 function drawBall(b){
   if(b.pocketed) return;
 
@@ -1384,26 +1457,11 @@ function drawBall(b){
   ctx.arc(0,0,R,0,Math.PI*2);
   ctx.clip();
 
-  /* Base sphere color. */
-  if(b.n===0){
-    ctx.fillStyle="#f6f1df";
-    ctx.fillRect(-R,-R,R*2,R*2);
-  }else if(b.n===8){
-    ctx.fillStyle="#171717";
-    ctx.fillRect(-R,-R,R*2,R*2);
-  }else if(isStripe(b.n)){
-    ctx.fillStyle="#f4efde";
-    ctx.fillRect(-R,-R,R*2,R*2);
+  ctx.fillStyle=isStripe(b.n) ? "#f4efde" : colors[b.n];
+  ctx.fillRect(-R,-R,R*2,R*2);
 
-    ctx.save();
-    ctx.rotate(b.stripeSpin*.30);
-    ctx.fillStyle=colors[b.n];
-    ctx.fillRect(-R*1.45,-R*.47,R*2.9,R*.94);
-    ctx.restore();
-  }else{
-    ctx.fillStyle=colors[b.n];
-    ctx.fillRect(-R,-R,R*2,R*2);
-  }
+  if(isStripe(b.n)) drawStripe(b);
+  if(b.n!==0) drawBallNumber(b);
 
   /* Sphere shading, darker at bottom-right with a bright upper-left reflection. */
   const shade=ctx.createRadialGradient(
@@ -1430,37 +1488,6 @@ function drawBall(b){
   ctx.beginPath();
   ctx.arc(-R*.39,-R*.46,R*.28,0,Math.PI*2);
   ctx.fill();
-
-  /* Number patch travels over the ball as it rolls. */
-  if(b.n!==0){
-    const wave=Math.sin(b.rollPhase);
-    const side=Math.cos(b.rollPhase*.73)*.15;
-    const ox=Math.cos(b.rollDir)*wave*R*.48 + Math.cos(b.rollDir+Math.PI/2)*side*R;
-    const oy=Math.sin(b.rollDir)*wave*R*.48 + Math.sin(b.rollDir+Math.PI/2)*side*R;
-    const edge=Math.abs(wave);
-    const spotScale=.98-edge*.20;
-
-    ctx.save();
-    ctx.translate(ox,oy);
-    ctx.scale(spotScale,spotScale);
-
-    ctx.beginPath();
-    ctx.arc(0,0,R*.42,0,Math.PI*2);
-    ctx.fillStyle="#f7f1df";
-    ctx.fill();
-
-    ctx.strokeStyle="rgba(0,0,0,.17)";
-    ctx.lineWidth=1;
-    ctx.stroke();
-
-    ctx.fillStyle="#141414";
-    ctx.font=`700 ${R*.70}px Arial`;
-    ctx.textAlign="center";
-    ctx.textBaseline="middle";
-    ctx.fillText(String(b.n),0,R*.03);
-
-    ctx.restore();
-  }
 
   ctx.restore();
 
@@ -1562,7 +1589,7 @@ function drawBallInHandGhost(){
 }
 
 function draw(){
-  drawTable();
+  ctx.drawImage(tableSurface,0,0);
   for(const b of balls) drawBall(b);
   drawAim();
   drawBallInHandGhost();
@@ -1571,8 +1598,14 @@ function draw(){
 function loop(now){
   const dt=Math.min(34,now-lastTime);
   lastTime=now;
-  if(ballsMoving) physicsStep(dt);
-  draw();
+  if(ballsMoving){
+    physicsTime+=dt;
+    while(ballsMoving&&physicsTime>=physicsTick){
+      physicsTime-=physicsTick;
+      physicsStep(physicsTick);
+    }
+    draw();
+  }
   requestAnimationFrame(loop);
 }
 
@@ -1582,6 +1615,7 @@ canvas.addEventListener("pointerdown",canvasDown);
 canvas.addEventListener("pointermove",canvasMove);
 canvas.addEventListener("pointerup",canvasUp);
 canvas.addEventListener("pointercancel",canvasUp);
+canvas.addEventListener("lostpointercapture",canvasUp);
 
 meter.addEventListener("pointerdown",meterDown);
 meter.addEventListener("pointermove",meterMove);
@@ -1645,6 +1679,8 @@ rulesPanel.addEventListener("click",e=>{
   if(e.target===rulesPanel) rulesPanel.close();
 });
 
+drawTable();
+tableSurface.getContext("2d").drawImage(canvas,0,0);
 resetRack();
 requestAnimationFrame(loop);
 })();
