@@ -166,6 +166,17 @@
     .mounted-art.pencils { clip-path:polygon(0 0,100% 0,100% 82%,80% 79%,62% 100%,4% 100%,4% 66%,0 64%) }
     .mounted-art.tablet { background:#bdb6a9; border-radius:7px }
     .mounted-art.tablet::after { background:linear-gradient(109deg,#161d28a1,transparent 65%,#e6dbc945) }
+    .mounted-art.cover-on-shelf {
+      left:2.8%;
+      top:49%;
+      width:7.2%;
+      height:16%;
+      z-index:4;
+      pointer-events:none;
+      background:#211b13;
+      transform:skew(8deg,-9deg);
+    }
+    .cover-on-shelf img { object-fit:fill; filter:brightness(.79) saturate(.93) }
 
     .rain-layer { inset:0; z-index:7; opacity:0; transition:opacity .5s ease; pointer-events:none }
     .front-room.raining .rain-layer { opacity:1 }
@@ -276,9 +287,9 @@
 
     .book-hotspot {
       left: 2.5%;
-      top: 45.9%;
-      width: 9.2%;
-      height: 19.2%;
+      top: 47.2%;
+      width: 9.3%;
+      height: 18.1%;
     }
 
     .window-hotspot {
@@ -740,6 +751,9 @@
     <button class="room-hotspot lamp-hotspot" id="lampHotspot" type="button" aria-label="Turn the desk lamp off or on"></button>
     <button class="room-hotspot guitar-hotspot" id="guitarHotspot" type="button" aria-label="Play the guitar"></button>
     <button class="room-hotspot bob-hotspot" id="bobHotspot" type="button" aria-label="Talk to Bob"></button>
+    <div class="mounted-art mount-wide cover-on-shelf" aria-hidden="true">
+      <img src="assets/everybody-home-cover.webp" alt="" width="620" height="945">
+    </div>
     <a class="room-hotspot book-hotspot" href="books.html" aria-label="Open Everybody Deserves to Go Home"></a>
     <button class="room-hotspot window-hotspot" id="windowHotspot" type="button" aria-label="Change the weather outside" aria-pressed="false"></button>
     <button class="rain-sound" id="rainSound" type="button" hidden>Mute rain</button>

@@ -10,7 +10,7 @@
     body {
       margin: 0;
       min-height: 100dvh;
-      background: radial-gradient(ellipse at 44% 25%, #524165, #291e39 56%, #1b1425 100%);
+      background: linear-gradient(90deg,#17101845,#191320b8), #241c32 url("../assets/prism-workbench.webp") center / cover fixed;
       color: #f8eaf5;
       font: 1rem/1.45 Georgia, serif;
     }
@@ -26,7 +26,7 @@
       align-content: center;
       grid-template-columns: minmax(0, 1fr) minmax(16rem, .88fr);
       align-items: center;
-      gap: clamp(1.1rem, 5vw, 3.2rem);
+      gap: clamp(1.1rem, 7vw, 5rem);
     }
     main img {
       display: block;
@@ -34,10 +34,13 @@
       max-width: 450px;
       height: auto;
       margin-inline: auto;
-      transform: rotate(-4deg);
-      filter: drop-shadow(0 15px 11px #0e0914c9);
+      transform: rotate(-7deg);
+      filter: drop-shadow(3px 17px 10px #0b0711);
+      transition:transform .2s ease;
     }
-    h1 { margin: 0; font-size: clamp(2.35rem, 6vw, 4.4rem); line-height: 1; letter-spacing: -.045em; }
+    .prism-cart:hover img, .prism-cart:focus-visible img { transform:translateY(-5px) rotate(-3deg) }
+    .launch-copy { text-shadow:0 2px 8px #171017, 0 1px 2px #150e18 }
+    h1 { margin: 0; font-size: clamp(2.75rem, 7.5vw, 6rem); line-height: 1; letter-spacing: -.045em; }
     p { max-width: 25rem; margin: .75rem 0 1.05rem; }
     nav { display: flex; flex-wrap: wrap; gap: .35rem 1.4rem; }
     nav a, .shelf { display: inline-flex; align-items: center; min-height: 44px; }
@@ -47,22 +50,29 @@
       z-index: 2;
       top: max(8px, env(safe-area-inset-top));
       left: max(8px, env(safe-area-inset-left));
-      padding-inline: .65rem;
-      background: #f1dfc8;
-      color: #342215;
-      box-shadow: 2px 3px #100a15;
+      padding-inline: .55rem;
+      background: #201829;
+      color: #fff0d5;
+      box-shadow: 0 2px 6px #100a15c9;
     }
     iframe { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; background: #211b30; }
     @media (max-width: 600px) {
-      main { grid-template-columns: 1fr; align-content: start; padding-top: 1.6rem; }
+      body { background-attachment:scroll }
+      main { grid-template-columns: 1fr; align-content: center; padding-block:1.6rem }
       main img { width: min(70vw, 320px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      main img { transition:none }
+      .prism-cart:is(:hover,:focus-visible) img { transform:rotate(-7deg) }
     }
   </style>
 </head>
 <body>
   <main id="prism-intro">
-    <img src="../assets/cartridge-prism.webp" alt="" width="497" height="489">
-    <section aria-labelledby="prism-title">
+    <a class="prism-cart" href="https://prism-pals-playtest.vercel.app/" aria-label="Insert the Prism Pals cartridge">
+      <img src="../assets/cartridge-prism.webp" alt="" width="497" height="489">
+    </a>
+    <section class="launch-copy" aria-labelledby="prism-title">
       <h1 id="prism-title">Prism Pals</h1>
       <p>Help Pip bring the living spectrum back into tune.</p>
       <nav aria-label="Prism Pals">
@@ -87,11 +97,13 @@
       game.focus();
     }
 
-    start.addEventListener("click", event => {
-      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-      event.preventDefault();
-      launchPrism();
-    });
+    for (const control of [start, document.querySelector(".prism-cart")]) {
+      control.addEventListener("click", event => {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        launchPrism();
+      });
+    }
 
     if (new URLSearchParams(location.search).get("play") === "1") launchPrism();
   </script>

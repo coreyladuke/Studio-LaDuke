@@ -10,6 +10,23 @@
 .touch-controls.joystick-ready .dpad{display:none!important}
 .touch-controls.joystick-ready .joystick{display:block!important}
 @media(max-width:900px),(hover:none),(pointer:coarse){html,body{width:100%;height:100%;min-height:100dvh;overflow:hidden}body{display:block;padding:0;background:#07110f}.shell{position:fixed;inset:0;width:100%;height:100dvh}header,.under,.cards{display:none!important}.stage{position:absolute;inset:0;border:0;border-radius:0;background:#07110f;box-shadow:none}.stage:before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 46%,rgba(0,0,0,.5));pointer-events:none;z-index:1}canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;z-index:0}.touch-controls{display:block!important;z-index:6;--dpad-unit:clamp(42px,12vw,54px);--action-unit:clamp(43px,12vw,54px)}.dpad{display:grid!important;left:max(14px,env(safe-area-inset-left));bottom:max(18px,env(safe-area-inset-bottom))}.action-pad{display:grid!important;right:max(14px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom))}.touch-controls button{background:rgba(12,22,20,.46);border-color:rgba(238,224,188,.52);box-shadow:0 2px 8px rgba(0,0,0,.36),inset 0 1px rgba(255,255,255,.12)}.dpad button{border-radius:9px}.action-pad button{background:rgba(31,39,35,.46)}.action-pad button.primary{background:rgba(126,78,38,.56)}}@media(max-width:600px) and (orientation:portrait){.touch-controls{--dpad-unit:44px;--action-unit:45px}.dpad,.action-pad{bottom:max(24px,env(safe-area-inset-bottom))}}
+  .launch-overlay {
+    background:linear-gradient(#07141045, #050c0adc), #101f16 url("../assets/heimr-woodline.webp") center / cover;
+  }
+  .launch-overlay::before { display:none }
+  .launch-screen {
+    min-height:0;
+    border:0;
+    border-radius:0;
+    background:radial-gradient(ellipse at center,#05100bdb,transparent 78%);
+    box-shadow:none;
+    text-shadow:0 2px 6px #020705;
+  }
+  .launch-title { font-size:clamp(3.5rem, 13vw, 8rem); line-height:.96 }
+  .launch-btn, .slot-btn { border-radius:2px; background:#1b3328; min-height:44px }
+  .launch-btn.primary { background:#d4ba86 }
+  .launch-skip { min-height:44px; padding-inline:.5rem; background:#101f16; color:#f0e1bc }
+  @media (max-height:450px) { .launch-screen { padding:14px 0 } .launch-title { font-size:clamp(2.6rem, 9vw, 5rem) } }
 </style></head><body><div class="launch-overlay" id="launchOverlay" role="dialog" aria-label="HEIMR game opening">
 <section class="launch-screen" id="studioSlate"><div class="studio-mark">SL</div><p class="launch-eyebrow">A Studio LaDuke production</p><h2 class="studio-wordmark">STUDIO LADUKE</h2><div class="launch-rule"></div><p class="launch-copy">Stories made close to home.</p></section>
 <section class="launch-screen" id="gamesSlate" hidden><p class="games-mark">MAVERICK<br>GAMES</p><div class="launch-rule"></div><p class="games-sub">Made for the next adventure</p></section>

@@ -4,6 +4,8 @@ const room = document.querySelector(".front-room");
 const narrowRoom = matchMedia("(max-width: 650px)");
 const wall = document.querySelector(".mounted-art-wall");
 const rainGlass = document.querySelector(".rain-layer");
+const bookCover = document.querySelector(".cover-on-shelf");
+const bookCorners = [[43, 502], [153, 485], [175, 640], [65, 667]];
 
 // Each mount is measured on its own room plate, clockwise from the upper left.
 const wide = {
@@ -83,9 +85,12 @@ function placeFrontRoom() {
   }
 
   if (!room.clientWidth || !room.clientHeight) return;
+  const scaleX = room.clientWidth / width;
+  const scaleY = room.clientHeight / height;
+  if (next === wide) setMount(bookCover, bookCorners, scaleX, scaleY);
   const activeMounts = wall.querySelectorAll(next === tall ? ".mount-tall" : ".mount-wide");
   activeMounts.forEach((link, i) => {
-    setMount(link, scene.art[i][1], room.clientWidth / width, room.clientHeight / height);
+    setMount(link, scene.art[i][1], scaleX, scaleY);
   });
 }
 

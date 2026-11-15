@@ -7,6 +7,15 @@
     content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
   >
   <title>Studio LaDuke Workshop</title>
+  <script>
+    try {
+      const bench = sessionStorage.getItem("studioWorkshopBench") === "in-use" ? "cleared" : "in-use";
+      document.documentElement.dataset.bench = bench;
+      sessionStorage.setItem("studioWorkshopBench", bench);
+    } catch {
+      // The in-use bench is also the fallback when storage is unavailable.
+    }
+  </script>
 
   <style>
     :root {
@@ -56,7 +65,7 @@
           rgba(0, 0, 0, 0.4),
           rgba(0, 0, 0, 0.64)
         ),
-        url("7B84A8A4-56B8-4572-ABA7-FA9FFD983B3F.png")
+        url("assets/workshop-in-use.webp")
         center / cover no-repeat;
 
       filter: blur(22px) brightness(0.46);
@@ -101,6 +110,10 @@
 
       will-change: transform;
       user-select: none;
+    }
+
+    [data-bench="cleared"] .workshop {
+      background-image: url("assets/workshop-cleared.webp");
     }
 
     @media (max-width: 700px) and (orientation: portrait) {
