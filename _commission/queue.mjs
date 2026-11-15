@@ -16,6 +16,10 @@ const nextStates = {
   declined: []
 };
 
+export function artistTransitions(status) {
+  return (nextStates[status] ?? []).filter(next => next !== "delivered");
+}
+
 const validId = /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/iu;
 const maxBytes = 16 * 1024;
 
@@ -30,6 +34,17 @@ export function openQueue(path) {
       status TEXT NOT NULL DEFAULT 'received',
       created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     ) STRICT;
+    CREATE TABLE IF NOT EXISTS sms_outbox (
+      reference TEXT PRIMARY KEY REFERENCES requests(reference),
+      status TEXT NOT NULL DEFAULT 'pending'
+        CHECK (status IN ('pending', 'sending', 'accepted', 'failed', 'uncertain')),
+      provider_id TEXT
+    ) STRICT;
+    CREATE TRIGGER IF NOT EXISTS commission_sms_after_insert
+    AFTER INSERT ON requests
+    BEGIN
+      INSERT INTO sms_outbox (reference) VALUES (NEW.reference);
+    END;
   `);
   const insert = db.prepare("INSERT INTO requests (id, reference, brief) VALUES (?, ?, ?) ON CONFLICT (id) DO NOTHING");
   const findId = db.prepare("SELECT reference, brief FROM requests WHERE id = ?");
@@ -56,9 +71,26 @@ export function openQueue(path) {
       const row = db.prepare("SELECT reference, status, created_at, brief FROM requests WHERE reference = ?").get(reference);
       return row && { ...row, brief: JSON.parse(row.brief) };
     },
-    update(reference, status) {
+    notification(reference) {
+      return db.prepare("SELECT status, provider_id FROM sms_outbox WHERE reference = ?").get(reference);
+    },
+    claimNotification() {
+      return db.prepare(`
+        UPDATE sms_outbox SET status = 'sending'
+        WHERE reference = (
+          SELECT reference FROM sms_outbox WHERE status = 'pending' ORDER BY rowid LIMIT 1
+        ) RETURNING reference
+      `).get();
+    },
+    finishNotification(reference, status, providerId = null) {
+      return db.prepare(`
+        UPDATE sms_outbox SET status = ?, provider_id = ?
+        WHERE reference = ? AND status = 'sending'
+      `).run(status, providerId, reference).changes === 1;
+    },
+    update(reference, status, expectedStatus) {
       const row = this.show(reference);
-      if (!row || !nextStates[row.status].includes(status)) return false;
+      if (!row || (expectedStatus && row.status !== expectedStatus) || !nextStates[row.status].includes(status)) return false;
       return advance.run(status, reference, row.status).changes === 1;
     },
     close() { db.close(); }
