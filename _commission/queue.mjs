@@ -1,4 +1,4 @@
-import { randomBytes } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import { DatabaseSync } from "node:sqlite";
 import { validateBrief } from "../commissions/brief.mjs";
 
@@ -17,11 +17,15 @@ const nextStates = {
 };
 
 export function artistTransitions(status) {
-  return (nextStates[status] ?? []).filter(next => next !== "delivered");
+  return (nextStates[status] ?? []).filter(next => next !== "delivered" && next !== "accepted");
 }
 
 const validId = /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/iu;
 const maxBytes = 16 * 1024;
+
+export function quoteFingerprint(quote) {
+  return createHash("sha256").update(JSON.stringify(validateQuote(quote))).digest("hex");
+}
 
 function cleanText(value, name, max, minimum = 1) {
   if (typeof value !== "string") throw new Error(`Check ${name}.`);
@@ -78,6 +82,12 @@ export function openQueue(path) {
       created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     ) STRICT;
+    CREATE TABLE IF NOT EXISTS quote_acceptances (
+      reference TEXT PRIMARY KEY REFERENCES requests(reference),
+      quote TEXT NOT NULL,
+      confirmation TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ) STRICT;
     CREATE TRIGGER IF NOT EXISTS commission_sms_after_insert
     AFTER INSERT ON requests
     BEGIN
@@ -121,11 +131,13 @@ export function openQueue(path) {
       if (!row) return undefined;
       const quote = db.prepare("SELECT quote, created_at, updated_at FROM quotes WHERE reference = ?").get(reference);
       const action = db.prepare("SELECT kind, message, created_at FROM artist_actions WHERE reference = ? ORDER BY id DESC LIMIT 1").get(reference);
+      const acceptance = db.prepare("SELECT quote, confirmation, created_at FROM quote_acceptances WHERE reference = ?").get(reference);
       return {
         ...row,
         brief: JSON.parse(row.brief),
         quote: quote && { ...JSON.parse(quote.quote), created_at: quote.created_at, updated_at: quote.updated_at },
-        latestAction: action
+        latestAction: action,
+        acceptance: acceptance && { ...acceptance, quote: JSON.parse(acceptance.quote) }
       };
     },
     notification(reference) {
@@ -146,45 +158,52 @@ export function openQueue(path) {
       `).run(status, providerId, reference).changes === 1;
     },
     update(reference, status, expectedStatus) {
+      if (status === "accepted") return false;
       const row = this.show(reference);
       if (!row || (expectedStatus && row.status !== expectedStatus) || !nextStates[row.status].includes(status)) return false;
       return advance.run(status, reference, row.status).changes === 1;
     },
     requestClarification(reference, message, expectedStatus) {
-      const row = this.show(reference);
-      if (!row || row.status !== expectedStatus || !["received", "reviewing"].includes(row.status)) return false;
-      const clean = cleanText(message, "clarification", 1500, 10);
-      const save = () => transaction(() => {
+      return transaction(() => {
+        const row = this.show(reference);
+        if (!row || row.status !== expectedStatus || !["received", "reviewing"].includes(row.status)) return false;
+        const clean = cleanText(message, "clarification", 1500, 10);
         db.prepare("INSERT INTO artist_actions (reference, kind, message) VALUES (?, 'clarification', ?)").run(reference, clean);
         if (row.status === "received") advance.run("reviewing", reference, "received");
+        return true;
       });
-      save();
-      return true;
     },
     decline(reference, message, expectedStatus) {
-      const row = this.show(reference);
-      if (!row || row.status !== expectedStatus || !["received", "reviewing", "quote-ready"].includes(row.status)) return false;
-      const clean = cleanText(message, "decline note", 1500, 10);
-      const save = () => transaction(() => {
+      return transaction(() => {
+        const row = this.show(reference);
+        if (!row || row.status !== expectedStatus || !["received", "reviewing", "quote-ready"].includes(row.status)) return false;
+        const clean = cleanText(message, "decline note", 1500, 10);
         db.prepare("INSERT INTO artist_actions (reference, kind, message) VALUES (?, 'decline', ?)").run(reference, clean);
-        advance.run("declined", reference, row.status);
+        return advance.run("declined", reference, row.status).changes === 1;
       });
-      save();
-      return true;
     },
     saveQuote(reference, input, expectedStatus) {
-      const row = this.show(reference);
-      if (!row || row.status !== expectedStatus || !["received", "reviewing", "quote-ready"].includes(row.status)) return false;
-      const quote = validateQuote(input);
-      const save = () => transaction(() => {
+      return transaction(() => {
+        const row = this.show(reference);
+        if (!row || row.status !== expectedStatus || !["received", "reviewing", "quote-ready"].includes(row.status)) return false;
+        const quote = validateQuote(input);
         db.prepare(`
           INSERT INTO quotes (reference, quote) VALUES (?, ?)
           ON CONFLICT(reference) DO UPDATE SET quote = excluded.quote, updated_at = CURRENT_TIMESTAMP
         `).run(reference, JSON.stringify(quote));
         if (row.status !== "quote-ready") advance.run("quote-ready", reference, row.status);
+        return true;
       });
-      save();
-      return true;
+    },
+    recordQuoteAcceptance(reference, fingerprint, confirmation) {
+      return transaction(() => {
+        const row = this.show(reference);
+        if (!row?.quote || row.status !== "quote-ready" || quoteFingerprint(row.quote) !== fingerprint) return false;
+        const note = cleanText(confirmation, "acceptance note", 1500, 10);
+        db.prepare("INSERT INTO quote_acceptances (reference, quote, confirmation) VALUES (?, ?, ?)")
+          .run(reference, JSON.stringify(validateQuote(row.quote)), note);
+        return advance.run("accepted", reference, "quote-ready").changes === 1;
+      });
     },
     close() { db.close(); }
   };

@@ -12,6 +12,8 @@ The draft state model supports review, clarification, decline, a durable artist 
 
 The authenticated request screen shows the complete brief and lets Corey save a clarification request, decline note, or quote. A quote records exact scope, price, timing, included revisions, usage/copyright terms, and any deposit. The formline workspace route stays behind the same authentication and keeps the selected brief on screen. The private generator itself and its working files remain outside the public repository.
 
+After a customer agrees through an existing private channel, use **Record customer acceptance** on the artist request screen. The inbox saves the exact quote and the artist’s dated note with the Accepted state. A stale acceptance form is rejected if the terms have changed. This step neither charges nor records a deposit. Use synthetic data while evaluating the draft.
+
 ## Before accepting client briefs
 
 1. Select an approved intake host with HTTPS, authenticated artist access, durable private storage, access logging that excludes request bodies, ingress throttling and abuse controls, and a tested retention/deletion policy.
