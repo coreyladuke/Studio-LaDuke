@@ -1,6 +1,6 @@
 import { timingSafeEqual, createHash } from "node:crypto";
 import { briefRows } from "../commissions/brief.mjs";
-import { artistTransitions } from "./queue.mjs";
+import { artistTransitions, quoteFingerprint } from "./queue.mjs";
 
 const route = /^\/artist\/(?:(SLD-[A-F0-9]{16})(?:\/(workspace))?)?$/u;
 const labels = {
@@ -51,7 +51,7 @@ function quoteHtml(quote) {
 <dl><dt>Scope</dt><dd>${escape(quote.scope)}</dd><dt>Timing</dt><dd>${escape(quote.timing)}</dd>
 <dt>Included revisions</dt><dd>${escape(quote.revisions)}</dd><dt>Usage terms</dt><dd>${escape(quote.usageTerms)}</dd>
 <dt>Deposit</dt><dd>${escape(quote.depositCents ? money(quote.depositCents) : "No deposit")}</dd></dl>
-<p class="fine">This review build does not send the quote, accept payment, or grant delivery access.</p></section>`;
+<p class="fine">The quoted deposit is part of the offer. Record any payment separately.</p></section>`;
 }
 
 export function artistInbox(queue, { origin, password }) {
@@ -102,6 +102,9 @@ export function artistInbox(queue, { origin, password }) {
           usageTerms: fields.get("usageTerms"),
           depositCents: Math.round(Number(fields.get("deposit") || 0) * 100)
         }, from);
+        if (from === current.status && action === "accept-quote") {
+          saved = queue.recordQuoteAcceptance(reference, fields.get("fingerprint"), fields.get("confirmation"));
+        }
         if (from === current.status && action === "status") {
           const next = fields.get("status");
           saved = artistTransitions(current.status).includes(next) && queue.update(reference, next, current.status);
@@ -150,6 +153,8 @@ ${sms ? `<p>${escape(smsLabels[sms.status])}</p>` : ""}
 ${request.brief.service === "formline" ? `<p><a href="/artist/${reference}/workspace">Open private formline workspace with this brief →</a></p>` : ""}
 ${request.latestAction ? `<section class="action"><h2>Latest artist action</h2><p><strong>${escape(request.latestAction.kind)}</strong></p><p>${escape(request.latestAction.message)}</p></section>` : ""}
 ${quoteHtml(request.quote)}
+${request.acceptance ? `<section class="action"><h2>Quote acceptance recorded</h2><p>${escape(request.acceptance.confirmation)}</p><p class="fine">Recorded ${escape(request.acceptance.created_at)} UTC. Payment has its own step.</p></section>` : ""}
+${request.status === "quote-ready" && request.quote ? `<section class="action"><h2>Record customer acceptance</h2><p>Use this after the customer has agreed to the quote shown above. The inbox keeps a copy of those exact terms.</p><form method="post"><input type="hidden" name="from" value="quote-ready"><input type="hidden" name="action" value="accept-quote"><input type="hidden" name="fingerprint" value="${quoteFingerprint(request.quote)}"><label for="confirmation">How and when the customer accepted</label><textarea id="confirmation" name="confirmation" minlength="10" maxlength="1500" rows="3" required></textarea><button type="submit">Record acceptance</button></form></section>` : ""}
 ${["received", "reviewing"].includes(request.status) ? `<section class="action"><h2>Ask for clarification</h2><form method="post"><input type="hidden" name="from" value="${escape(request.status)}"><input type="hidden" name="action" value="clarify"><label for="message">What needs answering?</label><textarea id="message" name="message" minlength="10" maxlength="1500" rows="3" required></textarea><button type="submit">Save clarification request</button></form></section>` : ""}
 ${["received", "reviewing", "quote-ready"].includes(request.status) ? `<section class="action"><h2>${request.quote ? "Revise quote" : "Offer a quote"}</h2><form method="post"><input type="hidden" name="from" value="${escape(request.status)}"><input type="hidden" name="action" value="quote">
 <label for="scope">Exact scope</label><textarea id="scope" name="scope" minlength="10" maxlength="2000" rows="4" required>${escape(request.quote?.scope ?? "")}</textarea>

@@ -63,7 +63,7 @@ test("saved customer brief is private and can be reviewed from the authenticated
   assert.equal(queue.show(reference).status, "reviewing");
 });
 
-test("synthetic formline logo moves from complete brief to a durable artist quote", async t => {
+test("synthetic formline logo moves from complete brief to an accepted versioned quote", async t => {
   const queue = openQueue(":memory:");
   let handle;
   const server = createServer((req, res) => handle(req, res));
@@ -114,6 +114,32 @@ test("synthetic formline logo moves from complete brief to a durable artist quot
   assert.match(after, /Quote on file/);
   assert.match(after, /\$275\.00/);
   assert.match(after, /Corey retains copyright/);
+
+  const originalFingerprint = /name="fingerprint" value="([a-f0-9]{64})"/u.exec(after)?.[1];
+  assert.ok(originalFingerprint);
+  assert.equal(queue.saveQuote(reference, { ...saved.quote, priceCents: 29000 }, "quote-ready"), true);
+  const revisedHtml = await (await fetch(detail, { headers: auth })).text();
+  const revisedFingerprint = /name="fingerprint" value="([a-f0-9]{64})"/u.exec(revisedHtml)?.[1];
+  assert.ok(revisedFingerprint);
+  assert.notEqual(revisedFingerprint, originalFingerprint);
+  const record = (fingerprint, headers = auth) => fetch(detail, {
+    method: "POST", redirect: "manual", headers: { ...headers, Origin: origin },
+    body: new URLSearchParams({
+      from: "quote-ready", action: "accept-quote", fingerprint,
+      confirmation: "Synthetic customer confirmed the revised quote by email on November 15."
+    })
+  });
+  assert.equal(queue.update(reference, "accepted"), false);
+  assert.equal((await record(revisedFingerprint, {})).status, 401);
+  assert.equal((await record(originalFingerprint)).status, 409);
+  assert.equal((await record(revisedFingerprint)).status, 303);
+  assert.equal((await record(revisedFingerprint)).status, 409);
+  const completed = queue.show(reference);
+  assert.equal(completed.status, "accepted");
+  assert.equal(completed.acceptance.quote.priceCents, 29000);
+  assert.equal(completed.acceptance.quote.depositCents, 7500);
+  assert.match(completed.acceptance.confirmation, /revised quote by email/);
+  assert.match(await (await fetch(detail, { headers: auth })).text(), /Quote acceptance recorded/);
 });
 
 test("SMS reference is queued once and provider acceptance is distinct from delivery", async t => {
