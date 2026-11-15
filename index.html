@@ -66,17 +66,53 @@
 
       transform: translate(-50%, -50%);
 
-      display: block;
-      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      border: 4px solid #2c190e;
+      border-radius: 2px;
+      overflow: hidden;
+      background:
+        linear-gradient(90deg,transparent 0 47%,#2a160a 48% 52%,transparent 53%),
+        repeating-linear-gradient(90deg,#5a321a 0 17%,#704322 18% 32%,#4d2a16 33% 49%);
+      box-shadow: inset 0 0 0 2px #9a6632, inset 0 0 18px #120905, 0 8px 12px #000a;
+      color: transparent;
 
       -webkit-tap-highlight-color: transparent;
+    }
+
+    .enter::before {
+      content: "STUDIO";
+      position: absolute;
+      left: 12%;
+      top: 18%;
+      padding: .22em .45em;
+      color: #26190e;
+      background: #bc9a5f;
+      border: 1px solid #4d351b;
+      box-shadow: 0 2px 2px #0008;
+      font: 700 clamp(5px, .62vw, 10px)/1 Georgia, serif;
+      letter-spacing: .08em;
+      transform: rotate(-1deg);
+    }
+
+    .enter::after {
+      content: "";
+      position: absolute;
+      right: 12%;
+      top: 42%;
+      width: 12%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #ffe5a1, #9b681f 48%, #352008 75%);
+      box-shadow: 0 2px 3px #000b, 0 0 5px #ffd87355;
     }
 
     .enter:hover,
     .enter:focus-visible {
       outline: 2px solid rgba(245, 205, 125, 0.8);
       outline-offset: 3px;
-      background: rgba(255, 210, 120, 0.08);
+      filter: brightness(1.18);
+      transform: translate(-50%, -50%) perspective(100px) rotateY(-4deg);
     }
 
     /* Front-room interactions */
@@ -614,8 +650,10 @@
         left: 50%;
         top: 57.4%;
         width: 31.1%;
-        height: 5.4%;
+        height: 6.2%;
+        border-width: 3px;
       }
+      .enter::before { font-size: 8px; }
 
       .lamp-glow {
         left: -3%;

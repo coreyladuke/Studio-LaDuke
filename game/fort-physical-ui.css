@@ -1,0 +1,230 @@
+/* Physical staging for the Fort game collection and Super Maverick launcher. */
+.arcade-hotspot::before {
+  content:"SUPER MAVERICK'S\A WORLD";
+  position:absolute;
+  left:-7%;
+  top:0;
+  width:114%;
+  height:15%;
+  display:grid;
+  place-items:center;
+  padding:0 .18em;
+  white-space:pre;
+  color:#ffdc70;
+  background:linear-gradient(180deg,#14264b,#080d19 70%);
+  border:1px solid #40638f;
+  box-shadow:0 0 9px #4b80ff99,inset 0 0 8px #000;
+  font:900 clamp(6px,.67vw,12px)/.86 "Trebuchet MS",sans-serif;
+  letter-spacing:.03em;
+  text-align:center;
+  text-shadow:0 0 4px #ff9c32;
+  transform:perspective(80px) rotateX(-5deg);
+}
+.arcade-hotspot::after {
+  content:"PLAY";
+  position:absolute;
+  left:23%;
+  top:48%;
+  padding:.28em .48em;
+  border:1px solid #ffdb72;
+  color:#fff4b0;
+  background:#08101ecc;
+  opacity:0;
+  font:900 clamp(5px,.6vw,10px)/1 ui-monospace,monospace;
+  box-shadow:0 0 12px #53a3ff;
+}
+.arcade-hotspot:is(:hover,:focus-visible)::after { opacity:1; }
+
+/* The three games live in a battered plastic crate, not a menu row. */
+.fort-game-crate {
+  position:absolute;
+  z-index:33;
+  left:66.2%;
+  top:63.5%;
+  width:29.2%;
+  height:19.5%;
+  border:clamp(3px,.38vw,7px) solid #1c2328;
+  border-radius:4% 4% 8% 8%;
+  background:
+    repeating-linear-gradient(90deg,transparent 0 9%,#12181c 9% 13%),
+    linear-gradient(#343d41 0 20%,#171d20 20% 100%);
+  box-shadow:inset 0 3px #697377,inset 0 -8px #080b0d,0 8px 9px #0009;
+  transform:perspective(400px) rotateX(-4deg) rotateZ(.5deg);
+}
+.fort-game-crate::before {
+  content:"MAV'S GAMES";
+  position:absolute;
+  left:29%;
+  bottom:5%;
+  padding:.22em .5em;
+  color:#2a2217;
+  background:#d7c28c;
+  box-shadow:0 1px 2px #0009;
+  font:700 clamp(5px,.55vw,10px)/1.1 "Trebuchet MS",sans-serif;
+  transform:rotate(-2deg);
+}
+.fort-game-crate .fort-cartridge {
+  top:-18%!important;
+  width:34%!important;
+  max-width:none;
+  min-width:0;
+  transform-origin:50% 100%;
+}
+.fort-game-crate .fort-cartridge:nth-child(1){left:1%!important;transform:rotate(-8deg)}
+.fort-game-crate .fort-cartridge:nth-child(2){left:33%!important;transform:translateY(4%) rotate(2deg)}
+.fort-game-crate .fort-cartridge:nth-child(3){left:65%!important;transform:translateY(-3%) rotate(9deg)}
+.fort-game-crate .fort-cartridge:is(:hover,:focus-visible){z-index:4;transform:translateY(-18%) rotate(0)}
+
+/* The collection modal is the same milk crate pulled closer. */
+#gameModal .mav-screen.mav-library-screen { background:radial-gradient(circle at 50% 55%,#77572d99,#06101bdd 66%); }
+#gameModal .mav-library-card {
+  position:relative;
+  width:min(760px,94vw)!important;
+  padding:clamp(76px,13vw,120px) clamp(24px,6vw,62px) clamp(44px,8vw,72px)!important;
+  overflow:visible!important;
+  border:clamp(9px,1.5vw,17px) solid #1c252a!important;
+  border-radius:4% 4% 12% 12%!important;
+  background:
+    repeating-linear-gradient(90deg,transparent 0 10%,#11171a 10% 14%),
+    linear-gradient(#465156 0 17%,#1d2428 17% 100%)!important;
+  box-shadow:inset 0 5px #778287,inset 0 -14px #070a0c,0 30px 45px #000b!important;
+  transform:perspective(780px) rotateX(2deg);
+}
+#gameModal .mav-library-card::before {
+  content:"MILK CRATE UNDER THE TV";
+  position:absolute;
+  top:20px;
+  left:50%;
+  padding:.35em .8em;
+  color:#201c14;
+  background:#d4c18b;
+  box-shadow:1px 2px 3px #0008;
+  font:700 clamp(11px,2.5vw,17px)/1.1 "Trebuchet MS",sans-serif;
+  letter-spacing:.05em;
+  transform:translateX(-50%) rotate(-1.5deg);
+  white-space:nowrap;
+}
+#gameModal .mav-library-card h2{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+#gameModal .mav-library-grid {
+  position:relative;
+  display:block!important;
+  height:clamp(210px,38vw,315px);
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+#gameModal .mav-cart-tile {
+  position:absolute;
+  top:0;
+  width:35%;
+  transition:transform .18s ease,filter .18s ease;
+  transform-origin:50% 100%;
+}
+#gameModal .mav-cart-tile:nth-child(1){left:0;transform:rotate(-8deg) translateY(8%)}
+#gameModal .mav-cart-tile:nth-child(2){left:32.5%;z-index:2;transform:rotate(1deg) translateY(-3%)}
+#gameModal .mav-cart-tile:nth-child(3){left:65%;transform:rotate(9deg) translateY(7%)}
+#gameModal .mav-cart-tile:is(:hover,:focus-visible){z-index:5;transform:translateY(-13%) rotate(0)!important}
+
+/* Title screen: a CRT and control deck, not a giant rounded web card. */
+#gameModal .mav-title-screen { background:radial-gradient(circle at 50% 40%,#39332a,#070b10 70%)!important; }
+#gameModal .mav-title-screen .mav-screen-card {
+  position:relative;
+  width:min(720px,94vw)!important;
+  padding:clamp(18px,3vw,31px) clamp(22px,5vw,52px) clamp(70px,10vw,96px)!important;
+  overflow:auto;
+  border:clamp(10px,1.8vw,18px) solid #292d2d!important;
+  border-radius:12% 12% 6% 6% / 8% 8% 5% 5%!important;
+  background:
+    repeating-linear-gradient(0deg,#071b2c08 0 2px,#7be1ff0b 2px 3px),
+    radial-gradient(ellipse at 50% 30%,#123c59,#06131f 72%)!important;
+  box-shadow:inset 0 0 45px #000,0 0 0 5px #111,0 30px 55px #000c!important;
+  color:#e9f5ee;
+}
+#gameModal .mav-title-screen .mav-screen-card::after {
+  content:"";
+  position:absolute;
+  z-index:-1;
+  left:-4%;right:-4%;bottom:-7%;height:23%;
+  border:6px solid #292d2d;
+  border-radius:5% 5% 15% 15%;
+  background:linear-gradient(#4a4c49,#202321 65%,#111);
+  box-shadow:0 13px 26px #000b;
+}
+#gameModal .mav-title-screen .mav-primary {
+  position:absolute;
+  right:8%;
+  bottom:13px;
+  width:74px!important;
+  height:74px!important;
+  min-height:74px!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden;
+  border:6px solid #6f1e18!important;
+  border-radius:50%!important;
+  color:transparent!important;
+  background:radial-gradient(circle at 36% 29%,#ff8a61,#d52e24 46%,#76130f 72%)!important;
+  box-shadow:inset 0 -9px #5d100d,0 7px 0 #181b1b,0 0 0 7px #a8a99f!important;
+}
+#gameModal .mav-title-screen .mav-primary::before{content:"START";color:#fff4dc;font:900 11px/1 "Trebuchet MS",sans-serif;text-shadow:0 2px #6a0e0a}
+#gameModal .mav-title-screen .mav-primary span{display:none}
+#gameModal .mav-title-screen .mav-primary:active{transform:translateY(5px);box-shadow:inset 0 -4px #5d100d,0 2px #181b1b,0 0 0 7px #a8a99f!important}
+#gameModal .mav-title-screen .mav-intro-link {
+  position:absolute;
+  left:8%;bottom:24px;
+  width:auto;
+  margin:0;
+  padding:.6em .8em;
+  border:1px solid #777!important;
+  color:#201b13;
+  background:#d6c48d;
+  box-shadow:1px 2px 0 #000;
+  text-decoration:none;
+  transform:rotate(-1deg);
+}
+#gameModal .mav-title-screen .mav-hint{display:none}
+#gameModal .mav-title-screen .mav-secondary{width:auto;min-height:38px;padding:.6em 1em;border:2px solid #89908d;border-radius:3px;background:#343a39;color:#e7e1ce;box-shadow:0 3px #111;font-size:11px}
+#gameModal .mav-save-slot {
+  border:2px solid #575f60!important;
+  border-radius:2px!important;
+  background:linear-gradient(100deg,#c7c2ab,#817e70)!important;
+  color:#171713!important;
+  box-shadow:inset 0 0 0 2px #e5dfc5,0 3px 0 #0d1112!important;
+  transform:rotate(var(--slot-tilt,0));
+}
+#gameModal .mav-save-slot:nth-child(1){--slot-tilt:-1deg}#gameModal .mav-save-slot:nth-child(3){--slot-tilt:1deg}
+#gameModal .mav-save-slot small{color:#393a35!important}
+#gameModal .mav-save-slot.active{border-color:#f0d270!important;background:linear-gradient(100deg,#f3dda0,#a98a45)!important;box-shadow:0 0 11px #ffd75e,0 3px #16120a!important}
+
+@media (orientation:portrait) and (max-width:760px) {
+  .fort-game-crate{left:63.5%;top:64%;width:34%;height:20%}
+  .arcade-hotspot::before{font-size:5px}
+  #gameModal .mav-title-screen{padding:54px 12px 12px!important;align-items:center}
+  #gameModal .mav-title-screen .mav-screen-card{width:100%!important;max-height:calc(100dvh - 72px);padding:13px 16px 92px!important;border-width:10px!important;overflow-x:hidden!important}
+  #gameModal .mav-title-screen .mav-screen-card h1{font-size:clamp(34px,12vw,50px);margin:5px 0 6px}
+  #gameModal .mav-title-screen .mav-tagline{margin:5px 0 7px;font-size:13px}
+  #gameModal .mav-title-screen .mav-save-panel{margin:5px 0}
+  #gameModal .mav-title-screen .mav-campaign-trail{margin:5px 0;padding:5px}
+  #gameModal .mav-title-screen .mav-primary{right:8%;bottom:12px;width:65px!important;height:65px!important;min-height:65px!important}
+  #gameModal .mav-title-screen .mav-intro-link{left:7%;bottom:20px;font-size:10px}
+  #gameModal .mav-library-card{padding:68px 13px 34px!important}
+  #gameModal .mav-library-grid{height:min(48vw,235px)}
+}
+
+@media (orientation:landscape) and (max-height:600px) {
+  #gameModal .mav-title-screen .mav-screen-card{width:min(780px,90vw)!important;max-height:94dvh;padding:10px 120px 56px!important}
+  #gameModal .mav-title-screen .mav-screen-card h1{font-size:clamp(27px,8vh,43px);margin:2px 0}
+  #gameModal .mav-title-screen .mav-tagline{font-size:12px;margin:3px 0}
+  #gameModal .mav-title-screen .mav-save-panel{margin:3px 0}
+  #gameModal .mav-title-screen .mav-save-slot{min-height:42px;padding:3px}
+  #gameModal .mav-title-screen .mav-campaign-trail{margin:3px 0;padding:4px}
+  #gameModal .mav-title-screen .mav-primary{right:3%;bottom:13px;width:62px!important;height:62px!important;min-height:62px!important}
+  #gameModal .mav-title-screen .mav-intro-link{left:4%;bottom:19px;font-size:9px}
+  #gameModal .mav-library-card{width:min(700px,85vw)!important;padding:55px 45px 27px!important}
+  #gameModal .mav-library-grid{height:min(37vh,205px)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  #gameModal .mav-cart-tile,.fort-game-crate .fort-cartridge{transition:none}
+}

@@ -3,109 +3,56 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#211b30">
+  <meta name="theme-color" content="#171326">
   <title>Prism Pals | Maverick Games</title>
   <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100dvh;
-      background: linear-gradient(90deg,#17101845,#191320b8), #241c32 url("../assets/prism-workbench.webp") center / cover fixed;
-      color: #f8eaf5;
-      font: 1rem/1.45 Georgia, serif;
-    }
-    [hidden] { display: none !important; }
-    a { color: inherit; text-underline-offset: .2em; }
-    a:focus-visible { outline: 2px solid #ffe397; outline-offset: 4px; }
-    main {
-      display: grid;
-      min-height: 100dvh;
-      width: min(calc(100% - 2.2rem), 61rem);
-      margin: auto;
-      padding: 2rem 0;
-      align-content: center;
-      grid-template-columns: minmax(0, 1fr) minmax(16rem, .88fr);
-      align-items: center;
-      gap: clamp(1.1rem, 7vw, 5rem);
-    }
-    main img {
-      display: block;
-      width: 100%;
-      max-width: 450px;
-      height: auto;
-      margin-inline: auto;
-      transform: rotate(-7deg);
-      filter: drop-shadow(3px 17px 10px #0b0711);
-      transition:transform .2s ease;
-    }
-    .prism-cart:hover img, .prism-cart:focus-visible img { transform:translateY(-5px) rotate(-3deg) }
-    .launch-copy { text-shadow:0 2px 8px #171017, 0 1px 2px #150e18 }
-    h1 { margin: 0; font-size: clamp(2.75rem, 7.5vw, 6rem); line-height: 1; letter-spacing: -.045em; }
-    p { max-width: 25rem; margin: .75rem 0 1.05rem; }
-    nav { display: flex; flex-wrap: wrap; gap: .35rem 1.4rem; }
-    nav a, .shelf { display: inline-flex; align-items: center; min-height: 44px; }
-    .start { font-weight: 700; color: #ffdd96; }
-    .shelf {
-      position: fixed;
-      z-index: 2;
-      top: max(8px, env(safe-area-inset-top));
-      left: max(8px, env(safe-area-inset-left));
-      padding-inline: .55rem;
-      background: #201829;
-      color: #fff0d5;
-      box-shadow: 0 2px 6px #100a15c9;
-    }
-    iframe { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; background: #211b30; }
-    @media (max-width: 600px) {
-      body { background-attachment:scroll }
-      main { grid-template-columns: 1fr; align-content: center; padding-block:1.6rem }
-      main img { width: min(70vw, 320px); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      main img { transition:none }
-      .prism-cart:is(:hover,:focus-visible) img { transform:rotate(-7deg) }
-    }
+    *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#130f20;color:#fff;font-family:"Trebuchet MS",system-ui,sans-serif}
+    [hidden]{display:none!important}button,a{font:inherit}button:focus-visible,a:focus-visible{outline:3px solid #fff4a9;outline-offset:4px}
+    .cartoon{position:fixed;inset:0;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 50% 42%,#8b78ac 0,#332847 38%,#151020 78%);isolation:isolate}
+    .cartoon::before{content:"";position:absolute;inset:-12%;z-index:-3;background:conic-gradient(from 10deg at 50% 53%,#ff477e30,#ffca5730,#7bed9f30,#57c7ff30,#a66cff30,#ff477e30);animation:skyTurn 20s linear infinite}
+    .islands{position:absolute;inset:0;z-index:-2;background:radial-gradient(ellipse at 7% 65%,#281e39 0 8%,transparent 8.5%),radial-gradient(ellipse at 88% 35%,#3f3156 0 10%,transparent 10.5%),radial-gradient(ellipse at 84% 82%,#21192f 0 12%,transparent 12.5%),linear-gradient(180deg,transparent 68%,#120d1d 68%)}
+    .stage{position:relative;width:min(92vw,850px);height:min(74vh,600px);border:clamp(8px,1.4vw,16px) solid #332a3f;border-radius:4% 4% 9% 9%;overflow:hidden;background:linear-gradient(#5a4d78 0 64%,#251c37 64%);box-shadow:inset 0 0 70px #090611,0 30px 80px #000a}
+    .stage::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 3px,#fff1 4px);mix-blend-mode:soft-light}
+    .prism{position:absolute;left:50%;top:15%;width:clamp(74px,14vw,132px);aspect-ratio:1;transform:translateX(-50%) rotate(45deg);border:6px solid #e7ecff;background:linear-gradient(135deg,#ff6990aa,#fff27aaa 31%,#70ffb5aa 54%,#62b6ffaa 77%,#ba76ffaa);box-shadow:0 0 35px #fff,0 0 90px #da7dff;animation:prismTrouble 27s both}
+    .beam{position:absolute;left:50%;top:31%;width:10px;height:65%;transform-origin:50% 0;opacity:0;filter:blur(1px);animation:beamReturn 27s both}.beam.red{background:#ff5876;transform:rotate(30deg)}.beam.yellow{background:#ffe66d;transform:rotate(0)}.beam.blue{background:#5cd8ff;transform:rotate(-30deg)}
+    .shadow{position:absolute;z-index:3;left:-35%;bottom:28%;width:34%;height:30%;border-radius:48% 52% 42% 58%;background:#0b0713;filter:blur(3px);animation:shadowPass 27s both}
+    .pal{position:absolute;z-index:5;bottom:10%;width:clamp(66px,13vw,125px);aspect-ratio:1;filter:drop-shadow(0 9px 5px #09061088);transform-origin:50% 100%}.pal.pink{left:18%;border-radius:50%;background:linear-gradient(145deg,#ff9bc3,#e83f86);animation:pinkStory 27s both}.pal.star{left:44%;background:#ffe36c;clip-path:polygon(50% 0,61% 34%,98% 35%,68% 56%,79% 94%,50% 72%,21% 94%,32% 56%,2% 35%,39% 34%);animation:starStory 27s both}.pal.blue{left:70%;border-radius:22%;background:linear-gradient(145deg,#7be7ff,#398de1);animation:blueStory 27s both}
+    .face{position:absolute;z-index:2;left:22%;top:31%;width:56%;height:37%}.eye{position:absolute;top:0;width:22%;height:37%;border-radius:50%;background:#191126;animation:blink 4.1s infinite}.eye:first-child{left:8%}.eye:nth-child(2){right:8%}.mouth{position:absolute;left:34%;bottom:0;width:32%;height:18%;border-bottom:4px solid #3a1631;border-radius:50%}.leg{position:absolute;z-index:-1;bottom:-18%;width:8%;height:26%;border-radius:8px;background:#21162e}.leg.one{left:31%;transform:rotate(8deg)}.leg.two{right:31%;transform:rotate(-8deg)}
+    .subtitle{position:absolute;z-index:8;left:50%;bottom:2%;width:min(88%,620px);min-height:2.8em;padding:.55em 1em;transform:translateX(-50%);border:2px solid #f7e7bf;border-radius:50%;background:#171120e8;box-shadow:0 6px 18px #0008;color:#fff8df;text-align:center;font:700 clamp(13px,2.4vw,19px)/1.25 Georgia,serif}.subtitle span{position:absolute;inset:0;display:grid;place-items:center;padding:.3em 1.4em;opacity:0}.subtitle span:nth-child(1){animation:caption1 27s both}.subtitle span:nth-child(2){animation:caption2 27s both}.subtitle span:nth-child(3){animation:caption3 27s both}.subtitle span:nth-child(4){animation:caption4 27s both}
+    .brand{position:absolute;z-index:12;top:max(12px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);color:#fff4ce;font:900 clamp(13px,2.4vw,20px)/1 ui-monospace,monospace;letter-spacing:.2em;text-shadow:0 2px 7px #000}.controls{position:absolute;z-index:14;top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));display:flex;gap:8px}.controls button,.controls a{display:grid;place-items:center;min-width:48px;min-height:48px;padding:.5em .8em;border:2px solid #d9d1ee;border-radius:3px;color:#fff;background:#21182fdf;text-decoration:none;font-weight:900;box-shadow:0 4px 0 #0b0710;cursor:pointer}.play-now{position:absolute;z-index:14;right:max(18px,env(safe-area-inset-right));bottom:max(17px,env(safe-area-inset-bottom));min-width:82px;min-height:82px;border:7px solid #74244f;border-radius:50%;color:#fff;background:radial-gradient(circle at 35% 28%,#ff94bd,#ef3f88 48%,#87154f 75%);box-shadow:inset 0 -9px #6d0d3c,0 7px #0e0b14,0 0 0 6px #d6c5dd;font-weight:1000;cursor:pointer}
+    iframe{position:fixed;inset:0;width:100%;height:100%;border:0;background:#211b30}.shelf{position:fixed;z-index:20;top:max(8px,env(safe-area-inset-top));left:max(8px,env(safe-area-inset-left));display:grid;place-items:center;min-height:48px;padding:.5em .8em;background:#201829;color:#fff0d5;box-shadow:0 2px 6px #100a15c9}
+    @keyframes skyTurn{to{transform:rotate(1turn)}}@keyframes blink{0%,44%,48%,100%{transform:scaleY(1)}46%{transform:scaleY(.08)}}
+    @keyframes prismTrouble{0%,11%{filter:grayscale(1) brightness(.65);transform:translateX(-50%) rotate(45deg) scale(.85)}16%{transform:translateX(-50%) rotate(42deg) scale(.9)}21%,50%{filter:grayscale(1) brightness(.45);transform:translateX(-50%) rotate(48deg) scale(.82)}54%{filter:none;transform:translateX(-50%) rotate(45deg) scale(1.15)}59%,100%{filter:none;transform:translateX(-50%) rotate(405deg) scale(1)}}
+    @keyframes shadowPass{0%,15%{left:-35%}24%{left:38%}31%,100%{left:110%}}@keyframes beamReturn{0%,53%{opacity:0;height:0}57%{opacity:1;height:65%}100%{opacity:.72;height:65%}}
+    @keyframes pinkStory{0%,13%{transform:translateY(0)}16%{transform:translateY(-18%) rotate(-7deg)}20%{transform:translateY(0)}28%{transform:translateX(115%) rotate(14deg)}35%{transform:translateX(190%) rotate(-8deg)}42%{transform:translateX(190%) translateY(-45%)}48%{transform:translateX(190%) translateY(-80%) rotate(12deg)}55%{transform:translateX(115%) translateY(0)}61%,100%{transform:translateX(0);filter:drop-shadow(0 0 24px #ff70b2)}}
+    @keyframes starStory{0%,17%{transform:rotate(0)}21%{transform:rotate(-16deg)}25%{transform:rotate(14deg)}31%{transform:translateX(80%) rotate(30deg)}38%{transform:translateX(80%) translateY(-35%) rotate(50deg)}45%{transform:translateX(55%) translateY(-70%) rotate(85deg)}53%{transform:translateX(0) translateY(-12%) rotate(360deg)}61%,100%{transform:none;filter:drop-shadow(0 0 24px #ffe165)}}
+    @keyframes blueStory{0%,12%{transform:scale(1)}16%{transform:scaleY(.72) scaleX(1.12)}21%{transform:none}28%{transform:translateX(-70%) rotate(-12deg)}36%{transform:translateX(-145%) rotate(8deg)}44%{transform:translateX(-145%) translateY(-30%) rotate(-8deg)}51%{transform:translateX(-145%) translateY(-52%)}58%{transform:translateX(-70%)}64%,100%{transform:none;filter:drop-shadow(0 0 24px #59cfff)}}
+    @keyframes caption1{0%,2%{opacity:0}4%,19%{opacity:1}22%,100%{opacity:0}}@keyframes caption2{0%,20%{opacity:0}23%,39%{opacity:1}42%,100%{opacity:0}}@keyframes caption3{0%,40%{opacity:0}43%,61%{opacity:1}64%,100%{opacity:0}}@keyframes caption4{0%,62%{opacity:0}65%,100%{opacity:1}}
+    @media(orientation:portrait){.stage{width:100vw;height:76vh;border-inline:0;border-radius:0}.brand{top:max(76px,calc(env(safe-area-inset-top) + 66px));white-space:nowrap}.pal{bottom:14%;width:min(22vw,110px)}.pal.pink{left:10%}.pal.star{left:39%}.pal.blue{left:69%}.subtitle{bottom:4%;font-size:13px}.play-now{width:72px;height:72px;min-width:72px;min-height:72px;bottom:max(12px,env(safe-area-inset-bottom))}}
+    @media(orientation:landscape) and (max-height:600px){.stage{width:82vw;height:92vh}.brand{left:2%;top:50%;transform:translateY(-50%) rotate(-90deg)}.subtitle{bottom:1%;min-height:2.4em}.play-now{width:68px;height:68px;min-width:68px;min-height:68px}}
+    @media(prefers-reduced-motion:reduce){.cartoon::before,.prism,.beam,.shadow,.pal,.eye,.subtitle span{animation:none!important}.prism{filter:none}.beam{opacity:.65;height:65%}.shadow{display:none}.subtitle span{opacity:0}.subtitle span:last-child{opacity:1}}
   </style>
 </head>
 <body>
-  <main id="prism-intro">
-    <a class="prism-cart" href="https://prism-pals-playtest.vercel.app/" aria-label="Insert the Prism Pals cartridge">
-      <img src="../assets/cartridge-prism.webp" alt="" width="497" height="489">
-    </a>
-    <section class="launch-copy" aria-labelledby="prism-title">
-      <h1 id="prism-title">Prism Pals</h1>
-      <p>Help Pip bring the living spectrum back into tune.</p>
-      <nav aria-label="Prism Pals">
-        <a class="start" id="prism-start" href="https://prism-pals-playtest.vercel.app/">Start game</a>
-        <a href="../directory.html#cartridges">Back to the shelf</a>
-      </nav>
-    </section>
-  </main>
-  <a class="shelf" id="prism-shelf" href="../directory.html#cartridges" hidden>← Back to the shelf</a>
+  <section class="cartoon" id="prism-cartoon" aria-label="Prism Pals animated opening">
+    <div class="islands" aria-hidden="true"></div><div class="brand">PRISM PALS</div>
+    <div class="stage" aria-hidden="true">
+      <div class="prism"></div><i class="beam red"></i><i class="beam yellow"></i><i class="beam blue"></i><div class="shadow"></div>
+      <div class="pal pink"><span class="face"><i class="eye"></i><i class="eye"></i><i class="mouth"></i></span><i class="leg one"></i><i class="leg two"></i></div>
+      <div class="pal star"><span class="face"><i class="eye"></i><i class="eye"></i><i class="mouth"></i></span><i class="leg one"></i><i class="leg two"></i></div>
+      <div class="pal blue"><span class="face"><i class="eye"></i><i class="eye"></i><i class="mouth"></i></span><i class="leg one"></i><i class="leg two"></i></div>
+      <div class="subtitle"><span>Every morning, Pip tuned the living spectrum.</span><span>Then something stole the color—and absolutely did not leave a note.</span><span>Three very small heroes formed one poorly supervised plan.</span><span>The spectrum is waiting. Try not to drop it.</span></div>
+    </div>
+    <nav class="controls" aria-label="Opening controls"><a href="../directory.html#cartridges">Shelf</a><button id="skip" type="button">Skip</button></nav>
+    <button class="play-now" id="play" type="button" aria-label="Play Prism Pals now">PLAY</button>
+  </section>
+  <a class="shelf" id="prism-shelf" href="../directory.html#cartridges" hidden>← Shelf</a>
   <iframe id="prism-game" title="Prism Pals game" hidden allow="autoplay; fullscreen; gamepad" allowfullscreen></iframe>
   <script>
-    const intro = document.getElementById("prism-intro");
-    const start = document.getElementById("prism-start");
-    const shelf = document.getElementById("prism-shelf");
-    const game = document.getElementById("prism-game");
-
-    function launchPrism() {
-      game.src = start.href;
-      intro.hidden = true;
-      game.hidden = false;
-      shelf.hidden = false;
-      game.focus();
-    }
-
-    for (const control of [start, document.querySelector(".prism-cart")]) {
-      control.addEventListener("click", event => {
-        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-        event.preventDefault();
-        launchPrism();
-      });
-    }
-
-    if (new URLSearchParams(location.search).get("play") === "1") launchPrism();
+    const cartoon=document.getElementById("prism-cartoon"),game=document.getElementById("prism-game"),shelf=document.getElementById("prism-shelf");
+    function launch(){game.src="https://prism-pals-playtest.vercel.app/";cartoon.hidden=true;game.hidden=false;shelf.hidden=false;game.focus()}
+    document.getElementById("play").addEventListener("click",launch);document.getElementById("skip").addEventListener("click",launch);
+    if(!matchMedia("(prefers-reduced-motion: reduce)").matches)setTimeout(()=>document.getElementById("play").setAttribute("aria-label","Opening complete. Play Prism Pals"),27000);
   </script>
 </body>
 </html>

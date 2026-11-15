@@ -173,3 +173,81 @@
   .game-cart:hover img, .game-cart:focus-visible img { transform: none; }
   .console-deck[data-step="retry"] .console-cart { animation: none; }
 }
+
+/* A real object under the television, rather than another three-column menu. */
+.crate-note {
+  max-width:38rem;
+  margin:0 0 .9rem;
+  color:#d0bda4;
+  font-style:italic;
+}
+.game-shelf {
+  display:block;
+  width:min(100%,780px);
+  min-height:clamp(260px,43vw,430px);
+  margin:1rem auto 0;
+  padding:clamp(48px,8vw,82px) clamp(22px,5vw,55px) clamp(48px,8vw,76px);
+  border:clamp(10px,1.5vw,18px) solid #1c2326;
+  border-radius:4% 4% 12% 12%;
+  background:
+    repeating-linear-gradient(90deg,transparent 0 10%,#11171a 10% 14%),
+    linear-gradient(#465054 0 17%,#1a2023 17% 100%);
+  box-shadow:inset 0 5px #778184,inset 0 -14px #070a0b,0 30px 38px #090504b8;
+  transform:perspective(900px) rotateX(2deg) rotateZ(-.35deg);
+}
+.game-shelf::before {
+  content:"MAVERICK GAMES — RETURN THESE";
+  position:absolute;
+  z-index:4;
+  top:18px;
+  left:50%;
+  padding:.35em .75em;
+  color:#292116;
+  background:#d7c38d;
+  box-shadow:1px 2px 3px #0009;
+  font:700 clamp(10px,2vw,16px)/1.1 "Trebuchet MS",sans-serif;
+  letter-spacing:.04em;
+  white-space:nowrap;
+  transform:translateX(-50%) rotate(-1.5deg);
+}
+.game-shelf::after { display:none; }
+.game-shelf li {
+  position:absolute;
+  z-index:1;
+  top:19%;
+  display:block;
+  width:35%;
+  padding:0;
+  border:0;
+  box-shadow:none;
+  transform-origin:50% 100%;
+}
+.game-shelf li:nth-child(1){left:3%;transform:translateY(8%) rotate(-8deg)}
+.game-shelf li:nth-child(2){left:32.5%;z-index:2;transform:translateY(-2%) rotate(1deg)}
+.game-shelf li:nth-child(3){left:62%;transform:translateY(8%) rotate(9deg)}
+.game-cart{width:100%;max-width:none}
+.game-cart img{width:100%}
+.game-shelf li:has(.game-cart:is(:hover,:focus-visible)){z-index:6}
+.game-shelf li:has(.game-cart:is(:hover,:focus-visible)) .game-cart img{transform:translateY(-12%) rotate(0)}
+.direct-play {
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  min-height:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  clip:rect(0 0 0 0)!important;
+  white-space:nowrap!important;
+}
+
+@media(max-width:420px){
+  .game-shelf{
+    display:block;
+    min-height:62vw;
+    padding:58px 12px 34px;
+  }
+  .game-shelf li{top:27%;width:37%}
+  .game-shelf li:nth-child(1){left:0}
+  .game-shelf li:nth-child(2){left:31.5%}
+  .game-shelf li:nth-child(3){left:63%}
+}
