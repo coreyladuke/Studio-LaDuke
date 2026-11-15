@@ -3,7 +3,7 @@
   const canvas=document.getElementById('mavGameCanvas'); if(!canvas)return;
   const ctx=canvas.getContext('2d'), W=960,H=540, TAU=Math.PI*2;
   const modal=document.getElementById('gameModal'),score=document.getElementById('gameScore');
-  const titleScreen=document.getElementById('mavTitleScreen'),pauseScreen=document.getElementById('mavPauseScreen'),winScreen=document.getElementById('mavWinScreen'),gameOverScreen=document.getElementById('mavGameOverScreen'),libraryScreen=document.getElementById('mavLibraryScreen'),heimrScreen=document.getElementById('mavHeimrScreen'),prismScreen=document.getElementById('mavPrismScreen');
+  const titleScreen=document.getElementById('mavTitleScreen'),pauseScreen=document.getElementById('mavPauseScreen'),winScreen=document.getElementById('mavWinScreen'),gameOverScreen=document.getElementById('mavGameOverScreen'),libraryScreen=document.getElementById('mavLibraryScreen');
   canvas.width=W;canvas.height=H;ctx.imageSmoothingEnabled=true;
   const input={left:false,right:false,jump:false,down:false},pressed={jump:false,bone:false,dash:false};
   let soundEnabled=true,musicTimer=0,musicStep=0;
@@ -476,7 +476,18 @@ const player={x:120,y:330,w:52,h:68,vx:0,vy:0,dir:1,ground:false,coyote:0,jumpBu
   function drawStoryScreen(){if(!S.story)return;const [heading,caption]=S.story.beats[S.story.index]||['THE ADVENTURE CONTINUES','The trail is waiting.'];ctx.fillStyle='rgba(8,26,38,.24)';ctx.fillRect(0,0,W,H);drawStoryParty();ctx.fillStyle='rgba(5,19,31,.9)';ctx.fillRect(34,370,892,136);ctx.fillStyle='#f0bd58';ctx.fillRect(34,370,892,6);ctx.fillStyle='#f0bd58';ctx.fillRect(34,500,892,6);ctx.fillStyle='#fff3ce';ctx.fillRect(34,376,6,124);ctx.fillRect(920,376,6,124);text(S.story.kind==='intro'?'A MAVERICK’S WORLD STORY':S.story.kind==='finale'?'THE LAST PAGE':S.story.kind==='gear'?'DAD’S WORKBENCH':'BETWEEN WORLDS',60,405,14,'#82e6fb');text(heading,60,440,24,'#ffe174');text(caption,60,471,18,'#fff');const remaining=Math.max(0,1-S.story.time/3.2);ctx.fillStyle='#ffe174';ctx.fillRect(60,485,820*remaining,4);text('TAP OR PRESS ENTER TO CONTINUE',W-58,496,12,'#dcecf2','right')}
   function drawBonus(){const cave=ctx.createLinearGradient(0,0,0,H);cave.addColorStop(0,'#205d78');cave.addColorStop(.55,'#10394e');cave.addColorStop(1,'#061722');ctx.fillStyle=cave;ctx.fillRect(0,0,W,H);for(let i=0;i<14;i++){ctx.fillStyle=i%2?'#2d7182':'#245d72';ctx.beginPath();ctx.moveTo(i*75,0);ctx.lineTo(i*75+35,90+(i%3)*22);ctx.lineTo(i*75+75,0);ctx.fill()}for(let i=0;i<35;i++)ellipse((i*137)%W,70+(i*83)%330,2+i%3,2+i%3,i%3?'#76dbe9':'#eaffff');drawGround([0,438,960]);drawPlatform([230,350,180]);drawPlatform([505,280,190]);const old=S.cam;S.cam=0;drawPipe(14);drawPipe(874);bonusCoins.forEach(drawCoin);bones.forEach(drawBone);vines.forEach(drawVine);if(!(player.inv>0&&Math.floor(S.time*12)%2))drawPlayer();drawParticles();S.cam=old;text('PRESS PIPE AT THE FAR END TO RETURN',W/2,110,17,'#e9fbff','center')}
   function draw(){ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,W,H);if(S.mode==='bonus'){drawBonus()}else{drawBg();ctx.save();if(S.shake)ctx.translate((Math.random()-.5)*S.shake,(Math.random()-.5)*S.shake);level.ground.forEach(drawGround);drawTerrainDetails();level.plats.forEach(drawPlatform);drawSpeedRoutes();drawCheckpointMarkers();if(S.level===0)drawPipe(1270);blocks.forEach(drawBlock);coins.forEach(drawCoin);enemies.forEach(drawEnemy);items.forEach(drawItem);bones.forEach(drawBone);vines.forEach(drawVine);hazards.forEach(drawHazard);drawFinish();drawBoss();if(!(player.inv>0&&Math.floor(S.time*12)%2))drawPlayer();drawParticles();ctx.restore()}if(S.story)drawStoryScreen();else{drawHud();drawOverlay()}syncScreens()}
-  function syncScreens(){modal.classList.toggle('mav-title-open',S.screen==='title');modal.classList.toggle('mav-paused',S.screen==='paused');modal.classList.toggle('mav-won',S.screen==='won');modal.classList.toggle('mav-game-over',S.screen==='gameover');modal.classList.toggle('mav-library-open',S.screen==='library');modal.classList.toggle('mav-library-detail-open',S.screen==='library-heimr'||S.screen==='library-prism');if(titleScreen)titleScreen.hidden=S.screen!=='title';if(pauseScreen)pauseScreen.hidden=S.screen!=='paused';if(winScreen)winScreen.hidden=S.screen!=='won';if(gameOverScreen)gameOverScreen.hidden=S.screen!=='gameover';if(libraryScreen)libraryScreen.hidden=S.screen!=='library';if(heimrScreen)heimrScreen.hidden=S.screen!=='library-heimr';if(prismScreen)prismScreen.hidden=S.screen!=='library-prism'}
+  function syncScreens(){
+    modal.classList.toggle('mav-title-open',S.screen==='title');
+    modal.classList.toggle('mav-paused',S.screen==='paused');
+    modal.classList.toggle('mav-won',S.screen==='won');
+    modal.classList.toggle('mav-game-over',S.screen==='gameover');
+    modal.classList.toggle('mav-library-open',S.screen==='library');
+    if(titleScreen)titleScreen.hidden=S.screen!=='title';
+    if(pauseScreen)pauseScreen.hidden=S.screen!=='paused';
+    if(winScreen)winScreen.hidden=S.screen!=='won';
+    if(gameOverScreen)gameOverScreen.hidden=S.screen!=='gameover';
+    if(libraryScreen)libraryScreen.hidden=S.screen!=='library';
+  }
   function frame(t){if(!running)return;const dt=Math.min(.033,(t-last)/1000||.016);last=t;if(S.screen==='playing')update(dt);else S.time+=dt;draw();raf=requestAnimationFrame(frame)}
   function start(){if(running)return;running=true;last=performance.now();raf=requestAnimationFrame(frame)}
   function stop(){if(S.screen==='playing')S.screen='paused';stopMusic();syncScreens();running=false;cancelAnimationFrame(raf);Object.assign(input,{left:false,right:false,jump:false,down:false});if(document.fullscreenElement===modal)document.exitFullscreen?.().catch(()=>{})}
@@ -506,9 +517,23 @@ const player={x:120,y:330,w:52,h:68,vx:0,vy:0,dir:1,ground:false,coyote:0,jumpBu
   addEventListener('pageshow',refreshVisibleCanvas);
   addEventListener('resize',refreshVisibleCanvas);
   addEventListener('orientationchange',()=>setTimeout(refreshVisibleCanvas,180));
-  function openLibrary(detail=''){window.openModal?.('gameModal');if(S.screen==='playing')stopMusic();S.screen=detail||'library';syncScreens();start();draw()}
+  function openLibrary(){
+    window.openModal?.('gameModal');
+    if(S.screen==='playing')stopMusic();
+    S.screen='library';
+    syncScreens();
+    start();
+    draw();
+  }
   function launchHeimr(){stopMusic();running=false;cancelAnimationFrame(raf);window.location.assign('games/heimr.html')}
-  document.getElementById('gameBtn')?.addEventListener('click',launchMaverick);document.getElementById('consoleBtn')?.addEventListener('click',()=>openLibrary());document.getElementById('mavCartridge')?.addEventListener('click',launchMaverick);document.getElementById('heimrCartridge')?.addEventListener('click',launchHeimr);document.getElementById('prismCartridge')?.addEventListener('click',()=>openLibrary('library-prism'));document.getElementById('mavLibraryPlayButton')?.addEventListener('click',launchMaverick);document.getElementById('mavLibraryHeimrButton')?.addEventListener('click',launchHeimr);document.getElementById('mavLibraryPrismButton')?.addEventListener('click',()=>openLibrary('library-prism'));document.getElementById('mavHeimrBackButton')?.addEventListener('click',()=>openLibrary());document.getElementById('mavPrismBackButton')?.addEventListener('click',()=>openLibrary());document.querySelector('[data-close="gameModal"]')?.addEventListener('click',stop);modal.addEventListener('click',e=>{if(e.target===modal)stop()});
+  document.getElementById('gameBtn')?.addEventListener('click',launchMaverick);
+  document.getElementById('consoleBtn')?.addEventListener('click',openLibrary);
+  document.getElementById('mavCartridge')?.addEventListener('click',launchMaverick);
+  document.getElementById('heimrCartridge')?.addEventListener('click',launchHeimr);
+  document.getElementById('mavLibraryPlayButton')?.addEventListener('click',launchMaverick);
+  document.getElementById('mavLibraryHeimrButton')?.addEventListener('click',launchHeimr);
+  document.querySelector('[data-close="gameModal"]')?.addEventListener('click',stop);
+  modal.addEventListener('click',e=>{if(e.target===modal)stop()});
   function kd(e){if(!modal.classList.contains('show'))return;const k=e.key;if(S.screen==='title'&&['Enter',' ','ArrowUp','w','W'].includes(k)){beginAdventure();e.preventDefault();return}if(S.story&&['Enter',' ','ArrowRight','e','E'].includes(k)){advanceStory();e.preventDefault();return}if(['Escape','p','P'].includes(k)){if(!e.repeat)togglePause();e.preventDefault();return}if(S.screen!=='playing')return;if(['ArrowLeft','a','A'].includes(k)){input.left=true;e.preventDefault()}if(['ArrowRight','d','D'].includes(k)){input.right=true;e.preventDefault()}if(['ArrowUp','w','W',' '].includes(k)){if(!input.jump)pressed.jump=true;input.jump=true;e.preventDefault()}if(['ArrowDown','s','S'].includes(k)){input.down=true;enterPipe();e.preventDefault()}if(['f','F','x','X'].includes(k)&&!e.repeat){pressed.bone=true;e.preventDefault()}if(['Shift','e','E'].includes(k)&&!e.repeat){pressed.dash=true;e.preventDefault()}}
   function ku(e){const k=e.key;if(['ArrowLeft','a','A'].includes(k))input.left=false;if(['ArrowRight','d','D'].includes(k))input.right=false;if(['ArrowUp','w','W',' '].includes(k))input.jump=false;if(['ArrowDown','s','S'].includes(k))input.down=false}addEventListener('keydown',kd);addEventListener('keyup',ku);addEventListener('blur',()=>Object.assign(input,{left:false,right:false,jump:false,down:false}));
   let controllerTimer=0;function wakeController(){modal.classList.add('controller-visible');clearTimeout(controllerTimer);controllerTimer=setTimeout(()=>modal.classList.remove('controller-visible'),850)}
@@ -529,5 +554,6 @@ const player={x:120,y:330,w:52,h:68,vx:0,vy:0,dir:1,ground:false,coyote:0,jumpBu
   document.getElementById('scoreInitials')?.addEventListener('input',e=>e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,3));
   document.getElementById('gameRestart')?.addEventListener('click',e=>{const button=e.currentTarget,now=performance.now();if(now>restartArm){restartArm=now+1800;button.textContent='TAP AGAIN';msg('RESTART ARMED • TAP AGAIN TO CONFIRM',1.7);setTimeout(()=>{if(performance.now()>restartArm&&button.isConnected)button.textContent='RESTART'},1900);return}restartArm=0;button.textContent='RESTART';restartAdventure()});
   window.__mavGameTest={LEVELS,spriteSheets,activeSpriteFrame,drawStoryParty,state:()=>({...S,checkpointX,checkpointIndex,speedLoop:speedLoopRide?{t:speedLoopRide.t,x:speedLoopRide.loop.x}:null,projectiles:hazards.map(h=>({x:h.x,y:h.y,vx:h.vx,life:h.life})),player:{...player},blocks:blocks.map(b=>({type:b.type,used:b.used,broken:b.broken})),counts:{blocks:blocks.length,coins:coins.length,enemies:enemies.filter(e=>e.alive).length,bones:bones.length,vines:vines.length,items:items.length}}),setPlayer:(x,y=330)=>Object.assign(player,{x,y,vx:0,vy:0,inv:0}),input,pressed,step:(dt=.016,n=1)=>{for(let i=0;i<n;i++)update(dt);draw()},loadLevel,activateFinn,activateBob,activateRunners,throwBone,doDash,enterPipe,hitBlockAt:i=>hitBlock(blocks[i]),win,reset,start,stop};
-  reset();S.screen='title';S.transition=0;S.messageTime=0;refreshSoundButton();refreshSaveSlots();draw();if(new URLSearchParams(location.search).get('gamePreview')==='1')open();
+  reset();S.screen='title';S.transition=0;S.messageTime=0;refreshSoundButton();refreshSaveSlots();draw();
+  if(new URLSearchParams(location.search).get('gamePreview')==='1')launchMaverick();
 })();
