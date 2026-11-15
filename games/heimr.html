@@ -26,6 +26,27 @@
   .launch-btn, .slot-btn { border-radius:2px; background:#1b3328; min-height:44px }
   .launch-btn.primary { background:#d4ba86 }
   .launch-skip { min-height:44px; padding-inline:.5rem; background:#101f16; color:#f0e1bc }
+  .launch-screen { overflow:visible }
+  .studio-mark { border:8px solid #2b1a0f; background:radial-gradient(circle at 38% 30%,#b98b4f,#5c3820 63%,#26160d); box-shadow:0 7px 0 #130b07,0 18px 44px #000b,inset 0 2px #d5ab6f; color:#f0d49d; text-shadow:0 2px #1d1008; transform:rotate(-2deg) }
+  .studio-wordmark,.games-mark,.launch-title { position:relative; display:inline-block; padding:.18em .45em .24em; border:1px solid #86663d; border-radius:2px; background:linear-gradient(96deg,#50351f,#2c2016 51%,#48301d); box-shadow:0 5px 0 #140c07,0 16px 35px #0009,inset 0 1px #a27b4d; color:#eed6a4; text-shadow:0 2px #130b07; transform:rotate(-.7deg) }
+  .games-mark { padding:.22em .6em .28em; font-size:clamp(2.2rem,7vw,4.8rem); line-height:.84 }
+  .launch-title { padding:.18em .58em .24em; border-color:#415b4d; background:linear-gradient(96deg,#243b2e,#13251d 54%,#2b4132); box-shadow:0 5px 0 #07110c,0 18px 44px #000b,inset 0 1px #5a7a65; color:#f0e0b8; letter-spacing:.13em }
+  .launch-copy,.launch-eyebrow,.games-sub,.launch-foot { padding:.3em .65em; background:#07110cc7; box-shadow:4px 4px 0 #02050355; color:#d8cfb7 }
+  .launch-actions { gap:14px }
+  .launch-btn { position:relative; border:1px solid #76552e; border-radius:2px; background:linear-gradient(#5c4026,#2b1c11); box-shadow:0 4px 0 #120a06,0 10px 22px #0008,inset 0 1px #a57a46; color:#f2ddae; text-shadow:0 1px #000 }
+  .launch-btn.primary { border-color:#876f43; background:linear-gradient(#d0b279,#896b3d); box-shadow:0 4px 0 #38240f,0 10px 22px #0008,inset 0 1px #f4ddb0; color:#17211c; text-shadow:0 1px #f3d99f }
+  .launch-skip { border:1px solid #3c4e43; border-radius:2px; box-shadow:0 3px 0 #020604; text-decoration:underline; text-underline-offset:.22em }
+  .slot-list { align-items:stretch; gap:15px; perspective:700px }
+  .slot-btn { position:relative; min-height:104px; padding:22px 10px 15px; border:1px solid #a78e61; border-radius:1px; background:#d9c49a; box-shadow:3px 5px 0 #160e08,0 13px 30px #0008; color:#261b12; text-shadow:none; transform:rotate(-1deg) }
+  .slot-btn:nth-child(2){transform:rotate(.8deg) translateY(5px)}.slot-btn:nth-child(3){transform:rotate(-.4deg) translateY(-2px)}
+  .slot-btn::before { content:""; position:absolute; left:34%; top:-8px; width:34%; height:15px; background:#a99260b8; box-shadow:0 1px 3px #0005; transform:rotate(2deg) }
+  .slot-btn.active { border:2px solid #5b4527; box-shadow:3px 5px 0 #160e08,0 0 0 4px #e8d29f55,0 13px 30px #0008 }
+  .slot-detail { color:#59472f }
+  .tag { border-radius:2px; background:#dac69f; color:#241a11; box-shadow:2px 3px 0 #160d08; transform:rotate(.5deg) }
+  .cards { gap:18px; perspective:800px }
+  .card { position:relative; border:1px solid #9a8257; border-radius:1px; background:#d8c398; box-shadow:4px 5px 0 #080d0b,0 14px 28px #0007; color:#291f15; transform:rotate(-.45deg) }
+  .card:nth-child(2){transform:rotate(.35deg) translateY(3px)}.card:nth-child(3){transform:rotate(-.2deg)}.card b,.card span{color:#291f15}
+  .card::before { content:""; position:absolute; left:38%; top:-7px; width:24%; height:13px; background:#a88d5eb5; box-shadow:0 1px 3px #0005 }
   @media (max-height:450px) { .launch-screen { padding:14px 0 } .launch-title { font-size:clamp(2.6rem, 9vw, 5rem) } }
 </style></head><body><div class="launch-overlay" id="launchOverlay" role="dialog" aria-label="HEIMR game opening">
 <section class="launch-screen" id="studioSlate"><div class="studio-mark">SL</div><p class="launch-eyebrow">A Studio LaDuke production</p><h2 class="studio-wordmark">STUDIO LADUKE</h2><div class="launch-rule"></div><p class="launch-copy">Stories made close to home.</p></section>
