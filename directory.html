@@ -53,29 +53,6 @@
       text-underline-offset: .2em;
       cursor: pointer;
     }
-    .cartridges { padding: 1.8rem 1.35rem 1rem; }
-    .cartridges h2 { margin-top: 0; font-size: 1.8rem; line-height: 1; }
-    .cartridges a { text-underline-offset: auto; }
-.game-shelf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;margin:6px 0 42px}
-.game-cart{--cart:#ba8751;--glow:#fff0a1;position:relative;min-height:245px;display:flex;flex-direction:column;align-items:stretch;padding:13px 15px 15px;border:3px solid color-mix(in srgb,var(--cart),#fff 24%);border-radius:16px 16px 9px 9px;color:#f8f0d6;text-decoration:none;background:linear-gradient(180deg,color-mix(in srgb,var(--cart),#fff 18%) 0 9px,color-mix(in srgb,var(--cart),#111 35%) 10px 21px,#232323 22px 100%);box-shadow:0 8px 0 #090909,0 16px 25px #0008;transition:transform .18s,filter .18s,box-shadow .18s;isolation:isolate}
-.game-cart:before,.game-cart:after{content:"";position:absolute;top:7px;width:10px;height:16px;border-radius:3px;background:#201b18;box-shadow:inset 0 2px 2px #0008}
-.game-cart:before{left:10px}
-.game-cart:after{right:10px}
-.game-cart:hover,.game-cart:focus-visible{transform:translateY(-7px) rotate(-1deg);filter:brightness(1.13);box-shadow:0 11px 0 #090909,0 22px 32px #000b,0 0 24px color-mix(in srgb,var(--glow),transparent 55%);outline:3px solid var(--glow);outline-offset:3px}
-.game-cart.heimr{--cart:#3f8d83;--glow:#9affec}
-.game-cart.prism{--cart:#7955b7;--glow:#8ef3ff}
-.game-cart.mav{--cart:#c58140;--glow:#ffe277}
-.cart-label{position:relative;z-index:1;flex:1;margin:18px 2px 10px;padding:16px 13px;border:2px solid color-mix(in srgb,var(--cart),#fff 35%);border-radius:6px;background:linear-gradient(135deg,#183c35,#0c1718);box-shadow:inset 0 0 0 3px #0008,inset 0 0 28px color-mix(in srgb,var(--glow),transparent 84%);overflow:hidden}
-.game-cart.prism .cart-label{background:linear-gradient(135deg,#391e68,#101a38)}
-.game-cart.heimr .cart-label{background:linear-gradient(135deg,#1d4e4a,#10211f)}
-.cart-label:after{content:"";position:absolute;inset:0;opacity:.18;background:repeating-linear-gradient(0deg,transparent 0 8px,#fff 9px 10px),repeating-linear-gradient(90deg,transparent 0 8px,#fff 9px 10px);mask-image:linear-gradient(90deg,transparent,#000 20% 80%,transparent);pointer-events:none}
-.cart-studio{font:700 9px system-ui;letter-spacing:.2em;color:#e3d19e;text-transform:uppercase}
-.cart-title{display:block;margin:13px 0 5px;font:900 clamp(17px,2vw,25px)/.96 Georgia,serif;letter-spacing:.06em;text-shadow:2px 2px #1a1110}
-.cart-caption{font-size:11px;color:#d7d5c2}
-.cart-open{align-self:center;margin:0 auto;padding:7px 14px;border:2px solid #e0c578;border-radius:6px;background:linear-gradient(#a98246,#5b3e2a);box-shadow:0 3px 0 #322116;color:#fff1bf;font:900 10px system-ui;letter-spacing:.14em;text-transform:uppercase}
-.cart-teeth{display:flex;justify-content:center;gap:8px;height:14px;margin:3px auto -1px}
-.cart-teeth i{width:9px;height:9px;border:2px solid #d3b65e;background:#29241c;border-radius:0 0 3px 3px}
-
     @media (max-width: 760px) {
       .notice {
         min-height: 0;
@@ -86,18 +63,13 @@
         box-shadow: inset 0 0 15px #54310d47;
       }
       .notice li a { min-height: 44px; font-size: 1rem; }
-      .game-shelf { grid-template-columns: 1fr; gap: 14px; }
-      .game-cart { min-height: 190px; }
     }
     @media (max-width: 365px) {
       .notice { padding-inline: .85rem; }
       .notice-grid { gap: .75rem; }
     }
-    @media (prefers-reduced-motion: reduce) {
-      .game-cart { transition: none; }
-      .game-cart:hover, .game-cart:focus-visible { transform: none; }
-    }
   </style>
+  <link rel="stylesheet" href="assets/cartridge-shelf.css">
 </head>
 <body>
   <main>
@@ -136,14 +108,46 @@
     </section>
 
     <section class="cartridges" aria-labelledby="cartridges">
-    <h2 id="cartridges" tabindex="-1">Game cartridges</h2>
-    <nav class="game-shelf" aria-label="Studio LaDuke games">
-      <a class="game-cart mav" href="mavericks-fort.html?gamePreview=1" aria-label="Play Super Maverick’s World"><span class="cart-label"><span class="cart-studio">Maverick Games · 16-bit adventure</span><strong class="cart-title">SUPER MAVERICK’S WORLD</strong><span class="cart-caption">Run fast. Find Finn. Make the fort yours.</span></span><span class="cart-open">Insert · Start</span><span class="cart-teeth" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></a>
-      <a class="game-cart prism" href="games/prism.html" aria-label="Play Prism Pals"><span class="cart-label"><span class="cart-studio">Maverick Games · color arcade</span><strong class="cart-title">PRISM PALS</strong><span class="cart-caption">Bring the living spectrum back into tune.</span></span><span class="cart-open">Insert · Start</span><span class="cart-teeth" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></a>
-      <a class="game-cart heimr" href="games/heimr.html" aria-label="Play HEIMR: The Woodline"><span class="cart-label"><span class="cart-studio">Maverick Games · story adventure</span><strong class="cart-title">HEIMR</strong><span class="cart-caption">A rain-soaked trail. A small blue light. Home.</span></span><span class="cart-open">Insert · Start</span><span class="cart-teeth" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></a>
-    </nav>
+      <h2 id="cartridges" tabindex="-1">Game cartridges</h2>
+      <ul class="game-shelf">
+        <li>
+          <a class="game-cart" href="mavericks-fort.html?gamePreview=1">
+            <img src="assets/cartridge-maverick.webp" alt="Super Maverick’s World" width="493" height="491" loading="lazy">
+          </a>
+          <a class="direct-play" href="mavericks-fort.html?gamePreview=1" aria-label="Play Super Maverick’s World directly">Play directly</a>
+        </li>
+        <li>
+          <a class="game-cart" href="games/prism.html?play=1">
+            <img src="assets/cartridge-prism.webp" alt="Prism Pals" width="497" height="489" loading="lazy">
+          </a>
+          <a class="direct-play" href="games/prism.html?play=1" aria-label="Play Prism Pals directly">Play directly</a>
+        </li>
+        <li>
+          <a class="game-cart" href="games/heimr.html">
+            <img src="assets/cartridge-heimr.webp" alt="HEIMR" width="503" height="490" loading="lazy">
+          </a>
+          <a class="direct-play" href="games/heimr.html" aria-label="Play HEIMR directly">Play directly</a>
+        </li>
+      </ul>
     </section>
   </main>
+  <dialog class="console-dialog" id="cartridge-console" aria-labelledby="console-title">
+    <h2 id="console-title">Maverick Games</h2>
+    <form method="dialog">
+      <button class="console-close" type="submit" aria-label="Put the cartridge back on the shelf">×</button>
+    </form>
+    <p id="console-status" role="status"></p>
+    <div class="console-deck" aria-hidden="true">
+      <img class="console-photo" src="assets/cartridge-console.webp" width="960" height="640" alt="" loading="lazy">
+      <img class="console-cart" id="selected-cartridge" alt="">
+      <span class="console-light"></span>
+    </div>
+    <div class="console-controls">
+      <button id="console-action" type="button" autofocus>Push it in</button>
+      <a id="console-skip">Skip to game</a>
+    </div>
+  </dialog>
+  <script src="assets/cartridge-shelf.js" defer></script>
   <script>
     const destinations = [
       "workshop.html", "forest-path.html", "mavericks-fort.html", "mcbrides.html",
