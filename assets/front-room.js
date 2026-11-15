@@ -1,7 +1,7 @@
 "use strict";
 
 const room = document.querySelector(".front-room");
-const narrowRoom = matchMedia("(max-width: 650px)");
+const narrowRoom = matchMedia("(max-width: 650px) and (orientation: portrait)");
 const wall = document.querySelector(".mounted-art-wall");
 const rainGlass = document.querySelector(".rain-layer");
 const bookCover = document.querySelector(".cover-on-shelf");
@@ -99,7 +99,7 @@ new ResizeObserver(placeFrontRoom).observe(room);
 narrowRoom.addEventListener("change", placeFrontRoom);
 
 
-const movingView = matchMedia("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)");
+const movingView = matchMedia("(hover: hover) and (pointer: fine) and (min-height: 601px) and (prefers-reduced-motion: no-preference)");
 
 function resetViewpoint() {
   for (const property of ["--room-drift-x", "--room-drift-y", "--entry-drift-x", "--entry-drift-y"]) {

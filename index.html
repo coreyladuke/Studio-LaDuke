@@ -623,10 +623,10 @@
 
     /* Vertical front room for phones */
 
-    @media (max-width: 650px) {
+    @media (max-width: 650px) and (orientation: portrait) {
       .front-room {
-        width: max(100vw, calc(100svh * 0.48884));
-        height: max(100svh, calc(100vw / 0.48884));
+        width: min(100vw, calc(100svh * 0.48884));
+        height: min(100svh, calc(100vw / 0.48884));
 
         background-image:
           url("assets/front-room-phone.webp");
@@ -720,6 +720,17 @@
         width: 50px;
         height: 50px;
       }
+    }
+
+    /* The artwork includes the navigation rail, so fit the entire plate on short screens. */
+    @media (max-height: 600px) and (orientation: landscape) {
+      .front-room {
+        width: min(100vw, calc(100svh * 1.5));
+        height: min(100svh, calc(100vw / 1.5));
+        transform: translate(-50%, -50%);
+      }
+
+      .enter { transform: translate(-50%, -50%); }
     }
 
     @media (prefers-reduced-motion: reduce) {
