@@ -127,8 +127,10 @@
 
     @media (max-height: 600px) and (orientation: landscape) {
       .workshop {
-        width: 100vw;
-        height: calc(100vw * 844 / 1170);
+        width: calc(100svh * 1170 / 844);
+        height: 100svh;
+        max-width: none;
+        max-height: none;
       }
     }
 
@@ -465,27 +467,28 @@
         box-shadow 160ms ease;
     }
 
-    .hotspot:hover::after,
     .hotspot:focus-visible::after {
-      border-color:
-        rgba(189, 255, 103, 0.7);
+      inset: calc(50% - 14px);
+      border-color: rgba(235, 202, 126, .95);
+      border-radius: 50%;
+      background: transparent;
+      box-shadow: 0 0 0 4px rgba(18, 12, 8, .62), 0 0 16px rgba(235, 202, 126, .48);
+    }
 
-      background:
-        radial-gradient(
-          circle at center,
-          rgba(124, 255, 77, 0.1),
-          transparent 65%
-        );
-
-      box-shadow:
-        0 0 18px rgba(95, 255, 65, 0.28);
+    @media (hover: none), (pointer: coarse) {
+      .hotspot:hover::after,
+      .hotspot:active::after {
+        border-color: transparent;
+        background: transparent;
+        box-shadow: none;
+      }
     }
 
     /* ATTIC PULL — the doorway into Maverick's Fort. */
     .fort-entry {
       position: absolute;
       left: 41.1%;
-      top: 0;
+      top: 3.5%;
       z-index: 36;
 
       width: 8.2%;
@@ -499,14 +502,13 @@
 
     .fort-hatch {
       position: absolute;
-      left: -25%;
-      top: -1%;
-      width: 150%;
-      height: 20%;
+      left: -11%;
+      top: 0;
+      width: 122%;
+      height: 16%;
 
       border: 1px solid rgba(224, 184, 111, 0.52);
-      border-top: 0;
-      border-radius: 0 0 7px 7px;
+      border-radius: 2px;
 
       background:
         linear-gradient(
@@ -597,7 +599,6 @@
 
       transform: translateX(-50%) rotate(-2deg);
       transform-origin: top center;
-      animation: fortHandleSway 3.2s ease-in-out infinite;
       transition:
         background 180ms ease,
         box-shadow 180ms ease;
@@ -646,23 +647,6 @@
       transform: translateX(-50%) translateY(8px) rotate(2deg);
     }
 
-    @keyframes fortHandleSway {
-      0%,
-      100% {
-        transform: translateX(-50%) rotate(-2deg);
-      }
-
-      50% {
-        transform: translateX(-50%) rotate(2deg);
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .fort-handle {
-        animation: none;
-      }
-    }
-
     .arcade-hotspot {
       left: 59.65%;
       top: 26.4%;
@@ -698,6 +682,14 @@
       height: 32.0%;
     }
 
+    .forest-hotspot.touching::after {
+      inset: 41% 12% 41% 69%;
+      border: 0;
+      border-radius: 50%;
+      background: linear-gradient(110deg, transparent, rgba(255, 239, 174, .95), transparent);
+      box-shadow: 0 0 9px rgba(255, 222, 125, .72);
+    }
+
     /* WALL STEREO */
     .stereo-hotspot {
       left: 18.2%;
@@ -729,6 +721,8 @@
       opacity: 0.9;
       animation: stereoPulse 2.4s ease-in-out infinite;
     }
+
+    .stereo-hotspot.touching::before { opacity: .68; }
 
     @keyframes stereoPulse {
       0%,
@@ -823,24 +817,31 @@
       }
     }
 
-    /* Light stays on the cabinet glass and its marquee. */
+    /* Light stays inside the cabinet glass and leaks softly onto its bezel. */
     .arcade-hotspot {
       container-type: inline-size;
+      filter: drop-shadow(0 0 3px rgba(115, 214, 93, .18));
     }
 
     .arcade-hotspot::before {
       content: "";
       position: absolute;
-      top: 17%;
-      left: 12%;
-      width: 71%;
-      height: 36%;
-      clip-path: polygon(12% 0, 97% 7%, 93% 100%, 0 97%);
+      top: 19%;
+      left: 15%;
+      width: 65%;
+      height: 29%;
+      border-radius: 10% 12% 14% 10% / 9% 10% 17% 15%;
+      clip-path: polygon(8% 0, 96% 5%, 91% 100%, 0 95%);
       pointer-events: none;
       background:
-        radial-gradient(ellipse at 46% 63%, #a7e25d80, #389d425c 48%, #142218cc 90%),
-        repeating-linear-gradient(0deg, #141c1955 0 1px, transparent 1px 3px);
-      opacity: .88;
+        linear-gradient(116deg, rgba(230,255,218,.18) 0 7%, transparent 20% 100%),
+        radial-gradient(ellipse at 46% 58%, rgba(153,224,104,.55), rgba(52,127,52,.35) 39%, rgba(4,13,8,.88) 78%),
+        repeating-linear-gradient(0deg, rgba(207,255,192,.05) 0 1px, transparent 1px 3px);
+      box-shadow:
+        inset 0 0 10px rgba(0,0,0,.92),
+        inset 1px 1px 2px rgba(221,255,196,.26),
+        0 0 7px rgba(105,215,76,.28);
+      opacity: .72;
     }
 
     .arcade-marquee {
@@ -854,11 +855,22 @@
       transform: rotate(1deg);
       color: #f6edb0;
       background: linear-gradient(#19251a, #3f5e34 55%, #233b2c);
-      box-shadow: inset 0 0 4px #b4d65c8c, 0 0 8px #adff514f;
+      box-shadow: inset 0 0 4px #d6e99c8c, 0 0 5px #adff5138;
       font: 900 clamp(6px, 10cqw, 13px)/.86 Georgia, serif;
       text-align: center;
       text-transform: uppercase;
       text-shadow: 0 1px 2px #101a0d;
+      pointer-events: none;
+    }
+
+    .arcade-marquee::after {
+      content: "";
+      position: absolute;
+      inset: -17% -10%;
+      z-index: -1;
+      border-radius: 50%;
+      background: rgba(169, 221, 91, .18);
+      filter: blur(7px);
       pointer-events: none;
     }
 
@@ -991,7 +1003,7 @@
       100% { left:5.0%; top:24.5%; opacity:0; transform:scale(.35) rotate(760deg); }
     }
 
-    /* ROOM DOTS */
+    /* A small brass position rail, not a floating pagination widget. */
 
     .room-indicator {
       position: fixed;
@@ -1001,27 +1013,31 @@
       z-index: 45;
 
       display: none;
-      gap: 7px;
+      gap: 9px;
 
       transform: translateX(-50%);
 
-      padding: 7px 10px;
+      padding: 5px 10px;
 
-      background: rgba(10, 8, 6, 0.72);
-      border:
-        1px solid rgba(225, 183, 100, 0.3);
-      border-radius: 999px;
+      background:
+        linear-gradient(90deg, transparent 7px, #8e6b32 8px 9px, transparent 10px calc(100% - 10px), #8e6b32 calc(100% - 9px) calc(100% - 8px), transparent calc(100% - 7px)),
+        linear-gradient(#413522, #17130e 58%, #0c0a08);
+      border: 1px solid #826329;
+      border-radius: 4px;
+      box-shadow: inset 0 1px #c7a45b55, 0 3px 7px #0009;
 
       pointer-events: none;
-      backdrop-filter: blur(5px);
+      backdrop-filter: none;
     }
 
     .room-dot {
-      width: 7px;
-      height: 7px;
+      width: 10px;
+      height: 10px;
 
       border-radius: 50%;
-      background: rgba(245, 223, 178, 0.3);
+      border: 1px solid #76602f;
+      background: radial-gradient(circle at 36% 30%, #81765a, #29261e 62%, #11100d);
+      box-shadow: inset 0 1px #fff2;
 
       transition:
         background 130ms ease,
@@ -1029,8 +1045,10 @@
     }
 
     .room-dot.active {
-      background: #e1b85f;
-      transform: scale(1.2);
+      border-color: #d0a548;
+      background: radial-gradient(circle at 36% 30%, #ffe49a, #c39036 52%, #5b3b12 100%);
+      box-shadow: inset 0 1px #fff7, 0 0 5px #d6a64270;
+      transform: translateY(-1px);
     }
 
     @media (max-width: 700px) and (orientation: portrait) {
@@ -1426,9 +1444,10 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="assets/room-controls.css?v=4">
 </head>
 
-<body>
+<body class="studio-room workshop-scene">
 
   <div
     class="background-fill"
@@ -1545,7 +1564,7 @@
         class="hotspot dog-hotspot"
         id="dogHotspot"
         type="button"
-        aria-label="Fin"
+        aria-label="Finn"
       ></button>
 
       <a
@@ -1579,7 +1598,7 @@
         id="finRunner"
         viewBox="0 0 220 112"
         role="img"
-        aria-label="Fin running after the tennis ball"
+        aria-label="Finn running after the tennis ball"
       >
         <defs>
           <linearGradient id="finWhite" x1="0" y1="0" x2="0" y2="1">
@@ -1592,7 +1611,7 @@
           </linearGradient>
         </defs>
 
-        <!-- tail points right; Fin is facing/running left toward the door -->
+        <!-- tail points right; Finn is facing/running left toward the door -->
         <g class="fin-tail">
           <path d="M159 51 C183 41 190 25 205 20 C196 34 196 51 174 61 Z"
                 fill="url(#finWhite)" stroke="#4a3325" stroke-width="3" stroke-linejoin="round"/>
@@ -1656,11 +1675,13 @@
     class="menu-button"
     id="menuButton"
     type="button"
-    aria-label="Open navigation menu"
+    aria-label="Open rooms"
     aria-controls="menuPanel"
     aria-expanded="false"
   >
-    <span class="menu-lines"></span>
+    <span class="menu-lines" aria-hidden="true"></span>
+    <span class="menu-label-open" aria-hidden="true">Rooms</span>
+    <span class="menu-label-close" aria-hidden="true">Close</span>
   </button>
 
   <div
@@ -1695,7 +1716,7 @@
       </a>
 
       <a class="menu-link" href="forest-path.html">
-        The Back Forty
+        The Woods
       </a>
 
       <a class="menu-link" href="directory.html">
@@ -1831,8 +1852,8 @@
         <div class="drawer-object-photo" aria-hidden="true"></div>
         <div class="drawer-object-copy">
           <h3 tabindex="-1">Folded receipt</h3>
-          <p>Birdseed. One flashlight.<br>Directions from the raven: $0.<br>Someone wrote <em>Overpaid</em> in pencil.</p>
-          <p><a href="forest-path.html#raven">Find the raven out back</a></p>
+          <p>Birdseed. One flashlight.<br>A rain-smeared trail map: $0.<br>Someone wrote <em>Overpaid</em> in pencil.</p>
+          <p><a href="forest-path.html">Step out into The Woods</a></p>
           <p class="drawer-receipt-note">On the back, in green ink: “Complaints accepted. Satisfaction is outside our remit.”<br><a href="bob-bureau/">File a case with Bob’s Bureau</a></p>
           <button class="drawer-back" type="button">Put it back</button>
         </div>
@@ -1851,7 +1872,7 @@
   </dialog>
 
   <div
-    class="toast"
+    class="toast scene-note"
     id="toast"
     aria-live="polite"
   ></div>
@@ -1913,7 +1934,8 @@
     preload="metadata"
   ></audio>
 
-  <script>
+  <script type="module">
+    import { bindRoomPan } from "./assets/room-pan.mjs";
     "use strict";
 
     const stereoPlaylist = [
@@ -2070,17 +2092,10 @@
     let minRoomX = 0;
     let maxRoomX = 0;
 
-    let pointerActive = false;
-    let pointerId = null;
-    let pointerStartX = 0;
-    let roomStartX = 0;
-    let pointerTravel = 0;
-
     let viewerTouchStartX = 0;
 
     frames.forEach(frame => {
-      frame.addEventListener("click", event => {
-        if (event.detail && pointerTravel > 8) return;
+      frame.addEventListener("click", () => {
         openViewer(frame.querySelector("img").getAttribute("src"));
       });
     });
@@ -2207,7 +2222,7 @@
 
     sceneViewport.addEventListener("focusin", event => {
       const bounds = event.target.getBoundingClientRect();
-      if ((bounds.left >= 0 && bounds.right <= window.innerWidth) || maxRoomX === 0) return;
+      if (!event.target.matches(":focus-visible") || (bounds.left >= 0 && bounds.right <= window.innerWidth) || maxRoomX === 0) return;
 
       const centered = roomX + window.innerWidth / 2 - (bounds.left + bounds.width / 2);
       roomX = Math.max(minRoomX, Math.min(maxRoomX, centered));
@@ -2239,92 +2254,6 @@
       roomDotRight.classList.toggle(
         "active",
         normalized < 0.32
-      );
-    }
-
-    function beginRoomDrag(event) {
-      if (
-        viewer.classList.contains("open") ||
-        menuPanel.classList.contains("open")
-      ) {
-        return;
-      }
-
-      /*
-        Do not capture the pointer when the visitor is tapping an actual
-        object. Pointer capture changes the click target to the room itself
-        on some touch browsers, which made doors and buttons feel randomly
-        unresponsive. Empty wall/floor space still pans normally.
-      */
-      if (
-        event.target.closest(
-          "a, button, input, select, textarea, [role='button']"
-        )
-      ) {
-        pointerTravel = 0;
-        return;
-      }
-
-      pointerActive = true;
-      pointerId = event.pointerId;
-      pointerStartX = event.clientX;
-      roomStartX = roomX;
-      pointerTravel = 0;
-
-      sceneViewport.classList.add(
-        "dragging"
-      );
-
-      sceneViewport.setPointerCapture(
-        event.pointerId
-      );
-    }
-
-    function moveRoom(event) {
-      if (
-        !pointerActive ||
-        event.pointerId !== pointerId
-      ) {
-        return;
-      }
-
-      const distance =
-        event.clientX - pointerStartX;
-
-      pointerTravel =
-        Math.max(
-          pointerTravel,
-          Math.abs(distance)
-        );
-
-      roomX =
-        Math.max(
-          minRoomX,
-          Math.min(
-            maxRoomX,
-            roomStartX + distance
-          )
-        );
-
-      renderRoomPosition();
-    }
-
-    function endRoomDrag(event) {
-      if (
-        !pointerActive ||
-        (
-          event &&
-          event.pointerId !== pointerId
-        )
-      ) {
-        return;
-      }
-
-      pointerActive = false;
-      pointerId = null;
-
-      sceneViewport.classList.remove(
-        "dragging"
       );
     }
 
@@ -2384,7 +2313,7 @@
       menuOverlay.classList.add("open");
       menuPanel.inert = false;
       sceneViewport.inert = true;
-      menuButton.setAttribute("aria-label", "Close navigation menu");
+      menuButton.setAttribute("aria-label", "Close rooms");
 
       menuButton.setAttribute(
         "aria-expanded",
@@ -2399,7 +2328,7 @@
       menuOverlay.classList.remove("open");
       menuPanel.inert = true;
       sceneViewport.inert = false;
-      menuButton.setAttribute("aria-label", "Open navigation menu");
+      menuButton.setAttribute("aria-label", "Open rooms");
       menuButton.focus({ preventScroll: true });
 
       menuButton.setAttribute(
@@ -2492,7 +2421,6 @@
       if (!stereoHasStarted) {
         stereoHasStarted = true;
         loadStereoTrack(stereoTrackIndex, true);
-        showToast("The workshop stereo wakes up.");
         return;
       }
 
@@ -2526,33 +2454,19 @@
       toastTimer =
         window.setTimeout(() => {
           toast.classList.remove("show");
-        }, 1800);
+        }, 6400);
     }
 
-    sceneViewport.addEventListener(
-      "pointerdown",
-      beginRoomDrag
-    );
-
-    sceneViewport.addEventListener(
-      "pointermove",
-      moveRoom
-    );
-
-    sceneViewport.addEventListener(
-      "pointerup",
-      endRoomDrag
-    );
-
-    sceneViewport.addEventListener(
-      "pointercancel",
-      endRoomDrag
-    );
-
-    sceneViewport.addEventListener(
-      "lostpointercapture",
-      () => endRoomDrag()
-    );
+    bindRoomPan(sceneViewport, {
+      getPosition: () => roomX,
+      setPosition: position => {
+        roomX = Math.max(minRoomX, Math.min(maxRoomX, position));
+        renderRoomPosition();
+      },
+      canPan: () => maxRoomX - minRoomX > 2 &&
+        !viewer.classList.contains("open") && !menuPanel.classList.contains("open"),
+      scale: 1.22
+    });
 
     menuButton.addEventListener(
       "click",
@@ -2652,11 +2566,7 @@
 
     stereoHotspot.addEventListener(
       "click",
-      () => {
-        if (pointerTravel <= 8) {
-          toggleStereo();
-        }
-      }
+      toggleStereo
     );
 
     stereoPlayPause.addEventListener(
@@ -2801,30 +2711,28 @@
       .addEventListener(
         "click",
         () => {
-          if (pointerTravel <= 8) {
-            if (finGone) {
-              showToast("Fin is still outside conducting important tennis-ball business.");
-              return;
-            }
-
-            finGone = true;
-
-            thrownBall.classList.remove("fly");
-            finRunner.classList.remove("run");
-            void thrownBall.offsetWidth;
-            void finRunner.offsetWidth;
-
-            finBedPatch.classList.add("show");
-            thrownBall.classList.add("fly");
-
-            window.setTimeout(() => {
-              finRunner.classList.add("run");
-            }, 55);
-
-            showToast("You throw the ball. Fin bolts after it.");
-
-            document.getElementById("dogHotspot").style.pointerEvents = "none";
+          if (finGone) {
+            showToast("Finn is still outside conducting important tennis-ball business.");
+            return;
           }
+
+          finGone = true;
+
+          thrownBall.classList.remove("fly");
+          finRunner.classList.remove("run");
+          void thrownBall.offsetWidth;
+          void finRunner.offsetWidth;
+
+          finBedPatch.classList.add("show");
+          thrownBall.classList.add("fly");
+
+          window.setTimeout(() => {
+            finRunner.classList.add("run");
+          }, 55);
+
+          showToast("You throw the ball. Finn bolts after it.");
+
+          document.getElementById("dogHotspot").style.pointerEvents = "none";
         }
       );
 
@@ -2852,21 +2760,6 @@
     window.requestAnimationFrame(applyAllPerspectiveFrames);
     loadStereoTrack(0, false);
 
-    window.setTimeout(() => {
-      try {
-        if (!sessionStorage.getItem("workshopHintSeen")) {
-          showToast(
-            "Drag to look around. Tap what catches your eye."
-          );
-          sessionStorage.setItem(
-            "workshopHintSeen",
-            "1"
-          );
-        }
-      } catch (error) {
-        /* Storage can be blocked; the room still works fine. */
-      }
-    }, 850);
 
     window.setTimeout(() => {
       calculateRoomBounds();

@@ -48,6 +48,128 @@
       transform: translate(-50%, -50%);
     }
 
+    /* Restore the original floor or wall behind the interactive mark. */
+    .front-room::before {
+      content: "";
+      position: absolute;
+      left: 45.081433%;
+      top: 56.640625%;
+      width: 3.517915%;
+      height: 5.273438%;
+      background: url("assets/front-room-note-star-wide.webp") center / 100% 100% no-repeat;
+      pointer-events: none;
+    }
+
+    .front-room {
+      --star-x: 46.84%;
+      --star-y: 59.28%;
+    }
+
+    .note-star {
+      position: absolute;
+      z-index: 18;
+      left: var(--star-x);
+      top: var(--star-y);
+      width: clamp(44px, 5.3vw, 82px);
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      transform: translate(-50%, -50%);
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .note-star img {
+      width: 74%;
+      height: auto;
+      filter: drop-shadow(0 2px 2px #160e08);
+      pointer-events: none;
+    }
+    .note-star.spinning img { animation: note-star-spin .95s cubic-bezier(.16, .79, .27, 1) both; }
+    @keyframes note-star-spin { to { transform: rotate(360deg); } }
+    .note-star:focus-visible { outline: 2px dashed #f1dfb1; border-radius: 50%; }
+    @media (prefers-reduced-motion: reduce) {
+      .note-star.spinning img { animation: none; filter: drop-shadow(0 0 5px #edbf68); }
+    }
+
+    .turn-room {
+      position: fixed;
+      z-index: 25;
+      right: max(14px, env(safe-area-inset-right));
+      top: max(8px, env(safe-area-inset-top));
+      min-height: 44px;
+      padding: 0 3px;
+      border: 0;
+      background: transparent;
+      color: #f7e5c1;
+      text-decoration: underline;
+      text-underline-offset: .3em;
+      text-shadow: 0 1px 2px #170e09, 0 0 8px #140d06, 0 0 12px #140d06;
+      font: 700 clamp(.9rem, 2.9vw, 1.03rem)/1 Georgia, serif;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .turn-room:focus-visible { outline: 2px dashed #f1dfb1; }
+
+    .door-wall {
+      position: fixed;
+      inset: 0;
+      z-index: 21;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(ellipse at 50% 40%, #392519, #17100d);
+    }
+    .door-wall[hidden] { display: none; }
+    .door-wall .door-plate {
+      position: relative;
+      width: min(100vw, 177.68dvh);
+      height: min(100dvh, 56.28vw);
+      background: url("assets/front-room-doors.webp") center / 100% 100% no-repeat;
+    }
+    .door-plate a {
+      position: absolute;
+      top: 24%;
+      height: 52%;
+      display: grid;
+      place-items: end center;
+      padding: 0 3px 6px;
+      color: #ffecd1;
+      font: 700 clamp(.66rem, 2.2vw, 1.18rem)/1.13 Georgia, serif;
+      text-shadow: 0 1px 2px #140e07, 0 0 4px #140e07, 0 0 8px #140e07;
+      text-decoration: underline;
+      text-underline-offset: .2em;
+      text-align: center;
+      transition: background .15s ease;
+    }
+    .door-plate a:nth-child(1) { left: 10.5%; width: 14%; }
+    .door-plate a:nth-child(2) { left: 41.8%; width: 16%; }
+    .door-plate a:nth-child(3) { left: 75.4%; width: 14%; }
+    .door-plate a:is(:hover,:focus-visible) {
+      background: linear-gradient(0deg,#1a0e0944,transparent 40%);
+    }
+    .door-plate a:focus-visible { outline: 2px dashed #f1dfb1; outline-offset: 2px; }
+    .front-scene .turn-room[aria-expanded="true"] { color: #ffeece; }
+
+    .front-room .wet-pane::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: #040a19;
+      opacity: calc(var(--outside-darkness, .45) * .78);
+    }
+    .front-room[data-season="autumn"] .wet-pane::before { background: #11131f; }
+    .front-room[data-season="autumn"] .wet-pane { filter: sepia(.16); }
+    .front-room[data-season="winter"] .wet-pane::before { background: #102133; }
+    .front-room .rain-layer { opacity: 1; }
+    .front-room:not([data-weather="rain"]) .wet-pane :is(.bead,.rivulet) { display: none; }
+    .front-room[data-weather="snow"] .wet-pane::after {
+      content: ""; position: absolute; inset: 0;
+      background-image: radial-gradient(circle, #eaf6efbe 0 1px, transparent 1.6px);
+      background-size: 33px 49px;
+    }
+
     button,
     a {
       font: inherit;
@@ -67,14 +189,14 @@
       font-weight: 700;
       line-height: 1;
       text-decoration: none;
-      text-shadow: 0 1px #543118, 0 2px 4px #1e1009, 0 5px 13px #261409;
+      text-shadow: 0 1px #a27d47, 0 2px #66452b, 0 3px 1px #4d321e, 5px 11px 15px #140b0799;
       transform: translate(calc(-50% + var(--entry-drift-x, 0px)), calc(-50% + var(--entry-drift-y, 0px)));
       -webkit-tap-highlight-color: transparent;
     }
 
     .enter span {
       display: block;
-      transform: perspective(420px) rotateY(-8deg) rotateZ(-4deg);
+      transform: perspective(520px) translateZ(37px) rotateY(-11deg) rotateZ(-4deg);
     }
 
     .enter:hover,
@@ -205,13 +327,9 @@
     .wet-pane {
       position:absolute;
       overflow:hidden;
-      background:
-        radial-gradient(ellipse at 22% 20%,#dad9cf24,transparent 55%),
-        linear-gradient(155deg,#516d7627,#17222b4a);
-      backdrop-filter:brightness(.68) saturate(.62);
-      -webkit-backdrop-filter:brightness(.68) saturate(.62);
-      mask-image: linear-gradient(#000 0 90%, transparent);
+      background: transparent;
     }
+    .front-room.raining .wet-pane { background: #17222b27; }
     .wet-pane .bead {
       position:absolute;
       width:var(--size);
@@ -235,16 +353,64 @@
       65% { opacity:.62 }
       85% { opacity:.19; transform:translateY(30px) }
     }
-    .rain-sound {
-      position:absolute;
-      top:8%; left:57%; z-index:17;
-      min-height:44px; padding:0 12px;
-      border:1px solid #d5b782; border-radius:6px;
-      color:#fff0d1; background:#22251f;
-      font:700 .8rem system-ui,sans-serif;
-      cursor:pointer;
+    .window-actions {
+      position: absolute;
+      left: 49.5%;
+      top: 39%;
+      z-index: 17;
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      width: max-content;
+      max-width: 40%;
+      transform: translateX(-50%);
     }
-    .rain-sound:focus-visible { outline:2px solid #ffe4a4; outline-offset:3px }
+
+    .window-actions[hidden] { display: none; }
+    .window-actions :is(a, button) {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 2px;
+      border: 0;
+      color: #fff1d1;
+      background: transparent;
+      text-decoration: underline;
+      text-underline-offset: .25em;
+      text-shadow: 0 1px 2px #1a1208, 0 0 5px #130e08, 0 0 11px #171309;
+      font: 700 clamp(.75rem, 1.35vw, 1.05rem)/1 Georgia, serif;
+      white-space: nowrap;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .window-actions :is(a, button):focus-visible {
+      outline: 2px solid #eef1ec;
+      outline-offset: 1px;
+    }
+
+    .front-room .guitar-hotspot.strumming::before {
+      content: "";
+      position: absolute;
+      inset: 21% 28% 11%;
+      background: radial-gradient(ellipse, #ffd99525, transparent 68%);
+      pointer-events: none;
+      animation: guitar-shimmer 640ms ease-out both;
+    }
+    @keyframes guitar-shimmer { to { opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) {
+      .front-room .guitar-hotspot.strumming::before { animation: none; }
+    }
+
+    .guitar-status {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      clip-path: inset(50%);
+      overflow: hidden;
+      white-space: nowrap;
+    }
 
     .room-hotspot,
     .picture-nav {
@@ -321,34 +487,10 @@
       height: 42.3%;
     }
 
-    .window-trail {
-      position: absolute;
-      top: 8%;
-      left: 50%;
-      z-index: 17;
-      display: grid;
-      place-items: center;
-      min-height: 44px;
-      padding: 0 13px;
-      transform: translateX(-50%);
-      border: 1px solid #d5b782;
-      border-radius: 6px;
-      color: #fff0d1;
-      background: #1d251e;
-      font: 700 0.83rem system-ui, sans-serif;
-      text-decoration: none;
-    }
-
-    .window-trail[hidden] { display: none; }
-    .window-trail:hover, .window-trail:focus-visible {
-      outline: 2px solid #ffe4a4;
-      outline-offset: 3px;
-    }
-
     .brain-secret {
       left: 45.7%;
-      top: 57.2%;
-      z-index: 18;
+      top: 66%;
+      z-index: 19;
       width: 3%;
       height: 5%;
       border-radius: 50%;
@@ -638,12 +780,41 @@
     /* Vertical front room for phones */
 
     @media (max-width: 650px) and (orientation: portrait) {
+      .front-scene {
+        --phone-usable-height: calc(100dvh - max(8px, env(safe-area-inset-bottom)));
+      }
+
       .front-room {
-        width: min(100vw, calc(100svh * 0.48884));
-        height: min(100svh, calc(100vw / 0.48884));
+        top: 0;
+        bottom: 0;
+        margin-block: auto;
+        width: min(100vw, calc(var(--phone-usable-height) * .48884));
+        height: min(var(--phone-usable-height), calc(100vw / .48884));
+        transform: translateX(-50%);
+        --star-x: 49.66%;
+        --star-y: 49.41%;
 
         background-image:
           url("assets/front-room-phone.webp");
+      }
+
+      .front-room::after {
+        content: "";
+        position: absolute;
+        left: 3.767123%;
+        top: 2.116992%;
+        width: 7.876712%;
+        height: 2.674095%;
+        background: url("assets/front-room-phone-wood.webp") center / 100% 100% no-repeat;
+        pointer-events: none;
+      }
+
+      .front-room::before {
+        left: 46.232877%;
+        top: 47.743733%;
+        width: 6.849315%;
+        height: 3.342618%;
+        background-image: url("assets/front-room-note-star-phone.webp");
       }
 
       .enter {
@@ -652,7 +823,9 @@
         font-size: clamp(29px, 8vw, 42px);
       }
 
-      .enter span { transform: perspective(350px) rotateY(-10deg) rotateZ(-5deg); }
+      .enter span { transform: perspective(460px) translateZ(32px) rotateY(-12deg) rotateZ(-4deg); }
+      .note-star { width: clamp(44px, 13vw, 59px); }
+      .note-star img { width: 68%; }
 
       .lamp-glow {
         left: -3%;
@@ -668,8 +841,12 @@
         height: 27.1%;
       }
 
-      .rain-sound { left:63%; top:8% }
-      .window-trail { left:43%; top:8% }
+      .window-actions {
+        left: 52.9%;
+        top: 24%;
+        max-width: 47%;
+        gap: clamp(7px, 2.3vw, 14px);
+      }
 
       .lamp-hotspot {
         left: 0;
@@ -701,7 +878,7 @@
 
       .brain-secret {
         left: 47.3%;
-        top: 47.6%;
+        top: 53%;
         width: 5.5%;
         height: 5%;
       }
@@ -755,6 +932,7 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
+      .enter span { transform: perspective(520px) rotateY(-8deg) rotateZ(-4deg); }
       .menu-panel,
       .menu-shade,
       .menu-lines,
@@ -776,10 +954,34 @@
         animation: none;
       }
     }
+
+    .front-scene .menu-button.open { left: max(19px, env(safe-area-inset-left)); }
+    .front-scene .room-hotspot:focus-visible::after,
+    .front-scene .picture-nav:focus-visible::after {
+      border: 2px solid #eef1ec;
+      box-shadow: 0 0 0 2px #24251e;
+      background: transparent;
+    }
+    @media (hover: none), (pointer: coarse) {
+      .room-hotspot:hover:not(:focus-visible)::after,
+      .picture-nav:hover:not(:focus-visible)::after {
+        border-color: transparent;
+        background: transparent;
+        box-shadow: none;
+      }
+    }
+    @media (max-width: 650px) and (orientation: portrait) {
+      .front-scene .menu-button {
+        left: calc(50vw - min(100vw, var(--phone-usable-height) * .48884) * .5 + min(100vw, var(--phone-usable-height) * .48884) * .03);
+        top: max(4px, calc(50dvh - min(var(--phone-usable-height), 100vw / .48884) * .5 + min(var(--phone-usable-height), 100vw / .48884) * .035 - 20px));
+      }
+      .front-scene .front-toast { bottom: max(calc(13.6% + env(safe-area-inset-bottom)), 100px); }
+    }
   </style>
+  <link rel="stylesheet" href="assets/room-controls.css?v=4">
 </head>
 
-<body>
+<body class="studio-room front-scene">
 
   <div class="front-room" aria-label="Studio LaDuke front room">
     <div class="room-dimmer" aria-hidden="true"></div>
@@ -806,9 +1008,12 @@
       <img src="assets/everybody-home-cover.webp" alt="" width="620" height="945">
     </div>
     <a class="room-hotspot book-hotspot" href="books.html" aria-label="Open Everybody Deserves to Go Home"></a>
-    <button class="room-hotspot window-hotspot" id="windowHotspot" type="button" aria-label="Change the weather outside" aria-pressed="false"></button>
-    <button class="rain-sound" id="rainSound" type="button" hidden>Mute rain</button>
-    <a class="window-trail" id="windowTrail" href="forest-path.html" hidden>Follow the trail</a>
+    <button class="room-hotspot window-hotspot" id="windowHotspot" type="button" aria-label="Look out the window" aria-controls="windowActions" aria-expanded="false"></button>
+    <div class="window-actions" id="windowActions" hidden>
+      <a href="forest-path.html">The Woods <span aria-hidden="true">↗</span></a>
+      <button id="rainSound" type="button" aria-pressed="false">Sound on</button>
+    </div>
+    <button class="note-star" id="noteStar" type="button" aria-label="Spin the five-note star"><img src="assets/studio-note-star.webp" alt=""></button>
     <a class="room-hotspot brain-secret" id="brainSecret" href="brain.html" aria-label="Enter the hidden room inside my head" hidden></a>
 
     <a class="picture-nav nav-studio" href="index.html" aria-label="Studio front room"></a>
@@ -826,18 +1031,29 @@
     </a>
   </div>
 
-  <audio id="rainAudio" src="audio/front-room-rain.mp3" preload="none" loop></audio>
-  <div class="front-toast" id="frontToast" aria-live="polite"></div>
+  <button class="turn-room" id="turnRoom" type="button" aria-controls="doorWall" aria-expanded="false">Turn around</button>
+  <section class="door-wall" id="doorWall" aria-label="Doors off the Front Room" hidden>
+    <div class="door-plate">
+      <a href="music.html">Music Room</a>
+      <a href="workshop.html">Workshop</a>
+      <a href="books.html">Library</a>
+    </div>
+  </section>
+  <audio id="rainAudio" preload="none" loop></audio>
+  <div class="front-toast scene-note" id="frontToast" aria-live="polite"></div>
+  <div class="guitar-status" id="guitarStatus" role="status"></div>
 
   <button
     class="menu-button"
     id="menuButton"
     type="button"
-    aria-label="Open studio doors"
+    aria-label="Open rooms"
     aria-controls="menuPanel"
     aria-expanded="false"
   >
     <span class="menu-lines" aria-hidden="true"></span>
+    <span class="menu-label-open" aria-hidden="true">Rooms</span>
+    <span class="menu-label-close" aria-hidden="true">Close</span>
   </button>
 
   <div
@@ -868,7 +1084,7 @@
       </a>
 
       <a class="menu-link" href="forest-path.html">
-        The Back Forty
+        The Woods
       </a>
 
       <a class="menu-link" href="directory.html">
@@ -910,13 +1126,15 @@
     </div>
   </nav>
 
-  <script>
+  <script type="module">
+    import { ambientSound, studioConditions } from "./assets/studio-weather.mjs";
+
     const menuButton = document.getElementById("menuButton");
     const menuPanel = document.getElementById("menuPanel");
     const menuShade = document.getElementById("menuShade");
     const frontRoom = document.querySelector(".front-room");
     const frontToast = document.getElementById("frontToast");
-    const windowTrail = document.getElementById("windowTrail");
+    const windowActions = document.getElementById("windowActions");
     const brainSecret = document.getElementById("brainSecret");
     const lampHotspot = document.getElementById("lampHotspot");
     const guitarHotspot = document.getElementById("guitarHotspot");
@@ -929,6 +1147,7 @@
     const rainSound = document.getElementById("rainSound");
     let bobReadyForDoor = false;
     let guitarChordIndex = 0;
+    let guitarTimer;
 
     const bobRemarks = [
       "Bob says: Growth is mostly standing still with commitment.",
@@ -938,14 +1157,14 @@
       "Bob says: Photosynthesis is just plants eating sunshine. You’re welcome."
     ];
 
-    function showFrontToast(message, duration = 2300) {
+    function showFrontToast(message) {
       window.clearTimeout(toastTimer);
       frontToast.textContent = message;
       frontToast.classList.add("show");
 
       toastTimer = window.setTimeout(() => {
         frontToast.classList.remove("show");
-      }, duration);
+      }, 6500);
     }
 
     function getAudioContext() {
@@ -968,12 +1187,18 @@
     ];
 
     function playGuitarChord() {
+      const chord = guitarProgression[guitarChordIndex];
+      guitarChordIndex = (guitarChordIndex + 1) % guitarProgression.length;
+      document.getElementById("guitarStatus").textContent = chord.name + " chord";
+      guitarHotspot.classList.remove("strumming");
+      void guitarHotspot.offsetWidth;
+      guitarHotspot.classList.add("strumming");
+      clearTimeout(guitarTimer);
+      guitarTimer = setTimeout(() => guitarHotspot.classList.remove("strumming"), 650);
+      if (!(window.AudioContext || window.webkitAudioContext)) return;
       const audio = getAudioContext();
       const now = audio.currentTime;
-      const chord = guitarProgression[guitarChordIndex];
       const frequencies = chord.notes;
-
-      guitarChordIndex = (guitarChordIndex + 1) % guitarProgression.length;
 
       frequencies.forEach((frequency, index) => {
         const oscillator = audio.createOscillator();
@@ -994,10 +1219,6 @@
         oscillator.stop(start + 1.2);
       });
 
-      showFrontToast(
-        chord.name + " chord. Tap again for " +
-        guitarProgression[guitarChordIndex].name + "."
-      );
     }
 
     lampHotspot.addEventListener("click", () => {
@@ -1021,46 +1242,47 @@
       }
 
       const remark = bobRemarks[Math.floor(Math.random() * bobRemarks.length)];
-      showFrontToast(remark + " Tap Bob again to visit his room.", 3400);
+      showFrontToast(remark + " Tap Bob again to visit his room.");
       bobReadyForDoor = true;
 
       window.setTimeout(() => {
         bobReadyForDoor = false;
-      }, 5000);
+      }, 7000);
     });
 
-    function playRain() {
-      rainAudio.play().catch(() => {
-        if (frontRoom.classList.contains("raining")) rainSound.textContent = "Play rain";
-      });
-    }
-
-    rainSound.addEventListener("click", () => {
-      if (rainAudio.paused) playRain();
-      else rainAudio.pause();
+    ambientSound(rainSound, rainAudio, frontRoom, { inside: true });
+    frontRoom.addEventListener("studio-weather", event => {
+      frontRoom.classList.toggle("raining", event.detail === "rain");
     });
-    rainAudio.addEventListener("play", () => { rainSound.textContent = "Mute rain"; });
-    rainAudio.addEventListener("pause", () => { rainSound.textContent = "Play rain"; });
+    studioConditions(frontRoom);
 
     windowHotspot.addEventListener("click", () => {
-      const raining = frontRoom.classList.toggle("raining");
-      windowHotspot.setAttribute("aria-pressed", String(raining));
-      windowTrail.hidden = !raining;
-      rainSound.hidden = !raining;
-      if (raining) playRain();
-      else rainAudio.pause();
+      windowActions.hidden = !windowActions.hidden;
+      windowHotspot.setAttribute("aria-expanded", String(!windowActions.hidden));
     });
 
-    window.setTimeout(() => {
-      try {
-        if (!sessionStorage.getItem("frontRoomSecretsHint")) {
-          showFrontToast("The front room has secrets. Tap what looks interesting.", 3000);
-          sessionStorage.setItem("frontRoomSecretsHint", "1");
-        }
-      } catch (error) {
-        showFrontToast("The front room has secrets. Tap what looks interesting.", 3000);
+    const noteStar = document.getElementById("noteStar");
+    let starTimer;
+    noteStar.addEventListener("click", () => {
+      noteStar.classList.remove("spinning");
+      void noteStar.offsetWidth;
+      noteStar.classList.add("spinning");
+      clearTimeout(starTimer);
+      starTimer = setTimeout(() => noteStar.classList.remove("spinning"), 960);
+    });
+
+    const turnRoom = document.getElementById("turnRoom");
+    const doorWall = document.getElementById("doorWall");
+    function turn(toDoors) {
+      doorWall.hidden = !toDoors;
+      frontRoom.inert = toDoors;
+      turnRoom.setAttribute("aria-expanded", String(toDoors));
+      turnRoom.textContent = toDoors ? "Face the window" : "Turn around";
+      if (toDoors && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        doorWall.animate([{opacity:.4,transform:"perspective(1000px) rotateY(-7deg) scale(.98)"},{opacity:1,transform:"none"}],{duration:280,easing:"ease-out"});
       }
-    }, 850);
+    }
+    turnRoom.addEventListener("click", () => turn(doorWall.hidden));
 
     function openMenu() {
       menuButton.classList.add("open");
@@ -1068,9 +1290,11 @@
       menuShade.classList.add("open");
 
       menuButton.setAttribute("aria-expanded", "true");
-      menuButton.setAttribute("aria-label", "Close studio doors");
+      menuButton.setAttribute("aria-label", "Close rooms");
       menuPanel.inert = false;
       frontRoom.inert = true;
+      doorWall.inert = true;
+      turnRoom.inert = true;
     }
 
     function closeMenu() {
@@ -1079,9 +1303,11 @@
       menuShade.classList.remove("open");
 
       menuButton.setAttribute("aria-expanded", "false");
-      menuButton.setAttribute("aria-label", "Open studio doors");
+      menuButton.setAttribute("aria-label", "Open rooms");
       menuPanel.inert = true;
-      frontRoom.inert = false;
+      frontRoom.inert = !doorWall.hidden;
+      doorWall.inert = false;
+      turnRoom.inert = false;
       menuButton.focus({ preventScroll: true });
     }
 
@@ -1101,6 +1327,9 @@
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && menuButton.getAttribute("aria-expanded") === "true") {
         closeMenu();
+      } else if (event.key === "Escape" && !doorWall.hidden) {
+        turn(false);
+        turnRoom.focus();
       }
     });
 
@@ -1109,6 +1338,6 @@
     });
   </script>
 
-  <script src="assets/front-room.js" defer></script>
+  <script src="assets/front-room.js?v=4" defer></script>
 </body>
 </html>

@@ -126,94 +126,224 @@
 #gameModal .mav-cart-tile:nth-child(3){left:65%;transform:rotate(9deg) translateY(7%)}
 #gameModal .mav-cart-tile:is(:hover,:focus-visible){z-index:5;transform:translateY(-13%) rotate(0)!important}
 
-/* Title screen: a CRT and control deck, not a giant rounded web card. */
+/* Title screen: one battered CRT cabinet with physical media and controls. */
 #gameModal .mav-title-screen { background:radial-gradient(circle at 50% 40%,#39332a,#070b10 70%)!important; }
 #gameModal .mav-title-screen .mav-screen-card {
   position:relative;
   width:min(720px,94vw)!important;
-  padding:clamp(18px,3vw,31px) clamp(22px,5vw,52px) clamp(70px,10vw,96px)!important;
+  padding:clamp(18px,3vw,31px) clamp(22px,5vw,52px) clamp(82px,11vw,108px)!important;
   overflow:auto;
   border:clamp(10px,1.8vw,18px) solid #292d2d!important;
-  border-radius:12% 12% 6% 6% / 8% 8% 5% 5%!important;
+  border-radius:10% 10% 5% 5% / 7% 7% 4% 4%!important;
   background:
+    linear-gradient(112deg,rgba(255,255,255,.055) 0 8%,transparent 23% 100%),
     repeating-linear-gradient(0deg,#071b2c08 0 2px,#7be1ff0b 2px 3px),
     radial-gradient(ellipse at 50% 30%,#123c59,#06131f 72%)!important;
-  box-shadow:inset 0 0 45px #000,0 0 0 5px #111,0 30px 55px #000c!important;
+  box-shadow:inset 0 0 52px #000,0 0 0 5px #111,0 30px 55px #000c!important;
   color:#e9f5ee;
+}
+#gameModal .mav-title-screen .mav-screen-card::before {
+  content:"";
+  position:absolute;
+  inset:8px;
+  border:1px solid rgba(175,205,211,.12);
+  border-radius:inherit;
+  pointer-events:none;
 }
 #gameModal .mav-title-screen .mav-screen-card::after {
   content:"";
   position:absolute;
   z-index:-1;
-  left:-4%;right:-4%;bottom:-7%;height:23%;
+  left:-4%;right:-4%;bottom:-8%;height:25%;
   border:6px solid #292d2d;
-  border-radius:5% 5% 15% 15%;
-  background:linear-gradient(#4a4c49,#202321 65%,#111);
+  border-radius:4% 4% 13% 13%;
+  background:
+    linear-gradient(90deg,transparent 0 8%,#171918 8% 9%,transparent 9% 91%,#171918 91% 92%,transparent 92%),
+    linear-gradient(#555754,#292c2a 55%,#141615);
   box-shadow:0 13px 26px #000b;
 }
 #gameModal .mav-title-screen .mav-primary {
   position:absolute;
-  right:8%;
-  bottom:13px;
-  width:74px!important;
-  height:74px!important;
-  min-height:74px!important;
+  right:7%;
+  bottom:12px;
+  width:80px!important;
+  height:80px!important;
+  min-height:80px!important;
   margin:0!important;
   padding:0!important;
   overflow:hidden;
   border:6px solid #6f1e18!important;
   border-radius:50%!important;
   color:transparent!important;
+  font-size:0!important;
+  text-shadow:none!important;
+  -webkit-text-fill-color:transparent!important;
   background:radial-gradient(circle at 36% 29%,#ff8a61,#d52e24 46%,#76130f 72%)!important;
-  box-shadow:inset 0 -9px #5d100d,0 7px 0 #181b1b,0 0 0 7px #a8a99f!important;
+  box-shadow:inset 0 -10px #5d100d,0 8px 0 #181b1b,0 0 0 7px #a8a99f,0 0 0 10px #151817!important;
 }
-#gameModal .mav-title-screen .mav-primary::before{content:"START";color:#fff4dc;font:900 11px/1 "Trebuchet MS",sans-serif;text-shadow:0 2px #6a0e0a}
+#gameModal .mav-title-screen .mav-primary::before{content:"START";position:absolute;inset:0;display:grid;place-items:center;color:#fff4dc!important;-webkit-text-fill-color:#fff4dc!important;font:900 11px/1 "Trebuchet MS",sans-serif;text-shadow:0 2px #6a0e0a}
 #gameModal .mav-title-screen .mav-primary span{display:none}
 #gameModal .mav-title-screen .mav-primary:active{transform:translateY(5px);box-shadow:inset 0 -4px #5d100d,0 2px #181b1b,0 0 0 7px #a8a99f!important}
 #gameModal .mav-title-screen .mav-intro-link {
   position:absolute;
-  left:8%;bottom:24px;
-  width:auto;
+  left:7%;bottom:20px;
+  width:132px;
+  height:48px;
   margin:0;
-  padding:.6em .8em;
-  border:1px solid #777!important;
-  color:#201b13;
-  background:#d6c48d;
-  box-shadow:1px 2px 0 #000;
+  padding:0;
+  overflow:hidden;
+  border:3px solid #111!important;
+  border-radius:5px!important;
+  color:transparent!important;
+  font-size:0!important;
+  background:
+    radial-gradient(circle at 30% 53%,#c7c7bc 0 7%,#292b2a 8% 13%,transparent 14%),
+    radial-gradient(circle at 70% 53%,#c7c7bc 0 7%,#292b2a 8% 13%,transparent 14%),
+    linear-gradient(#262a29,#0e1111);
+  box-shadow:inset 0 0 0 2px #4f5552,1px 4px 0 #080909,0 7px 10px #0008;
   text-decoration:none;
-  transform:rotate(-1deg);
+  transform:rotate(-1.5deg);
 }
+#gameModal .mav-title-screen .mav-intro-link::before {
+  content:"PLAY STORY TAPE";
+  position:absolute;
+  left:17px;right:17px;top:6px;
+  padding:3px 2px;
+  color:#241d15;
+  background:#d7c895;
+  font:900 8px/1 "Trebuchet MS",sans-serif;
+  letter-spacing:.04em;
+  box-shadow:0 1px #0008;
+}
+#gameModal .mav-title-screen .mav-intro-link:active{transform:rotate(-1.5deg) translateY(3px)}
 #gameModal .mav-title-screen .mav-hint{display:none}
 #gameModal .mav-title-screen .mav-secondary{width:auto;min-height:38px;padding:.6em 1em;border:2px solid #89908d;border-radius:3px;background:#343a39;color:#e7e1ce;box-shadow:0 3px #111;font-size:11px}
+#gameModal .mav-title-screen .mav-new-adventure {
+  position:relative;
+  width:96px;
+  min-height:29px;
+  margin:7px auto 0;
+  padding:0 8px;
+  border:3px solid #151817!important;
+  border-radius:3px!important;
+  background:linear-gradient(#5e6461,#292d2b)!important;
+  box-shadow:inset 0 1px #969c97,0 4px #080a09!important;
+  color:#ece7d4!important;
+  font-size:7px!important;
+  letter-spacing:.06em;
+  transform:none;
+}
+#gameModal .mav-title-screen .mav-new-adventure:active{transform:translateY(3px)}
+#gameModal .mav-title-screen .mav-save-panel {
+  position:relative;
+  margin:9px 0 12px!important;
+  padding:10px 10px 12px;
+  border:3px solid #171b1b;
+  border-radius:5px;
+  background:linear-gradient(145deg,#434846,#242827 70%);
+  box-shadow:inset 0 1px #777d79,inset 0 -5px #151817,0 5px 10px #0008;
+}
+#gameModal .mav-title-screen .mav-save-label {
+  margin:0 0 8px;
+  color:#d7d8cb;
+  font-size:8px;
+  text-shadow:0 1px #000;
+}
+#gameModal .mav-title-screen .mav-save-grid { gap:8px; }
 #gameModal .mav-save-slot {
-  border:2px solid #575f60!important;
+  position:relative;
+  min-height:62px!important;
+  padding:15px 4px 6px!important;
+  border:2px solid #545750!important;
   border-radius:2px!important;
-  background:linear-gradient(100deg,#c7c2ab,#817e70)!important;
+  clip-path:polygon(10% 0,90% 0,96% 12%,96% 100%,4% 100%,4% 12%);
+  background:
+    linear-gradient(90deg,transparent 0 10%,rgba(255,255,255,.12) 10% 13%,transparent 13% 87%,rgba(0,0,0,.16) 87% 90%,transparent 90%),
+    linear-gradient(100deg,#b9b5a5,#77776d)!important;
   color:#171713!important;
-  box-shadow:inset 0 0 0 2px #e5dfc5,0 3px 0 #0d1112!important;
+  box-shadow:inset 0 0 0 2px #d9d5c2,0 5px 0 #0d1112!important;
   transform:rotate(var(--slot-tilt,0));
+}
+#gameModal .mav-save-slot::before {
+  content:"SAVE " attr(data-mav-save-slot);
+  position:absolute;
+  left:17%;right:17%;top:5px;
+  padding:2px 1px;
+  color:#ded8bd;
+  background:#343631;
+  font:800 6px/1 ui-monospace,monospace;
+  letter-spacing:.1em;
+}
+#gameModal .mav-save-slot::after {
+  content:"";
+  position:absolute;
+  right:8px;bottom:7px;
+  width:6px;height:6px;
+  border-radius:50%;
+  background:#2c332d;
+  box-shadow:inset 0 1px #000;
 }
 #gameModal .mav-save-slot:nth-child(1){--slot-tilt:-1deg}#gameModal .mav-save-slot:nth-child(3){--slot-tilt:1deg}
 #gameModal .mav-save-slot small{color:#393a35!important}
-#gameModal .mav-save-slot.active{border-color:#f0d270!important;background:linear-gradient(100deg,#f3dda0,#a98a45)!important;box-shadow:0 0 11px #ffd75e,0 3px #16120a!important}
+#gameModal .mav-save-slot.active{border-color:#c2b889!important;background:linear-gradient(100deg,#d4cfb4,#8b8876)!important;box-shadow:inset 0 0 0 2px #ebe5cb,0 5px #16120a!important}
+#gameModal .mav-save-slot.active::after{background:#e7c44c;box-shadow:0 0 5px #f3d66f,inset 0 1px #fff8}
+#gameModal .mav-title-screen .mav-campaign-trail {
+  position:relative;
+  margin:10px 0 6px;
+  padding:8px 13px!important;
+  border:2px solid #111!important;
+  border-radius:3px!important;
+  background:linear-gradient(#2e3332,#171b1b)!important;
+  box-shadow:inset 0 1px #626866,0 3px #090b0b;
+}
+#gameModal .mav-title-screen .mav-campaign-trail::before,
+#gameModal .mav-title-screen .mav-campaign-trail::after {
+  content:"";
+  position:absolute;
+  top:5px;
+  width:5px;height:5px;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#aeb3aa,#323531 70%);
+}
+#gameModal .mav-title-screen .mav-campaign-trail::before{left:5px}
+#gameModal .mav-title-screen .mav-campaign-trail::after{right:5px}
+#gameModal .mav-title-screen .mav-world i{border-color:#46504f;background:#171d1d;box-shadow:inset 0 1px #000}
+#gameModal .mav-title-screen .mav-world i.current{border-color:#bfd9cc;background:#77d5b1;box-shadow:0 0 6px #79dfbb}
+#gameModal .mav-title-screen .mav-world i.done{border-color:#c7af63;background:#c69734;box-shadow:0 0 4px #dcb34e}
+#gameModal.mav-title-open #gameRestart{display:none!important}
+#gameModal.mav-title-open .sound-toggle{
+  width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;
+  border:5px solid #292d2d!important;border-radius:50%!important;
+  background:radial-gradient(circle at 36% 32%,#737976,#303532 62%,#151817)!important;
+  box-shadow:0 3px #0a0c0b,inset 0 1px #a8afaa!important;
+  color:#d8d8c7!important;font-size:16px!important;opacity:1!important;
+}
+#gameModal.mav-title-open .close{
+  width:40px!important;height:40px!important;
+  border:4px solid #292d2d!important;border-radius:5px!important;
+  background:linear-gradient(#4b504e,#1f2322)!important;
+  box-shadow:0 3px #080a09,inset 0 1px #858b87!important;
+  color:#d9d7c7!important;font-size:20px!important;opacity:1!important;
+}
 
 @media (orientation:portrait) and (max-width:760px) {
   .fort-game-crate{left:63.5%;top:64%;width:34%;height:20%}
   .arcade-hotspot::before{font-size:5px}
   #gameModal .mav-title-screen{padding:54px 12px 12px!important;align-items:center}
-  #gameModal .mav-title-screen .mav-screen-card{width:100%!important;max-height:calc(100dvh - 72px);padding:13px 16px 92px!important;border-width:10px!important;overflow-x:hidden!important}
+  #gameModal .mav-title-screen .mav-screen-card{width:100%!important;max-height:calc(100dvh - 72px);padding:13px 16px 98px!important;border-width:10px!important;overflow:hidden!important}
   #gameModal .mav-title-screen .mav-screen-card h1{font-size:clamp(34px,12vw,50px);margin:5px 0 6px}
   #gameModal .mav-title-screen .mav-tagline{margin:5px 0 7px;font-size:13px}
   #gameModal .mav-title-screen .mav-save-panel{margin:5px 0}
   #gameModal .mav-title-screen .mav-campaign-trail{margin:5px 0;padding:5px}
-  #gameModal .mav-title-screen .mav-primary{right:8%;bottom:12px;width:65px!important;height:65px!important;min-height:65px!important}
-  #gameModal .mav-title-screen .mav-intro-link{left:7%;bottom:20px;font-size:10px}
+  #gameModal .mav-title-screen .mav-primary{right:8%;bottom:12px;width:68px!important;height:68px!important;min-height:68px!important}
+  #gameModal .mav-title-screen .mav-intro-link{left:7%;bottom:18px;width:122px;height:44px}
   #gameModal .mav-library-card{padding:68px 13px 34px!important}
   #gameModal .mav-library-grid{height:min(48vw,235px)}
 }
 
 @media (orientation:landscape) and (max-height:600px) {
-  #gameModal .mav-title-screen .mav-screen-card{width:min(780px,90vw)!important;max-height:94dvh;padding:10px 120px 56px!important}
+  #gameModal .mav-title-screen{padding:8px 44px!important}
+  #gameModal .mav-title-screen .mav-screen-card{width:min(760px,calc(100vw - 88px))!important;height:calc(100dvh - 16px);max-height:none;padding:8px 112px 54px!important;overflow:hidden!important}
   #gameModal .mav-title-screen .mav-screen-card h1{font-size:clamp(27px,8vh,43px);margin:2px 0}
   #gameModal .mav-title-screen .mav-tagline{font-size:12px;margin:3px 0}
   #gameModal .mav-title-screen .mav-save-panel{margin:3px 0}

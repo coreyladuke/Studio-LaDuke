@@ -11,7 +11,7 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;min-height:100vh;color:var(--paper);font-family:Georgia,"Times New Roman",serif;background:radial-gradient(ellipse at 75% -10%,#4b2e20 0%,transparent 46%),radial-gradient(ellipse at 9% 80%,#2a2922 0%,transparent 40%),#17120f}
-.room-photo{min-height:32rem;display:grid;align-items:center;background:linear-gradient(90deg,#201712 0%,#201712dc 36%,#24170c3d 80%),url("assets/corey-studio.webp") center 54% / cover;box-shadow:0 12px 32px #09050399}
+.room-photo{min-height:clamp(34rem,65vw,42rem);display:grid;align-items:center;background:linear-gradient(90deg,#201712 0%,#201712dc 36%,#24170c3d 80%),url("assets/denali-music-room.webp") center 54% / cover;box-shadow:0 12px 32px #09050399}
 body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.1;background:repeating-linear-gradient(0deg,transparent 0 3px,#edc184 4px,transparent 5px);z-index:0}
 button,textarea,input{font:inherit}
 a{color:inherit}
@@ -22,17 +22,12 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 .top nav{display:flex;flex-wrap:wrap;gap:15px;font:.82rem/1.4 system-ui,sans-serif}
 .top nav a{display:inline-flex;align-items:center;min-height:44px;color:#e0c9a5;text-decoration:none}
 .top nav a:hover{text-decoration:underline}
-.hero{display:grid;grid-template-columns:1.2fr .8fr;align-items:center;gap:35px;padding:54px clamp(18px,5vw,64px)}
+.hero{max-width:39rem;padding:54px clamp(18px,5vw,64px)}
 .kicker{font:700 .75rem/1.5 system-ui,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
 h1{font-size:clamp(3.2rem,9vw,7.5rem);letter-spacing:-.065em;line-height:.9;margin:20px 0}
 h1 em{display:block;font-weight:normal;color:#e7b97c}
 .lead{color:#e4d3b9;font:clamp(1.05rem,2.3vw,1.4rem)/1.5 Georgia,serif;max-width:560px}
 .note{font: .85rem/1.6 system-ui,sans-serif;color:var(--muted)}
-.record-wrap{display:grid;place-items:center;padding:15px}
-.record{width:min(34vw,350px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;position:relative;box-shadow:0 18px 45px #0009,0 0 0 12px #38271f,0 0 0 13px #926340;background:repeating-radial-gradient(circle,#25201e 0px,#25201e 2px,#0e0d0c 3px,#0e0d0c 5px)}
-.record:before{content:"";position:absolute;inset:30%;border-radius:50%;background:radial-gradient(circle at 40% 35%,#d4a363,#6f3e2f 75%);border:1px solid #dbac6b}
-.record:after{content:"";position:absolute;width:11px;height:11px;background:#150f0e;border-radius:50%;z-index:2}
-.record span{position:relative;z-index:1;text-align:center;font-size:clamp(1rem,2.9vw,2rem);letter-spacing:-.03em;font-style:italic;color:#fff0d0;transform:rotate(-12deg)}
 .divider{height:1px;background:linear-gradient(90deg,transparent,#c28d55,transparent);margin:0 0 50px}
 .rehearsal{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start;margin-bottom:66px}
 .panel{background:linear-gradient(145deg,#2f2018,#1e1713);border:1px solid #71513d;box-shadow:0 25px 55px #0005;border-radius:0;padding:clamp(20px,4vw,32px)}
@@ -56,17 +51,17 @@ textarea[readonly]{color:#e8c783}
 .below p{margin:0;font:.9rem/1.65 system-ui,sans-serif;color:#c5b6a1}
 footer{padding:25px 0 50px;border-top:1px solid #6b4c36;color:var(--muted);font:.8rem/1.6 system-ui,sans-serif}
 footer a{color:var(--gold)}
-@media(max-width:760px){.hero{grid-template-columns:1fr;padding:48px 0 38px}.record-wrap{justify-content:center}.record{width:130px}h1{margin-top:15px}.rehearsal,.below{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.wrap{width:min(100% - 28px,1100px)}}
+@media(max-width:760px){.room-photo{min-height:34rem;align-items:end;background-position:67% center;background-image:linear-gradient(0deg,#17120ff0 0%,#201712ca 30%,transparent 65%),url("assets/denali-music-room.webp")}.hero{padding:36px 18px}h1{margin-top:15px}.rehearsal,.below{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.wrap{width:min(100% - 28px,1100px)}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style>
+  <link rel="stylesheet" href="assets/room-controls.css?v=1">
 </head>
-<body>
+<body class="studio-room music-scene">
 <div class="wrap">
   <header class="top"><a class="brand" href="index.html">STUDIO LADUKE / MUSIC</a><nav aria-label="Studio navigation"><a href="index.html">Front Room</a><a href="workshop.html">Workshop</a><a href="directory.html">Directory</a><a href="books.html">Books</a></nav></header>
   <main>
     <div class="room-photo"><section class="hero" aria-labelledby="musicTitle">
       <div><h1 id="musicTitle">Music Room</h1><p class="lead"><em>Moments</em> is a collection of original songs I’m writing and arranging for guitar and voice.</p><a href="#rehearsal">Try the chord bench ↓</a></div>
-      <div class="record-wrap" aria-hidden="true"><div class="record"><span>Moments<br><small>STUDIO LADUKE</small></span></div></div>
     </section></div>
     <div class="divider" aria-hidden="true"></div>
     <section id="rehearsal" class="rehearsal" aria-label="Rehearsal bench">
@@ -83,7 +78,7 @@ F        G        C</textarea>
       </div>
       <div class="panel"><h2>New key</h2>
         <label for="transposed">Transposed chord chart</label><textarea id="transposed" readonly spellcheck="false" aria-live="off"></textarea>
-        <div class="actions"><button class="action" type="button" id="copy">Copy new chords</button><button class="action alt" type="button" id="reset">Reset</button></div>
+        <div class="actions"><button class="action room-sign" type="button" id="copy">Copy new chords</button><button class="action alt room-sign" type="button" id="reset">Reset</button></div>
         <p class="small" id="copyStatus" role="status" aria-live="polite"></p>
       </div>
     </section>

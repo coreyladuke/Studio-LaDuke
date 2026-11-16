@@ -9,23 +9,66 @@
     :root{--paper:#f5f0e4;--ink:#181a16;--green:#617842;--red:#a9362d;--yellow:#e3b429;--safe-top:max(10px,env(safe-area-inset-top));--safe-bottom:max(10px,env(safe-area-inset-bottom))}
     *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#d8d1c1;color:var(--ink)}
     body{font-family:"Comic Sans MS","Bradley Hand","Segoe Print",system-ui,sans-serif;touch-action:manipulation}button,a{font:inherit;-webkit-tap-highlight-color:transparent}button{color:inherit}
-    .room{position:relative;width:100vw;height:100svh;overflow:hidden;background:#d8d1c1;isolation:isolate}
-    .world{position:absolute;inset:0 auto 0 0;height:100%;width:auto;min-width:100%;aspect-ratio:1672/941;transform:translate3d(0,0,0);transition:transform .7s cubic-bezier(.22,.78,.2,1);will-change:transform}
-    .room-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;user-select:none;pointer-events:none}
+    .room{position:relative;width:100vw;height:100dvh;overflow:hidden;overflow:clip;background:#d8d1c1;isolation:isolate;touch-action:none}
+    .world{position:absolute;inset:0 auto 0 0;height:100%;width:auto;min-width:100%;aspect-ratio:1672/941;transform:translate3d(0,0,0);transition:transform .7s cubic-bezier(.22,.78,.2,1);will-change:transform;touch-action:none}
+    .room.dragging .world,.world.snap-view{transition:none}.room.dragging{cursor:grabbing}
+    .room-art{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:cover;user-select:none;pointer-events:none}
     .paper-grain{position:absolute;inset:0;z-index:5;pointer-events:none;mix-blend-mode:multiply;opacity:.24;background-image:radial-gradient(#302d25 .55px,transparent .75px);background-size:5px 5px}
     .night-wash{position:absolute;inset:0;z-index:6;pointer-events:none;background:rgba(20,38,31,0);transition:.6s;mix-blend-mode:multiply}.room.night .night-wash{background:rgba(18,42,34,.64)}
     .fireflies{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:0;transition:.5s}.room.night .fireflies{opacity:1}.fly{position:absolute;width:5px;height:5px;border-radius:50%;background:#fff0a2;box-shadow:0 0 12px 5px rgba(255,233,111,.55);animation:drift 5s ease-in-out infinite}
     @keyframes drift{0%,100%{transform:translate(0,0)}35%{transform:translate(18px,-28px)}70%{transform:translate(-12px,-12px)}}
     .hotspot{position:absolute;z-index:14;padding:0;border:0;border-radius:28%;background:transparent;cursor:pointer;outline:0}
-    .hotspot::before{content:"";position:absolute;inset:7%;border:2.5px solid transparent;border-radius:inherit;transition:.2s;filter:drop-shadow(0 0 0 transparent)}
-    .hotspot:hover::before,.hotspot:focus-visible::before{border-color:rgba(36,48,29,.75);background:rgba(151,178,101,.09);filter:drop-shadow(2px 2px 0 rgba(255,255,255,.85))}
+    .hotspot::before{content:"";position:absolute;inset:25% 18%;border-radius:50%;opacity:0;pointer-events:none;transition:opacity .18s ease}
+    .hotspot:focus-visible::before{inset:auto;left:50%;top:50%;width:22px;height:22px;transform:translate(-50%,-50%);outline:2px solid #f5f0e4;border:2px solid #273326;opacity:1}
     .hotspot::after{content:attr(data-label);position:absolute;left:50%;bottom:-12px;transform:translate(-50%,7px) rotate(-1deg);white-space:nowrap;padding:4px 8px;border:2px solid var(--ink);border-radius:48% 52% 47% 53%;background:var(--paper);color:var(--ink);font-size:11px;font-weight:900;text-transform:uppercase;opacity:0;transition:.2s;pointer-events:none}
-    .hotspot:hover::after,.hotspot:focus-visible::after{opacity:1;transform:translate(-50%,0) rotate(-1deg)}.hotspot.met::before{border-color:rgba(85,112,55,.28)}
+    .hotspot:focus-visible::after{opacity:1;transform:translate(-50%,0) rotate(-1deg)}
+    @media(hover:hover) and (pointer:fine){
+      .hotspot:hover:not(:focus-visible)::before{opacity:1;background:radial-gradient(ellipse,#fff6ca1c,transparent 70%)}
+      .hotspot:hover::after{opacity:1;transform:translate(-50%,0) rotate(-1deg)}
+    }
+    @media(hover:none),(pointer:coarse){.hotspot:not(:focus-visible)::after{display:none}}
     .sunflower-spot{left:1.2%;top:26%;width:12.5%;height:45%}.rose-spot{left:12.2%;top:35%;width:9%;height:37%}.pinky-spot{left:22.5%;top:39%;width:14%;height:37%}
     .bob-spot{left:36.2%;top:20%;width:29%;height:57%;border-radius:35%}.venus-spot{left:65%;top:34%;width:10%;height:39%}.bonsai-spot{left:73.5%;top:34%;width:15%;height:39%}.dandelion-spot{left:87%;top:39%;width:11%;height:35%}
     .watering-spot{left:4.5%;top:66%;width:22%;height:27%}.coffee-spot{left:33%;top:69%;width:11%;height:19%}.phone-spot{left:67%;top:71%;width:12%;height:14%}.books-spot{left:63%;top:5%;width:21%;height:22%}
     .lamp-spot{left:38%;top:0;width:22%;height:25%}.secret-spot{left:91%;top:0;width:9%;height:34%}
-    .watering-mode .hotspot:not(.watering-spot){cursor:crosshair}.watering-mode .watering-spot::before{border-color:#4e83a8;background:rgba(82,160,213,.18);filter:drop-shadow(0 0 8px rgba(80,163,219,.7))}
+    .greenhouse-entry {
+      position: absolute; inset: 0; z-index: 120; display: grid; place-items: center;
+      background: radial-gradient(ellipse at center, #38382a, #181e18);
+    }
+    .greenhouse-entry[hidden], .room-ui[hidden] { display: none; }
+    .greenhouse-entry .threshold-view {
+      position: relative; width: min(100vw, 66.667dvh); height: min(100dvh, 150vw);
+    }
+    .threshold-view img { display: block; width: 100%; height: 100%; object-fit: fill; }
+    .threshold-view a, .threshold-view button {
+      position: absolute; min-height: 44px; display: grid; place-items: end center;
+      padding: 7px; border: 0; background: transparent; cursor: pointer;
+      color: #fff4d7; font: 700 clamp(.88rem, 2.4vw, 1.05rem)/1 Georgia, serif;
+      text-decoration: underline; text-underline-offset: .21em;
+      text-shadow: 0 1px 2px #1b1b13, 0 0 6px #171812, 0 0 12px #191c15;
+    }
+    .threshold-view a:focus-visible, .threshold-view button:focus-visible {
+      outline: 2px dashed #fff4d7; outline-offset: 1px;
+    }
+    .threshold-return { left: 10%; top: 49%; width: 22%; height: 26%; }
+    .threshold-forward { left: 53%; top: 39%; width: 39%; height: 19%; }
+    .greenhouse-entry .entry-title {
+      position: absolute; top: max(10px, env(safe-area-inset-top)); left: 50%;
+      transform: translateX(-50%); margin: 0; text-align: center; white-space: nowrap;
+      color: #fff4d7; text-shadow: 0 2px 3px #27251a, 0 0 13px #212019;
+      font: 700 clamp(1rem, 3vw, 1.7rem)/1.1 Georgia, serif;
+    }
+    .room-ui .topbar :is(.nav, .reset) {
+      background: none; border: 0; box-shadow: none; border-radius: 0;
+      font-size: .83rem; text-decoration: underline; text-underline-offset: .22em;
+      text-shadow: 0 1px 1px #fff7df, 0 0 5px #f6edcf;
+      padding-inline: 4px;
+    }
+    .room-ui .topbar :is(.nav, .reset)::after { content: none; }
+    .greenhouse-entry.entering { animation: greenhouse-step 360ms ease-in both; pointer-events: none; }
+    @keyframes greenhouse-step { to { opacity: 0; transform: scale(1.12); } }
+    .world.bob-revealed .bob-spot{animation:bob-arrives .55s ease}@keyframes bob-arrives{40%{transform:translateY(-2.5%) rotate(-.7deg)}75%{transform:translateY(1%) rotate(.4deg)}}
+    .watering-mode .hotspot:not(.watering-spot){cursor:crosshair}.watering-mode .watering-spot::before{opacity:1;background:radial-gradient(ellipse,#8ac4ee55,transparent 70%)}
     .reaction{position:absolute;z-index:30;pointer-events:none;transform:translate(-50%,-50%);font:900 25px/1 "Comic Sans MS",sans-serif;color:#27361f;text-shadow:2px 2px 0 #fff;animation:pop .7s ease-out forwards}
     @keyframes pop{0%{opacity:0;transform:translate(-50%,-20%) scale(.3) rotate(-8deg)}40%{opacity:1;transform:translate(-50%,-70%) scale(1.25) rotate(4deg)}100%{opacity:0;transform:translate(-50%,-150%) scale(.9)}}
     .drop{position:absolute;z-index:32;width:7px;height:13px;border-radius:55% 45% 65% 35%;background:#5ca3d0;box-shadow:1px 1px 0 #244b65;pointer-events:none;animation:drop .72s ease-in forwards}
@@ -50,7 +93,7 @@
     .certificate{padding:20px;border:4px double var(--ink);background:#fffefa;transform:rotate(-.5deg)}.certificate .seal{display:grid;place-items:center;width:82px;height:82px;margin:10px auto;border:3px solid #516a37;border-radius:50%;color:#516a37;font-size:32px;font-weight:900;transform:rotate(-8deg)}
     .mission{position:fixed;left:11px;top:calc(var(--safe-top) + 49px);z-index:82;padding:6px 10px;border:2px solid var(--ink);border-radius:48% 52% 50% 46%;background:#e9dd9e;font-size:12px;font-weight:900;box-shadow:3px 3px 0 rgba(0,0,0,.13);transform:rotate(-1deg)}
     .book-pages{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:250px;padding:26px 24px;border:5px solid #402b1d;border-radius:8px 20px 20px 8px;background:linear-gradient(90deg,#f2ead8 0 48.5%,#b3a68c 49.5%,#786a54 50%,#eee5d2 51.5%);box-shadow:inset 10px 0 #cdbb9c,inset -10px 0 #cdbb9c,7px 10px 0 #0003;font:17px/1.5 Georgia,serif;text-align:left;transform:rotate(-.5deg)}.book-pages::before{content:"PROPERTY OF BOB — RETURN NEVER";position:absolute;left:8%;bottom:9%;padding:.25em .55em;border:2px solid #8c3c35;color:#8c3c35;font:700 10px/1 ui-monospace,monospace;transform:rotate(-4deg)}.book-pages strong{display:block;grid-column:1/-1;margin-bottom:12px;font:800 24px/1.1 Georgia,serif;text-align:center}.book-pages p{grid-column:2;margin:0!important;font:17px/1.45 Georgia,serif!important}.book-pages .page-number{position:absolute;right:7%;bottom:5%;font:12px Georgia,serif}.book-pages.turning{animation:page-turn .32s ease}@keyframes page-turn{45%{transform:perspective(500px) rotateY(-8deg) rotate(-.5deg)}100%{transform:perspective(500px) rotateY(0) rotate(-.5deg)}}
-    @media(max-width:700px){.title{width:54vw;padding:7px 8px}.title p{display:none}.topbar{padding-inline:7px}.nav,.reset{min-height:37px;padding:7px 9px;font-size:0}.nav::after{content:"↩";font-size:18px}.reset::after{content:"↻";font-size:18px}.counter{right:7px;top:calc(var(--safe-top) + 45px);font-size:10px}.mission{left:7px;top:calc(var(--safe-top) + 45px);font-size:10px}.tool-state{top:calc(var(--safe-top) + 45px)}.bubble{bottom:calc(var(--safe-bottom) + 55px);min-height:62px;padding:11px 43px 11px 48px;font-size:13px}.bubble::after{display:none}.hotspot::after{display:none}.book-pages{grid-template-columns:1fr;min-height:330px;padding:24px 25px 76px;background:linear-gradient(90deg,#e8dec9,#f6efdf 8%,#f6efdf 93%,#cabca1);font-size:16px}.book-pages strong,.book-pages p{grid-column:1}.book-pages p{font-size:16px!important}.book-pages::before{bottom:12%}}
+    @media(max-width:700px){.title{width:54vw;padding:7px 8px}.title p{display:none}.topbar{padding-inline:7px}.nav,.reset{min-width:44px;min-height:44px;justify-content:center;padding:7px 9px;font-size:0}.nav::after{content:"‹";font-size:27px;line-height:1}.reset::after{content:"↻";font-size:18px}.counter{right:7px;top:calc(var(--safe-top) + 45px);font-size:10px}.mission{left:7px;top:calc(var(--safe-top) + 45px);font-size:10px}.tool-state{top:calc(var(--safe-top) + 45px)}.bubble{bottom:calc(var(--safe-bottom) + 49px);min-height:52px;padding:9px 24px 9px 46px;font-size:13px}.bubble::after{display:none}.hotspot::after{display:none}.book-pages{grid-template-columns:1fr;min-height:330px;padding:24px 25px 76px;background:linear-gradient(90deg,#e8dec9,#f6efdf 8%,#f6efdf 93%,#cabca1);font-size:16px}.book-pages strong,.book-pages p{grid-column:1}.book-pages p{font-size:16px!important}.book-pages::before{bottom:12%}}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
   </style>
 </head>
@@ -73,19 +116,35 @@
       <button class="hotspot lamp-spot" id="lampButton" data-label="Lamp" aria-label="Turn the greenhouse lamp on or off"></button>
       <button class="hotspot secret-spot" id="secretButton" data-label="Gerald" aria-label="Inspect the hanging plant"></button>
     </div>
-    <div class="topbar"><a class="nav" href="forest-path.html">← Outside</a><button class="reset" id="resetButton" type="button">Reset the greenhouse</button></div>
+    <div class="room-ui" id="roomUi">
+    <div class="topbar"><button class="nav" id="returnToDoor" type="button">‹ Door</button><button class="reset" id="resetButton" type="button" aria-label="Reset the greenhouse">Reset</button></div>
     <header class="title"><h1>BOB'S WORLD</h1><p>We all just live in it.</p></header>
     <div class="mission" id="missionCounter">BOB'S INSPECTION: 0 / 4</div><div class="counter" id="counter">OPINIONS: 0 / 7</div><div class="tool-state" id="toolState">WATERING CAN READY — TAP A PLANT</div>
-    <div class="bubble" aria-live="polite"><button class="speaker" id="speakerButton" type="button" aria-label="Read the message aloud"></button><span id="messageText">The plants have noticed you. They have not reached a consensus.</span></div>
-    <div class="camera" aria-label="Look around Bob's greenhouse"><button type="button" data-view="0" aria-label="Look left">←</button><button type="button" data-view="1" class="active" aria-label="Look at Bob">●</button><button type="button" data-view="2" aria-label="Look right">→</button></div>
+    <div class="bubble" aria-live="polite"><button class="speaker" id="speakerButton" type="button" aria-label="Read the message aloud"></button><span id="messageText">The same crooked latch closes behind you. Something beyond the chair clears its throat.</span></div>
+    <div class="camera" aria-label="Look around Bob's greenhouse"><button type="button" data-view="0" class="active" aria-label="Look by the door and chair">←</button><button type="button" data-view="1" aria-label="Look at Bob">●</button><button type="button" data-view="2" aria-label="Look along the bench">→</button></div>
+    </div>
+    <section class="greenhouse-entry" id="greenhouseEntry" aria-labelledby="greenhouseTitle" hidden>
+      <div class="threshold-view">
+        <img src="assets/bob-greenhouse-threshold.webp" alt="An open green greenhouse door with a brass handle, looking past a wooden stool to Bob at the potting bench" width="1024" height="1536">
+        <h1 id="greenhouseTitle" class="entry-title">Bob’s greenhouse</h1>
+        <a class="threshold-return" href="forest-path.html?from=bob">← The Woods</a>
+        <button class="threshold-forward" id="approachBench" type="button">Potting bench →</button>
+      </div>
+    </section>
   </main>
   <div class="modal" id="phoneModal" role="dialog" aria-modal="true" aria-labelledby="phoneTitle"><div class="panel"><button class="close" data-close="phoneModal" aria-label="Put down the Guessing Rectangle">×</button><h2 id="phoneTitle">THE GUESSING RECTANGLE</h2><p>It claims Bob is thinking about something. This technology is not peer reviewed.</p><p class="big">What is Bob thinking about?</p><button class="choice" data-guess="coffee">Coffee</button><button class="choice" data-guess="privacy">Privacy</button><button class="choice" data-guess="murder">Plant murder</button></div></div>
   <div class="modal" id="booksModal" role="dialog" aria-modal="true" aria-labelledby="booksTitle"><div class="panel"><button class="close" data-close="booksModal" aria-label="Close the book">×</button><h2 id="booksTitle">HOW NOT TO PEOPLE</h2><div class="book-pages" id="bookPages"><strong>CHAPTER ONE</strong><p>Canceling plans is a plan.</p><span class="page-number">1</span></div><button class="panel-button" id="nextPage">Turn the page</button></div></div>
   <div class="modal" id="rewardModal" role="dialog" aria-modal="true" aria-labelledby="rewardTitle"><div class="panel"><button class="close" data-close="rewardModal" aria-label="Close the certificate">×</button><h2 id="rewardTitle">INSPECTION COMPLETE</h2><div class="certificate"><div class="seal">BOB</div><p class="big">TEMPORARY PERMISSION TO BE HERE</p><p>This certifies that the visitor completed four greenhouse complaints with only minor supervision.</p><p>Permission expires whenever Bob remembers issuing it.</p><p>Bob still declines to sign.</p></div><p><a href="bob-bureau/">File a case with Bob’s Bureau</a></p><button class="panel-button" data-close="rewardModal">Keep this questionable honor</button></div></div>
-  <script>
+  <script type="module">
+    import { bindRoomPan } from "./assets/room-pan.mjs";
     (()=>{
       const room=document.getElementById("room"),world=document.getElementById("world"),messageText=document.getElementById("messageText"),counter=document.getElementById("counter"),missionCounter=document.getElementById("missionCounter"),toolState=document.getElementById("toolState");
-      const state={view:1,watering:false,night:false,last:"",met:new Set(),tasks:new Set(),missionStarted:false,counts:{},bookPage:0,reward:false};let audioContext;
+      const entry = document.getElementById("greenhouseEntry");
+      const roomUi = document.getElementById("roomUi");
+      const approach = document.getElementById("approachBench");
+      const returnToDoor = document.getElementById("returnToDoor");
+      const noMotion = matchMedia("(prefers-reduced-motion: reduce)");
+      const state={view:0,watering:false,night:false,last:"",met:new Set(),tasks:new Set(),missionStarted:false,counts:{},bookPage:0,reward:false,bobSeen:false};let audioContext;
       const lines={
         bob:["Bob: “I would like to appeal.”","Bob: “The grass is always greener on the outside.”","Bob: “Nobody needs uninvited guests.”","Bob: “I have been wrong before. Once.”","Bob: “I am not being difficult. The situation is poorly designed.”"],
         pinky:["Pinky: “It is a beautiful day.” Bob disagrees from several inches away.","Pinky: “We should decorate something.”","Pinky: “I brought enthusiasm. Nobody assigned me this.”","Pinky: “Bob likes me. He has chosen not to document it.”"],
@@ -102,7 +161,53 @@
       function speak(text){if(!("speechSynthesis" in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text.replace(/[“”]/g,""));u.rate=.96;u.pitch=.82;u.volume=.8;speechSynthesis.speak(u)}
       function react(target,glyph){const el=document.createElement("span");el.className="reaction";el.textContent=glyph||"…";el.style.left=(target.offsetLeft+target.offsetWidth/2)+"px";el.style.top=(target.offsetTop+target.offsetHeight*.45)+"px";world.appendChild(el);setTimeout(()=>el.remove(),760);target.classList.remove("wiggle");void target.offsetWidth;target.classList.add("wiggle")}
       function drops(target){for(let i=0;i<9;i++){const d=document.createElement("i");d.className="drop";d.style.left=(target.offsetLeft+target.offsetWidth*(.25+Math.random()*.5))+"px";d.style.top=(target.offsetTop+target.offsetHeight*.35)+"px";d.style.animationDelay=(Math.random()*.18)+"s";world.appendChild(d);setTimeout(()=>d.remove(),1000)}}
-      function setView(view){state.view=Math.max(0,Math.min(2,view));const travel=Math.max(0,world.getBoundingClientRect().width-room.clientWidth);world.style.transform="translate3d("+(-travel*(state.view/2))+"px,0,0)";document.querySelectorAll("[data-view]").forEach(btn=>btn.classList.toggle("active",Number(btn.dataset.view)===state.view))}
+      function showEntry(moveFocus = false) {
+        entry.classList.remove("entering");
+        entry.hidden = false;
+        world.inert = true;
+        roomUi.hidden = true;
+        if (moveFocus) approach.focus({ preventScroll: true });
+      }
+
+      function showBench() {
+        roomUi.hidden = false;
+        world.inert = false;
+        world.classList.add("snap-view");
+        setView(1);
+        const finish = () => {
+          entry.hidden = true;
+          world.classList.remove("snap-view");
+          entry.classList.remove("entering");
+          returnToDoor.focus({ preventScroll: true });
+        };
+        if (noMotion.matches) finish();
+        else {
+          entry.classList.add("entering");
+          setTimeout(finish, 360);
+        }
+      }
+
+      approach.addEventListener("click", showBench);
+      returnToDoor.addEventListener("click", () => showEntry(true));
+      showEntry();
+
+      function roomTravel() { return Math.max(0, world.offsetWidth - room.clientWidth); }
+
+      function setView(view) {
+        state.view = Math.max(0, Math.min(2, view));
+        world.style.transform = `translate3d(${-roomTravel() * state.view / 2}px,0,0)`;
+        const nearest = Math.round(state.view);
+        document.querySelectorAll("[data-view]").forEach(button => {
+          const active = Number(button.dataset.view) === nearest;
+          button.classList.toggle("active", active);
+          button.setAttribute("aria-pressed", String(active));
+        });
+        if (nearest === 1 && !state.bobSeen) {
+          state.bobSeen = true;
+          world.classList.add("bob-revealed");
+          say("Bob emerges from beyond the aloe. “You found the center of the room. Please do not make this a habit.”");
+        }
+      }
       function openModal(id){const m=document.getElementById(id);m.classList.add("open");const first=m.querySelector("button");if(first)first.focus()}function closeModal(id){document.getElementById(id).classList.remove("open")}
       function beginMission(){if(state.missionStarted)return;state.missionStarted=true;say("Bob: “Fine. Four complaints. Water Pinky, turn off that lamp, find out what I am thinking, and read the inspection book. Then leave dramatically.”")}
       function completeTask(task,message){beginMission();if(state.tasks.has(task)){say(message);return}state.tasks.add(task);missionCounter.textContent="BOB'S INSPECTION: "+state.tasks.size+" / 4";say(message);tone(480,.12);setTimeout(()=>tone(640,.14),100);if(state.tasks.size===4&&!state.reward){state.reward=true;setTimeout(()=>openModal("rewardModal"),700)}}
@@ -123,12 +228,26 @@
       function renderBook(){const page=bookPages[state.bookPage%bookPages.length],pages=document.getElementById("bookPages");pages.classList.remove("turning");void pages.offsetWidth;pages.classList.add("turning");pages.innerHTML="<strong>"+page[0]+"</strong><p>"+page[1]+"</p><span class=\"page-number\">"+(state.bookPage+1)+"</span>"}
       document.getElementById("nextPage").addEventListener("click",()=>{state.bookPage=(state.bookPage+1)%bookPages.length;renderBook();tone(320,.06);if(state.bookPage===bookPages.length-1)completeTask("book","The final page contains the entire assignment. Bob is furious that documentation worked.");else say(state.bookPage?"The book continues being suspiciously specific.":"The book has returned to the beginning. Like people.")});
       document.querySelectorAll("[data-view]").forEach(btn=>btn.addEventListener("click",()=>setView(Number(btn.dataset.view))));
+      bindRoomPan(room, {
+        getPosition: () => -roomTravel() * state.view / 2,
+        setPosition: position => setView(-2 * position / Math.max(1, roomTravel())),
+        canPan: () => entry.hidden && roomTravel() > 4 && !document.querySelector(".modal.open"),
+        scale: 1.45
+      });
       document.querySelectorAll("[data-close]").forEach(btn=>btn.addEventListener("click",()=>closeModal(btn.dataset.close)));document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)closeModal(m.id)}));
       document.getElementById("speakerButton").addEventListener("click",()=>speak(state.last||messageText.textContent));
-      document.getElementById("resetButton").addEventListener("click",()=>{state.view=1;state.watering=false;state.night=false;state.last="";state.met.clear();state.tasks.clear();state.missionStarted=false;state.counts={};state.bookPage=0;state.reward=false;room.classList.remove("night","watering-mode");toolState.classList.remove("show");document.querySelectorAll(".hotspot").forEach(b=>b.classList.remove("met"));counter.textContent="OPINIONS: 0 / 7";missionCounter.textContent="BOB'S INSPECTION: 0 / 4";setView(1);say("The greenhouse has been reset. The plants remember everything.")});
-      window.addEventListener("resize",()=>setView(state.view));window.addEventListener("keydown",event=>{if(event.key==="ArrowLeft")setView(state.view-1);if(event.key==="ArrowRight")setView(state.view+1);if(event.key==="Escape")document.querySelectorAll(".modal.open").forEach(m=>closeModal(m.id))});
+      document.getElementById("resetButton").addEventListener("click",()=>{state.view=1;state.watering=false;state.night=false;state.last="";state.met.clear();state.tasks.clear();state.missionStarted=false;state.counts={};state.bookPage=0;state.reward=false;state.bobSeen=false;world.classList.remove("bob-revealed");room.classList.remove("night","watering-mode");toolState.classList.remove("show");document.querySelectorAll(".hotspot").forEach(b=>b.classList.remove("met"));counter.textContent="OPINIONS: 0 / 7";missionCounter.textContent="BOB'S INSPECTION: 0 / 4";setView(1);say("Bob has filed the previous inspection. Start again whenever you’re ready.")});
+      world.addEventListener("focusin", event => {
+        if (!event.target.matches(".hotspot:focus-visible")) return;
+        const bounds = event.target.getBoundingClientRect();
+        if (bounds.left >= 0 && bounds.right <= room.clientWidth) return;
+        const center = event.target.offsetLeft + event.target.offsetWidth / 2;
+        const maxTravel = world.offsetWidth - room.clientWidth;
+        if (maxTravel > 0) setView(2 * (center - room.clientWidth / 2) / maxTravel);
+      });
+      window.addEventListener("resize",()=>setView(state.view));window.addEventListener("keydown",event=>{if(entry.hidden&&event.key==="ArrowLeft")setView(state.view-1);if(entry.hidden&&event.key==="ArrowRight")setView(state.view+1);if(event.key==="Escape")document.querySelectorAll(".modal.open").forEach(m=>closeModal(m.id))});
       const flies=document.getElementById("fireflies");for(let i=0;i<15;i++){const f=document.createElement("i");f.className="fly";f.style.left=(5+Math.random()*90)+"%";f.style.top=(15+Math.random()*65)+"%";f.style.animationDelay=(-Math.random()*5)+"s";f.style.animationDuration=(4+Math.random()*5)+"s";flies.appendChild(f)}
-      requestAnimationFrame(()=>setView(1));
+      requestAnimationFrame(()=>setView(0));
     })();
   </script>
 </body>

@@ -19,7 +19,11 @@ const wide = {
     ["buoy", [[1275, 429], [1382, 436], [1378, 520], [1273, 504]]],
     ["tablet", [[1297, 648], [1414, 682], [1341, 752], [1210, 705]]]
   ],
-  panes: [[480, 68, 148, 325], [645, 59, 231, 361], [899, 55, 146, 340]]
+  panes: [
+    [[474,69],[626,63],[627,426],[611,426],[606,400],[582,381],[550,362],[518,329],[474,299]],
+    [[646,61],[878,55],[878,439],[867,439],[861,394],[839,384],[812,390],[805,435],[647,429]],
+    [[899,55],[1048,50],[1046,448],[1023,447],[1010,359],[989,363],[987,438],[949,439],[945,402],[899,397]]
+  ]
 };
 const tall = {
   size: [876, 1795],
@@ -27,7 +31,12 @@ const tall = {
     ["ktn-crab", [[730, 123], [829, 114], [831, 234], [727, 238]]],
     ["hump-day", [[723, 295], [833, 290], [831, 371], [722, 369]]]
   ],
-  panes: [[270, 153, 72, 283], [356, 144, 79, 323], [448, 136, 94, 346], [563, 129, 92, 341]]
+  panes: [
+    [[266,151],[344,146],[342,400],[322,392],[292,387],[267,398]],
+    [[358,145],[434,138],[433,471],[417,471],[401,455],[378,445],[358,447]],
+    [[449,138],[543,132],[541,528],[517,525],[515,488],[496,476],[477,478],[468,523],[450,524]],
+    [[559,131],[659,124],[657,535],[640,530],[631,448],[610,447],[590,491],[572,488],[559,490]]
+  ]
 };
 
 let scene;
@@ -62,10 +71,17 @@ function placeFrontRoom() {
   const [width, height] = next.size;
   if (scene !== next) {
     scene = next;
-    rainGlass.replaceChildren(...scene.panes.map(([x, y, w, h], i) => {
+    rainGlass.replaceChildren(...scene.panes.map((points, i) => {
+      const xs = points.map(point => point[0]);
+      const ys = points.map(point => point[1]);
+      const x = Math.min(...xs);
+      const y = Math.min(...ys);
+      const w = Math.max(...xs) - x;
+      const h = Math.max(...ys) - y;
+      const polygon = points.map(([px, py]) => `${(px - x) / w * 100}% ${(py - y) / h * 100}%`).join(",");
       const pane = document.createElement("div");
       pane.className = "wet-pane";
-      pane.style.cssText = `left:${x / width * 100}%;top:${y / height * 100}%;width:${w / width * 100}%;height:${h / height * 100}%;`;
+      pane.style.cssText = `left:${x / width * 100}%;top:${y / height * 100}%;width:${w / width * 100}%;height:${h / height * 100}%;clip-path:polygon(${polygon});`;
       for (let j = 0; j < 24; j += 1) {
         const bead = document.createElement("i");
         bead.className = "bead";
@@ -113,8 +129,8 @@ room.addEventListener("pointermove", (event) => {
   const y = (event.clientY / innerHeight - .5) * 2;
   room.style.setProperty("--room-drift-x", `${x * -.32}%`);
   room.style.setProperty("--room-drift-y", `${y * -.3}%`);
-  room.style.setProperty("--entry-drift-x", `${x * -2}px`);
-  room.style.setProperty("--entry-drift-y", `${y * -1.5}px`);
+  room.style.setProperty("--entry-drift-x", `${x * 12}px`);
+  room.style.setProperty("--entry-drift-y", `${y * 8}px`);
 }, { passive: true });
 room.addEventListener("pointerleave", resetViewpoint);
 movingView.addEventListener("change", resetViewpoint);

@@ -2014,7 +2014,9 @@
 /* Shared Studio LaDuke / Maverick Games opening */
 #sharedGameOpening{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:18px;background:radial-gradient(ellipse at 50% 28%,rgba(40,69,61,.86),rgba(4,8,12,.94) 72%);overflow:hidden;color:#f3eedb;text-align:center;font-family:Georgia,serif;animation:sgFade .5s ease both}#sharedGameOpening:before{content:"";position:absolute;inset:-35%;pointer-events:none;background:repeating-linear-gradient(112deg,transparent 0 40px,rgba(190,219,208,.04) 41px 42px,transparent 43px 82px);animation:sgRain 8s linear infinite}.sgPanel{position:relative;width:min(94vw,650px);min-height:310px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 18px;border:1px solid #d7bd7855;border-radius:18px;background:linear-gradient(145deg,#12231fe8,#080e13ed);box-shadow:0 24px 90px #000a}.sgPanel[hidden]{display:none}.sgMark{width:78px;height:78px;border:2px solid #d4b878;border-radius:50%;display:grid;place-items:center;color:#ead8a0;font:700 29px Georgia,serif;letter-spacing:-.1em;box-shadow:0 0 32px #7ed9d355,inset 0 0 20px #88e3d333;animation:sgRise 1s ease both}.sgEyebrow{margin:17px 0 4px;color:#c2d4c7;font:11px system-ui;letter-spacing:.27em;text-transform:uppercase}.sgWord{margin:5px 0;color:#f1ecd9;font:700 clamp(24px,5vw,38px) Georgia,serif;letter-spacing:.13em}.sgGames{font:900 clamp(36px,8vw,62px)/.98 system-ui,sans-serif;letter-spacing:.05em;color:#f0d888;text-shadow:0 3px #754833,0 8px 30px #8c604c88;animation:sgRise 1s ease both}.sgSub{margin-top:18px;color:#bdd7ce;font:11px system-ui;letter-spacing:.28em;text-transform:uppercase}.sgSkip{position:absolute;right:20px;top:15px;border:0;background:transparent;color:#d6ddd1;font:700 11px system-ui;letter-spacing:.12em;cursor:pointer}@keyframes sgFade{from{opacity:0}to{opacity:1}}@keyframes sgRise{from{opacity:0;transform:translateY(16px) scale(.84)}to{opacity:1;transform:none}}@keyframes sgRain{from{transform:translateY(-4%)}to{transform:translateY(4%)}}</style>
   <link rel="stylesheet" href="game/super-mavericks-world.css?v=20261114-physical-shelf">
-  <link rel="stylesheet" href="game/fort-physical-ui.css?v=20261115-crate-and-crt">
+  <link rel="stylesheet" href="game/fort-physical-ui.css?v=20261116-hardware-controls">
+  <link rel="stylesheet" href="assets/room-controls.css?v=2">
+
   <style>
     #sharedGameOpening {
       background:linear-gradient(#07314b4f, #111d36c7), #133d5e url("game/assets/chapter-1.webp") center / cover;
@@ -2030,13 +2032,13 @@
     #sharedGameOpening .sgSkip { min-height:44px; padding-inline:.5rem; background:#122b49; color:#ffeeca }
   </style>
 </head>
-<body>
+<body class="studio-room fort-scene">
   <div class="hud">
     <div class="hud-box hud-title">Maverick’s Fort</div>
-    <a class="hud-box back-workshop" href="workshop.html">← Workshop</a>
+    <a class="hud-box back-workshop room-sign" href="workshop.html">← Workshop</a>
     <div class="hud-box">Laundry Mission: <strong id="laundryCount">0</strong>/6</div>
     <div class="hud-box">Secrets Found: <strong id="secretCount">0</strong>/9</div>
-    <button class="hud-box hud-button" id="fortMapBtn" type="button">🗺 Fort Map</button>
+    <button class="hud-box hud-button room-sign" id="fortMapBtn" type="button">🗺 Fort Map</button>
   </div>
 
   <div class="pan-hint">Swipe sideways to look around • arrows turn you around</div>
@@ -2379,7 +2381,7 @@
   </div>
 
 
-  <div class="toast" id="toast"></div>
+  <div class="toast scene-note" id="toast" role="status" aria-atomic="true"></div>
 
   <script>
     const toastEl = document.getElementById('toast');
@@ -2412,7 +2414,7 @@
       toastEl.textContent = msg;
       toastEl.classList.add('show');
       clearTimeout(toastEl._timer);
-      toastEl._timer = setTimeout(() => toastEl.classList.remove('show'), 2200);
+      toastEl._timer = setTimeout(() => toastEl.classList.remove('show'), 6500);
     }
 
     function saveProgress(){
@@ -2456,7 +2458,7 @@
       });
 
       allSecretReward.classList.toggle('show', secretCount === SECRET_TOTAL);
-      if(secretCount === 8 && !secretsFound.has('chest')){ setTimeout(()=>toast('8 / 9! Last clue: clean all 6 clothes, then OPEN the glowing treasure chest.'),250); }
+      if(secretCount === 8 && !secretsFound.has('chest')){ toast('8 / 9! Last clue: clean all 6 clothes, then open the treasure chest.'); }
     }
 
     function restoreProgress(){
@@ -3164,11 +3166,6 @@
     setupCanvas();
     refreshLights();
     restoreProgress();
-
-    // Welcome
-    setTimeout(() => {
-      toast('Welcome to Maverick’s Fort. Click everything.');
-    }, 300);
   </script>
 
 

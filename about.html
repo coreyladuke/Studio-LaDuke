@@ -65,6 +65,50 @@
         </section>
       </section>
 
+      <section class="bench-experiment" aria-labelledby="experiment-heading">
+        <div class="experiment-caption">
+          <p class="experiment-kicker">An idea I haven't finished yet</p>
+          <h2 id="experiment-heading">The cedar-weave hat experiment</h2>
+          <p>A loose sheet of clear vinyl is protecting a cedar-weave study that still needs figuring out. Lift it to look underneath.</p>
+        </div>
+        <div class="physical-workbench" id="physical-workbench">
+          <aside class="reference-board" aria-label="Photographs of Corey’s real work">
+            <figure class="reference-photo reference-paddle">
+              <img src="assets/corey-carved-paddle.jpeg" alt="Corey’s blue carved paddle" width="3024" height="4032" loading="lazy">
+              <figcaption>carved paddle</figcaption>
+            </figure>
+            <figure class="reference-photo reference-sketch">
+              <img src="assets/corey-boat-sketch.jpeg" alt="Corey’s hand-drawn boat sketch on his worktable" width="3024" height="4032" loading="lazy">
+              <figcaption>boat sketch</figcaption>
+            </figure>
+            <figure class="reference-photo reference-earrings">
+              <img src="assets/corey-cedar-earrings.jpeg" alt="Corey’s hand-carved paddle earrings against cedar boughs" width="3024" height="4032" loading="lazy">
+              <figcaption>paddle earrings</figcaption>
+            </figure>
+          </aside>
+
+          <div class="task-lamp" aria-hidden="true"></div>
+          <div class="tape-measure" aria-hidden="true"></div>
+          <div class="bench-pencil" aria-hidden="true"></div>
+
+          <article class="hat-study" id="hat-study" aria-hidden="true">
+            <h3>Unfinished cedar-weave hat experiment</h3>
+            <p>Working study · not finished</p>
+            <div class="woven-crown" aria-hidden="true"></div>
+            <div class="loose-cedar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="bench-awl" aria-hidden="true"></div>
+          </article>
+
+          <button class="vinyl-flap" id="vinyl-flap" type="button" aria-expanded="false" aria-controls="hat-study" aria-label="Lift the loose clear vinyl to reveal the cedar-weave hat experiment">
+            <span class="vinyl-hinge" aria-hidden="true"></span>
+            <span class="vinyl-pull">Lift clear vinyl</span>
+          </button>
+          <button class="lower-vinyl" id="lower-vinyl" type="button" hidden>Lay the vinyl back down</button>
+          <p class="experiment-status" id="experiment-status" aria-live="polite">The unfinished study is covered.</p>
+        </div>
+        <p class="experiment-source"><strong>Real work, unfinished on purpose.</strong> The pinned photographs are Corey’s carved paddle, hand-drawn boat study, and carved paddle earrings. The cedar weave remains an experiment.</p>
+      </section>
+
       <section class="prints" aria-label="Artwork from the studio">
         <a class="print" href="gallery.html?art=9EAA20AB-901D-41E1-AC98-64455D1A291D.png">
           <img src="assets/front-art/hump-day.webp" alt="" width="456" height="286" loading="lazy">
@@ -83,5 +127,29 @@
     </div>
   </main>
   <footer>Studio LaDuke · Ketchikan, Alaska</footer>
+  <script>
+    const workbench = document.getElementById('physical-workbench');
+    const vinyl = document.getElementById('vinyl-flap');
+    const lower = document.getElementById('lower-vinyl');
+    const study = document.getElementById('hat-study');
+    const pull = vinyl.querySelector('.vinyl-pull');
+    const status = document.getElementById('experiment-status');
+
+    function setVinylOpen(isOpen) {
+      workbench.classList.toggle('is-open', isOpen);
+      vinyl.setAttribute('aria-expanded', String(isOpen));
+      vinyl.setAttribute('aria-label', isOpen ? 'Lower the clear vinyl over the cedar-weave hat experiment' : 'Lift the loose clear vinyl to reveal the cedar-weave hat experiment');
+      study.setAttribute('aria-hidden', String(!isOpen));
+      pull.textContent = isOpen ? 'Vinyl lifted' : 'Lift clear vinyl';
+      lower.hidden = !isOpen;
+      status.textContent = isOpen ? 'The unfinished cedar-weave study is uncovered.' : 'The unfinished study is covered.';
+    }
+
+    vinyl.addEventListener('click', () => setVinylOpen(true));
+    lower.addEventListener('click', () => {
+      setVinylOpen(false);
+      vinyl.focus({ preventScroll: true });
+    });
+  </script>
 </body>
 </html>

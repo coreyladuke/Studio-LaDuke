@@ -449,13 +449,14 @@ canvas:focus-visible,.power-meter:focus-visible{outline:2px solid #dfba76;outlin
   *{scroll-behavior:auto!important}
 }
 </style>
+  <link rel="stylesheet" href="assets/room-controls.css?v=1">
 </head>
-<body>
+<body class="studio-room pool-scene">
 <div class="page" id="poolGame">
   <header class="topbar">
-    <a class="back" id="poolBack" href="workshop.html">← Workshop</a>
+    <a class="back room-sign" id="poolBack" href="workshop.html">← Workshop</a>
     <div class="title">Mav &amp; Dad’s Pool Room</div>
-    <button class="rules-btn" id="rulesButton" type="button">Rules</button>
+    <button class="rules-btn room-sign" id="rulesButton" type="button">Rules</button>
   </header>
 
   <div class="status" id="status" aria-live="polite">
@@ -513,7 +514,7 @@ canvas:focus-visible,.power-meter:focus-visible{outline:2px solid #dfba76;outlin
       <li>Pocketing the 8 early, or scratching while pocketing it, loses the rack.</li>
     </ul>
     <p><strong>Controls:</strong> drag around the cue ball to rotate the aim. Lift your finger and resume from another spot without losing your angle. Pull the left power meter downward and release to shoot.</p>
-    <button class="rules-close" id="rulesClose" type="button">Back to the table</button>
+    <button class="rules-close room-sign" id="rulesClose" type="button">Back to the table</button>
   </div>
 </dialog>
 
