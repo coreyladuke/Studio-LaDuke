@@ -67,9 +67,8 @@
 
       <section class="bench-experiment" aria-labelledby="experiment-heading">
         <div class="experiment-caption">
-          <p class="experiment-kicker">An idea I haven't finished yet</p>
           <h2 id="experiment-heading">The cedar-weave hat experiment</h2>
-          <p>A loose sheet of clear vinyl is protecting a cedar-weave study that still needs figuring out. Lift it to look underneath.</p>
+          <p>I’m trying out clear vinyl for a cedar-weave hat.</p>
         </div>
         <div class="physical-workbench" id="physical-workbench">
           <aside class="reference-board" aria-label="Photographs of Corey’s real work">
@@ -92,8 +91,8 @@
           <div class="bench-pencil" aria-hidden="true"></div>
 
           <article class="hat-study" id="hat-study" aria-hidden="true">
-            <h3>Unfinished cedar-weave hat experiment</h3>
-            <p>Working study · not finished</p>
+            <h3>Cedar-weave hat</h3>
+            <p>Concept sketch</p>
             <div class="woven-crown" aria-hidden="true"></div>
             <div class="loose-cedar" aria-hidden="true"><i></i><i></i><i></i></div>
             <div class="bench-awl" aria-hidden="true"></div>
@@ -103,10 +102,10 @@
             <span class="vinyl-hinge" aria-hidden="true"></span>
             <span class="vinyl-pull">Lift clear vinyl</span>
           </button>
-          <button class="lower-vinyl" id="lower-vinyl" type="button" hidden>Lay the vinyl back down</button>
-          <p class="experiment-status" id="experiment-status" aria-live="polite">The unfinished study is covered.</p>
+          <button class="lower-vinyl" id="lower-vinyl" type="button" hidden>Lower vinyl</button>
+          <p class="experiment-status" id="experiment-status" aria-live="polite"></p>
         </div>
-        <p class="experiment-source"><strong>Real work, unfinished on purpose.</strong> The pinned photographs are Corey’s carved paddle, hand-drawn boat study, and carved paddle earrings. The cedar weave remains an experiment.</p>
+        <p class="experiment-source">My carved paddle, boat sketch, and paddle earrings are pinned above the concept sketch.</p>
       </section>
 
       <section class="prints" aria-label="Artwork from the studio">
@@ -142,10 +141,14 @@
       study.setAttribute('aria-hidden', String(!isOpen));
       pull.textContent = isOpen ? 'Vinyl lifted' : 'Lift clear vinyl';
       lower.hidden = !isOpen;
-      status.textContent = isOpen ? 'The unfinished cedar-weave study is uncovered.' : 'The unfinished study is covered.';
+      vinyl.tabIndex = isOpen ? -1 : 0;
+      status.textContent = isOpen ? 'Vinyl lifted. Concept sketch revealed.' : 'Vinyl lowered.';
     }
 
-    vinyl.addEventListener('click', () => setVinylOpen(true));
+    vinyl.addEventListener('click', () => {
+      setVinylOpen(true);
+      lower.focus({ preventScroll: true });
+    });
     lower.addEventListener('click', () => {
       setVinylOpen(false);
       vinyl.focus({ preventScroll: true });

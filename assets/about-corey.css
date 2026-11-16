@@ -147,7 +147,6 @@ footer { padding: 1rem 1rem max(1.4rem, env(safe-area-inset-bottom)); text-align
   box-shadow: inset 0 8px 20px #1a100b88, 0 12px 22px #10090680;
 }
 .experiment-caption { max-width: 45rem; margin-bottom: 1.25rem; }
-.experiment-kicker { margin: 0; color: #e5c795; font-size: .82rem; letter-spacing: .09em; text-transform: uppercase; }
 .experiment-caption h2 { font-size: clamp(1.8rem, 4vw, 3.2rem); font-weight: 400; line-height: 1.03; margin: .3rem 0 .65rem; }
 .experiment-caption p:last-child { max-width: 52ch; margin-bottom: 0; color: #ead9bd; }
 
@@ -290,11 +289,10 @@ footer { padding: 1rem 1rem max(1.4rem, env(safe-area-inset-bottom)); text-align
 .vinyl-pull { position: absolute; left: 50%; bottom: -1.25rem; min-width: 8rem; min-height: 46px; display: grid; place-items: center; transform: translateX(-50%) rotate(-1deg); padding: .35rem .9rem; color: #2e2018; background: linear-gradient(#c6a276, #a1764d); border: 2px solid #644529; border-radius: .2rem .2rem 1rem 1rem; box-shadow: 0 .35rem .5rem #0009; font: 700 .72rem/1.1 ui-monospace, monospace; letter-spacing: .07em; text-transform: uppercase; }
 .lower-vinyl { position: absolute; z-index: 9; right: 4%; bottom: 3rem; min-height: 46px; padding: .45rem 2.4rem .45rem 1rem; color: #2c1c14; background: linear-gradient(100deg, #b98a5d, #d0a673 65%, #8a5e39); border: 2px solid #5b3821; border-radius: .25rem 1.1rem 1.1rem .25rem; box-shadow: .25rem .45rem .6rem #000a, inset 0 1px #f0ca9b; font: 700 .66rem/1.1 ui-monospace, monospace; letter-spacing: .07em; text-transform: uppercase; }
 .lower-vinyl::after { content: ''; position: absolute; right: .65rem; top: 50%; width: .7rem; aspect-ratio: 1; transform: translateY(-50%); border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff0a5, #9b6422 40%, #3d210b 76%); box-shadow: 0 2px 2px #0008; }
-.experiment-status { position: absolute; z-index: 7; right: 6%; bottom: .65rem; margin: 0; color: #f4dfbd; font: .7rem/1.2 ui-monospace, monospace; }
+.experiment-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .physical-workbench:not(.is-open) .hat-study { filter: saturate(.76) brightness(.86); }
 .physical-workbench.is-open .hat-study { filter: none; }
 .experiment-source { margin: 1rem 0 0; color: #d9c6ae; font-size: .88rem; }
-.experiment-source strong { color: #ffe0a9; }
 
 @media (max-width: 680px) {
   .physical-workbench { min-height: 43rem; }

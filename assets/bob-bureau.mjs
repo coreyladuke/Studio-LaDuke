@@ -172,14 +172,21 @@ function openBureau(doc, win) {
     const topic = new win.FormData(form).get('topic');
     if (!Object.hasOwn(cases, topic)) return;
     const next = chooseVerdict(topic, previous);
-    win.location.hash = `case=${next.topic}-${next.index}`;
-    show(next);
+    showVerdict(next);
   });
   win.addEventListener('hashchange', () => {
     const next = readVerdict(win.location.hash);
     if (next?.topic !== current?.topic || next?.index !== current?.index) show(next);
   });
+  function showVerdict(next) {
+    win.location.hash = `case=${next.topic}-${next.index}`;
+    show(next);
+  }
+
   doc.getElementById('again').addEventListener('click', () => {
+    if (current) showVerdict(chooseVerdict(current.topic, current));
+  });
+  doc.getElementById('change-topic').addEventListener('click', () => {
     win.location.hash = '';
     show(null);
   });

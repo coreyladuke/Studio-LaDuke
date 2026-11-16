@@ -70,7 +70,8 @@
     footer { display:flex; justify-content:space-between; flex-wrap:wrap; gap:0 1rem; padding:.65rem clamp(1rem, 5vw, 4rem); background:#20130e; border-top:1px solid #8e6c4999 }
     footer nav { display:flex; flex-wrap:wrap; gap:0 1.1rem }
     @media(max-width:700px) {
-      .desk { grid-template-columns:1fr; gap:1.75rem; padding:1.7rem 1.15rem 2rem; background-position:46% center }
+      .desk { grid-template-columns:1fr; gap:.8rem; padding:1.4rem 1.15rem 1.75rem; min-height:auto; background-position:46% center }
+      h1 { max-width:16ch; font-size:clamp(2rem, 8vw, 3.25rem) }
       .book-copy { grid-row:1 }
       .book { width:clamp(128px, 46vw, 205px) }
     }
@@ -84,7 +85,7 @@
   </header>
   <main class="desk" aria-labelledby="book-title">
     <div class="book-stage">
-      <button class="book" id="memoir" type="button" aria-label="Open or close Everybody Deserves to Go Home" aria-expanded="false" aria-controls="inside-cover">
+      <button class="book" id="memoir" type="button" aria-label="Open Everybody Deserves to Go Home" aria-expanded="false" aria-controls="inside-cover">
         <span class="inside" id="inside-cover" aria-hidden="true">
           <strong>Everybody Deserves to Go Home</strong>
           <span>A memoir in progress</span>
@@ -98,12 +99,12 @@
       <p>The library</p>
       <h1 id="book-title">Everybody Deserves to Go Home</h1>
       <p class="byline">A memoir by Corey LaDuke</p>
-      <p>In progress.</p>
-      <a href="projects.html#books">Other books in the works</a>
+
     </section>
   </main>
   <footer>
     <nav aria-label="Studio navigation">
+      <a href="projects.html#books">Other books in the works</a>
       <a href="directory.html">Directory</a>
       <a href="workshop.html">Workshop</a>
       <a href="about.html">About Corey</a>
@@ -113,12 +114,14 @@
     const memoir = document.getElementById("memoir");
     const inside = document.getElementById("inside-cover");
     const note = document.getElementById("tap-note");
+    const bookTitle = document.getElementById("book-title").textContent;
     const lamp = document.getElementById("lamp-button");
 
     memoir.addEventListener("click", () => {
       const isOpen = memoir.getAttribute("aria-expanded") === "false";
       memoir.setAttribute("aria-expanded", isOpen);
       inside.setAttribute("aria-hidden", !isOpen);
+      memoir.setAttribute("aria-label", `${isOpen ? "Close" : "Open"} ${bookTitle}`);
       note.textContent = isOpen ? "Tap again to close the cover" : "Tap the cover to open it";
     });
     lamp.addEventListener("click", () => {
