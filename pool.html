@@ -34,8 +34,8 @@ button{appearance:none}
   display:flex;
   flex-direction:column;
   background:
-    radial-gradient(circle at 50% 0%,rgba(94,61,30,.19),transparent 42%),
-    #080706;
+    radial-gradient(ellipse at 50% 43%,#30251b 0%,transparent 69%),
+    repeating-linear-gradient(92deg,#0f0d0a 0 54px,#17110b 55px 56px,#120e0a 58px 108px);
 }
 .topbar{
   display:flex;
@@ -55,9 +55,8 @@ button{appearance:none}
   min-height:42px;
   text-decoration:none;
   padding:9px 11px;
-  border:1px solid rgba(213,167,82,.45);
-  border-radius:9px;
-  background:rgba(255,255,255,.035);
+  border:0;
+  background:transparent;
   cursor:pointer;
 }
 .title{
@@ -72,18 +71,6 @@ button{appearance:none}
   font-size:.84rem;
   color:rgba(245,223,178,.88);
   min-height:38px;
-}
-.rotate-hint{
-  display:none;
-  width:max-content;
-  max-width:calc(100% - 22px);
-  margin:0 auto 6px;
-  padding:6px 10px;
-  border:1px solid rgba(213,167,82,.28);
-  border-radius:999px;
-  background:rgba(255,255,255,.035);
-  font:700 .72rem Arial,sans-serif;
-  color:rgba(245,223,178,.72);
 }
 .game-shell{
   position:relative;
@@ -120,8 +107,7 @@ button{appearance:none}
   max-height:580px;
   border:1px solid rgba(213,167,82,.5);
   border-radius:999px;
-  background:
-    linear-gradient(to bottom,rgba(85,20,12,.80),rgba(156,75,25,.68) 45%,rgba(199,151,54,.48));
+  background:linear-gradient(100deg,#20150d,#53331c 38%,#29190e);
   box-shadow:
     inset 0 0 18px rgba(0,0,0,.6),
     0 4px 18px rgba(0,0,0,.22);
@@ -177,6 +163,7 @@ canvas{
   touch-action:none;
   box-shadow:0 18px 55px rgba(0,0,0,.58);
 }
+canvas:focus-visible,.power-meter:focus-visible{outline:2px solid #dfba76;outline-offset:3px}
 .hud{
   width:min(1120px,calc(100% - 20px));
   margin:0 auto 16px;
@@ -187,15 +174,12 @@ canvas{
   font-family:Arial,sans-serif;
 }
 .player{
-  border:1px solid rgba(213,167,82,.28);
-  background:rgba(255,255,255,.025);
-  border-radius:9px;
+  border-bottom:1px solid rgba(213,167,82,.22);
   padding:9px 10px;
   min-width:0;
 }
 .player.active{
   border-color:rgba(224,184,95,.72);
-  background:rgba(213,167,82,.08);
 }
 .player strong{
   display:block;
@@ -216,9 +200,9 @@ canvas{
   flex-wrap:wrap;
 }
 .small-btn{
-  border:1px solid rgba(213,167,82,.38);
-  border-radius:8px;
-  background:rgba(255,255,255,.04);
+  border:0;
+  border-bottom:1px solid rgba(213,167,82,.38);
+  background:transparent;
   padding:9px 11px;
   font:700 .75rem Arial,sans-serif;
   cursor:pointer;
@@ -282,17 +266,34 @@ canvas{
   cursor:pointer;
 }
 
-/* Portrait phone: still playable, but nudges the player toward the better view. */
+/* Portrait keeps the table full-width and puts shot power below the rail. */
 @media(max-width:700px) and (orientation:portrait){
-  .rotate-hint{display:block}
   .game-shell{
-    grid-template-columns:58px minmax(0,1fr);
-    gap:6px;
-    padding-left:5px;
-    padding-right:7px;
+    display:flex;
+    flex-direction:column-reverse;
+    gap:13px;
+    padding-inline:5px;
   }
-  .power-meter{width:40px;min-height:210px}
-  .power-wrap{min-height:240px}
+  .power-wrap{
+    flex-direction:row;
+    min-height:0;
+    width:100%;
+    gap:8px;
+    padding:0 8px;
+  }
+  .power-meter{
+    width:auto;
+    height:44px;
+    min-height:0;
+    max-width:none;
+    cursor:ew-resize;
+  }
+  .power-track{inset:12px 10px}
+  .power-fill{top:13px;bottom:13px;left:10px;right:auto;height:auto}
+  .power-handle{
+    top:4px;bottom:4px;left:0;right:auto;
+    width:25px;height:auto;
+  }
   .hud{grid-template-columns:1fr 1fr}
   .center-controls{grid-column:1/-1;grid-row:2}
   .topbar{padding:9px}
@@ -348,7 +349,6 @@ canvas{
     font-size:.73rem;
     pointer-events:none;
   }
-  .rotate-hint{display:none}
   .ball-in-hand-tip{
     position:absolute;
     left:50%;
@@ -374,16 +374,16 @@ canvas{
   .table-wrap{
     position:absolute;
     inset:
-      max(5px,env(safe-area-inset-top))
+      max(39px,env(safe-area-inset-top))
       max(7px,env(safe-area-inset-right))
-      max(5px,env(safe-area-inset-bottom))
-      max(7px,env(safe-area-inset-left));
+      max(40px,env(safe-area-inset-bottom))
+      max(75px,calc(env(safe-area-inset-left) + 64px));
   }
   canvas{
     width:auto;
     height:min(
-      calc(100dvh - max(10px,env(safe-area-inset-top)) - max(10px,env(safe-area-inset-bottom))),
-      calc((100vw - max(14px,env(safe-area-inset-left)) - max(14px,env(safe-area-inset-right))) / 1.9230769)
+      calc(100dvh - max(39px,env(safe-area-inset-top)) - max(40px,env(safe-area-inset-bottom))),
+      calc((100vw - max(75px,calc(env(safe-area-inset-left) + 64px)) - max(7px,env(safe-area-inset-right))) / 1.9230769)
     );
     max-width:calc(100vw - max(14px,env(safe-area-inset-left)) - max(14px,env(safe-area-inset-right)));
     max-height:none;
@@ -398,7 +398,7 @@ canvas{
     width:48px;
     min-height:0;
     gap:4px;
-    opacity:.72;
+    opacity:.93;
     transition:opacity .15s ease;
     filter:drop-shadow(0 3px 10px rgba(0,0,0,.5));
   }
@@ -408,7 +408,7 @@ canvas{
     min-height:0;
     max-height:none;
     flex:1;
-    background:linear-gradient(to bottom,rgba(85,20,12,.62),rgba(156,75,25,.55) 45%,rgba(199,151,54,.42));
+    background:linear-gradient(100deg,#20150d,#53331c 38%,#29190e);
   }
   .power-label{font-size:.58rem}
   .power-value{
@@ -453,8 +453,8 @@ canvas{
 <body>
 <div class="page" id="poolGame">
   <header class="topbar">
-    <a class="back" href="workshop.html">← Workshop</a>
-    <div class="title">Studio LaDuke · Eight Ball</div>
+    <a class="back" id="poolBack" href="workshop.html">← Workshop</a>
+    <div class="title">Teddy’s Pool Room</div>
     <button class="rules-btn" id="rulesButton" type="button">Rules</button>
   </header>
 
@@ -462,16 +462,14 @@ canvas{
     Player 1 breaks. Grab the cue behind the cue ball to aim, then pull the power meter and release.
   </div>
 
-  <div class="rotate-hint">↻ Turn your phone sideways for the full table</div>
-
   <div class="ball-in-hand-tip" id="ballInHandTip">
     Ball in hand: drag the cue ball to a legal spot, then release it.
   </div>
 
   <div class="game-shell">
     <div class="power-wrap" aria-label="Shot power control">
-      <div class="power-label">PULL<br>BACK</div>
-      <div class="power-meter" id="powerMeter" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
+      <div class="power-label">POWER</div>
+      <div class="power-meter" id="powerMeter" role="slider" aria-label="Shot power" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
         <div class="power-track"></div>
         <div class="power-fill" id="powerFill"></div>
         <div class="power-handle" id="powerHandle"></div>
@@ -480,7 +478,7 @@ canvas{
     </div>
 
     <div class="table-wrap">
-      <canvas id="table" width="1200" height="624" aria-label="Top-down eight-ball pool table"></canvas>
+      <canvas id="table" width="1200" height="624" tabindex="0" aria-label="Eight-ball table. Drag to aim, or use the left and right arrow keys. Hold Shift for fine adjustments."></canvas>
     </div>
   </div>
 
@@ -492,7 +490,7 @@ canvas{
 
     <div class="center-controls">
       <button class="small-btn" id="newGame" type="button">New rack</button>
-      <button class="small-btn" id="undoAim" type="button">Reset aim</button>
+      <button class="small-btn" id="soloPractice" type="button">Solo practice</button>
       <button class="small-btn" id="musicButton" type="button" aria-pressed="false">Music</button>
     </div>
 
@@ -614,6 +612,12 @@ let cueDrag=false;
 let breakShot=true;
 let lastTime=performance.now();
 let physicsTime=0;
+let practice=null;
+const practiceShots=[
+  {cue:[451,378],target:[600,247],pocket:1,hint:"Center pocket"},
+  {cue:[360,264],target:[502,428],pocket:4,hint:"Cut to the bottom middle"},
+  {cue:[793,312],target:[968,195],pocket:2,hint:"Top right corner"}
+];
 
 let audioCtx=null;
 let noiseBuffer=null;
@@ -624,7 +628,7 @@ const feltTile=document.createElement("canvas");
 feltTile.width=96;
 feltTile.height=96;
 const feltCtx=feltTile.getContext("2d");
-feltCtx.fillStyle="#28573f";
+feltCtx.fillStyle="#21614b";
 feltCtx.fillRect(0,0,96,96);
 for(let i=0;i<900;i++){
   const a=Math.random()*.065+.012;
@@ -662,6 +666,14 @@ function makeBall(n,x,y){
 function setStatus(t){statusEl.textContent=t;}
 
 function updateHud(){
+  if(practice){
+    pEls[0].classList.toggle("active",!gameOver);
+    pEls[1].classList.toggle("active",false);
+    gEls[0].textContent=`Practice · ${practice.score} of ${practiceShots.length} pocketed`;
+    gEls[1].textContent=`Attempt ${practice.attempt+1} of ${practiceShots.length}`;
+    ballTip.classList.toggle("show",false);
+    return;
+  }
   pEls.forEach((el,i)=>el.classList.toggle("active",i===current&&!gameOver));
   for(let i=0;i<2;i++){
     const g=groups[i];
@@ -673,6 +685,7 @@ function updateHud(){
 }
 
 function resetRack(){
+  practice=null;
   balls=[];
   physicsTime=0;
   current=0;
@@ -700,10 +713,27 @@ function resetRack(){
     }
   }
 
-  setStatus("Player 1 breaks. Drag around the cue ball to aim, then pull the power meter and release.");
+  setStatus("Player 1 breaks. Drag to aim. Pull and release the power slider to shoot.");
   updateHud();
   updatePower(0);
   draw();
+}
+
+function startPracticeShot(){
+  const layout=practiceShots[practice.attempt];
+  const targetPocket=pockets[layout.pocket];
+  const angle=Math.atan2(targetPocket.y-layout.target[1],targetPocket.x-layout.target[0]);
+  const contactX=layout.target[0]-Math.cos(angle)*R*2;
+  const contactY=layout.target[1]-Math.sin(angle)*R*2;
+  balls=[makeBall(0,...layout.cue),makeBall(3,...layout.target)];
+  aimAngle=Math.atan2(contactY-layout.cue[1],contactX-layout.cue[0])+.20;
+  ballInHand=false;
+  breakShot=false;
+  gameOver=false;
+  shot=null;
+  setStatus(`Shot ${practice.attempt+1} of ${practiceShots.length}. ${layout.hint}.`);
+  updateHud();
+  updatePower(0);
 }
 
 function localPoint(e){
@@ -886,19 +916,25 @@ function moveCueTo(x,y){
 function updatePower(v){
   power=clamp(v,0,1);
   const rect=meter.getBoundingClientRect();
-  const usable=Math.max(1,rect.height-30);
-  const y=6+power*usable;
+  const horizontal=rect.width>rect.height;
+  const usable=Math.max(1,(horizontal?rect.width:rect.height)-30);
+  const travel=6+power*usable;
 
-  handle.style.transform=`translateY(${y}px)`;
-  fill.style.height=`${10+power*usable}px`;
+  handle.style.transform=horizontal?`translateX(${travel}px)`:`translateY(${travel}px)`;
+  fill.style.width=horizontal?`${10+power*usable}px`:"";
+  fill.style.height=horizontal?"":`${10+power*usable}px`;
   powerValue.textContent=`${Math.round(power*100)}%`;
+  meter.setAttribute("aria-orientation",horizontal?"horizontal":"vertical");
   meter.setAttribute("aria-valuenow",String(Math.round(power*100)));
   draw();
 }
 
 function meterPowerFromEvent(e){
   const r=meter.getBoundingClientRect();
-  return clamp((e.clientY-r.top-10)/(r.height-30),0,1);
+  const horizontal=r.width>r.height;
+  const length=horizontal?r.width:r.height;
+  const position=horizontal?e.clientX-r.left:e.clientY-r.top;
+  return clamp((position-10)/Math.max(1,length-30),0,1);
 }
 
 function meterDown(e){
@@ -943,7 +979,7 @@ function shoot(p){
   physicsTime=0;
   ballsMoving=true;
   updatePower(0);
-  setStatus(`${playerName(current)} shoots…`);
+  setStatus(practice?"Practice shot…":`${playerName(current)} shoots…`);
 }
 
 function pocketBall(b){
@@ -1129,6 +1165,20 @@ function physicsStep(dt){
 
 function finishShot(){
   if(!shot) return;
+  if(practice){
+    if(shot.pocketed.includes(3)&&!shot.scratch) practice.score++;
+    if(practice.attempt+1===practiceShots.length){
+      gameOver=true;
+      shot=null;
+      setStatus(`Practice complete. ${practice.score} of ${practiceShots.length} pocketed. Select Solo practice to play again.`);
+      updateHud();
+      draw();
+    }else{
+      practice.attempt++;
+      startPracticeShot();
+    }
+    return;
+  }
 
   const shooter=current;
   const opponent=1-current;
@@ -1241,10 +1291,11 @@ function roundRect(x,y,w,h,r){
 }
 
 function drawWood(){
-  const outer=ctx.createLinearGradient(0,0,0,H);
-  outer.addColorStop(0,"#5a361f");
-  outer.addColorStop(.45,"#3d2416");
-  outer.addColorStop(1,"#26160e");
+  const outer=ctx.createLinearGradient(0,0,W,H);
+  outer.addColorStop(0,"#8a5032");
+  outer.addColorStop(.29,"#47251a");
+  outer.addColorStop(.6,"#64371f");
+  outer.addColorStop(1,"#301912");
   ctx.fillStyle=outer;
   roundRect(7,7,W-14,H-14,30);
   ctx.fill();
@@ -1253,20 +1304,26 @@ function drawWood(){
   roundRect(13,13,W-26,H-26,25);
   ctx.clip();
 
-  for(let i=0;i<34;i++){
-    const y=18+i*17+(i%3)*2;
-    ctx.strokeStyle=`rgba(235,179,103,${.028+(i%5)*.006})`;
-    ctx.lineWidth=1;
+  for(let i=0;i<215;i++){
+    const y=8+i*2.9;
+    const drift=Math.sin(i*.32)*8;
+    const shade=i%4 ? "35,13,6" : "238,153,82";
+    ctx.strokeStyle=`rgba(${shade},${.095+(i%5)*.035})`;
+    ctx.lineWidth=i%3===0?.65:1.25;
     ctx.beginPath();
     ctx.moveTo(18,y);
-    ctx.bezierCurveTo(W*.28,y+6,W*.56,y-5,W-18,y+2);
+    ctx.bezierCurveTo(W*.29,y+drift,W*.66,y-drift,W-18,y+2);
     ctx.stroke();
   }
   ctx.restore();
 
-  ctx.strokeStyle="rgba(238,194,119,.18)";
+  ctx.strokeStyle="rgba(249,186,119,.47)";
   ctx.lineWidth=2;
   roundRect(10,10,W-20,H-20,27);
+  ctx.stroke();
+  ctx.strokeStyle="rgba(35,15,6,.75)";
+  ctx.lineWidth=3;
+  roundRect(16,16,W-32,H-32,23);
   ctx.stroke();
 }
 
@@ -1287,15 +1344,24 @@ function drawPocket(p){
   ctx.arc(p.x,p.y,pocketVisualR+10,0,Math.PI*2);
   ctx.fill();
 
-  ctx.fillStyle="#020202";
+  const well=ctx.createRadialGradient(p.x-6,p.y+8,3,p.x,p.y,pocketVisualR);
+  well.addColorStop(0,"#1e1610");
+  well.addColorStop(.73,"#0b0806");
+  well.addColorStop(1,"#030201");
+  ctx.fillStyle=well;
   ctx.beginPath();
   ctx.arc(p.x,p.y,pocketVisualR,0,Math.PI*2);
   ctx.fill();
 
-  ctx.strokeStyle="rgba(111,72,40,.92)";
+  ctx.strokeStyle="rgba(36,20,13,.98)";
   ctx.lineWidth=4;
   ctx.beginPath();
   ctx.arc(p.x,p.y,pocketVisualR+2,0,Math.PI*2);
+  ctx.stroke();
+  ctx.strokeStyle="rgba(209,139,75,.50)";
+  ctx.lineWidth=1.6;
+  ctx.beginPath();
+  ctx.arc(p.x,p.y,pocketVisualR+5,Math.PI*1.05,Math.PI*1.79);
   ctx.stroke();
 
   ctx.restore();
@@ -1324,6 +1390,9 @@ function drawDiamond(x,y,s){
   ctx.save();
   ctx.translate(x,y);
   ctx.rotate(Math.PI/4);
+  ctx.strokeStyle="#392216";
+  ctx.lineWidth=2;
+  ctx.strokeRect(-s,-s,s*2,s*2);
   ctx.fillRect(-s,-s,s*2,s*2);
   ctx.restore();
 }
@@ -1333,36 +1402,33 @@ function drawTable(){
 
   drawWood();
 
-  /* Inner rail and cushion shadow. */
-  const cushion=ctx.createLinearGradient(0,top-22,0,bottom+22);
-  cushion.addColorStop(0,"#173726");
-  cushion.addColorStop(.5,"#244c36");
-  cushion.addColorStop(1,"#142f22");
-  ctx.fillStyle=cushion;
-  roundRect(left-23,top-23,right-left+46,bottom-top+46,18);
+  ctx.fillStyle="#101610";
+  roundRect(left-20,top-20,right-left+40,bottom-top+40,11);
   ctx.fill();
 
-  ctx.save();
-  ctx.shadowColor="rgba(0,0,0,.72)";
-  ctx.shadowBlur=17;
-  ctx.shadowOffsetY=8;
-  ctx.fillStyle="#254f39";
-  ctx.fillRect(left,top,right-left,bottom-top);
-  ctx.restore();
-
-  ctx.fillStyle=feltPattern||"#28573f";
+  ctx.fillStyle=feltPattern||"#21614b";
   ctx.fillRect(left,top,right-left,bottom-top);
 
   /* Gentle vignette over the felt. */
   const feltShade=ctx.createRadialGradient(
-    W*.47,H*.42,40,
-    W/2,H/2,W*.62
+    W*.51,H*.40,54,
+    W/2,H/2,W*.53
   );
-  feltShade.addColorStop(0,"rgba(255,255,255,.055)");
-  feltShade.addColorStop(.58,"rgba(0,0,0,.02)");
-  feltShade.addColorStop(1,"rgba(0,0,0,.25)");
+  feltShade.addColorStop(0,"rgba(242,238,201,.13)");
+  feltShade.addColorStop(.56,"rgba(0,0,0,.025)");
+  feltShade.addColorStop(1,"rgba(2,13,11,.34)");
   ctx.fillStyle=feltShade;
   ctx.fillRect(left,top,right-left,bottom-top);
+
+  // Each rubber cushion has its own beveled face and cut ends at the pocket jaws.
+  for(const y of [top,bottom]){
+    const sign=y===top ? -1 : 1;
+    for(const [start,end] of [[left,W/2],[W/2,right]]){
+      drawCushion(start,y,end,y,0,sign);
+    }
+  }
+  drawCushion(left,top,left,bottom,-1,0);
+  drawCushion(right,top,right,bottom,1,0);
 
   drawDiamonds();
 
@@ -1377,6 +1443,29 @@ function drawTable(){
   ctx.beginPath();
   ctx.arc(left+(right-left)*.72,H/2,3.4,0,Math.PI*2);
   ctx.fill();
+}
+
+function drawCushion(ax,ay,bx,by,nx,ny){
+  const depth=18;
+  const horizontal=ay===by;
+  const tx=horizontal ? 1 : 0;
+  const ty=horizontal ? 0 : 1;
+  const slope=ctx.createLinearGradient(ax+nx*depth,ay+ny*depth,ax,ay);
+  slope.addColorStop(0,"#132d21");
+  slope.addColorStop(.29,"#30765a");
+  slope.addColorStop(.76,"#20533e");
+  slope.addColorStop(1,"#0c2d22");
+  ctx.fillStyle=slope;
+  ctx.beginPath();
+  ctx.moveTo(ax+tx*23+nx*depth,ay+ty*23+ny*depth);
+  ctx.lineTo(bx-tx*23+nx*depth,by-ty*23+ny*depth);
+  ctx.lineTo(bx-tx*36,by-ty*36);
+  ctx.lineTo(ax+tx*36,ay+ty*36);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle="rgba(5,21,15,.6)";
+  ctx.lineWidth=1.75;
+  ctx.stroke();
 }
 
 function drawBallShadow(b){
@@ -1504,6 +1593,28 @@ function drawBall(b){
   ctx.stroke();
 }
 
+function aimContact(c,dx,dy){
+  // The cue ball’s center stops one radius in from the cushion.
+  const edgeX=dx>0 ? right-R : left+R;
+  const edgeY=dy>0 ? bottom-R : top+R;
+  let distance=Math.min(dx ? (edgeX-c.x)/dx : Infinity,dy ? (edgeY-c.y)/dy : Infinity);
+  let object=null;
+  for(const ball of balls){
+    if(ball.pocketed||ball===c) continue;
+    const x=ball.x-c.x;
+    const y=ball.y-c.y;
+    const along=x*dx+y*dy;
+    const across=x*dy-y*dx;
+    if(along<=0||Math.abs(across)>R*2) continue;
+    const hit=along-Math.sqrt(R*R*4-across*across);
+    if(hit>-.001&&hit<=distance){
+      distance=Math.max(0,hit);
+      object=ball;
+    }
+  }
+  return {distance,object};
+}
+
 function drawAim(){
   if(gameOver||ballsMoving||ballInHand) return;
 
@@ -1512,18 +1623,39 @@ function drawAim(){
 
   const dx=Math.cos(aimAngle);
   const dy=Math.sin(aimAngle);
+  const {distance,object}=aimContact(c,dx,dy);
+  const contactX=c.x+dx*distance;
+  const contactY=c.y+dy*distance;
 
   ctx.save();
 
-  /* Aim line is opposite the finger/cue side. */
-  ctx.setLineDash([10,8]);
-  ctx.strokeStyle="rgba(255,255,255,.56)";
-  ctx.lineWidth=2;
-  ctx.beginPath();
-  ctx.moveTo(c.x+dx*(R+4),c.y+dy*(R+4));
-  ctx.lineTo(c.x+dx*410,c.y+dy*410);
-  ctx.stroke();
+  ctx.setLineDash([5,8]);
+  ctx.strokeStyle="rgba(255,246,220,.74)";
+  ctx.lineWidth=2.3;
+  if(distance>R+4){
+    ctx.beginPath();
+    ctx.moveTo(c.x+dx*(R+4),c.y+dy*(R+4));
+    ctx.lineTo(contactX,contactY);
+    ctx.stroke();
+  }
   ctx.setLineDash([]);
+  if(object){
+    const nx=(object.x-contactX)/(R*2);
+    const ny=(object.y-contactY)/(R*2);
+    const roomX=nx>0 ? right-object.x : object.x-left;
+    const roomY=ny>0 ? bottom-object.y : object.y-top;
+    const length=Math.min(126,nx ? roomX/Math.abs(nx) : Infinity,ny ? roomY/Math.abs(ny) : Infinity);
+    ctx.beginPath();
+    ctx.arc(contactX,contactY,R-1,0,Math.PI*2);
+    ctx.stroke();
+    if(length>R+3){
+      ctx.strokeStyle="rgba(244,201,102,.88)";
+      ctx.beginPath();
+      ctx.moveTo(object.x+nx*(R+3),object.y+ny*(R+3));
+      ctx.lineTo(object.x+nx*length,object.y+ny*length);
+      ctx.stroke();
+    }
+  }
 
   /* Cue is behind the cue ball, exactly where the player's finger lives. */
   const cueBack=R+22+power*76;
@@ -1617,6 +1749,13 @@ canvas.addEventListener("pointermove",canvasMove);
 canvas.addEventListener("pointerup",canvasUp);
 canvas.addEventListener("pointercancel",canvasUp);
 canvas.addEventListener("lostpointercapture",canvasUp);
+canvas.addEventListener("keydown",e=>{
+  if(gameOver||ballsMoving||ballInHand) return;
+  if(e.key!=="ArrowLeft"&&e.key!=="ArrowRight") return;
+  e.preventDefault();
+  aimAngle+=(e.key==="ArrowRight"?1:-1)*(e.shiftKey?.004:.025);
+  draw();
+});
 
 meter.addEventListener("pointerdown",meterDown);
 meter.addEventListener("pointermove",meterMove);
@@ -1649,10 +1788,11 @@ document.getElementById("newGame").addEventListener("click",()=>{
   if(confirm("Rack a new game?")) resetRack();
 });
 
-document.getElementById("undoAim").addEventListener("click",()=>{
-  aimAngle=0;
-  updatePower(0);
-  draw();
+document.getElementById("soloPractice").addEventListener("click",()=>{
+  ensureAudio();
+  if(ballsMoving||meterDrag) return;
+  practice={attempt:0,score:0};
+  startPracticeShot();
 });
 
 bgMusic.volume=.085;
@@ -1682,6 +1822,12 @@ rulesPanel.addEventListener("click",e=>{
 
 drawTable();
 tableSurface.getContext("2d").drawImage(canvas,0,0);
+if(window.location&&new URLSearchParams(window.location.search).get("from")==="arcade"){
+  const back=document.getElementById("poolBack");
+  back.href="mcbrides.html";
+  back.textContent="← Arcade";
+}
+window.addEventListener?.("resize",()=>updatePower(power));
 resetRack();
 requestAnimationFrame(loop);
 })();

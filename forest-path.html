@@ -35,6 +35,9 @@
     .raven{left:13.2%;top:41.5%;width:8.5%;height:17%;z-index:13}
     .fort-trail{left:43.5%;top:11%;width:20%;height:54%}
     .greenhouse{left:66.5%;top:4%;width:33.5%;height:62%}
+    .forest-cabinet{left:61.6%;top:33%;width:5.4%;height:22%;z-index:12;border-radius:5px;filter:drop-shadow(4px 6px 4px #020802)}
+    .forest-cabinet img{display:block;width:100%;height:100%;object-fit:contain;object-position:bottom;filter:brightness(.79) saturate(.77);pointer-events:none}
+    .forest-cabinet:is(:hover,:focus-visible) img{filter:brightness(1.08) saturate(.9)}
     .token{left:71.5%;top:69%;width:18%;height:20%;z-index:14;border-radius:50%}
 
     .fire-glow{position:absolute;z-index:4;left:19.5%;top:43%;width:11%;height:18%;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(255,218,129,.44),rgba(255,106,31,.18) 38%,transparent 72%);filter:blur(8px);animation:fireGlow 1.4s ease-in-out infinite alternate;transition:.3s ease}
@@ -87,6 +90,9 @@
       <button class="hotspot raven" id="raven" type="button" data-tip="Ask the raven" aria-label="Ask the raven for directions"></button>
       <a class="hotspot fort-trail" href="mavericks-fort.html" data-tip="Trail to Mav's Fort" aria-label="Follow the trail to Maverick's Fort"></a>
       <a class="hotspot greenhouse bob-threshold" href="bob.html" data-tip="Enter Bob's greenhouse" aria-label="Enter Bob's World greenhouse"></a>
+      <a class="hotspot forest-cabinet" href="games/alder-crawl.html" aria-label="Play the old arcade cabinet in the woods">
+        <img src="assets/alders-arcade-cabinet.webp" alt="" width="210" height="350">
+      </a>
       <button class="hotspot token" id="token" type="button" data-tip="Questionable coin" aria-label="Pick up the copper adventure token"></button>
     </div>
   </main>

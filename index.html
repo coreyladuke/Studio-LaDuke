@@ -390,6 +390,20 @@
     .nav-workshop { left: 46.4%; top: 93.2%; width: 11%; height: 6.8%; }
     .nav-gallery { left: 58.4%; top: 93.2%; width: 10.4%; height: 6.8%; }
     .nav-bob { left: 70%; top: 93.2%; width: 13%; height: 6.8%; }
+    .bob-nav-mark {
+      position: absolute;
+      left: 32.9%;
+      top: 44%;
+      width: 17%;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      transform: translate(-50%, -50%);
+      color: #c8a675;
+      background: radial-gradient(circle, #1a1a1a 62%, transparent 76%);
+      pointer-events: none;
+    }
+    .bob-nav-mark svg { width: 79%; }
 
     .front-toast {
       position: fixed;
@@ -709,6 +723,13 @@
       .nav-workshop { left: 50%; }
       .nav-gallery { left: 66.6667%; }
       .nav-bob { left: 83.3334%; }
+      .bob-nav-mark {
+        left: 46%;
+        top: 24%;
+        width: 38%;
+        color: #d9bd8e;
+        background: radial-gradient(circle, #141414 62%, transparent 76%);
+      }
 
       .front-toast {
         bottom: calc(13.6% + env(safe-area-inset-bottom));
@@ -795,7 +816,14 @@
     <a class="picture-nav nav-music" href="music.html" aria-label="Music Room"></a>
     <a class="picture-nav nav-workshop" href="workshop.html" aria-label="Workshop"></a>
     <a class="picture-nav nav-gallery" href="gallery.html" aria-label="Gallery"></a>
-    <a class="picture-nav nav-bob" href="bob.html" aria-label="Bob's Room"></a>
+    <a class="picture-nav nav-bob" href="bob.html" aria-label="Bob's Room">
+      <span class="bob-nav-mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48" fill="currentColor" focusable="false">
+          <path d="M24 30C14 28 7 20 5 12c9 1 16 6 19 15C20 13 24 6 27 3c5 8 4 17-1 25 4-7 9-11 17-12-2 8-9 13-17 14z"/>
+          <path d="M11 31h26v3H11zm3 5h20l-3 8H17z"/>
+        </svg>
+      </span>
+    </a>
   </div>
 
   <audio id="rainAudio" src="audio/front-room-rain.mp3" preload="none" loop></audio>

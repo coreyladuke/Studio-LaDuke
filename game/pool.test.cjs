@@ -120,3 +120,39 @@ test("a full break settles and passes play even when frames arrive slowly", () =
     assert.equal(statusEl.textContent,"Player 2's turn.");
   `);
 });
+
+test("aim predicts the nearest object-ball contact and ignores a pocketed ball", () => {
+  runGame(`
+    const c=makeBall(0,300,300);
+    const near=makeBall(1,447,311);
+    const far=makeBall(2,500,300);
+    balls=[c,far,near];
+    const hit=aimContact(c,1,0);
+    assert.equal(hit.object,near);
+    assert.ok(Math.abs(hit.distance-(147-Math.sqrt(4*R*R-121)))<.001);
+    near.pocketed=true;
+    assert.equal(aimContact(c,1,0).object,far);
+    assert.equal(aimContact(c,-1,0).distance,c.x-left-R);
+  `);
+});
+
+test("the three solo layouts can all be pocketed and a new rack restores two-player play", () => {
+  runGame(`
+    practice={attempt:0,score:0};
+    startPracticeShot();
+    for(const layout of practiceShots){
+      const pocket=pockets[layout.pocket];
+      const c=cue(), target=balls.find(ball=>ball.n===3);
+      const a=Math.atan2(pocket.y-target.y,pocket.x-target.x);
+      aimAngle=Math.atan2(target.y-Math.sin(a)*R*2-c.y,target.x-Math.cos(a)*R*2-c.x);
+      shoot(.71);
+      for(let i=0;i<1300&&ballsMoving;i++) physicsStep(physicsTick);
+    }
+    assert.equal(gameOver,true);
+    assert.equal(practice.score,3);
+    assert.equal(ballsMoving,false);
+    resetRack();
+    assert.equal(practice,null);
+    assert.equal(balls.length,16);
+  `);
+});
