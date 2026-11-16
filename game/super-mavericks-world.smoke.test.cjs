@@ -166,6 +166,10 @@ run('Red Runners turn enough approach speed into a complete loop and reward', ()
   assert(state.points>=750);
   assert(state.coins>=3);
 });
+run('Red Runners remain visibly attached after the speed burst', () => {
+  assert(engine.includes('function drawRunnerShoes()'));
+  assert(engine.includes('if(player.runners)drawRunnerShoes()'));
+});
 run('Maverick, Finn, and Bob costumes use one physical sprite atlas', () => {
   assert.deepEqual(Object.keys(game.spriteSheets), ['mav']);
   const atlas=game.spriteSheets.mav;
