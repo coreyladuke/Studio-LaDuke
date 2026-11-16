@@ -1,0 +1,14 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'prism.html'),'utf8');
+const js=fs.readFileSync(path.join(__dirname,'prism-opening.js'),'utf8');
+assert.match(html,/id="story"[^>]+aria-label=/,'the opening needs an accessible authored canvas');
+assert.match(html,/id="skip"/,'the story must remain skippable');
+assert.match(html,/prefers-reduced-motion:reduce/,'the opening must honor reduced motion');
+assert.match(js,/DURATION=31000/,'the authored opening should run about thirty seconds');
+for(const scene of ['sceneTune','sceneTheft','sceneChase','sceneReturn','sceneEnd'])assert.match(js,new RegExp('function '+scene+'\\('),'missing '+scene);
+assert.match(js,/frame\.addEventListener\('load'/,'the game handoff must wait for the iframe load');
+assert.match(js,/https:\/\/prism-pals-playtest\.vercel\.app\//,'the opening must launch the actual playable build');
+new Function(js);
+console.log('Prism Pals authored opening and game handoff: OK');

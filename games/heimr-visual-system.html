@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>HEIMR — Master Visual System</title>
+  <style>
+    :root{color-scheme:dark;--ink:#efe9d8;--muted:#aebdb5;--panel:#10211e;--edge:#38584e;--gold:#e4b56b;--blue:#48bfd1}
+    *{box-sizing:border-box}body{margin:0;background:#081310;color:var(--ink);font:15px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}main{width:min(1180px,calc(100% - 28px));margin:auto;padding:32px 0 70px}header{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:end;margin-bottom:22px}h1,h2,h3,p{margin-top:0}h1{font:800 clamp(28px,5vw,54px)/1 Georgia,serif;letter-spacing:.08em;margin-bottom:8px}h2{font:700 22px Georgia,serif;letter-spacing:.05em;margin:38px 0 15px}h3{font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px}.kicker,.meta{color:var(--muted);letter-spacing:.12em;text-transform:uppercase;font-size:11px}.badge{border:1px solid var(--edge);border-radius:999px;padding:8px 12px;color:#cfe1d7;white-space:nowrap}.hero,.scene-board{width:100%;display:block;border:1px solid var(--edge);border-radius:16px;box-shadow:0 24px 80px #0009}.caption{color:var(--muted);font-size:12px;margin:9px 4px 0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{background:linear-gradient(145deg,#12241f,#0d1917);border:1px solid var(--edge);border-radius:13px;padding:16px;overflow:hidden}.card img{width:100%;height:auto;display:block;image-rendering:pixelated}.character-master{background:#10221c;padding:14px;border-radius:11px}.specs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}.spec{border-top:2px solid var(--gold);padding-top:9px}.spec strong{display:block}.spec span{color:var(--muted);font-size:12px}.palette{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}.swatch{min-height:92px;border-radius:9px;padding:9px;display:flex;align-items:end;font-size:10px;font-weight:800;text-shadow:0 1px 3px #000}.motifs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.motif{background:#0b1715;border:1px solid var(--edge);border-radius:11px;overflow:hidden}.motif canvas{width:100%;aspect-ratio:16/10;display:block;image-rendering:pixelated;background:#07110f}.motif div{padding:11px}.motif strong{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.08em}.motif small{color:var(--muted)}.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.rule{border-left:3px solid var(--blue);padding:4px 0 4px 12px}.rule strong{display:block}.rule span{color:var(--muted);font-size:12px}@media(max-width:780px){header{grid-template-columns:1fr}.grid,.rules{grid-template-columns:1fr}.specs{grid-template-columns:repeat(2,1fr)}.motifs{grid-template-columns:repeat(2,minmax(0,1fr))}.palette{grid-template-columns:repeat(4,1fr)}}@media(max-width:480px){main{width:min(100% - 18px,1180px);padding-top:20px}.motifs{grid-template-columns:1fr}.palette{grid-template-columns:repeat(3,1fr)}}
+  </style>
+</head>
+<body>
+<main>
+  <header><div><p class="kicker">Studio LaDuke · Chapter One production reference</p><h1>HEIMR VISUAL SYSTEM</h1><p>One scale, one camera, one wet Southeast Alaska world.</p></div><div class="badge">VERSION 1 · PLAYABLE SOURCE LOCKED</div></header>
+
+  <img class="hero" src="assets/heimr/reference/heimr-promotional-master-v1.webp" alt="Maverick, Dad, Finn and Heimr in the rainy Southeast Alaska forest">
+  <p class="caption">Promotional mood reference. Character relationships are locked; gameplay scale is defined below.</p>
+
+  <h2>Playable character master</h2>
+  <section class="card">
+    <img class="character-master" src="assets/heimr/reference/chapter-one-character-master-v1.png" alt="Directional sprite sheets for Maverick, Dad, Finn and Heimr">
+    <div class="specs">
+      <div class="spec"><strong>Maverick · 60 px</strong><span>Child protagonist. Normal anatomy; never giant-headed.</span></div>
+      <div class="spec"><strong>Dad · 74 px</strong><span>Adult anchor. 23% taller at the same ground scale.</span></div>
+      <div class="spec"><strong>Finn · 48 px</strong><span>Low, quick trail companion with a readable trot.</span></div>
+      <div class="spec"><strong>Heimr · 52 px</strong><span>Small hatchling scale for Chapter One protection and trust.</span></div>
+    </div>
+  </section>
+
+  <h2>Gameplay translation</h2>
+  <div class="grid">
+    <div><img class="scene-board" src="assets/heimr/reference/gameplay-camera-target-v1.webp" alt="Three-quarter gameplay camera target"><p class="caption">Target: playable paths, visible collision edges, layered foregrounds and readable rain.</p></div>
+    <div><img class="scene-board" src="assets/heimr/reference/environment-scenes-v1.webp" alt="Six environment scene references"><p class="caption">Porch, deep forest, crossing, shore, home and future discovery-space language.</p></div>
+  </div>
+
+  <h2>Restricted world palette</h2>
+  <section class="palette" id="palette"></section>
+
+  <h2>Reusable environment motifs</h2>
+  <p class="caption">These are named crops from the shipped master worlds. Each motif carries separate collision and depth semantics so the picture and the physical world remain aligned.</p>
+  <section class="motifs" id="motifs"></section>
+
+  <h2>Production rules</h2>
+  <section class="rules">
+    <div class="rule"><strong>Ground scale wins</strong><span>Feet, paws and shadows share one world plane. Promotional art never overrides runtime proportions.</span></div>
+    <div class="rule"><strong>Visible blocker = physical blocker</strong><span>Trunks, rocks, walls, water and dense brush require matching collision geometry.</span></div>
+    <div class="rule"><strong>Depth is authored</strong><span>Foreground canopies, porch posts and rock faces join the actor Y-sort instead of behaving like wallpaper.</span></div>
+    <div class="rule"><strong>Abilities change the world</strong><span>Alder, bushes, rocks, bridges and caches have explicit locked and unlocked visual states.</span></div>
+    <div class="rule"><strong>Rain stays readable</strong><span>Cool ambient light and wet highlights add atmosphere without crushing characters into darkness.</span></div>
+    <div class="rule"><strong>No sword default</strong><span>Threats are answered through light, tools, movement, companions and story-specific abilities.</span></div>
+  </section>
+</main>
+<script>
+fetch('assets/heimr/visual-system.json').then(r=>r.json()).then(system=>{
+  const palette=document.getElementById('palette');
+  Object.entries(system.palette).forEach(([name,color])=>{const el=document.createElement('div');el.className='swatch';el.style.background=color;el.textContent=name+' · '+color;palette.appendChild(el)});
+  const motifs=document.getElementById('motifs'),images={};
+  Promise.all(Object.entries(system.worldSources).map(([name,src])=>new Promise(resolve=>{const im=new Image;im.onload=()=>{images[name]=im;resolve()};im.src='assets/heimr/'+src}))).then(()=>{
+    system.environmentMotifs.forEach(m=>{const card=document.createElement('article');card.className='motif';const canvas=document.createElement('canvas');canvas.width=320;canvas.height=200;const g=canvas.getContext('2d');g.imageSmoothingEnabled=false;const [x,y,w,h]=m.crop;g.drawImage(images[m.source],x,y,w,h,0,0,320,200);const copy=document.createElement('div');copy.innerHTML='<strong>'+m.id.replaceAll('-',' ')+'</strong><small>'+m.collision+' · '+m.depth+'</small>';card.append(canvas,copy);motifs.appendChild(card)});
+  });
+}).catch(error=>{document.getElementById('motifs').textContent='Visual-system data could not load: '+error});
+</script>
+</body>
+</html>
