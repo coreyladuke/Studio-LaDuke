@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#142426">
+  <title>Reflection Pond | Studio LaDuke</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #142426; color: #fff0d7; font: 1rem Georgia, serif; }
+    a, button { color: inherit; font: inherit; }
+    a:focus-visible, button:focus-visible { outline: 2px solid #ffda94; outline-offset: 4px; }
+    .pond {
+      position: relative;
+      isolation: isolate;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100vh;
+      min-height: 100svh;
+      padding: max(14px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right))
+        max(24px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+      background: #142426 url("assets/reflection-pond.webp") center 36% / cover no-repeat;
+    }
+    .pond::before {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(180deg, #091519d9, transparent 29% 56%, #081719e8);
+      content: "";
+      pointer-events: none;
+    }
+    .pond-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .pond-nav a, .pond-nav button {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      border: 0;
+      background: transparent;
+      padding: 0 4px;
+      text-decoration: underline;
+      text-underline-offset: .28em;
+      text-shadow: 0 1px 6px #101d21;
+      cursor: pointer;
+    }
+    .pond-nav [hidden] { display: none; }
+    .pond-title { margin: 0; text-align: center; align-self: start; padding-top: clamp(16px, 4svh, 44px); }
+    .pond-title p { margin: 0 0 .45rem; font-size: .875rem; letter-spacing: .18em; text-transform: uppercase; }
+    .pond-title h1 {
+      margin: 0;
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: normal;
+      line-height: 1;
+      text-shadow: 0 2px 24px #0c1a21, 0 1px 6px #122532;
+    }
+    .water {
+      position: absolute;
+      inset: 40% max(14px, env(safe-area-inset-right)) 24% max(14px, env(safe-area-inset-left));
+      overflow: hidden;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .water span {
+      position: absolute;
+      left: 50%;
+      top: 56%;
+      transform: translate(-50%, -50%);
+      padding: .55em .8em;
+      background: radial-gradient(ellipse, #0b2329d9 18%, #0b232900 73%);
+      text-shadow: 0 1px 3px #081416, 0 0 8px #081416, 0 0 14px #081416;
+      white-space: nowrap;
+    }
+    .water::after {
+      position: absolute;
+      left: var(--ripple-x, 50%);
+      top: var(--ripple-y, 56%);
+      width: min(48vw, 290px);
+      aspect-ratio: 3.6;
+      border: 1px solid #ffe7b9;
+      border-radius: 50%;
+      box-shadow: 0 0 0 7px #fff0ce55, 0 0 0 16px #f5d39b31, inset 0 0 20px #eedbbb55;
+      content: "";
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(.1);
+    }
+    .water.rippling::after { animation: spread 1.35s ease-out; }
+    @keyframes spread {
+      12% { opacity: .95; }
+      to { opacity: 0; transform: translate(-50%, -50%) scale(1.65); }
+    }
+    .reflection {
+      justify-self: center;
+      align-self: end;
+      min-height: 3.8rem;
+      max-width: 30rem;
+      margin: 0;
+      color: #fff0d7;
+      font-size: clamp(1.3rem, 3.4vw, 2.2rem);
+      line-height: 1.18;
+      text-align: center;
+      text-wrap: balance;
+      text-shadow: 0 2px 12px #051416;
+    }
+    @media (orientation: landscape) and (max-height: 520px) {
+      .pond { padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+      .pond-title { padding-top: 0; }
+      .pond-title h1 { font-size: clamp(2.2rem, 7.8vh, 3.5rem); }
+      .reflection { min-height: 2.8rem; font-size: clamp(1.25rem, 5vh, 1.65rem); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .water.rippling::after { animation-name: still-ripple; animation-duration: .65s; }
+      @keyframes still-ripple {
+        0%, 60% { opacity: .85; transform: translate(-50%, -50%) scale(.6); }
+        to { opacity: 0; transform: translate(-50%, -50%) scale(.6); }
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="pond">
+    <nav class="pond-nav" aria-label="Reflection Pond">
+      <a href="workshop.html">Back to the Workshop</a>
+      <button type="button" id="sound" aria-pressed="false" hidden>Forest sound</button>
+    </nav>
+    <header class="pond-title">
+      <p>Higher Ground</p>
+      <h1>Reflection Pond</h1>
+    </header>
+    <button class="water" type="button" id="water" aria-controls="reflection"><span>Touch the water</span></button>
+    <p id="reflection" class="reflection" role="status"></p>
+  </main>
+  <!-- Higher Ground’s Stillwater mix uses NPS Bartlett Cove field audio and the CC0 Forest Stream loop by Sound Effects Library. -->
+  <audio id="forest" src="audio/reflection-pond.mp3" preload="none" loop></audio>
+  <script>
+    const water = document.getElementById("water");
+    const reflection = document.getElementById("reflection");
+    water.addEventListener("click", event => {
+      if (event.detail > 0) {
+        const bounds = water.getBoundingClientRect();
+        water.style.setProperty("--ripple-x", `${event.clientX - bounds.left}px`);
+        water.style.setProperty("--ripple-y", `${event.clientY - bounds.top}px`);
+      } else {
+        water.style.removeProperty("--ripple-x");
+        water.style.removeProperty("--ripple-y");
+      }
+      water.classList.remove("rippling");
+      void water.offsetWidth;
+      water.classList.add("rippling");
+      if (!reflection.textContent) reflection.textContent = "What are you feeling right now, before you try to explain why?";
+    });
+
+    const sound = document.getElementById("sound");
+    const forest = document.getElementById("forest");
+    sound.hidden = false;
+    sound.addEventListener("click", async () => {
+      if (!forest.paused) {
+        forest.pause();
+        return;
+      }
+      try {
+        await forest.play();
+      } catch {
+        sound.setAttribute("aria-pressed", "false");
+      }
+    });
+    forest.addEventListener("play", () => sound.setAttribute("aria-pressed", "true"));
+    forest.addEventListener("pause", () => sound.setAttribute("aria-pressed", "false"));
+    window.addEventListener("pagehide", () => forest.pause());
+  </script>
+</body>
+</html>
