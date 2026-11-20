@@ -5,7 +5,7 @@ const html=fs.readFileSync(path.join(__dirname,'heimr.html'),'utf8');
 const start=html.indexOf('const trailLine='),end=html.indexOf('function update(){',start);
 assert.ok(start>=0&&end>start,'world collision source should be present');
 const collisionSource=html.slice(start,end);
-const makeWorld=(bridgeFixed)=>new Function('bridgeFixed','brushCleared','cacheOpened','last','world',collisionSource+'\nreturn blocked;')(bridgeFixed,false,false,'forest',{w:3072,h:2048});
+const makeWorld=(bridgeFixed,phase='search')=>new Function('bridgeFixed','brushCleared','cacheOpened','last','world','phase',collisionSource+'\nreturn blocked;')(bridgeFixed,false,false,'forest',{w:3072,h:2048},phase);
 function reachable(blocked,target,radius=65){
   const step=8,seen=new Set(['360,730']),queue=[[360,730]],dirs=[[8,0],[-8,0],[0,8],[0,-8]];
   let i=0;

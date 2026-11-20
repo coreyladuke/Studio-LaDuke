@@ -14,7 +14,7 @@
 .game-status{pointer-events:none;position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .action-pad button.primary.dialog-next{color:#17211c;background:rgba(230,193,111,.96);border-color:#fff0bd;box-shadow:0 0 0 3px rgba(236,197,111,.2),0 4px 18px rgba(0,0,0,.38)}.action-pad button.primary.dialog-next small{color:#26342c}
 @media(max-width:900px),(hover:none),(pointer:coarse){body{background:#10221c}.stage{background:radial-gradient(ellipse at 50% 43%,#29463a 0,#172d25 48%,#0d1c18 100%)}.stage:before{background:radial-gradient(ellipse at center,transparent 58%,rgba(0,0,0,.2))}}
-@media(max-width:600px) and (orientation:portrait){canvas{height:min(54%,112.5vw);width:100%;object-fit:cover;object-position:center}.stage:before{background:linear-gradient(180deg,transparent 0 54%,rgba(13,28,24,.16) 62%,rgba(13,28,24,.78) 100%)}.joystick{left:max(15px,env(safe-area-inset-left));bottom:max(8%,calc(env(safe-area-inset-bottom) + 10px))}.dpad,.action-pad{bottom:max(8%,calc(env(safe-area-inset-bottom) + 10px))}.action-pad{right:max(15px,env(safe-area-inset-right))}}
+@media(max-width:600px) and (orientation:portrait){canvas{height:min(64%,112.5vw,calc(100% - 176px));width:100%;object-fit:cover;object-position:center}.stage:before{background:linear-gradient(180deg,transparent 0 54%,rgba(13,28,24,.16) 62%,rgba(13,28,24,.78) 100%)}.joystick{left:max(15px,env(safe-area-inset-left));bottom:max(8%,calc(env(safe-area-inset-bottom) + 10px))}.dpad,.action-pad{bottom:max(8%,calc(env(safe-area-inset-bottom) + 10px))}.action-pad{right:max(15px,env(safe-area-inset-right))}}
 .stage:has(canvas[data-room="home"]){background:radial-gradient(ellipse at 50% 40%,#302218,#110c08 76%)}
 .stage:has(canvas[data-room="home"])::before{background:none}
 </style></head><body><div class="launch-overlay" id="launchOverlay" role="dialog" aria-label="HEIMR game opening">
@@ -37,37 +37,49 @@ walkSheets.maverick.src='assets/heimr/maverick-walk.png';walkSheets.dad.src='ass
 const assetLoadStarted=performance.now(),criticalAssets=[art.forest,walkSheets.maverick,walkSheets.dad,walkSheets.finn,walkSheets.heimr];
 const criticalAssetsReady=()=>criticalAssets.every(im=>im.complete&&im.naturalWidth)&&(last!=='home'||(art.home.complete&&art.home.naturalWidth));
 const SPRITE_CELL=72;
+// Shoulder or body center and ground contact in each authored cell, by direction.
+const actorArt={
+  maverick:{height:104,sourceHeight:62,anchors:[[40,67,36,65,30,67],[41,66,36,66,32,66],[40,65,34,65,30,65],[40,66,36,66,32,66]]},
+  dad:{height:129,sourceHeight:59,anchors:[[39,65,35,65,31,65],[40,65,36,65,32,65],[39,65,34,65,30,65],[40,64,36,64,32,64]]},
+  finn:{height:48,sourceHeight:55,anchors:[[36,65,35,60,34,65],[36,64,37,63,36,64],[36,58,33,55,34,58],[36,58,38,56,36,58]]},
+  heimr:{height:49,sourceHeight:48,anchors:[[34,58,32,58,29,60],[34,60,32,60,30,60],[39,56,38,56,36,55],[37,52,34,52,33,53]]}
+};
 if(typeof document.createElement==='function')Object.entries(walkSheets).forEach(([name,im])=>{const hydrate=()=>{characterArt[name]=[0,1,2,3].map(row=>{const c=document.createElement('canvas');c.width=c.height=SPRITE_CELL;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.drawImage(im,SPRITE_CELL,row*SPRITE_CELL,SPRITE_CELL,SPRITE_CELL,0,0,SPRITE_CELL,SPRITE_CELL);return c})};if(typeof im.addEventListener==='function')im.addEventListener('load',hydrate);else im.onload=hydrate});
 const player={x:360,y:730,dir:0,walk:0,moving:false};
 const finn={x:418,y:738,dir:0,walk:0,moving:false};
 const dad={x:318,y:725,dir:0};
 const dragon={x:1265,y:188,dir:3,walk:0,moving:false,found:false,following:false};
-const camera={x:0,y:0,zoom:1};
-let cabinViewWidth=portraitView.right-portraitView.left;
-function measureCabinView(){
+const camera={x:0,y:0,zoom:1,room:null};
+let portraitCanvasWidth=portraitView.right-portraitView.left;
+function measurePlayfield(){
   const box=canvas.getBoundingClientRect();
-  if(box.width&&box.height)cabinViewWidth=Math.min(W,box.width*H/box.height);
+  if(box.width&&box.height)portraitCanvasWidth=Math.min(W,box.width*H/box.height);
 }
 const screenX=x=>(x-camera.x)*camera.zoom;
 const screenY=y=>(y-camera.y)*camera.zoom;
 
+function clamp(value,lo,hi){return Math.max(lo,Math.min(hi,value))}
+
 function updateCamera(){
-  const portrait=portraitScreen();
-  if(last==='home'){
-    const viewWidth=portrait?cabinViewWidth:W;
-    const top=portrait?98:80;
-    camera.zoom=Math.min((viewWidth-8)/(world.w/2),(H-top)/(world.h/2));
-    camera.x=(world.w/2-W/camera.zoom)/2;
-    camera.y=(world.h/2-(H+top)/camera.zoom)/2;
-    return;
-  }
-  camera.zoom=portrait?1.15:1;
-  const width=W/camera.zoom,height=H/camera.zoom;
-  const inset=portrait?portraitView.left/camera.zoom:0;
-  const footLine=.64;
-  camera.x=Math.max(-inset,Math.min(world.w/2-width+inset,player.x-width/2));
-  camera.y=Math.max(0,Math.min(world.h/2-height,player.y-height*footLine));
+  const portrait=portraitScreen(),indoors=last==='home';
+  const viewWidth=portrait?portraitCanvasWidth:W;
+  const zoom=indoors ? (portrait ? .72 : .67) : (portrait ? .91 : .84);
+  const width=W/zoom,height=H/zoom;
+  const inset=(W-viewWidth)/(2*zoom);
+  const focusX=player.x-width/2;
+  const focusY=player.y-height*.65;
+  const snap=camera.room!==last||camera.zoom!==zoom||
+    Math.abs(focusX-camera.x)>width*.39||Math.abs(focusY-camera.y)>height*.45;
+  const marginX=viewWidth*.115/zoom,marginY=height*.073;
+  const targetX=snap?focusX:clamp(camera.x,focusX-marginX,focusX+marginX);
+  const targetY=snap?focusY:clamp(camera.y,focusY-marginY,focusY+marginY);
+  const follow=snap?1:.33;
+  camera.x=clamp(camera.x+(targetX-camera.x)*follow,-inset,world.w/2-width+inset);
+  camera.y=clamp(camera.y+(targetY-camera.y)*follow,0,world.h/2-height);
+  camera.zoom=zoom;
+  camera.room=last;
 }
+
 let keys={},pressed={},frame=0,phase='briefing',dialog=null,dialogIndex=0,finLead=false,routeIndex=0,foodFound=false,completed=false,showMap=false,paused=false;
 let inventory={tokens:0,blanket:false,bowl:false,extinguisher:false,prepared:false,starTin:false,headlamp:false,starLamp:false,campHatchet:false,shardWarmth:false};
 let wonderTalk=0,introStep=0,introFrame=0,introStartedAt=0,introSeen=false,pickupFx=0,clueFx=0,bridgeFx=0,actorAction=0,debugCollision=false;
@@ -134,7 +146,7 @@ function resetJoystick(){analog.x=0;analog.y=0;analog.pointer=null;if(joyArea){j
 if(joyArea&&touchPanel&&window.PointerEvent){
   const track=joyArea.querySelector('.joystick-track'),knob=joyArea.querySelector('.joystick-knob');
   const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
-  const moveStick=e=>{if(e.pointerId!==analog.pointer)return;const box=joyArea.getBoundingClientRect(),dx=e.clientX-box.left-analog.cx,dy=e.clientY-box.top-analog.cy,d=Math.hypot(dx,dy),m=d>8?Math.min(1,d/43):0;analog.x=d?dx/d*m:0;analog.y=d?dy/d*m:0;knob.style.transform='translate(-50%,-50%) translate('+(analog.x*43)+'px,'+(analog.y*43)+'px)'};
+  const moveStick=e=>{if(e.pointerId!==analog.pointer)return;const box=joyArea.getBoundingClientRect(),dx=e.clientX-box.left-analog.cx,dy=e.clientY-box.top-analog.cy,d=Math.hypot(dx,dy),m=clamp((d-8)/35,0,1);analog.x=d?dx/d*m:0;analog.y=d?dy/d*m:0;knob.style.transform='translate(-50%,-50%) translate('+(analog.x*43)+'px,'+(analog.y*43)+'px)'};
   joyArea.addEventListener('pointerdown',e=>{if(analog.pointer!==null)return;e.preventDefault();const box=joyArea.getBoundingClientRect();analog.pointer=e.pointerId;analog.cx=clamp(e.clientX-box.left,54,Math.max(54,box.width-54));analog.cy=clamp(e.clientY-box.top,54,Math.max(54,box.height-54));track.style.left=analog.cx+'px';track.style.top=analog.cy+'px';joyArea.classList.add('active');joyArea.setPointerCapture?.(e.pointerId);moveStick(e)},{passive:false});
   joyArea.addEventListener('pointermove',e=>{if(e.pointerId===analog.pointer){e.preventDefault();moveStick(e)}},{passive:false});
   for(const kind of ['pointerup','pointercancel','lostpointercapture'])joyArea.addEventListener(kind,e=>{if(e.pointerId===analog.pointer){e.preventDefault();resetJoystick()}},{passive:false});
@@ -270,24 +282,75 @@ function enterCabin(){
   toastT=0;
 }
 
-function blocked(x,y){if(x<35||x>world.w/2-35||y<45||y>world.h/2-45)return true;if(last==='home')return cabinBlocked(x,y);if(last==='forest'){if(sceneCollisions.some(o=>sceneBlocksPoint(x,y,o)))return true;if(!cacheOpened&&Math.hypot(x-555,y-530)<43)return true}return false}
-function update(){frame++;player.moving=false;finn.moving=false;dragon.moving=false;let dx=0,dy=0;if(phase==='intro'){if(!introStartedAt)introStartedAt=performance.now();let elapsed=performance.now()-introStartedAt;introFrame=elapsed/16.667;if(elapsed>4800||pressed.e||pressed.enter)advanceIntro()}else if(paused){if(pressed.e)paused=false;if(pressed.r)reset()}else if(dialog?.choices){if(pressed.arrowup||pressed.w)dialogIndex=(dialogIndex+dialog.choices.length-1)%dialog.choices.length;if(pressed.arrowdown||pressed.s)dialogIndex=(dialogIndex+1)%dialog.choices.length;if(analog.pointer!==null&&Math.abs(analog.y)>.6&&performance.now()-lastJoyChoiceAt>300){dialogIndex=(dialogIndex+(analog.y>0?1:-1)+dialog.choices.length)%dialog.choices.length;lastJoyChoiceAt=performance.now()}if(pressed.e)closeDialog()}else if(dialog){if(pressed.e)closeDialog()}else if(!showMap){if(keys.w||keys.arrowup)dy--;if(keys.s||keys.arrowdown)dy++;if(keys.a||keys.arrowleft)dx--;if(keys.d||keys.arrowright)dx++;if(analog.pointer!==null){dx=analog.x;dy=analog.y}if(dx||dy){const n=Math.hypot(dx,dy),strength=Math.min(1,n);dx/=n;dy/=n;player.dir=Math.atan2(dy,dx);player.walk+=.18*strength;player.moving=true;let speed=1.75*strength,nx=player.x+dx*speed,ny=player.y+dy*speed;if(!blocked(nx,player.y))player.x=nx;if(!blocked(player.x,ny))player.y=ny;}
+function blocked(x,y){if(x<35||x>world.w/2-35||y<45||y>world.h/2-45)return true;if(last==='home')return cabinBlocked(x,y);if(last==='forest'){if(sceneCollisions.some(o=>sceneBlocksPoint(x,y,o)))return true;if(phase==='return'&&!cacheOpened&&Math.hypot(x-555,y-530)<43)return true}return false}
+const simulationStep=1/60;
+const cabinSpeed=236,trailSpeed=212;
+function movePlayer(dx,dy){
+  const inputLength=Math.hypot(dx,dy);
+  if(!inputLength)return;
+  const stride=(last==='home'?cabinSpeed:trailSpeed)*simulationStep/Math.max(1,inputLength);
+  const oldX=player.x,oldY=player.y;
+  player.dir=Math.atan2(dy,dx);
+  if(!blocked(oldX+dx*stride,oldY))player.x+=dx*stride;
+  if(!blocked(player.x,oldY+dy*stride))player.y+=dy*stride;
+  const travelled=Math.hypot(player.x-oldX,player.y-oldY);
+  player.moving=travelled>0;
+  player.walk+=travelled/38;
+}
+
+function update(){frame++;player.moving=false;finn.moving=false;dragon.moving=false;let dx=0,dy=0;if(phase==='intro'){if(!introStartedAt)introStartedAt=performance.now();let elapsed=performance.now()-introStartedAt;introFrame=elapsed/16.667;if(elapsed>4800||pressed.e||pressed.enter)advanceIntro()}else if(paused){if(pressed.e)paused=false;if(pressed.r)reset()}else if(dialog?.choices){if(pressed.arrowup||pressed.w)dialogIndex=(dialogIndex+dialog.choices.length-1)%dialog.choices.length;if(pressed.arrowdown||pressed.s)dialogIndex=(dialogIndex+1)%dialog.choices.length;if(analog.pointer!==null&&Math.abs(analog.y)>.6&&performance.now()-lastJoyChoiceAt>300){dialogIndex=(dialogIndex+(analog.y>0?1:-1)+dialog.choices.length)%dialog.choices.length;lastJoyChoiceAt=performance.now()}if(pressed.e)closeDialog()}else if(dialog){if(pressed.e)closeDialog()}else if(showMap){if(pressed.m||pressed.e)showMap=false}else{
+if(keys.w||keys.arrowup)dy--;
+if(keys.s||keys.arrowdown)dy++;
+if(keys.a||keys.arrowleft)dx--;
+if(keys.d||keys.arrowright)dx++;
+if(analog.pointer!==null){dx=analog.x;dy=analog.y}
+movePlayer(dx,dy);
 if(pressed.e)actionKey('e');if(pressed.f)actionKey('f');if(pressed.m)actionKey('m');}
-if(phase==='search'&&finLead){let [tx,ty]=scents[Math.min(routeIndex,scents.length-1)],d=Math.hypot(tx-finn.x,ty-finn.y);if(d>3){finn.dir=Math.atan2(ty-finn.y,tx-finn.x);finn.x+=(tx-finn.x)/d*1.9;finn.y+=(ty-finn.y)/d*1.9;finn.walk+=.16;finn.moving=true}if(d<28&&routeIndex<scents.length-1)routeIndex++;}
-else if(last==='forest'&&!finLead){let tx=player.x-22,ty=player.y+17,d=Math.hypot(tx-finn.x,ty-finn.y);if(d>20){finn.dir=Math.atan2(ty-finn.y,tx-finn.x);finn.x+=(tx-finn.x)/d*Math.min(2,d*.06);finn.y+=(ty-finn.y)/d*Math.min(2,d*.06);finn.walk+=.12;finn.moving=true}}
-if(phase==='return'){dragon.dir=Math.atan2(player.y+12-dragon.y,player.x-28-dragon.x);dragon.x+=(player.x-28-dragon.x)*.025;dragon.y+=(player.y+12-dragon.y)*.025;dragon.walk+=.1;dragon.moving=true;finn.dir=Math.atan2(player.y+25-finn.y,player.x-48-finn.x);finn.x+=(player.x-48-finn.x)*.04;finn.y+=(player.y+25-finn.y)*.04;finn.walk+=.12;finn.moving=true}
+if(phase==='search'&&finLead){let [tx,ty]=scents[Math.min(routeIndex,scents.length-1)],d=Math.hypot(tx-finn.x,ty-finn.y);if(d>3){finn.dir=Math.atan2(ty-finn.y,tx-finn.x);finn.x+=(tx-finn.x)/d*Math.min(3.45,d);finn.y+=(ty-finn.y)/d*Math.min(3.45,d);finn.walk+=.2;finn.moving=true}if(d<28&&routeIndex<scents.length-1)routeIndex++;}
+else if(last==='forest'&&!finLead){let tx=player.x-22,ty=player.y+17,d=Math.hypot(tx-finn.x,ty-finn.y);if(d>20){finn.dir=Math.atan2(ty-finn.y,tx-finn.x);finn.x+=(tx-finn.x)/d*Math.min(3.85,d*.085);finn.y+=(ty-finn.y)/d*Math.min(3.85,d*.085);finn.walk+=.16;finn.moving=true}}
+if(phase==='return'){dragon.dir=Math.atan2(player.y+12-dragon.y,player.x-28-dragon.x);dragon.x+=(player.x-28-dragon.x)*.06;dragon.y+=(player.y+12-dragon.y)*.06;dragon.walk+=.1;dragon.moving=true;finn.dir=Math.atan2(player.y+25-finn.y,player.x-48-finn.x);finn.x+=(player.x-48-finn.x)*.085;finn.y+=(player.y+25-finn.y)*.085;finn.walk+=.12;finn.moving=true}
 if(phase==='attack'&&!dialog){dragon.x+=(player.x-30-dragon.x)*.045;dragon.y+=(player.y+18-dragon.y)*.045}
 if(phase==='attack'&&!dialog){if(lampCooldown>0)lampCooldown--;if(lampFlash>0)lampFlash--;if(smoke>0)smoke--;if(enemyStun>0)enemyStun--;else if(smoke===0&&!shadowRepelled){let tx=player.x,ty=player.y,d=Math.hypot(tx-enemy.x,ty-enemy.y);if(d>1){enemy.x+=(tx-enemy.x)/d*1.3;enemy.y+=(ty-enemy.y)/d*1.3}if(invuln>0)invuln--;else if(d<34){health--;invuln=90;player.x=390;player.y=730;if(health<=0){health=3;enemy={x:500,y:630};extinguisherUsed=false;shadowHits=0;shadowRepelled=false;objective='Hold the shadow back with three star-lamp pulses (0/3), then reach the crossing.';toastMsg('Dad pulls you behind the porch. The star lamp has to build all three pulses again.')}}}
 if(smoke===1)toastMsg('The white cloud breaks apart. Move!')}
 if(['briefing','gear','meetFinn'].includes(phase)&&Math.hypot(player.x-dad.x,player.y-dad.y)<150)dad.dir=Math.atan2(player.y-dad.y,player.x-dad.x);if(pickupFx>0)pickupFx--;if(clueFx>0)clueFx--;if(bridgeFx>0)bridgeFx--;if(actorAction>0)actorAction--;if(toastT>0)toastT--;if(pressed.e){};updateCamera();syncGameStatus();pressed={};saveTick();}
 let lastGameStatus='';function syncGameStatus(){const next=`Phase ${phase}. ${objective} ${dialog?'Dialogue open.':''} ${completed?'Chapter One complete.':''}`.trim();if(next!==lastGameStatus){lastGameStatus=next;canvas.dataset.room=last;gameStatus.textContent=next;gameStatus.dataset.phase=phase;gameStatus.dataset.completed=String(completed)}}
 let saveCount=0;function saveTick(){if(phase!=='intro'&&++saveCount%240===0)save()}
-function R(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(x,y,w,h)}function E(x,y,rx,ry,c){ctx.fillStyle=c;ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,6.283);ctx.fill()}function portraitScreen(){return typeof innerWidth!=='undefined'&&innerWidth<=600&&innerHeight>innerWidth}function drawLitImage(im,...args){ctx.save();ctx.filter='brightness(1.14) saturate(1.08)';ctx.drawImage(im,...args);ctx.restore()}function groundShadow(x,y,rx,ry){E(x,y+7,rx,ry,'rgba(8,18,16,.24)');E(x,y+6,rx*.56,Math.max(1,ry*.42),'rgba(3,10,9,.2)')}
-function directionFrame(angle=player.dir){if(Math.abs(Math.sin(angle))>.707)return Math.sin(angle)<0?1:0;return Math.cos(angle)<0?2:3}function drawCharacter(name,x,y,h,frame=0){const im=characterArt[name]?.[frame]||characterArt[name]?.[0];if(!im||!im.complete||!im.naturalWidth)return false;const w=h*im.naturalWidth/im.naturalHeight;ctx.drawImage(im,x-w/2,y+7-h,w,h);return true}function walkColumn(walk,moving){return moving?[0,1,2,1][Math.floor(walk*2)%4]:1}function drawWalkSheet(name,x,y,size,dir,walk,moving){const im=walkSheets[name];if(!im||!im.complete||!im.naturalWidth)return false;const row=directionFrame(dir),col=walkColumn(walk,moving);if(last==='home')size*=1.5;ctx.drawImage(im,col*SPRITE_CELL,row*SPRITE_CELL,SPRITE_CELL,SPRITE_CELL,x-size/2,y+8-size,size,size);return true}
-function playerSprite(x,y){groundShadow(x,y,9,2.4);const idle=player.moving?0:Math.sin(frame*.075)*.65,act=actorAction>0?Math.sin((24-actorAction)*.22)*.035:0,hurt=phase==='attack'&&invuln>55?.08:0;ctx.save();ctx.translate(x,y+idle);ctx.rotate(hurt||act);if(pickupFx>58)ctx.scale(.97,1.035);if(!drawWalkSheet('maverick',0,0,60,player.dir,player.walk,player.moving)&&!drawCharacter('maverick',0,0,46,directionFrame())){R(-8,-14,16,13,'#cb762d');R(-9,-23,18,11,'#302a25');R(-6,-22,13,9,'#d5a27d')}ctx.restore()}
-function dadSprite(x,y){groundShadow(x,y,11,2.8);const talking=dialog&&['briefing','gear'].includes(phase),bob=Math.sin(frame*.055)*.45;ctx.save();ctx.translate(0,bob);if(!drawWalkSheet('dad',x,y,74,dad.dir,0,false)&&!drawCharacter('dad',x,y,56,directionFrame(dad.dir)))R(x-10,y-17,20,28,'#314e4a');if(talking&&phase==='gear'){const side=Math.cos(dad.dir)<0?-1:1;ctx.strokeStyle='#273d39';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(x+side*4,y-40);ctx.lineTo(x+side*17,y-47);ctx.stroke();E(x+side*19,y-48,3,3,'#c99b78')}ctx.restore()}
-function finnSprite(x,y){groundShadow(x,y,9,2.2);const sniff=finLead&&!finn.moving,bob=finn.moving?0:Math.sin(frame*.11)*.5;ctx.save();ctx.translate(x,y-1+bob);if(sniff)ctx.rotate(Math.sin(frame*.07)*.025);if(!drawWalkSheet('finn',0,0,48,finn.dir,finn.walk,finn.moving)&&!drawCharacter('finn',0,0,30,directionFrame(finn.dir)))R(-10,-6,20,10,'#e9d9bb');if(sniff){ctx.strokeStyle='rgba(235,217,164,.48)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(13,-16,5,4.8,6.1);ctx.arc(17,-17,8,4.8,6.1);ctx.stroke()}ctx.restore()}
-function dragonSprite(x,y){let glow=2+Math.sin(frame*.1)*2;E(x,y+6,15+glow,5,'rgba(58,203,193,.18)');groundShadow(x,y,11,2.7);if(!drawWalkSheet('heimr',x,y,52,dragon.dir,dragon.walk,dragon.moving)&&!drawCharacter('heimr',x,y,36,directionFrame(dragon.dir))){R(x-13,y-9,25,17,'#263e4b');R(x-6,y-14,12,5,'#f4bd50')}}function enemySprite(x,y){groundShadow(x,y,27,6);if(!drawCharacter('enemy',x,y,60,0)){ctx.save();ctx.translate(x,y);ctx.scale(1.7,1.7);dragonSprite(0,0);ctx.restore()}}
+function R(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(x,y,w,h)}function E(x,y,rx,ry,c){ctx.fillStyle=c;ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,6.283);ctx.fill()}function portraitScreen(){return typeof innerWidth!=='undefined'&&innerWidth<=600&&innerHeight>innerWidth}function drawLitImage(im,...args){ctx.save();ctx.filter='brightness(1.08) saturate(1.04)';ctx.drawImage(im,...args);ctx.restore()}function groundShadow(x,y,rx,ry){E(x,y+3,rx,ry,'rgba(8,18,16,.24)');E(x,y+2,rx*.56,Math.max(1,ry*.42),'rgba(3,10,9,.2)')}
+function directionFrame(angle=player.dir){if(Math.abs(Math.sin(angle))>.707)return Math.sin(angle)<0?1:0;return Math.cos(angle)<0?2:3}function drawCharacter(name,x,y,h,frame=0){const im=characterArt[name]?.[frame]||characterArt[name]?.[0];if(!im||!im.complete||!im.naturalWidth)return false;const w=h*im.naturalWidth/im.naturalHeight;ctx.drawImage(im,x-w/2,y+7-h,w,h);return true}function walkColumn(walk,moving){return moving?[0,1,2,1][Math.floor(walk*2)%4]:1}function drawWalkSheet(name,x,y,dir,walk,moving){
+  const im=walkSheets[name];
+  if(!im||!im.complete||!im.naturalWidth)return false;
+  const row=directionFrame(dir),col=walkColumn(walk,moving);
+  const {height,sourceHeight,anchors}=actorArt[name];
+  const scale=height/sourceHeight;
+  const anchor=anchors[row];
+  const size=SPRITE_CELL*scale;
+  ctx.drawImage(im,col*SPRITE_CELL,row*SPRITE_CELL,SPRITE_CELL,SPRITE_CELL,
+    x-anchor[col*2]*scale,y-anchor[col*2+1]*scale,size,size);
+  return true;
+}
+
+function playerSprite(x,y){
+  groundShadow(x,y,14,3.3);
+  const step=player.walk*Math.PI;
+  const lift=player.moving?1.4*Math.abs(Math.sin(step)):0;
+  const strideLean=player.moving?Math.cos(player.dir)*.026:0;
+  const useLean=actorAction>0?Math.sin((24-actorAction)*.22)*.045:0;
+  const hurt=phase==='attack'&&invuln>55?.08:0;
+  ctx.save();
+  ctx.translate(x,y-lift);
+  ctx.rotate(hurt||useLean||strideLean);
+  if(!player.moving)ctx.scale(1,1+Math.sin(frame*.075)*.009);
+  if(pickupFx>58)ctx.scale(.97,1.035);
+  if(!drawWalkSheet('maverick',0,0,player.dir,player.walk,player.moving)&&
+    !drawCharacter('maverick',0,0,actorArt.maverick.height,directionFrame())){
+    ctx.scale(1.6,1.6);
+    R(-8,-14,16,13,'#cb762d');R(-9,-23,18,11,'#302a25');R(-6,-22,13,9,'#d5a27d');
+  }
+  ctx.restore();
+}
+function dadSprite(x,y){groundShadow(x,y,17,3.8);const talking=dialog&&['briefing','gear'].includes(phase),bob=Math.sin(frame*.055)*.45;ctx.save();ctx.translate(0,bob);if(!drawWalkSheet('dad',x,y,dad.dir,0,false)&&!drawCharacter('dad',x,y,56,directionFrame(dad.dir)))R(x-10,y-17,20,28,'#314e4a');if(talking&&phase==='gear'){const side=Math.cos(dad.dir)<0?-1:1;ctx.strokeStyle='#273d39';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(x+side*4,y-40);ctx.lineTo(x+side*17,y-47);ctx.stroke();E(x+side*19,y-48,3,3,'#c99b78')}ctx.restore()}
+function finnSprite(x,y){groundShadow(x,y,9,2.2);const sniff=finLead&&!finn.moving,bob=finn.moving?0:Math.sin(frame*.11)*.5;ctx.save();ctx.translate(x,y-1+bob);if(sniff)ctx.rotate(Math.sin(frame*.07)*.025);if(!drawWalkSheet('finn',0,0,finn.dir,finn.walk,finn.moving)&&!drawCharacter('finn',0,0,30,directionFrame(finn.dir)))R(-10,-6,20,10,'#e9d9bb');if(sniff){ctx.strokeStyle='rgba(235,217,164,.48)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(13,-16,5,4.8,6.1);ctx.arc(17,-17,8,4.8,6.1);ctx.stroke()}ctx.restore()}
+function dragonSprite(x,y){let glow=2+Math.sin(frame*.1)*2;E(x,y+6,15+glow,5,'rgba(58,203,193,.18)');groundShadow(x,y,11,2.7);if(!drawWalkSheet('heimr',x,y,dragon.dir,dragon.walk,dragon.moving)&&!drawCharacter('heimr',x,y,36,directionFrame(dragon.dir))){R(x-13,y-9,25,17,'#263e4b');R(x-6,y-14,12,5,'#f4bd50')}}function enemySprite(x,y){groundShadow(x,y,27,6);if(!drawCharacter('enemy',x,y,60,0)){ctx.save();ctx.translate(x,y);ctx.scale(1.7,1.7);dragonSprite(0,0);ctx.restore()}}
 function drawForestTiles(){const t=16,x0=Math.max(0,Math.floor(camera.x/t)-1),x1=Math.min(95,Math.ceil((camera.x+W/camera.zoom)/t)+1),y0=Math.max(0,Math.floor(camera.y/t)-1),y1=Math.min(63,Math.ceil((camera.y+H/camera.zoom)/t)+1);for(let gy=y0;gy<=y1;gy++)for(let gx=x0;gx<=x1;gx++){let x=gx*t,y=gy*t,cx=x+8,cy=y+8,h=(gx*92837111^gy*689287499)>>>0,dw=lineDistance(cx,cy,creekLine),dp=lineDistance(cx,cy,trailLine);if(dw<34){R(x,y,t,t,h%3?'#174956':'#1b5260');if(h%4===0){R(x+2,y+4,7,2,'#347c83');R(x+10,y+11,4,2,'#2c6d78')}if(h%7===0)R(x+6,y+9,3,1,'#86aaa0');}else if(dw<48){R(x,y,t,t,'#66745c');R(x+2,y+3,4,2,'#9b9a76');R(x+10,y+10,4,3,'#536257')}else if(dp<25){R(x,y,t,t,h%4?'#806846':'#907951');R(x+2,y+2,12,2,'#a38a5e');if(h%3===0)R(x+5,y+9,3,2,'#665337');if(h%5===0)R(x+11,y+12,2,2,'#b3a071')}else{R(x,y,t,t,['#395943','#3e6046','#456448','#3a5b40'][h%4]);if(h%3===0){R(x+3,y+4,3,2,'#527449');R(x+10,y+10,2,2,'#2f4e3a')}if(h%8===0)R(x+6,y+12,2,2,'#c2ad61')}}}
 function drawTerrainAccents(){ctx.save();ctx.globalAlpha=.76;for(const [x,y,rx,ry] of [[548,659,20,5],[672,559,17,4],[744,510,14,3],[928,394,16,4],[1042,319,13,3]]){E(x,y,rx,ry,'#315c59');ctx.strokeStyle='#86a59a';ctx.lineWidth=.7;ctx.beginPath();ctx.arc(x,y,rx*.65,.18,2.5);ctx.stroke()}for(const [x,y] of [[535,676],[580,646],[655,577],[760,505],[905,420]]){R(x-5,y-2,10,3,'#918365');R(x-3,y-4,6,2,'#b0a17b')}ctx.restore()}
 function drawDebugCollision(){if(!debugCollision||last!=='forest')return;ctx.save();ctx.lineWidth=1;ctx.font='bold 6px system-ui';for(const o of sceneCollisions){const active=collisionActive(o);ctx.strokeStyle=active?'#ff6b6b':'#5ad6a8';ctx.fillStyle=active?'rgba(255,66,76,.12)':'rgba(66,220,165,.08)';if(o.type==='rect'){ctx.fillRect(o.x1,o.y1,o.x2-o.x1,o.y2-o.y1);ctx.strokeRect(o.x1+.5,o.y1+.5,o.x2-o.x1-1,o.y2-o.y1-1);ctx.fillStyle='#fff0c4';ctx.fillText(o.motif,o.x1+3,o.y1+8)}else if(o.type==='circle'){ctx.beginPath();ctx.arc(o.x,o.y,o.r+10,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle='#fff0c4';ctx.fillText(o.motif,o.x-o.r,o.y-o.r-4)}else if(o.type==='line'){ctx.beginPath();creekLine.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.strokeStyle='#66d8ff';ctx.lineWidth=o.radius*2;ctx.globalAlpha=.15;ctx.stroke();ctx.globalAlpha=1;ctx.lineWidth=1;ctx.strokeStyle='#a9efff';ctx.stroke()}}ctx.strokeStyle='#fff28a';ctx.strokeRect(player.x-9,player.y-7,18,15);ctx.beginPath();ctx.arc(player.x,player.y,70,0,Math.PI*2);ctx.strokeStyle='rgba(255,242,138,.55)';ctx.stroke();const target=missionTarget();if(target){ctx.beginPath();ctx.moveTo(player.x,player.y);ctx.lineTo(target[0],target[1]);ctx.strokeStyle='#67f0db';ctx.stroke()}openingScene.forEach(m=>{ctx.fillStyle='#9ff4df';ctx.fillText(m.layer.toUpperCase()+' · '+m.id,m.anchor[0]-20,m.anchor[1]-12)});ctx.restore()}
@@ -301,7 +364,7 @@ function drawForest(){const detailed=art.forest.complete&&art.forest.naturalWidt
 // Trail tools and ability gates. These sit on the path art and have matching solid collision.
 if(!inventory.campHatchet&&phase==='gear'){E(475,707,22,8,'rgba(249,208,112,.24)');ctx.strokeStyle='#d8c093';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(466,716);ctx.lineTo(482,696);ctx.stroke();ctx.fillStyle='#bbc5b5';ctx.beginPath();ctx.moveTo(480,698);ctx.lineTo(490,700);ctx.lineTo(484,708);ctx.closePath();ctx.fill();}
 if(!brushCleared){E(995,520,33,12,'#17261e');ctx.strokeStyle='#65452d';ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(973,534);ctx.lineTo(1017,506);ctx.moveTo(973,508);ctx.lineTo(1017,534);ctx.stroke();ctx.fillStyle='#48633a';for(let i=0;i<6;i++){E(977+i*7,510+(i%2)*16,8,7,'#48633a')}}else{R(985,519,27,5,'#6e5235');R(991,526,5,10,'#6e5235')}
-if(!cacheOpened){E(555,530,27,17,'#18231f');E(555,523,24,14,'#777e72');E(549,520,8,5,'#a4a99a');if(inventory.shardWarmth){ctx.strokeStyle=`rgba(102,235,226,${glow})`;ctx.lineWidth=2;ctx.beginPath();ctx.arc(555,523,31+Math.sin(frame*.08)*3,0,Math.PI*2);ctx.stroke()}}else{E(555,530,28,12,'rgba(76,207,193,.3)');R(544,519,22,13,'#73532f');R(547,516,16,5,'#bb9a59')}
+if(phase==='return'&&!cacheOpened){E(555,530,27,17,'#18231f');E(555,523,24,14,'#777e72');E(549,520,8,5,'#a4a99a');if(inventory.shardWarmth){ctx.strokeStyle=`rgba(102,235,226,${glow})`;ctx.lineWidth=2;ctx.beginPath();ctx.arc(555,523,31+Math.sin(frame*.08)*3,0,Math.PI*2);ctx.stroke()}}else if(cacheOpened){E(555,530,28,12,'rgba(76,207,193,.3)');R(544,519,22,13,'#73532f');R(547,516,16,5,'#bb9a59')}
 // Trail evidence, repair piece, and optional keepsakes
 if(!inventory.cedarWedge&&!bridgeFixed){R(709,478,24,5,'#b68a58');R(719,472,5,18,'#d4b179')}const kp=[[1072,535],[1030,480],[1170,245]];kp.forEach((o,i)=>{if(!keepsakes[i]&&(i!==0||brushCleared)){E(o[0],o[1],11,5,'#45c9c3');E(o[0],o[1]-2,4,4,'#b2fbef')}});if(brushCleared&&!keepsakes[0]){R(1053,526,38,7,'#5f4932');R(1058,520,29,8,'#8b6c43');R(1062,518,20,3,'#b3945e')}if(bridgeFixed){R(802,452,38,5,'#a97d4c');R(813,447,5,13,'#d4b179')}
 // Character layering
@@ -340,7 +403,7 @@ let fall=Math.min(1,introFrame/118),ease=1-Math.pow(1-fall,3),landX=603,landY=26
 drawCharacter('dad',212,288,57,0);drawCharacter('maverick',269,290,53,0);drawCharacter('finn',314,296,34,3);ctx.strokeStyle='rgba(195,220,216,.32)';ctx.lineWidth=1;for(let i=0;i<58;i++){let x=(i*97+frame*2)%800,y=(i*61+frame*5)%450;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-3,y+10);ctx.stroke()}
 let text=introFrame<72?'Morning rain. Dad, Maverick, and Finn hear the sky split open.':introFrame<120?'A blue-white egg drops through the cedar canopy.':introFrame<185?'The egg strikes the clearing—and something moves inside.':'Dad says, “Stay close.” Maverick is already moving.';drawIntroCaption(text,introFrame<120?'WATCH THE EGG FALL':'A / E · SKIP TO THE WOODLINE')}
 function drawDetailedIntroScene(){ctx.clearRect(0,0,W,H);drawLitImage(art.forest,0,80,1536,864,0,0,W,H);ctx.fillStyle='rgba(5,17,20,.08)';ctx.fillRect(0,0,W,H);let fall=Math.min(1,introFrame/118),ease=1-Math.pow(1-fall,3),landX=660,landY=58,eggX=742+(landX-742)*ease,eggY=-25+(landY+25)*ease,impact=Math.max(0,Math.min(1,(introFrame-118)/44)),pulse=Math.max(0,1-impact);if(fall<1){ctx.strokeStyle='rgba(161,230,239,.7)';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(eggX+56,eggY-70);ctx.lineTo(eggX+7,eggY-10);ctx.stroke();ctx.strokeStyle='rgba(235,244,220,.85)';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(eggX+37,eggY-46);ctx.lineTo(eggX+4,eggY-7);ctx.stroke()}if(introFrame>=112){E(landX,landY,64+70*pulse,39+45*pulse,`rgba(91,225,231,${.12+.24*pulse})`);E(landX,landY,39+31*pulse,24+26*pulse,`rgba(176,245,234,${.1+.23*pulse})`)}E(eggX,eggY,12,17,'#d9dbcf');E(eggX-2,eggY-4,8,13,'#f3f1dc');R(eggX+3,eggY-9,3,15,'#7fcbd0');ctx.strokeStyle='#5f7775';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(eggX-5,eggY-3);ctx.lineTo(eggX+1,eggY+1);ctx.lineTo(eggX-3,eggY+7);ctx.lineTo(eggX+4,eggY+12);ctx.stroke();drawCharacter('dad',154,341,61,0);drawCharacter('maverick',205,344,56,0);drawCharacter('finn',241,348,34,3);ctx.strokeStyle='rgba(205,228,229,.45)';ctx.lineWidth=1;for(let i=0;i<66;i++){let x=(i*97+frame*2)%800,y=(i*61+frame*5)%450;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-3,y+11);ctx.stroke()}let text=introFrame<72?'Morning rain. Dad, Maverick, and Finn hear the sky split open.':introFrame<120?'A blue-white egg drops through the cedar canopy.':introFrame<185?'The egg strikes the upper clearing—and something moves inside.':'Dad says, “Stay close.” Maverick is already moving.';drawIntroCaption(text,introFrame<120?'WATCH THE EGG FALL':'A / E · SKIP TO THE WOODLINE')}
-function drawPickupFx(){if(pickupFx<=0)return;const sx=screenX(player.x),sy=screenY(player.y)-60*camera.zoom-Math.sin((90-pickupFx)*.12)*3,a=Math.min(1,pickupFx/18);ctx.save();ctx.globalAlpha=a;ctx.translate(sx,sy);ctx.rotate(-.65);ctx.strokeStyle='#d7b77a';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-10,10);ctx.lineTo(11,-12);ctx.stroke();ctx.fillStyle='#d9e1d7';ctx.beginPath();ctx.moveTo(6,-16);ctx.lineTo(20,-17);ctx.lineTo(14,-5);ctx.lineTo(5,-8);ctx.closePath();ctx.fill();ctx.restore();ctx.save();ctx.globalAlpha=a;R(Math.max(15,sx-73),Math.max(82,sy-47),146,23,'rgba(10,26,22,.88)');ctx.fillStyle='#f4d184';ctx.font='bold 11px system-ui';ctx.textAlign='center';ctx.fillText('CAMP HATCHET  +1',Math.max(88,sx),Math.max(98,sy-31));ctx.restore()}
+function drawPickupFx(){if(pickupFx<=0)return;const sx=screenX(player.x),sy=screenY(player.y)-actorArt.maverick.height*camera.zoom-Math.sin((90-pickupFx)*.12)*3,a=Math.min(1,pickupFx/18);ctx.save();ctx.globalAlpha=a;ctx.translate(sx,sy);ctx.rotate(-.65);ctx.strokeStyle='#d7b77a';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-10,10);ctx.lineTo(11,-12);ctx.stroke();ctx.fillStyle='#d9e1d7';ctx.beginPath();ctx.moveTo(6,-16);ctx.lineTo(20,-17);ctx.lineTo(14,-5);ctx.lineTo(5,-8);ctx.closePath();ctx.fill();ctx.restore();ctx.save();ctx.globalAlpha=a;R(Math.max(15,sx-73),Math.max(82,sy-47),146,23,'rgba(10,26,22,.88)');ctx.fillStyle='#f4d184';ctx.font='bold 11px system-ui';ctx.textAlign='center';ctx.fillText('CAMP HATCHET  +1',Math.max(88,sx),Math.max(98,sy-31));ctx.restore()}
 function drawClueFx(){if(clueFx<=0)return;let index=Math.max(0,trailClues.lastIndexOf(true)),o=clueSpots[index],p=1-clueFx/100,a=Math.min(1,clueFx/24);ctx.save();ctx.globalAlpha=a;ctx.strokeStyle='#f4d184';ctx.lineWidth=2;ctx.beginPath();ctx.arc(o.x,o.y-22,18+p*35,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#fff2bd';ctx.font='bold 7px system-ui';ctx.textAlign='center';ctx.fillText(`TRAIL SIGN ${trailClues.filter(Boolean).length}/3`,o.x,o.y-51-p*8);ctx.restore()}
 function drawLoadingState(){const ready=criticalAssets.filter(im=>im.complete&&im.naturalWidth).length,p=ready/criticalAssets.length;ctx.clearRect(0,0,W,H);let g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0d211d');g.addColorStop(1,'#07110f');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);ctx.fillStyle='#ecdfbd';ctx.font='700 25px Georgia,serif';ctx.textAlign='center';ctx.fillText('HEIMR',W/2,184);ctx.fillStyle='#9eb9ad';ctx.font='11px system-ui';ctx.fillText('BUILDING THE WOODLINE',W/2,207);R(270,228,260,6,'#17312b');R(270,228,260*p,6,'#d9b66d');ctx.fillStyle='#7f9a8e';ctx.font='9px system-ui';ctx.fillText(ready+' / '+criticalAssets.length+' WORLD SOURCES',W/2,254);ctx.textAlign='left'}
 function draw(){if(!criticalAssetsReady()&&performance.now()-assetLoadStarted<8000){drawLoadingState();return}if(phase==='intro'){if(art.forest.complete&&art.forest.naturalWidth)drawDetailedIntroScene();else drawTopDownIntroScene();return}ctx.clearRect(0,0,W,H);if(last==='home')R(0,0,W,H,'#0d0b09');ctx.save();let bridgeShake=bridgeFx>88?Math.sin(frame*2.4)*2.2:0;ctx.translate(screenX(0)+bridgeShake,screenY(0));ctx.scale(camera.zoom,camera.zoom);if(last==='forest')drawForest();else drawHome();
@@ -376,6 +439,7 @@ ctx.save();if(visible){ctx.strokeStyle='rgba(255,213,123,.84)';ctx.lineWidth=2;c
 function actionVerb(){if(dialog)return dialog.choices?'CHOOSE':dialog.kind==='comic'?'PAGE':'NEXT';if(phase==='briefing'||phase==='meetFinn'||phase==='done')return'TALK';if(phase==='gear')return Math.hypot(player.x-475,player.y-710)<90?'TAKE':'ACT';if(phase==='careprep'||phase==='food'||phase==='lamp')return'TAKE';if(phase==='search'){if(clueSpots.some((o,i)=>!trailClues[i]&&Math.hypot(player.x-o.x,player.y-o.y)<82))return'READ';if(!brushCleared&&Math.hypot(player.x-995,player.y-520)<82)return'CHOP';if(!inventory.cedarWedge&&!bridgeFixed&&Math.hypot(player.x-720,player.y-485)<80)return'TAKE';if(Math.hypot(player.x-820,player.y-460)<84)return bridgeFixed?'CROSS':inventory.cedarWedge?'BRACE':'CHECK';return'ACT'}if(phase==='attack')return'USE';return'ACT'}
 function drawPortraitHud(){R(222,0,356,100,'rgba(8,22,19,.94)');ctx.strokeStyle='#9bb3a6';ctx.strokeRect(228.5,8.5,343,83);ctx.fillStyle='#fff3d2';ctx.font='bold 13px system-ui';ctx.fillText(last==='home'?'THE HOUSE':phase==='attack'?'THE SHADOW':'THE WOODLINE',239,28);ctx.fillStyle='#eef4ea';ctx.font='12px system-ui';wrapText(objective,239,48,322,14);ctx.fillStyle='#efd69a';ctx.font='bold 10px system-ui';ctx.textAlign='right';ctx.fillText(phase==='attack'?`LAMP ${shadowHits}/3  ·  ♥ ${health}`:'TOKENS '+inventory.tokens,561,86);ctx.textAlign='left'}
 function hud(){let fb=document.querySelector('[data-press="f"]'),eb=document.querySelector('[data-press="e"]');if(fb){fb.querySelector('small').textContent=phase==='attack'?'STAR LAMP':'FINN';fb.setAttribute('aria-label',phase==='attack'?'Flash Heimr’s star lamp':'Whistle for Finn')}if(eb){const verb=actionVerb(),next=!!dialog;eb.className=next?'primary dialog-next':'primary';eb.querySelector('small').textContent=verb;eb.setAttribute('aria-label',next?'Continue the conversation':verb.charAt(0)+verb.slice(1).toLowerCase())}
+if(last==='home'&&showMap)return;
 if(portraitScreen()){
   drawPortraitHud();
   if(toastT>0&&!dialog&&!showMap&&!paused){
@@ -400,19 +464,46 @@ const phrases={'DAD':'TALK TO DAD','HATCHET':'TAKE HATCHET','FINN':'MEET FINN','
 const msg='A  ·  '+(phrases[label]||label);ctx.save();ctx.font='bold 11px system-ui';const width=ctx.measureText(msg).width+24;
 const {left,right}=portraitScreen()?portraitView:{left:0,right:W};
 const x=Math.max(left+width/2+14,Math.min(right-width/2-14,screenX(player.x))),footY=screenY(player.y);
-const y=Math.max(122,footY+32<=H-78?footY+32:footY-60*camera.zoom-18);
+const y=Math.max(122,footY+32<=H-78?footY+32:footY-actorArt.maverick.height*camera.zoom-18);
 ctx.fillStyle='rgba(9,25,22,.92)';ctx.fillRect(x-width/2,y-16,width,25);ctx.strokeStyle='#ceb87b';ctx.lineWidth=1;ctx.strokeRect(x-width/2+.5,y-15.5,width-1,24);ctx.textAlign='center';ctx.fillStyle='#f3e7c9';ctx.fillText(msg,x,y);ctx.restore()}
-function mapPanel(){const portrait=portraitScreen(),x=portrait?222:175,y=65,w=portrait?356:450,h=315,pad=portrait?20:21,textX=x+pad,textW=w-pad*2;R(x,y,w,h,'#0a1715f4');ctx.strokeStyle='#9dbaaa';ctx.strokeRect(x+.5,y+.5,w-1,h-1);ctx.fillStyle='#eee4ca';ctx.font='bold 14px system-ui';ctx.fillText('TRAIL NOTES',textX,92);ctx.fillStyle='#9fb6a8';ctx.font='12px system-ui';let rows=['flight','attack','runend','run'].includes(phase)?['THE YARD → OLD CEDAR CROSSING → COAST ROAD',phase==='flight'?'Help Heimr try the air beside Dad and Finn.':'Flash the star lamp when the shadow closes in.',shadowRepelled?'The shadow has recoiled. Reach the crossing.':'The crossing is blocked until the star lamp drives it back.',phase==='run'?'Chapter One complete. The Run begins.':'Keep Finn and Heimr close.']:last==='forest'?['PORCH → WOODLINE → OLD CEDAR CROSSING → CLEARING',`Trail signs ${trailClues.filter(Boolean).length}/3 · Cedar wedge ${inventory.cedarWedge?'found':bridgeFixed?'placed':'not found'}`,'Optional keepsakes: glass bead · salmon scale · Finn’s red ball.','Find two signs, wedge the log, then follow Finn to the glow.']:phase==='lamp'?['THE HOUSE','Finn’s bed · folded blanket · water bowl','Workbench: empty coffee tin · Dad’s headlamp','Help Dad make a surprise for the room.']:['THE HOUSE','Finn’s bed · folded blanket · water bowl','Fire extinguisher beside the entry','Kitchen counter · herring eggs'];rows.forEach((s,i)=>wrapText(s,textX,130+i*48,textW,15));ctx.fillStyle='#dfc77f';ctx.fillText(portrait?'MAP or A to close':'M or E to close',textX,359)}
+function cabinMap(){
+  const portrait=portraitScreen(),width=portrait?356:492;
+  const x=(W-width)/2,y=55,imageWidth=width-28,imageHeight=imageWidth*world.h/world.w;
+  const left=x+14,top=y+34;
+  R(x,y,width,imageHeight+72,'#17110df5');
+  ctx.strokeStyle='#bd9364';
+  ctx.strokeRect(x+.5,y+.5,width-1,imageHeight+71);
+  ctx.fillStyle='#f2debd';ctx.font='bold 13px system-ui';
+  ctx.fillText('THE HOUSE',left,y+22);
+  ctx.drawImage(art.home,left,top,imageWidth,imageHeight);
+  E(left+player.x*imageWidth/(world.w/2),top+player.y*imageHeight/(world.h/2),4.5,4.5,'#ffd679');
+  ctx.fillStyle='#f2debd';ctx.font='11px system-ui';
+  ctx.fillText(portrait?'MAP or A to return':'M or E to return',left,top+imageHeight+23);
+}
+
+function mapPanel(){const portrait=portraitScreen(),x=portrait?222:175,y=65,w=portrait?356:450,h=315,pad=portrait?20:21,textX=x+pad,textW=w-pad*2;if(last==='home'&&art.home.complete&&art.home.naturalWidth){cabinMap();return}R(x,y,w,h,'#0a1715f4');ctx.strokeStyle='#9dbaaa';ctx.strokeRect(x+.5,y+.5,w-1,h-1);ctx.fillStyle='#eee4ca';ctx.font='bold 14px system-ui';ctx.fillText('TRAIL NOTES',textX,92);ctx.fillStyle='#9fb6a8';ctx.font='12px system-ui';let rows=['flight','attack','runend','run'].includes(phase)?['THE YARD → OLD CEDAR CROSSING → COAST ROAD',phase==='flight'?'Help Heimr try the air beside Dad and Finn.':'Flash the star lamp when the shadow closes in.',shadowRepelled?'The shadow has recoiled. Reach the crossing.':'The crossing is blocked until the star lamp drives it back.',phase==='run'?'Chapter One complete. The Run begins.':'Keep Finn and Heimr close.']:last==='forest'?['PORCH → WOODLINE → OLD CEDAR CROSSING → CLEARING',`Trail signs ${trailClues.filter(Boolean).length}/3 · Cedar wedge ${inventory.cedarWedge?'found':bridgeFixed?'placed':'not found'}`,'Optional keepsakes: glass bead · salmon scale · Finn’s red ball.','Find two signs, wedge the log, then follow Finn to the glow.']:phase==='lamp'?['THE HOUSE','Finn’s bed · folded blanket · water bowl','Workbench: empty coffee tin · Dad’s headlamp','Help Dad make a surprise for the room.']:['THE HOUSE','Finn’s bed · folded blanket · water bowl','Fire extinguisher beside the entry','Kitchen counter · herring eggs'];rows.forEach((s,i)=>wrapText(s,textX,130+i*48,textW,15));ctx.fillStyle='#dfc77f';ctx.fillText(portrait?'MAP or A to close':'M or E to close',textX,359)}
 function pausePanel(){const portrait=portraitScreen(),x=portrait?222:205,w=portrait?356:390,textX=x+(portrait?20:28);R(x,155,w,145,'#081210f5');ctx.strokeStyle='#b49a69';ctx.strokeRect(x+.5,155.5,w-1,144);ctx.fillStyle='#eee6d2';ctx.font='bold 16px system-ui';ctx.fillText('PAUSED',textX,187);ctx.font='12px system-ui';ctx.fillStyle='#b5c5b7';ctx.fillText('E resume     R restart chapter',textX,220);ctx.fillText(cabinVisit?'Cabin visit · progress is temporary.':'Your progress saves in this browser.',textX,246)}
 function setupLaunch(){const overlay=document.getElementById('launchOverlay'),studio=document.getElementById('studioSlate'),games=document.getElementById('gamesSlate'),title=document.getElementById('titleSlate'),slots=document.getElementById('slotsSlate'),slotList=document.getElementById('slotList'),play=document.getElementById('playButton'),skip=document.getElementById('skipLaunch');let timer;const showMenu=()=>{clearTimeout(timer);studio.hidden=true;games.hidden=true;title.hidden=false;slots.hidden=true;skip.hidden=true;refreshLaunch()};const showGames=()=>{studio.hidden=true;games.hidden=false;title.hidden=true;slots.hidden=true;timer=setTimeout(showMenu,1900)};timer=setTimeout(showGames,1900);skip.onclick=showMenu;const refreshLaunch=()=>{const save=getSave();play.textContent=(save?'CONTINUE':'START GAME')+' · '+slotLabel(activeSlot).toUpperCase()};document.getElementById('saveSlotsButton').onclick=()=>{title.hidden=true;slots.hidden=false;skip.hidden=true;slotList.innerHTML='';for(let n=1;n<=3;n++){const data=readSlot(n);const isComplete=data&&(data.phase==='run'||data.chapterComplete===true),b=document.createElement('button');b.className='slot-btn'+(n===activeSlot?' active':'');b.innerHTML=slotLabel(n).toUpperCase()+'<span class="slot-detail">SLOT '+n+' · '+(data?(isComplete?'Chapter 1 complete':(data.phase||'In progress').replace(/^[a-z]/,c=>c.toUpperCase())):'Empty')+'</span>';b.onclick=()=>{localStorage.setItem(storageKey('heimr-active-slot'),String(n));location.reload()};slotList.appendChild(b)}document.getElementById('newGameButton').textContent='NEW GAME · '+slotLabel(activeSlot).toUpperCase()};document.getElementById('slotBackButton').onclick=()=>{slots.hidden=true;title.hidden=false;refreshLaunch()};document.getElementById('newGameButton').onclick=()=>{if(getSave()&&!confirm('Replace the saved adventure in Slot '+activeSlot+'?'))return;clearSlot(activeSlot);location.reload()};play.onclick=()=>{overlay.hidden=true;if(phase==='briefing'&&!introSeen)enterWoodline();canvas.focus()};}
-window.addEventListener('resize',measureCabinView);
-measureCabinView();
+window.addEventListener('resize',measurePlayfield);
+measurePlayfield();
 if(last==='home'){putOnCabinFloor(player);putOnCabinFloor(dad)}
 if(cabinVisit){
   enterCabin();
   document.getElementById('launchOverlay').hidden=true;
   canvas.focus();
 }else setupLaunch();
-function loop(){update();draw();requestAnimationFrame(loop)}loop();
+let previousFrame=null,updateBudget=0;
+function loop(now=performance.now()){
+  const tickLength=simulationStep*1000;
+  if(previousFrame===null)update();
+  else{
+    updateBudget+=clamp(now-previousFrame,0,100);
+    while(updateBudget>=tickLength){update();updateBudget-=tickLength}
+  }
+  previousFrame=now;
+  draw();
+  requestAnimationFrame(loop);
+}
+loop();
 })();
 </script></body></html>

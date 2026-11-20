@@ -12,7 +12,7 @@ assert.ok(html.includes('class="joystick" id="moveJoystick"'), 'floating joystic
 assert.ok(html.includes('.touch-controls.joystick-ready .dpad{display:none!important}'), 'D-pad should hide only when joystick is ready');
 assert.ok(html.includes('joyArea.setPointerCapture'), 'thumb movement must stay captured');
 assert.ok(html.includes('if(analog.pointer!==null){dx=analog.x;dy=analog.y}'), 'analog axes must drive world motion');
-assert.ok(html.includes('let speed=1.75*strength'), 'continuous analog speed required');
+assert.ok(html.includes("stride=(last==='home'?cabinSpeed:trailSpeed)*simulationStep/Math.max(1,inputLength)"), 'continuous analog speed required');
 assert.ok(html.includes("document.addEventListener('visibilitychange'"), 'reset when app hidden');
 assert.match(html, /height:100dvh/, 'mobile game should fill the viewport');
 assert.match(html, /if\(phase==='briefing'&&!introSeen\)enterWoodline\(\)/, 'fresh launch must begin the egg cinematic');
@@ -34,7 +34,7 @@ assert.ok(html.includes("['briefing','gear','meetFinn','search','return','flight
 assert.ok(html.includes("y:dragon.y,f:()=>dragonSprite"), 'Heimr must share the actor depth sort');
 assert.ok(html.includes("canvas.addEventListener('pointerdown'"), 'the dialogue panel must advance directly when tapped');
 assert.ok(html.includes("eb.className=next?'primary dialog-next':'primary'"), 'the mobile action button must clearly change during dialogue');
-assert.ok(html.includes("drawWalkSheet('maverick',0,0,60"), 'Maverick must remain readable while staying child-sized beside Dad');
+assert.ok(html.includes("drawWalkSheet('maverick',0,0,player.dir"), 'Maverick must remain readable while staying child-sized beside Dad');
 assert.ok(html.includes('function groundShadow('), 'characters need contact shadows that anchor their feet to the terrain');
 assert.ok(html.includes("if(!shadowRepelled){toastMsg('The shadow blocks the crossing."), 'escape must require the star lamp milestone');
 assert.ok(html.includes('id="gameStatus" role="status"'), 'runtime phase and objective need an accessible live status');

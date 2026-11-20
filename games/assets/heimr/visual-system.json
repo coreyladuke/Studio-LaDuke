@@ -33,17 +33,17 @@
   "characters": {
     "maverick": {
       "sheet": "maverick-walk.png",
-      "renderHeight": 60,
-      "groundShadow": [9, 2.4],
+      "renderHeight": 104,
+      "groundShadow": [14, 3.3],
       "role": "child protagonist",
       "proportionRule": "normal child anatomy; never chibi or giant-headed"
     },
     "dad": {
       "sheet": "dad-walk.png",
-      "renderHeight": 74,
-      "groundShadow": [11, 2.8],
+      "renderHeight": 129,
+      "groundShadow": [17, 3.8],
       "role": "adult companion",
-      "proportionRule": "23 percent taller than Maverick at shared ground scale"
+      "proportionRule": "24 percent taller than Maverick at shared ground scale"
     },
     "finn": {
       "sheet": "finn-trot.png",
@@ -53,7 +53,7 @@
     },
     "heimr": {
       "sheet": "heimr-walk.png",
-      "renderHeight": 52,
+      "renderHeight": 49,
       "groundShadow": [11, 2.7],
       "role": "small dragon companion",
       "proportionRule": "small enough for Maverick to protect and carry in Chapter One"

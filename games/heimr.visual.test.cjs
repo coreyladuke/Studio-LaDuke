@@ -10,8 +10,8 @@ const system=JSON.parse(fs.readFileSync(systemPath,'utf8'));
 
 assert.equal(system.camera.projection,'three-quarter overhead','visual system must lock the gameplay projection');
 assert.deepEqual(system.camera.spriteCell,[72,72],'every playable actor must share one sprite cell');
-assert.equal(system.characters.maverick.renderHeight,60,'Maverick runtime scale must be authoritative');
-assert.equal(system.characters.dad.renderHeight,74,'Dad must stay taller than Maverick');
+assert.equal(system.characters.maverick.renderHeight,104,'Maverick runtime scale must be authoritative');
+assert.equal(system.characters.dad.renderHeight,129,'Dad must stay taller than Maverick');
 assert.ok(system.characters.dad.renderHeight/system.characters.maverick.renderHeight>1.2,'adult-child scale needs a visible difference');
 assert.equal(system.characters.maverick.proportionRule.includes('giant-headed'),true,'the rejected proportion must be explicitly prohibited');
 assert.ok(system.environmentMotifs.length>=12,'the first reusable environment library must cover outdoor and indoor motifs');
