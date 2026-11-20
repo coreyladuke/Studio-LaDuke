@@ -38,6 +38,7 @@
 /* The three games live in a battered plastic crate, not a menu row. */
 .fort-game-crate {
   position:absolute;
+  pointer-events:none;
   z-index:33;
   left:66.2%;
   top:63.5%;
@@ -64,6 +65,7 @@
   transform:rotate(-2deg);
 }
 .fort-game-crate .fort-cartridge {
+  pointer-events:auto;
   top:-18%!important;
   width:34%!important;
   max-width:none;

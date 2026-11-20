@@ -24,10 +24,10 @@ Concept references never override the exact proportions or collision rules in `v
 
 ## Layered opening runtime
 
-The porch-to-creek route is assembled through the ordered runtime layers in
-`visual-system.json`: ground, terrain, structure, interactive objects, actors,
-foreground occluders, atmosphere, and UI. The playable file contains the exact
-world anchors and collision shapes for each opening motif. Press `Q` in a
+The forest master contains the scenery, including the canopy and ferns. Draw it
+below the actors. A foreground asset needs transparency before it can join the
+actor depth sort. The playable file contains the world anchors and collision
+shapes for each opening motif. Press `Q` in a
 desktop review build to inspect collision geometry, interaction range, mission
 direction, motif ownership, and layer classification. The debug view is never
 stored in a player save.

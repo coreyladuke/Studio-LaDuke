@@ -41,8 +41,6 @@ assert.equal(crossing.collision[0].gate,'bridge','crossing collision must be rem
 const creek=scene.find(m=>m.id==='creek-bank');
 assert.equal(creek.collision[0].type,'line','visible creek water must use its authored line geometry');
 
-assert.match(html,/openingScene\.filter\(m=>m\.layer==='foreground'\).*actors\.push/,
-  'foreground motifs must join actor Y sorting');
 assert.match(html,/function drawDebugCollision\(\).*sceneCollisions/s,
   'debug view must expose collision ownership and scene layers');
 assert.match(html,/k==='q'.*debugCollision=!debugCollision/,

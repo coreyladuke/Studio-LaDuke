@@ -15,7 +15,8 @@ function node(id){
 }
 const buttons=['w','a','s','d'].map(k=>{const b=node('move'+k);b.dataset.hold=k;return b});
 const actions=['e','f','m'].map(k=>{const b=node('act'+k);b.dataset.press=k;return b});
-const ctx=new Proxy({},{get(t,k){
+const drawSources=[];
+const ctx=new Proxy({drawImage(image){drawSources.push(path.basename(image.src))}},{get(t,k){
   if(k==='measureText')return txt=>({width:String(txt).length*7});
   if(k==='createLinearGradient'||k==='createRadialGradient')return()=>({addColorStop(){}});
   return t[k]||(()=>{});
@@ -27,8 +28,8 @@ const document={querySelector:q=>q==='#game'?canvas:node(q),
 const store=new Map(),localStorage={getItem:k=>store.get(k)||null,
   setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)};
 const window={PointerEvent:function(){},addEventListener(){}};
-class FakeImage{constructor(){this.complete=false;this.naturalWidth=0;this.naturalHeight=0;this.src=''}}
-const source=match[1].replace(/\}\)\(\);\s*$/, 'window.__probe={player,dragon,dad,finn,inventory,get phase(){return phase},get dialog(){return dialog},get completed(){return completed},get bridgeFixed(){return bridgeFixed},get trailClues(){return trailClues},get foodFound(){return foodFound},get flightStage(){return flightStage},get shadowHits(){return shadowHits},get shadowRepelled(){return shadowRepelled},testReadyLamp(){lampCooldown=0},interact,closeDialog,useStarLamp,save};})();');
+class FakeImage{constructor(){this.complete=true;this.naturalWidth=1536;this.naturalHeight=1024;this.src=''}}
+const source=match[1].replace(/\}\)\(\);\s*$/, 'window.__probe={player,dragon,dad,finn,inventory,get phase(){return phase},get dialog(){return dialog},get completed(){return completed},get bridgeFixed(){return bridgeFixed},get trailClues(){return trailClues},get foodFound(){return foodFound},get flightStage(){return flightStage},get shadowHits(){return shadowHits},get shadowRepelled(){return shadowRepelled},testReadyLamp(){lampCooldown=0},interact,closeDialog,useStarLamp,save,blocked,draw};})();');
 assert.ok(source.includes('window.__probe'),'game test instrumentation should attach');
 new Function('window','document','Image','localStorage','performance','requestAnimationFrame','setTimeout','clearTimeout','confirm',source)
   (window,document,FakeImage,localStorage,{now:()=>1000},()=>{},()=>0,()=>{},()=>true);
@@ -40,6 +41,16 @@ const act=(label,x,y,phase)=>{next();g.player.x=x;g.player.y=y;g.interact();chec
 check('New save', 'briefing');
 node('playButton').onclick();check('Start intro','intro');
 g.interact();check('Egg handoff','briefing');
+for (const [x,y] of [[360,730],[540,605]]) {
+  // Both positions are walkable but overlap the old opaque foreground crops.
+  Object.assign(g.player,{x,y});
+  assert.equal(g.blocked(x,y),false,'regression position must be walkable');
+  drawSources.length=0;
+  g.draw();
+  const playerIndex=drawSources.indexOf('maverick-walk.png');
+  assert.ok(playerIndex>drawSources.lastIndexOf('forest-master-v1.webp'),
+    'all opaque scenery must render before Maverick');
+}
 act('Talk Dad',318,725,'gear');
 act('Hatchet',475,710,'meetFinn');
 act('Meet Finn',418,738,'search');

@@ -929,7 +929,7 @@
     .squish-art{position:relative;height:74px;border-radius:16px;overflow:hidden;background:radial-gradient(circle at 30% 25%, rgba(255,255,255,.45), transparent 36%),linear-gradient(135deg, var(--sq1), var(--sq2));box-shadow:inset 0 2px 10px rgba(255,255,255,.18), inset 0 -10px 12px rgba(0,0,0,.16);}
     .squish-art::before,.squish-art::after{content:"";position:absolute;width:16px;height:20px;top:20px;border-radius:50%;background:white;box-shadow:inset 0 -2px 0 rgba(0,0,0,.08);}
     .squish-art::before{left:32px;}.squish-art::after{right:32px;}
-    .squish-pupil{position:absolute;top:28px;width:7px;height:7px;border-radius:50%;background:#171515;box-shadow:0 0 0 2px rgba(255,255,255,.16);}
+    .squish-pupil{position:absolute;top:28px;width:7px;height:7px;z-index:1;border-radius:50%;background:#171515;box-shadow:0 0 0 2px rgba(255,255,255,.16);}
     .squish-pupil.left{left:37px;}.squish-pupil.right{right:37px;}
     .squish-mouth{position:absolute;left:50%;bottom:17px;width:24px;height:12px;border-bottom:3px solid rgba(40,12,24,.58);border-radius:0 0 18px 18px;transform:translateX(-50%);opacity:.72;}
     .squish-name{font-size:15px;line-height:1.05;display:block;}
@@ -2013,8 +2013,8 @@
   
 /* Shared Studio LaDuke / Maverick Games opening */
 #sharedGameOpening{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:18px;background:radial-gradient(ellipse at 50% 28%,rgba(40,69,61,.86),rgba(4,8,12,.94) 72%);overflow:hidden;color:#f3eedb;text-align:center;font-family:Georgia,serif;animation:sgFade .5s ease both}#sharedGameOpening:before{content:"";position:absolute;inset:-35%;pointer-events:none;background:repeating-linear-gradient(112deg,transparent 0 40px,rgba(190,219,208,.04) 41px 42px,transparent 43px 82px);animation:sgRain 8s linear infinite}.sgPanel{position:relative;width:min(94vw,650px);min-height:310px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 18px;border:1px solid #d7bd7855;border-radius:18px;background:linear-gradient(145deg,#12231fe8,#080e13ed);box-shadow:0 24px 90px #000a}.sgPanel[hidden]{display:none}.sgMark{width:78px;height:78px;border:2px solid #d4b878;border-radius:50%;display:grid;place-items:center;color:#ead8a0;font:700 29px Georgia,serif;letter-spacing:-.1em;box-shadow:0 0 32px #7ed9d355,inset 0 0 20px #88e3d333;animation:sgRise 1s ease both}.sgEyebrow{margin:17px 0 4px;color:#c2d4c7;font:11px system-ui;letter-spacing:.27em;text-transform:uppercase}.sgWord{margin:5px 0;color:#f1ecd9;font:700 clamp(24px,5vw,38px) Georgia,serif;letter-spacing:.13em}.sgGames{font:900 clamp(36px,8vw,62px)/.98 system-ui,sans-serif;letter-spacing:.05em;color:#f0d888;text-shadow:0 3px #754833,0 8px 30px #8c604c88;animation:sgRise 1s ease both}.sgSub{margin-top:18px;color:#bdd7ce;font:11px system-ui;letter-spacing:.28em;text-transform:uppercase}.sgSkip{position:absolute;right:20px;top:15px;border:0;background:transparent;color:#d6ddd1;font:700 11px system-ui;letter-spacing:.12em;cursor:pointer}@keyframes sgFade{from{opacity:0}to{opacity:1}}@keyframes sgRise{from{opacity:0;transform:translateY(16px) scale(.84)}to{opacity:1;transform:none}}@keyframes sgRain{from{transform:translateY(-4%)}to{transform:translateY(4%)}}</style>
-  <link rel="stylesheet" href="game/super-mavericks-world.css?v=20261114-physical-shelf">
-  <link rel="stylesheet" href="game/fort-physical-ui.css?v=20261116-hardware-controls">
+  <link rel="stylesheet" href="game/super-mavericks-world.css?v=20261119-phone-game">
+  <link rel="stylesheet" href="game/fort-physical-ui.css?v=20261119-fort-hit-targets">
   <link rel="stylesheet" href="assets/room-controls.css?v=2">
 
   <style>

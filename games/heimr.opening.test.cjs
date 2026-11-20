@@ -25,7 +25,7 @@ assert.match(html,/dad\.dir=Math\.atan2\(player\.y-dad\.y,player\.x-dad\.x\)/, '
 assert.match(html,/const openingSolids=/, 'opening art needs authored solid geometry');
 assert.match(html,/sceneCollisions\.some\(o=>sceneBlocksPoint/, 'opening solids must participate in collision');
 assert.match(html,/const SCENE_LAYER_ORDER=/, 'opening art needs an explicit layer order');
-assert.match(html,/openingScene\.filter\(m=>m\.layer==='foreground'\)/, 'foreground motifs must share the actor depth sort');
+assert.ok(html.includes('actors.sort((a,b)=>a.y-b.y)'), 'independent actors and trail signs must sort by foot position');
 
 assert.match(html,/canvas\.addEventListener\('pointerdown'.*if\(!dialog\)return/s, 'dialogue panel must be tappable');
 assert.match(html,/return dialog\.choices\?'CHOOSE':dialog\.kind==='comic'\?'PAGE':'NEXT'/, 'dialogue must expose a clear forward action');
@@ -34,7 +34,7 @@ assert.ok(html.includes("if(phase==='gear')return Math.hypot(player.x-475,player
 assert.match(html,/pickupFx=90/, 'hatchet pickup must trigger visible feedback');
 assert.match(html,/CAMP HATCHET  \+1/, 'hatchet pickup must identify the obtained item');
 
-assert.match(html,/@media\(max-width:600px\) and \(orientation:portrait\).*canvas\{height:58%;width:100%;object-fit:cover;object-position:center top\}/s, 'portrait layout must devote more of the phone to a readable playfield');
+assert.match(html,/canvas\{height:min\(54%,112\.5vw\);width:100%;object-fit:cover;object-position:center\}/, 'portrait framing must preserve at least half the canvas width');
 assert.match(html,/bottom:max\(8%,calc\(env\(safe-area-inset-bottom\) \+ 10px\)\)/, 'portrait controls must use the lower deck while respecting the safe area');
 assert.match(html,/function drawPortraitHud\(\)/, 'portrait crop must have a dedicated readable HUD composition');
 assert.match(html,/function portraitDialogPanel\(\)/, 'portrait crop must keep dialogue and its button in view');
