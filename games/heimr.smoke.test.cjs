@@ -27,7 +27,8 @@ assert.match(html, /const slotKey=n=>storageKey\('heimr-save-v8-slot-'\+n\)/, 'v
 assert.match(html, /const legacySlotKey=n=>storageKey\('heimr-save-slot-'\+n\)/, 'the live v3-v6 key must remain readable');
 assert.match(html, /localStorage\.getItem\(slotKey\(n\)\)\|\|localStorage\.getItem\(legacySlotKey\(n\)\)/, 'new saves must prefer v8 while importing legacy progress');
 
-assert.ok(html.includes('function drawContextAction(){'), 'nearby objectives must show a contextual action cue');
+assert.match(html, /<button id="worldAction"[^>]+type="button" hidden>/, 'the contextual action is a native button');
+assert.match(html, /bindTap\(worldAction,\(\)=>\{if\(nearbyAction\(\)\)actionKey\('e'\)\}\)/, 'the cue runs the same interaction as the A button');
 assert.ok(html.includes("if(phase==='flight')return[dragon.x,dragon.y,'HEIMR']"), 'first-flight interaction must have a visible mission marker');
 assert.ok(html.includes("['shard','return','careprep','food','done','lamp','wonder','flight','attack','runend','run'].includes(phase))actors.push"), 'Heimr must remain visible through discovery, flight, and escape');
 assert.ok(html.includes("['briefing','gear','meetFinn','search','return','flight','attack','runend'].includes(phase)"), 'Dad must remain visible during yard and escape scenes');

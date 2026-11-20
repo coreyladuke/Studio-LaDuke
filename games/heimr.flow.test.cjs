@@ -29,7 +29,7 @@ const store=new Map(),localStorage={getItem:k=>store.get(k)||null,
   setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)};
 const window={PointerEvent:function(){},addEventListener(){}};
 class FakeImage{constructor(){this.complete=true;this.naturalWidth=1536;this.naturalHeight=1024;this.src=''}}
-const source=match[1].replace(/\}\)\(\);\s*$/, 'window.__probe={player,dragon,dad,finn,inventory,get phase(){return phase},get dialog(){return dialog},get completed(){return completed},get bridgeFixed(){return bridgeFixed},get trailClues(){return trailClues},get foodFound(){return foodFound},get flightStage(){return flightStage},get shadowHits(){return shadowHits},get shadowRepelled(){return shadowRepelled},testReadyLamp(){lampCooldown=0},interact,closeDialog,useStarLamp,save,blocked,draw,loop,movePlayer,setMovement(value){keys.d=value}};})();');
+const source=match[1].replace(/\}\)\(\);\s*$/, 'window.__probe={player,dragon,dad,finn,inventory,get phase(){return phase},get dialog(){return dialog},get completed(){return completed},get bridgeFixed(){return bridgeFixed},get trailClues(){return trailClues},get foodFound(){return foodFound},get flightStage(){return flightStage},get shadowHits(){return shadowHits},get shadowRepelled(){return shadowRepelled},testReadyLamp(){lampCooldown=0},interact,closeDialog,useStarLamp,save,blocked,draw,loop,nearbyAction,movePlayer,setMovement(value){keys.d=value}};})();');
 assert.ok(source.includes('window.__probe'),'game test instrumentation should attach');
 new Function('window','document','Image','localStorage','performance','requestAnimationFrame','setTimeout','clearTimeout','confirm',source)
   (window,document,FakeImage,localStorage,{now:()=>1000},()=>{},()=>0,()=>{},()=>true);
@@ -87,7 +87,11 @@ const cabinAct=(label,x,y,phase)=>{
   act(label,x,y,phase);
 };
 cabinAct('Blanket',360,525,'careprep');
+Object.assign(g.player,{x:550,y:445});
+assert.equal(g.nearbyAction(),'FILL WATER BOWL','the recorded approach exposes the bowl action');
 cabinAct('Bowl',550,445,'careprep');
+assert.ok(g.inventory.bowl,'a bowl interaction advances the checklist');
+assert.notEqual(g.nearbyAction(),'FILL WATER BOWL','the completed bowl action must clear');
 cabinAct('Extinguisher',875,665,'careprep');
 cabinAct('Make bed',345,675,'careprep');g.closeDialog();check('Care prepared','food');
 cabinAct('Herring eggs',1265,410,'food');
