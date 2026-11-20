@@ -11,19 +11,19 @@
 </head>
 <body>
 <main>
-  <header><div><p class="kicker">Studio LaDuke · Chapter One production reference</p><h1>HEIMR VISUAL SYSTEM</h1><p>One scale, one camera, one wet Southeast Alaska world.</p></div><div class="badge">VERSION 1 · PLAYABLE SOURCE LOCKED</div></header>
+  <header><div><p class="kicker">Studio LaDuke · Chapter One production reference</p><h1>HEIMR VISUAL SYSTEM</h1><p>Painted Southeast Alaska environments at a shared character scale.</p></div><div class="badge">VERSION 1 · PLAYABLE SOURCE LOCKED</div></header>
 
-  <img class="hero" src="assets/heimr/reference/heimr-promotional-master-v1.webp" alt="Maverick, Dad, Finn and Heimr in the rainy Southeast Alaska forest">
-  <p class="caption">Promotional mood reference. Character relationships are locked; gameplay scale is defined below.</p>
+  <img class="hero" src="assets/heimr/world/home-master-v1.webp" alt="Cabin interior with warm stove light, wooden furniture and rain-blue windows">
+  <p class="caption">The cabin sets the gameplay reference for perspective, materials and warm light against rainy blues.</p>
 
   <h2>Playable character master</h2>
   <section class="card">
     <img class="character-master" src="assets/heimr/reference/chapter-one-character-master-v1.png" alt="Directional sprite sheets for Maverick, Dad, Finn and Heimr">
     <div class="specs">
-      <div class="spec"><strong>Maverick · 60 px</strong><span>Child protagonist. Normal anatomy; never giant-headed.</span></div>
-      <div class="spec"><strong>Dad · 74 px</strong><span>Adult anchor. 23% taller at the same ground scale.</span></div>
-      <div class="spec"><strong>Finn · 48 px</strong><span>Low, quick trail companion with a readable trot.</span></div>
-      <div class="spec"><strong>Heimr · 52 px</strong><span>Small hatchling scale for Chapter One protection and trust.</span></div>
+      <div class="spec"><strong>Maverick · 104 world px</strong><span>Child protagonist. Normal anatomy; never giant-headed.</span></div>
+      <div class="spec"><strong>Dad · 129 world px</strong><span>Adult anchor. 24% taller at the same ground scale.</span></div>
+      <div class="spec"><strong>Finn · 48 world px</strong><span>Low, quick trail companion with a readable trot.</span></div>
+      <div class="spec"><strong>Heimr · 49 world px</strong><span>Small hatchling scale for Chapter One protection and trust.</span></div>
     </div>
   </section>
 
@@ -31,6 +31,7 @@
   <div class="grid">
     <div><img class="scene-board" src="assets/heimr/reference/gameplay-camera-target-v1.webp" alt="Three-quarter gameplay camera target"><p class="caption">Target: playable paths, visible collision edges, layered foregrounds and readable rain.</p></div>
     <div><img class="scene-board" src="assets/heimr/reference/environment-scenes-v1.webp" alt="Six environment scene references"><p class="caption">Porch, deep forest, crossing, shore, home and future discovery-space language.</p></div>
+    <div><img class="scene-board" src="assets/heimr/reference/heimr-promotional-master-v1.webp" alt="Maverick, Dad, Finn and Heimr in a rainy Southeast Alaska forest"><p class="caption">Promotional illustration.</p></div>
   </div>
 
   <h2>Restricted world palette</h2>
@@ -44,7 +45,7 @@
   <section class="rules">
     <div class="rule"><strong>Ground scale wins</strong><span>Feet, paws and shadows share one world plane. Promotional art never overrides runtime proportions.</span></div>
     <div class="rule"><strong>Visible blocker = physical blocker</strong><span>Trunks, rocks, walls, water and dense brush require matching collision geometry.</span></div>
-    <div class="rule"><strong>Depth is authored</strong><span>Foreground canopies, porch posts and rock faces join the actor Y-sort instead of behaving like wallpaper.</span></div>
+    <div class="rule"><strong>Depth is authored</strong><span>Actors and independent props sort by ground position. Foreground cutouts need transparency around their silhouettes.</span></div>
     <div class="rule"><strong>Abilities change the world</strong><span>Alder, bushes, rocks, bridges and caches have explicit locked and unlocked visual states.</span></div>
     <div class="rule"><strong>Rain stays readable</strong><span>Cool ambient light and wet highlights add atmosphere without crushing characters into darkness.</span></div>
     <div class="rule"><strong>No sword default</strong><span>Threats are answered through light, tools, movement, companions and story-specific abilities.</span></div>
