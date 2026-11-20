@@ -15,6 +15,8 @@
 .action-pad button.primary.dialog-next{color:#17211c;background:rgba(230,193,111,.96);border-color:#fff0bd;box-shadow:0 0 0 3px rgba(236,197,111,.2),0 4px 18px rgba(0,0,0,.38)}.action-pad button.primary.dialog-next small{color:#26342c}
 @media(max-width:900px),(hover:none),(pointer:coarse){body{background:#10221c}.stage{background:radial-gradient(ellipse at 50% 43%,#29463a 0,#172d25 48%,#0d1c18 100%)}.stage:before{background:radial-gradient(ellipse at center,transparent 58%,rgba(0,0,0,.2))}}
 @media(max-width:600px) and (orientation:portrait){canvas{height:min(54%,112.5vw);width:100%;object-fit:cover;object-position:center}.stage:before{background:linear-gradient(180deg,transparent 0 54%,rgba(13,28,24,.16) 62%,rgba(13,28,24,.78) 100%)}.joystick{left:max(15px,env(safe-area-inset-left));bottom:max(8%,calc(env(safe-area-inset-bottom) + 10px))}.dpad,.action-pad{bottom:max(8%,calc(env(safe-area-inset-bottom) + 10px))}.action-pad{right:max(15px,env(safe-area-inset-right))}}
+.stage:has(canvas[data-room="home"]){background:radial-gradient(ellipse at 50% 40%,#302218,#110c08 76%)}
+.stage:has(canvas[data-room="home"])::before{background:none}
 </style></head><body><div class="launch-overlay" id="launchOverlay" role="dialog" aria-label="HEIMR game opening">
 <section class="launch-screen" id="studioSlate"><div class="studio-mark">SL</div><p class="launch-eyebrow">A Studio LaDuke production</p><h2 class="studio-wordmark">STUDIO LADUKE</h2><div class="launch-rule"></div><p class="launch-copy">Stories made close to home.</p></section>
 <section class="launch-screen" id="gamesSlate" hidden><p class="games-mark">MAVERICK<br>GAMES</p><div class="launch-rule"></div><p class="games-sub">Made for the next adventure</p></section>
@@ -33,7 +35,7 @@ const characterSheets={maverick:[],dad:[],finn:[],heimr:[],enemy:['assets/heimr/
 const walkSheets={maverick:new Image(),dad:new Image(),finn:new Image(),heimr:new Image()};
 walkSheets.maverick.src='assets/heimr/maverick-walk.png';walkSheets.dad.src='assets/heimr/dad-walk.png';walkSheets.finn.src='assets/heimr/finn-trot.png';walkSheets.heimr.src='assets/heimr/heimr-walk.png';
 const assetLoadStarted=performance.now(),criticalAssets=[art.forest,walkSheets.maverick,walkSheets.dad,walkSheets.finn,walkSheets.heimr];
-const criticalAssetsReady=()=>criticalAssets.every(im=>im.complete&&im.naturalWidth);
+const criticalAssetsReady=()=>criticalAssets.every(im=>im.complete&&im.naturalWidth)&&(last!=='home'||(art.home.complete&&art.home.naturalWidth));
 const SPRITE_CELL=72;
 if(typeof document.createElement==='function')Object.entries(walkSheets).forEach(([name,im])=>{const hydrate=()=>{characterArt[name]=[0,1,2,3].map(row=>{const c=document.createElement('canvas');c.width=c.height=SPRITE_CELL;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.drawImage(im,SPRITE_CELL,row*SPRITE_CELL,SPRITE_CELL,SPRITE_CELL,0,0,SPRITE_CELL,SPRITE_CELL);return c})};if(typeof im.addEventListener==='function')im.addEventListener('load',hydrate);else im.onload=hydrate});
 const player={x:360,y:730,dir:0,walk:0,moving:false};
@@ -41,16 +43,28 @@ const finn={x:418,y:738,dir:0,walk:0,moving:false};
 const dad={x:318,y:725,dir:0};
 const dragon={x:1265,y:188,dir:3,walk:0,moving:false,found:false,following:false};
 const camera={x:0,y:0,zoom:1};
+let cabinViewWidth=portraitView.right-portraitView.left;
+function measureCabinView(){
+  const box=canvas.getBoundingClientRect();
+  if(box.width&&box.height)cabinViewWidth=Math.min(W,box.width*H/box.height);
+}
 const screenX=x=>(x-camera.x)*camera.zoom;
 const screenY=y=>(y-camera.y)*camera.zoom;
 
 function updateCamera(){
   const portrait=portraitScreen();
-  const indoors=last==='home';
-  camera.zoom=indoors ? (portrait ? .68 : .62) : (portrait ? 1.15 : 1);
+  if(last==='home'){
+    const viewWidth=portrait?cabinViewWidth:W;
+    const top=portrait?98:80;
+    camera.zoom=Math.min((viewWidth-8)/(world.w/2),(H-top)/(world.h/2));
+    camera.x=(world.w/2-W/camera.zoom)/2;
+    camera.y=(world.h/2-(H+top)/camera.zoom)/2;
+    return;
+  }
+  camera.zoom=portrait?1.15:1;
   const width=W/camera.zoom,height=H/camera.zoom;
   const inset=portrait?portraitView.left/camera.zoom:0;
-  const footLine=indoors ? .77 : .64;
+  const footLine=.64;
   camera.x=Math.max(-inset,Math.min(world.w/2-width+inset,player.x-width/2));
   camera.y=Math.max(0,Math.min(world.h/2-height,player.y-height*footLine));
 }
@@ -63,7 +77,9 @@ let objective='Talk to Dad on the porch.';let toast='Rain drums on the roof. Dad
 const scents=[[600,645],[700,560],[820,470],[940,405],[1080,300],[1265,188]];
 const clueSpots=[{x:610,y:620,label:'WOODLINE',arrow:-.72,text:'Small prints cross the mud, then turn uphill. Finn is sure they are fresh.'},{x:930,y:405,label:'OLD CROSSING',arrow:-.45,text:'A strip of blue scale caught in cedar bark. Finn sniffs it, then looks toward the water.'},{x:1085,y:290,label:'UPPER TRAIL',arrow:-.62,text:'The moss is pressed flat beneath the roots. Something small waited here before the rain.'}];
 const zones=[{x:390,y:730,r:32,name:'PORCH'},{x:820,y:460,r:26,name:'CEDAR BRIDGE'},{x:1138,y:306,r:28,name:'UPPER TRAIL'},{x:1265,y:188,r:42,name:'THE CLEARING'}];
-const qaRun=(new URLSearchParams(typeof location==='undefined'?'':location.search).get('qa')||'').replace(/[^a-z0-9_-]/gi,'').slice(0,32);
+const params=new URLSearchParams(typeof location==='undefined'?'':location.search);
+const cabinVisit=params.get('scene')==='cabin';
+const qaRun=(params.get('qa')||'').replace(/[^a-z0-9_-]/gi,'').slice(0,32);
 const storageKey=key=>qaRun?'heimr-qa-'+qaRun+'-'+key:key;
 let activeSlot=Math.max(1,Math.min(3,Number(localStorage.getItem(storageKey('heimr-active-slot'))||1)));
 const slotLabel=n=>['Corey','Maverick','Friend'][n-1]||'Player';
@@ -73,12 +89,26 @@ const slotLabel=n=>['Corey','Maverick','Friend'][n-1]||'Player';
 const slotKey=n=>storageKey('heimr-save-v8-slot-'+n);
 const legacySlotKey=n=>storageKey('heimr-save-slot-'+n);
 const readSlot=n=>{try{return JSON.parse(localStorage.getItem(slotKey(n))||localStorage.getItem(legacySlotKey(n))||(!qaRun&&n===1?localStorage.getItem('heimr-save-level1'):null)||'null')}catch{return null}};
-const getSave=()=>readSlot(activeSlot);
+const getSave=()=>cabinVisit?null:readSlot(activeSlot);
+const cabinEntry=[760,610];
+const cabinDad=[1050,630];
+const cabinBed={x:251,y:684,n:'FINN’S BED'};
+const cabinFood={x:1280,y:406,n:'KITCHEN'};
+const cabinTin={x:1212,y:553,key:'starTin',n:'COFFEE TIN'};
+const cabinLamp={x:1212,y:625,key:'headlamp',n:'HEADLAMP'};
+const cabinCare=[
+  {x:285,y:526,key:'blanket',n:'BLANKET',msg:'A familiar blanket. Finn watches it leave his chair.'},
+  {x:539,y:373,key:'bowl',n:'WATER',msg:'A clean water bowl. It is heavier than it looks.'},
+  {x:875,y:718,key:'extinguisher',n:'EXTINGUISHER',msg:'Dad puts the extinguisher beside the bed. “Just in case.”'}
+];
+const cabinDistance=prop=>Math.hypot(player.x-prop.x,player.y-prop.y);
+const atCabinProp=(prop,radius)=>cabinDistance(prop)<radius;
+const nearestCabinProp=props=>props.filter(prop=>!inventory[prop.key]).sort((a,b)=>cabinDistance(a)-cabinDistance(b))[0];
 function resumeObjective(p){if(p==='briefing')return'Talk to Dad on the porch.';if(p==='gear')return'Pick up Dad’s camp hatchet beside the woodpile.';if(p==='meetFinn')return'Meet Finn at the edge of the trail.';if(p==='search'){if(bridgeFixed)return'Cross the steadied log and find the blue light.';if(inventory.cedarWedge&&trailClues.filter(Boolean).length>=2)return'Brace the old crossing with the cedar wedge.';if(trailClues.filter(Boolean).length>=2)return'Find a cedar wedge and brace the old crossing.';return'Follow Finn. Read two trail signs, then find a cedar wedge for the crossing.'}return{shard:'Decide how to approach the dragon.',return:'Take Heimr home to the warm light.',careprep:'Make a safe place for Heimr: blanket, water, extinguisher.',food:'Find something Heimr might eat. Try the kitchen.',done:'The first night is safe. The next day is waiting.',lamp:'Find Dad’s empty coffee tin and headlamp by the workbench.',wonder:'See what Dad has made.',flight:'Give Heimr room to try the air in the yard.',attack:shadowRepelled?'The shadow recoiled. Get Finn and Heimr across the cedar crossing.':`Hold the shadow back with three star-lamp pulses (${shadowHits}/3), then reach the crossing.`,runend:'You made it past the creek. The Run begins.',run:'The coast road is open. The run has begun.'}[p]||objective}
-function resumeDragonPosition(p){if(['careprep','food','done','lamp','wonder'].includes(p))return[826,595];if(['flight','attack'].includes(p))return[500,685];if(['runend','run'].includes(p))return[player.x-30,player.y+18];return[1265,188]}
-function resumeDadPosition(p){if(['done','lamp','wonder'].includes(p))return[1080,710];if(['flight','attack','runend','run'].includes(p))return[390,730];return[318,725]}
+function resumeDragonPosition(p){if(['done','lamp','wonder'].includes(p))return[350,680];if(['careprep','food'].includes(p))return[826,595];if(['flight','attack'].includes(p))return[500,685];if(['runend','run'].includes(p))return[player.x-30,player.y+18];return[1265,188]}
+function resumeDadPosition(p){if(['done','lamp','wonder'].includes(p))return cabinDad;if(['flight','attack','runend','run'].includes(p))return[390,730];return[318,725]}
 const saved=getSave();if(saved&&(saved.version===3||saved.version===4||saved.version===5||saved.version===6||saved.version===7||saved.version===8)){phase=saved.phase||phase;inventory={...inventory,...saved.inventory};player.x=saved.x||player.x;player.y=saved.y||player.y;finn.x=saved.finnX||finn.x;finn.y=saved.finnY||finn.y;const [resumeDragonX,resumeDragonY]=resumeDragonPosition(phase),[resumeDadX,resumeDadY]=resumeDadPosition(phase);dragon.x=Number(saved.dragonX)||resumeDragonX;dragon.y=Number(saved.dragonY)||resumeDragonY;dad.x=Number(saved.dadX)||resumeDadX;dad.y=Number(saved.dadY)||resumeDadY;dragon.found=!!saved.found;completed=phase==='run'||!!saved.chapterComplete;last=saved.last||'forest';trailClues=saved.trailClues||trailClues;bridgeFixed=!!saved.bridgeFixed;keepsakes=saved.keepsakes||keepsakes;brushCleared=!!saved.brushCleared;cacheOpened=!!saved.cacheOpened;wonderTalk=saved.wonderTalk||0;foodFound=!!saved.foodFound;flightStage=Number(saved.flightStage)||0;shadowRepelled=!!saved.shadowRepelled;shadowHits=Math.max(0,Math.min(3,Number(saved.shadowHits)||0));introSeen=!!saved.introSeen;objective=saved.objective||resumeObjective(phase);toastT=0;if(phase==='wonder'){wonderTalk=1;say('The coffee-can stars move softly over the room. Heimr rests beside Finn’s bed.','wonder')}if(phase==='runend')say('The fallen cedar shakes under your feet. Finn is across. Heimr is across. Behind you, the cabin disappears into rain and smoke.','end')}
-function save(){try{localStorage.setItem(slotKey(activeSlot),JSON.stringify({version:8,phase,objective,inventory,x:player.x,y:player.y,finnX:finn.x,finnY:finn.y,dragonX:dragon.x,dragonY:dragon.y,dadX:dad.x,dadY:dad.y,found:dragon.found,completed,chapterComplete:completed,last,trailClues,bridgeFixed,keepsakes,brushCleared,cacheOpened,wonderTalk,foodFound,flightStage,shadowRepelled,shadowHits,introSeen}))}catch{}}
+function save(){if(cabinVisit)return;try{localStorage.setItem(slotKey(activeSlot),JSON.stringify({version:8,phase,objective,inventory,x:player.x,y:player.y,finnX:finn.x,finnY:finn.y,dragonX:dragon.x,dragonY:dragon.y,dadX:dad.x,dadY:dad.y,found:dragon.found,completed,chapterComplete:completed,last,trailClues,bridgeFixed,keepsakes,brushCleared,cacheOpened,wonderTalk,foodFound,flightStage,shadowRepelled,shadowHits,introSeen}))}catch{}}
 function say(text,kind='line',choices=null){dialog={text,kind,choices};dialogIndex=0;}
 function toastMsg(text){toast=text;toastT=240;}
 function enterWoodline(){phase='intro';introStep=0;introFrame=0;introStartedAt=performance.now()}
@@ -89,14 +119,14 @@ else {toastMsg('You wait. The dragon stops trembling.');dialog=null;return;}}
 else if(dialog.kind==='bed'){dialog=null;if(phase==='careprep'&&inventory.blanket&&inventory.bowl&&inventory.extinguisher){inventory.prepared=true;phase='food';objective='Find something Heimr might eat. Try the kitchen.';say('Blanket in Finn’s bed. Water within reach. The extinguisher beside the door. Dad checks each one twice.','line');save();}return;}
 else dialog=null;return;}
 if(dialog.kind==='bed'&&phase==='careprep'&&inventory.blanket&&inventory.bowl&&inventory.extinguisher){inventory.prepared=true;phase='food';objective='Find something Heimr might eat. Try the kitchen.';say('Blanket in Finn’s bed. Water within reach. The extinguisher beside the door. Dad checks each one twice.','line');save();return;}
-if(dialog.kind==='food'&&phase==='food'){if(!foodFound){foodFound=true;inventory.tokens+=1;toastMsg('Found a little bowl of herring eggs. +1 Home Token');say('Finn watches the bowl move. Heimr sniffs it, then sneezes directly into the water. Dad tries the herring eggs with melted butter and soy sauce.','food');save();return;}phase='done';completed=false;objective='The first night is safe. The next day is waiting.';say('Heimr curls into Finn’s bed. Finn objects, then stays close enough to keep watch. Dad scratches behind one tiny horn. “I guess you’re staying for breakfast.”','end');save();return;}
+if(dialog.kind==='food'&&phase==='food'){if(!foodFound){foodFound=true;inventory.tokens+=1;toastMsg('Found a little bowl of herring eggs. +1 Home Token');say('Finn watches the bowl move. Heimr sniffs it, then sneezes directly into the water. Dad tries the herring eggs with melted butter and soy sauce.','food');save();return;}phase='done';completed=false;dragon.x=350;dragon.y=680;objective='The first night is safe. The next day is waiting.';say('Heimr curls up by Finn’s bed. Finn objects, then stays close enough to keep watch. Dad scratches behind one tiny horn. “I guess you’re staying for breakfast.”','end');save();return;}
 if(dialog.kind==='wonder'){if(wonderTalk===0){wonderTalk=1;say('Maverick: “You did this for me?” Dad: “I saw you watching him breathe. Figured you could use something else to watch.” Maverick: “It looks like the sky.” Dad: “It is a coffee can with holes in it.” Maverick: “It is a coffee can with stars.” Dad adjusts the tin. “All right. That is a little better than I expected.” The blue point pulses once as Heimr exhales. Nobody explains it.','wonder');return}phase='flight';last='forest';player.x=430;player.y=710;dad.x=390;dad.y=730;finn.x=405;finn.y=750;dragon.x=500;dragon.y=685;objective='Give Heimr room to try the air in the yard.';dialog=null;toastMsg('The next morning comes with a lot of questions.');save();return}
-if(dialog.kind==='end'){dialog=null;if(phase==='done'){phase='lamp';last='home';player.x=840;player.y=720;dad.x=1080;dad.y=710;objective='Find Dad’s empty coffee tin and headlamp by the workbench.';say('After dinner, Dad says he has one more thing to set up. “Can you grab the tin and my headlamp from the workbench?” He does not explain why.','line');save();return}if(phase==='runend'){phase='run';completed=true;objective='Chapter One complete. The coast road is open, and The Run begins.';toastMsg('CHAPTER ONE COMPLETE · THE RUN BEGINS');save();return}return}
+if(dialog.kind==='end'){dialog=null;if(phase==='done'){phase='lamp';last='home';[player.x,player.y]=[900,610];[dad.x,dad.y]=cabinDad;objective='Find Dad’s empty coffee tin and headlamp by the workbench.';say('After dinner, Dad says he has one more thing to set up. “Can you grab the tin and my headlamp from the workbench?” He does not explain why.','line');save();return}if(phase==='runend'){phase='run';completed=true;objective='Chapter One complete. The coast road is open, and The Run begins.';toastMsg('CHAPTER ONE COMPLETE · THE RUN BEGINS');save();return}return}
 dialog=null;}
 function start(){canvas.focus();}
 window.addEventListener('keydown',e=>{if(!document.getElementById('launchOverlay').hidden){if(e.key==='Enter'){const t=document.getElementById('titleSlate');if(!t.hidden)document.getElementById('playButton').click();else document.getElementById('skipLaunch').click()}e.preventDefault();return}let k=e.key.toLowerCase();if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault();if(k==='q'&&!e.repeat){debugCollision=!debugCollision;toastMsg(debugCollision?'COLLISION VIEW ON · Q TO CLOSE':'COLLISION VIEW OFF')}if(!keys[k])pressed[k]=true;keys[k]=true;if(k==='escape'){paused=!paused;dialog=null} });window.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 function useStarLamp(){if(phase!=='attack')return;if(!inventory.starLamp){toastMsg('The star lamp is still at home. Keep moving; the creek crossing is ahead.');return}if(shadowRepelled){toastMsg('The shadow is breaking apart. Get Finn and Heimr across the creek!');return}if(lampCooldown>0){toastMsg('The star lamp is gathering warmth. Keep moving.');return}let d=Math.hypot(player.x-enemy.x,player.y-enemy.y);if(d>270){toastMsg('The shadow is too far away. Wait until it closes in.');return}lampFlash=30;enemyStun=100;lampCooldown=150;shadowHits=Math.min(3,shadowHits+1);const push=Math.max(1,d);enemy.x+=(enemy.x-player.x)/push*82;enemy.y+=(enemy.y-player.y)/push*82;if(shadowHits>=3){shadowRepelled=true;enemyStun=9999;objective='The shadow recoiled. Get Finn and Heimr across the cedar crossing.';toastMsg('THREE PULSES! Heimr’s warmth tears the shadow open. Run for the crossing!')}else{objective=`Star lamp ${shadowHits}/3. Let the shadow close in, then pulse it again.`;toastMsg(`STAR LAMP ${shadowHits}/3 · The shadow recoils, but gathers itself in the rain.`)}save()}
-const actionKey=k=>{if(k==='e'){if(paused){paused=false;return}actorAction=24;interact()}if(k==='f'&&!paused){if(phase==='attack')useStarLamp();else whistle()}if(k==='m'&&!paused)showMap=!showMap;if(k==='r'&&paused)reset()};
+const actionKey=k=>{if(k==='e'){if(paused){paused=false;return}actorAction=24;interact()}if(k==='f'&&!paused){if(phase==='attack')useStarLamp();else if(last==='home')toastMsg('Finn is curled up in his basket.');else whistle()}if(k==='m'&&!paused)showMap=!showMap;if(k==='r'&&paused)reset()};
 const touchPanel=document.querySelector('.touch-controls'),joyArea=document.getElementById('moveJoystick');
 const analog={x:0,y:0,pointer:null,cx:0,cy:0};
 let lastJoyChoiceAt=0;
@@ -118,7 +148,7 @@ const x=(e.clientX-box.left-(box.width-W*scale)/2)/scale;
 const y=(e.clientY-box.top-(box.height-H*scale)/2)/scale;
 if(x<0||x>W||y<0||y>H)return;if(dialog.kind==='comic'){if(y>285){e.preventDefault();closeDialog()}return}if(y<288)return;e.preventDefault();if(dialog.choices){const choice=Math.floor((y-(portraitScreen()?347:367))/21);if(choice>=0&&choice<dialog.choices.length)dialogIndex=choice;else if(x<(portraitScreen()?430:470))return}closeDialog()},{passive:false});window.addEventListener('blur',()=>{keys.a=keys.d=keys.w=keys.s=false;resetJoystick()});
 function clearSlot(n){localStorage.removeItem(slotKey(n));localStorage.removeItem(legacySlotKey(n));if(!qaRun&&n===1)localStorage.removeItem('heimr-save-level1')}
-function reset(){if(getSave()&&!confirm('Restart this chapter and replace the current slot’s save?'))return;clearSlot(activeSlot);location.reload()}
+function reset(){if(cabinVisit){location.reload();return}if(getSave()&&!confirm('Restart this chapter and replace the current slot’s save?'))return;clearSlot(activeSlot);location.reload()}
 function interact(){if(phase==='intro'){advanceIntro();return}if(paused){reset();return}if(dialog){closeDialog();return}if(showMap){showMap=false;return}
 if(phase==='briefing'){if(Math.hypot(player.x-dad.x,player.y-dad.y)<105){phase='gear';objective='Pick up Dad’s camp hatchet beside the woodpile.';say('Dad points uphill. “Finn heard something near the old crossing. Take him to have a look. And grab my camp hatchet by the woodpile first—those alder runners grow over the trail every spring.”','line');save();return}toastMsg('Dad is on the porch, watching the rain. Walk over and press E.');return}
 if(phase==='gear'){if(!inventory.campHatchet&&Math.hypot(player.x-475,player.y-710)<90){inventory.campHatchet=true;pickupFx=90;phase='meetFinn';objective='Meet Finn at the edge of the trail.';say('Camp hatchet secured. Finn gives it one cautious sniff, then turns toward the trail.','line');save();return}toastMsg(inventory.campHatchet?'Finn is waiting at the trailhead.':'The hatchet is beside the woodpile, just off the porch.');return}
@@ -139,27 +169,34 @@ if(phase==='search'){
 if(phase==='shard'){say('Do you reach for the sliver, or give the frightened hatchling room?','shard',['Offer your hand','Wait beside him']);return}
 if(phase==='return'){
   if(Math.hypot(player.x-555,player.y-530)<78){if(!cacheOpened){if(!inventory.shardWarmth){toastMsg('The blue roots hold fast. Heimr’s warmth might change that.');return}cacheOpened=true;inventory.tokens++;objective='Take Heimr home to the warm light.';say('The blue roots loosen when Heimr breathes against them. Behind the stone is a dry cedar box and one old glass bead. Finn keeps it.','line');save();return}}
- if(Math.hypot(player.x-390,player.y-730)<105){phase='careprep';last='home';player.x=760;player.y=610;finn.x=720;finn.y=630;dragon.x=826;dragon.y=595;dragon.following=false;objective='Make a safe place for Heimr: blanket, water, extinguisher.';say('The house is warm and smells like wet wool. Finn looks at his bed. Heimr looks at Finn. Nobody says this is going to be easy.','line');save();return}
+ if(Math.hypot(player.x-390,player.y-730)<105){enterCabin();say('The house is warm and smells like wet wool. Finn looks at his bed. Heimr looks at Finn. Nobody says this is going to be easy.','line');save();return}
  toastMsg('Heimr follows at a careful distance. Head for the cabin porch.');return;
 }
 if(phase==='careprep'){
- const targets=[{x:225,y:492,key:'blanket',label:'Finn’s folded blanket',msg:'A familiar blanket. Finn watches it leave his chair.'},{x:578,y:368,key:'bowl',label:'Water bowl',msg:'A clean water bowl. It is heavier than it looks.'},{x:880,y:770,key:'extinguisher',label:'Fire extinguisher',msg:'Dad puts the extinguisher beside the bed. “Just in case.”'}];
- let t=targets.filter(o=>!inventory[o.key]).sort((a,b)=>Math.hypot(player.x-a.x,player.y-a.y)-Math.hypot(player.x-b.x,player.y-b.y))[0];
- if(t&&Math.hypot(player.x-t.x,player.y-t.y)<105){inventory[t.key]=true;toastMsg(t.msg);if(inventory.blanket&&inventory.bowl&&inventory.extinguisher)objective='All set. Make up Finn’s bed.';save();return}
- if(Math.hypot(player.x-210,player.y-685)<100){if(inventory.blanket&&inventory.bowl&&inventory.extinguisher){say('Set up Finn’s bed as a safe place for Heimr?','bed',['Make the bed']);}else toastMsg('Finn’s bed is here. It needs a blanket, water, and Dad’s extinguisher nearby.');return}
- if(Math.hypot(player.x-1330,player.y-245)<115){toastMsg('The kitchen smells like coffee, toast, and something from the freezer.');return}
+ const t=nearestCabinProp(cabinCare);
+ if(t&&atCabinProp(t,105)){inventory[t.key]=true;toastMsg(t.msg);if(inventory.blanket&&inventory.bowl&&inventory.extinguisher)objective='All set. Make up Finn’s bed.';save();return}
+ if(atCabinProp(cabinBed,112)){if(inventory.blanket&&inventory.bowl&&inventory.extinguisher){say('Set up Finn’s bed as a safe place for Heimr?','bed',['Make the bed']);}else toastMsg('Finn’s bed is here. It needs a blanket, water, and Dad’s extinguisher nearby.');return}
+ if(atCabinProp(cabinFood,100)){toastMsg('The kitchen smells like coffee, toast, and something from the freezer.');return}
  toastMsg('A lived-in room, a warm stove, rain on the windows. Finn stays close.');return;
 }
 if(phase==='food'){
- if(Math.hypot(player.x-1300,player.y-250)<135){say(foodFound?'Heimr is watching the bowl. Finn is pretending not to.':'There are herring eggs in the kitchen. Dad adds melted butter and soy sauce.','food');return}
+ if(atCabinProp(cabinFood,112)){say(foodFound?'Heimr is watching the bowl. Finn is pretending not to.':'There are herring eggs in the kitchen. Dad adds melted butter and soy sauce.','food');return}
  if(Math.hypot(player.x-826,player.y-595)<105){toastMsg('Heimr nudges the blanket, then sniffs the water.');return}
- if(Math.hypot(player.x-210,player.y-685)<110){toastMsg('Finn has accepted the arrangement, on a temporary basis.');return}
+ if(atCabinProp(cabinBed,112)){toastMsg('Finn has accepted the arrangement, on a temporary basis.');return}
  toastMsg('Dad is testing a few foods. Heimr is curious about all of them.');return;
 }
-if(phase==='lamp'){if(!inventory.starTin&&Math.hypot(player.x-990,player.y-650)<78){inventory.starTin=true;toastMsg('Empty coffee tin · Dad said this was important.');objective=inventory.headlamp?'Bring both things to Dad.':'Find Dad’s headlamp on the workbench.';save();return}if(!inventory.headlamp&&Math.hypot(player.x-1225,player.y-650)<82){inventory.headlamp=true;toastMsg('Dad’s old headlamp · the strap is held together with tape.');objective=inventory.starTin?'Bring both things to Dad.':'Find the empty coffee tin on the workbench.';save();return}if(Math.hypot(player.x-dad.x,player.y-dad.y)<105){if(!inventory.starTin||!inventory.headlamp){toastMsg('Dad points at the workbench. “Tin and headlamp, please.”');return}phase='wonder';wonderTalk=0;inventory.starLamp=true;objective='See what Dad has made.';const bead=keepsakes[0];say(bead?'Dad fits his headlamp over the coffee tin and shuts off the overhead light. Pinholes spill a field of warm stars across the ceiling. The blue glass bead you found catches one point and turns it blue. Heimr follows it, then lets his claws uncurl beside Finn’s bed.':'Dad fits his headlamp over the coffee tin and shuts off the overhead light. Pinholes spill a field of warm stars across the ceiling. Heimr follows the little lights, then lets his claws uncurl beside Finn’s bed.','wonder');save();return}toastMsg('The workbench is crowded with screws, tape, and things Dad swears he will organize.');return}
+if(phase==='lamp'){
+ const part=nearestCabinProp([cabinTin,cabinLamp]);
+ if(part&&atCabinProp(part,90)){
+   inventory[part.key]=true;
+   toastMsg(part===cabinTin?'Empty coffee tin · Dad said this was important.':'Dad’s old headlamp · the strap is held together with tape.');
+   objective=inventory.starTin&&inventory.headlamp?'Bring both things to Dad.':part===cabinTin?'Find Dad’s headlamp on the workbench.':'Find the empty coffee tin on the workbench.';
+   save();return;
+ }
+ if(Math.hypot(player.x-dad.x,player.y-dad.y)<105){if(!inventory.starTin||!inventory.headlamp){toastMsg('Dad points at the workbench. “Tin and headlamp, please.”');return}phase='wonder';wonderTalk=0;inventory.starLamp=true;objective='See what Dad has made.';const bead=keepsakes[0];say(bead?'Dad fits his headlamp over the coffee tin and shuts off the overhead light. Pinholes spill a field of warm stars across the ceiling. The blue glass bead you found catches one point and turns it blue. Heimr follows it, then lets his claws uncurl beside Finn’s bed.':'Dad fits his headlamp over the coffee tin and shuts off the overhead light. Pinholes spill a field of warm stars across the ceiling. Heimr follows the little lights, then lets his claws uncurl beside Finn’s bed.','wonder');save();return}toastMsg('The workbench is crowded with screws, tape, and things Dad swears he will organize.');return}
 if(phase==='flight'){if(Math.hypot(player.x-dragon.x,player.y-dragon.y)<125){flightStage++;if(flightStage===1){say('Heimr crouches, opens both wings, and lifts a few feet. He wobbles down again, offended by the ground. Dad laughs before he can stop himself.','line');save();return}phase='attack';enemy={x:player.x+92,y:player.y-46};health=3;shadowRepelled=false;shadowHits=0;objective='Hold the shadow back with three star-lamp pulses (0/3), then reach the crossing.';say('The woods go quiet. A shadow crosses the rain. Heimr turns toward it. Dad grabs the extinguisher. The star lamp in Maverick’s hands starts to glow.','comic');save();return}toastMsg('Heimr watches the open yard. Give him room near the porch.');return;}
 if(phase==='attack'){if(!extinguisherUsed&&Math.hypot(player.x-390,player.y-730)<115){extinguisherUsed=true;smoke=170;toastMsg('Dad blasts the extinguisher. White powder fills the air; the attacker loses sight of you.');return}if(Math.hypot(player.x-820,player.y-460)<78){if(!shadowRepelled){toastMsg('The shadow blocks the crossing. Let it close in, then press B / F to flash the star lamp.');return}phase='runend';objective='You made it past the creek. The Run begins.';say('The fallen cedar shakes under your feet. Finn is across. Heimr is across. Behind you, the cabin disappears into rain and smoke.','end');save();return}toastMsg(extinguisherUsed?'F  Star Lamp drives the shadow back. Keep moving to the crossing.':'Dad’s extinguisher buys a few seconds; the star lamp will send the shadow back.');return;}
-if(phase==='done'){phase='lamp';last='home';player.x=840;player.y=720;dad.x=1080;dad.y=710;objective='Find Dad’s empty coffee tin and headlamp by the workbench.';say('After dinner, Dad says he has one more thing to set up. “Can you grab the tin and my headlamp from the workbench?” He does not explain why.','line');save();return}
+if(phase==='done'){phase='lamp';last='home';[player.x,player.y]=[900,610];[dad.x,dad.y]=cabinDad;objective='Find Dad’s empty coffee tin and headlamp by the workbench.';say('After dinner, Dad says he has one more thing to set up. “Can you grab the tin and my headlamp from the workbench?” He does not explain why.','line');save();return}
 }
 function whistle(){if(phase==='careprep'||phase==='food'||phase==='done'||phase==='lamp'||phase==='wonder'){toastMsg('Finn looks up. He is not taking orders about his bed.');return}finLead=!finLead;if(finLead){routeIndex=Math.min(routeIndex,scents.length-1);toastMsg('Finn catches the scent and trots up the trail. Follow him.')}else toastMsg('Finn circles back to your side.')}
 const trailLine=[[350,760],[430,705],[520,670],[610,620],[690,545],[760,500],[820,460],[900,425],[970,370],[1045,315],[1110,275],[1180,225],[1265,188]];
@@ -190,7 +227,50 @@ const openingSolids=sceneCollisions.filter(o=>o.type==='rect');
 const insideSolid=(x,y,o)=>x>o.x1-9&&x<o.x2+9&&y>o.y1-7&&y<o.y2+8;
 function collisionActive(o){if(o.gate==='brush')return!brushCleared;if(o.gate==='bridge'&&o.type==='circle')return!bridgeFixed;return true}
 function sceneBlocksPoint(x,y,o){if(!collisionActive(o))return false;if(o.type==='rect')return insideSolid(x,y,o);if(o.type==='circle')return Math.hypot(x-o.x,y-o.y)<o.r+10;if(o.type==='line'){const line=o.line==='creek'?creekLine:trailLine;return lineDistance(x,y,line)<o.radius&&(!bridgeFixed||Math.hypot(x-820,y-460)>58)}return false}
-function blocked(x,y){if(x<35||x>world.w/2-35||y<45||y>world.h/2-45)return true;if(last==='home'){return x<50||x>world.w/2-40||y<48||y>world.h/2-48}if(last==='forest'){if(sceneCollisions.some(o=>sceneBlocksPoint(x,y,o)))return true;if(!cacheOpened&&Math.hypot(x-555,y-530)<43)return true}return false}
+// Floor coordinates are measured in the original 1536 × 1024 cabin painting.
+const cabinSolids=[
+  [155,286,433,355],   // hearth
+  [568,286,908,445],   // dining table and chairs
+  [971,286,1490,352],  // kitchen cabinets
+  [1370,350,1490,483], // end of the kitchen counter
+  [155,456,318,630],   // armchair
+  [172,634,314,735],   // Finn’s basket
+  [1205,506,1490,764], // side table and stools
+  [521,696,1195,900],  // front partition
+  [638,646,858,703]   // door trim
+].map(([x1,y1,x2,y2])=>({x1,y1,x2,y2}));
+
+function cabinBlocked(x,y){
+  return !Number.isFinite(x)||!Number.isFinite(y)||x<155||x>1438||y<286||y>752||
+    cabinSolids.some(solid=>insideSolid(x,y,solid));
+}
+
+function putOnCabinFloor(actor){
+  if(!cabinBlocked(actor.x,actor.y))return;
+  const originX=Number(actor.x),originY=Number(actor.y);
+  let best=Infinity;
+  [actor.x,actor.y]=cabinEntry;
+  for(let y=290;y<=750;y+=10){
+    for(let x=155;x<=1438;x+=10){
+      const distance=(x-originX)**2+(y-originY)**2;
+      if(distance<best&&!cabinBlocked(x,y)){best=distance;actor.x=x;actor.y=y}
+    }
+  }
+}
+
+function enterCabin(){
+  phase='careprep';
+  last='home';
+  [player.x,player.y]=cabinEntry;
+  [dad.x,dad.y]=cabinDad;
+  dragon.x=826;
+  dragon.y=595;
+  dragon.following=false;
+  objective=resumeObjective(phase);
+  toastT=0;
+}
+
+function blocked(x,y){if(x<35||x>world.w/2-35||y<45||y>world.h/2-45)return true;if(last==='home')return cabinBlocked(x,y);if(last==='forest'){if(sceneCollisions.some(o=>sceneBlocksPoint(x,y,o)))return true;if(!cacheOpened&&Math.hypot(x-555,y-530)<43)return true}return false}
 function update(){frame++;player.moving=false;finn.moving=false;dragon.moving=false;let dx=0,dy=0;if(phase==='intro'){if(!introStartedAt)introStartedAt=performance.now();let elapsed=performance.now()-introStartedAt;introFrame=elapsed/16.667;if(elapsed>4800||pressed.e||pressed.enter)advanceIntro()}else if(paused){if(pressed.e)paused=false;if(pressed.r)reset()}else if(dialog?.choices){if(pressed.arrowup||pressed.w)dialogIndex=(dialogIndex+dialog.choices.length-1)%dialog.choices.length;if(pressed.arrowdown||pressed.s)dialogIndex=(dialogIndex+1)%dialog.choices.length;if(analog.pointer!==null&&Math.abs(analog.y)>.6&&performance.now()-lastJoyChoiceAt>300){dialogIndex=(dialogIndex+(analog.y>0?1:-1)+dialog.choices.length)%dialog.choices.length;lastJoyChoiceAt=performance.now()}if(pressed.e)closeDialog()}else if(dialog){if(pressed.e)closeDialog()}else if(!showMap){if(keys.w||keys.arrowup)dy--;if(keys.s||keys.arrowdown)dy++;if(keys.a||keys.arrowleft)dx--;if(keys.d||keys.arrowright)dx++;if(analog.pointer!==null){dx=analog.x;dy=analog.y}if(dx||dy){const n=Math.hypot(dx,dy),strength=Math.min(1,n);dx/=n;dy/=n;player.dir=Math.atan2(dy,dx);player.walk+=.18*strength;player.moving=true;let speed=1.75*strength,nx=player.x+dx*speed,ny=player.y+dy*speed;if(!blocked(nx,player.y))player.x=nx;if(!blocked(player.x,ny))player.y=ny;}
 if(pressed.e)actionKey('e');if(pressed.f)actionKey('f');if(pressed.m)actionKey('m');}
 if(phase==='search'&&finLead){let [tx,ty]=scents[Math.min(routeIndex,scents.length-1)],d=Math.hypot(tx-finn.x,ty-finn.y);if(d>3){finn.dir=Math.atan2(ty-finn.y,tx-finn.x);finn.x+=(tx-finn.x)/d*1.9;finn.y+=(ty-finn.y)/d*1.9;finn.walk+=.16;finn.moving=true}if(d<28&&routeIndex<scents.length-1)routeIndex++;}
@@ -200,10 +280,10 @@ if(phase==='attack'&&!dialog){dragon.x+=(player.x-30-dragon.x)*.045;dragon.y+=(p
 if(phase==='attack'&&!dialog){if(lampCooldown>0)lampCooldown--;if(lampFlash>0)lampFlash--;if(smoke>0)smoke--;if(enemyStun>0)enemyStun--;else if(smoke===0&&!shadowRepelled){let tx=player.x,ty=player.y,d=Math.hypot(tx-enemy.x,ty-enemy.y);if(d>1){enemy.x+=(tx-enemy.x)/d*1.3;enemy.y+=(ty-enemy.y)/d*1.3}if(invuln>0)invuln--;else if(d<34){health--;invuln=90;player.x=390;player.y=730;if(health<=0){health=3;enemy={x:500,y:630};extinguisherUsed=false;shadowHits=0;shadowRepelled=false;objective='Hold the shadow back with three star-lamp pulses (0/3), then reach the crossing.';toastMsg('Dad pulls you behind the porch. The star lamp has to build all three pulses again.')}}}
 if(smoke===1)toastMsg('The white cloud breaks apart. Move!')}
 if(['briefing','gear','meetFinn'].includes(phase)&&Math.hypot(player.x-dad.x,player.y-dad.y)<150)dad.dir=Math.atan2(player.y-dad.y,player.x-dad.x);if(pickupFx>0)pickupFx--;if(clueFx>0)clueFx--;if(bridgeFx>0)bridgeFx--;if(actorAction>0)actorAction--;if(toastT>0)toastT--;if(pressed.e){};updateCamera();syncGameStatus();pressed={};saveTick();}
-let lastGameStatus='';function syncGameStatus(){const next=`Phase ${phase}. ${objective} ${dialog?'Dialogue open.':''} ${completed?'Chapter One complete.':''}`.trim();if(next!==lastGameStatus){lastGameStatus=next;gameStatus.textContent=next;gameStatus.dataset.phase=phase;gameStatus.dataset.completed=String(completed)}}
+let lastGameStatus='';function syncGameStatus(){const next=`Phase ${phase}. ${objective} ${dialog?'Dialogue open.':''} ${completed?'Chapter One complete.':''}`.trim();if(next!==lastGameStatus){lastGameStatus=next;canvas.dataset.room=last;gameStatus.textContent=next;gameStatus.dataset.phase=phase;gameStatus.dataset.completed=String(completed)}}
 let saveCount=0;function saveTick(){if(phase!=='intro'&&++saveCount%240===0)save()}
 function R(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(x,y,w,h)}function E(x,y,rx,ry,c){ctx.fillStyle=c;ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,6.283);ctx.fill()}function portraitScreen(){return typeof innerWidth!=='undefined'&&innerWidth<=600&&innerHeight>innerWidth}function drawLitImage(im,...args){ctx.save();ctx.filter='brightness(1.14) saturate(1.08)';ctx.drawImage(im,...args);ctx.restore()}function groundShadow(x,y,rx,ry){E(x,y+7,rx,ry,'rgba(8,18,16,.24)');E(x,y+6,rx*.56,Math.max(1,ry*.42),'rgba(3,10,9,.2)')}
-function directionFrame(angle=player.dir){if(Math.abs(Math.sin(angle))>.707)return Math.sin(angle)<0?1:0;return Math.cos(angle)<0?2:3}function drawCharacter(name,x,y,h,frame=0){const im=characterArt[name]?.[frame]||characterArt[name]?.[0];if(!im||!im.complete||!im.naturalWidth)return false;const w=h*im.naturalWidth/im.naturalHeight;ctx.drawImage(im,x-w/2,y+7-h,w,h);return true}function walkColumn(walk,moving){return moving?[0,1,2,1][Math.floor(walk*2)%4]:1}function drawWalkSheet(name,x,y,size,dir,walk,moving){const im=walkSheets[name];if(!im||!im.complete||!im.naturalWidth)return false;const row=directionFrame(dir),col=walkColumn(walk,moving);ctx.drawImage(im,col*SPRITE_CELL,row*SPRITE_CELL,SPRITE_CELL,SPRITE_CELL,x-size/2,y+8-size,size,size);return true}
+function directionFrame(angle=player.dir){if(Math.abs(Math.sin(angle))>.707)return Math.sin(angle)<0?1:0;return Math.cos(angle)<0?2:3}function drawCharacter(name,x,y,h,frame=0){const im=characterArt[name]?.[frame]||characterArt[name]?.[0];if(!im||!im.complete||!im.naturalWidth)return false;const w=h*im.naturalWidth/im.naturalHeight;ctx.drawImage(im,x-w/2,y+7-h,w,h);return true}function walkColumn(walk,moving){return moving?[0,1,2,1][Math.floor(walk*2)%4]:1}function drawWalkSheet(name,x,y,size,dir,walk,moving){const im=walkSheets[name];if(!im||!im.complete||!im.naturalWidth)return false;const row=directionFrame(dir),col=walkColumn(walk,moving);if(last==='home')size*=1.5;ctx.drawImage(im,col*SPRITE_CELL,row*SPRITE_CELL,SPRITE_CELL,SPRITE_CELL,x-size/2,y+8-size,size,size);return true}
 function playerSprite(x,y){groundShadow(x,y,9,2.4);const idle=player.moving?0:Math.sin(frame*.075)*.65,act=actorAction>0?Math.sin((24-actorAction)*.22)*.035:0,hurt=phase==='attack'&&invuln>55?.08:0;ctx.save();ctx.translate(x,y+idle);ctx.rotate(hurt||act);if(pickupFx>58)ctx.scale(.97,1.035);if(!drawWalkSheet('maverick',0,0,60,player.dir,player.walk,player.moving)&&!drawCharacter('maverick',0,0,46,directionFrame())){R(-8,-14,16,13,'#cb762d');R(-9,-23,18,11,'#302a25');R(-6,-22,13,9,'#d5a27d')}ctx.restore()}
 function dadSprite(x,y){groundShadow(x,y,11,2.8);const talking=dialog&&['briefing','gear'].includes(phase),bob=Math.sin(frame*.055)*.45;ctx.save();ctx.translate(0,bob);if(!drawWalkSheet('dad',x,y,74,dad.dir,0,false)&&!drawCharacter('dad',x,y,56,directionFrame(dad.dir)))R(x-10,y-17,20,28,'#314e4a');if(talking&&phase==='gear'){const side=Math.cos(dad.dir)<0?-1:1;ctx.strokeStyle='#273d39';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(x+side*4,y-40);ctx.lineTo(x+side*17,y-47);ctx.stroke();E(x+side*19,y-48,3,3,'#c99b78')}ctx.restore()}
 function finnSprite(x,y){groundShadow(x,y,9,2.2);const sniff=finLead&&!finn.moving,bob=finn.moving?0:Math.sin(frame*.11)*.5;ctx.save();ctx.translate(x,y-1+bob);if(sniff)ctx.rotate(Math.sin(frame*.07)*.025);if(!drawWalkSheet('finn',0,0,48,finn.dir,finn.walk,finn.moving)&&!drawCharacter('finn',0,0,30,directionFrame(finn.dir)))R(-10,-6,20,10,'#e9d9bb');if(sniff){ctx.strokeStyle='rgba(235,217,164,.48)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(13,-16,5,4.8,6.1);ctx.arc(17,-17,8,4.8,6.1);ctx.stroke()}ctx.restore()}
@@ -233,14 +313,14 @@ function drawOpeningDepth(o){if(!art.forest.complete||!art.forest.naturalWidth)r
 function drawHome(){
   if(art.home.complete&&art.home.naturalWidth)ctx.drawImage(art.home,0,0,world.w/2,world.h/2);
   else R(0,0,world.w/2,world.h/2,'#39291f');
-// Bed and care markers drawn over clear floor
-if(!inventory.blanket){E(225,495,18,8,'#614e39');R(210,480,31,16,'#b2945b');R(213,482,25,11,'#d7c184')}
-if(!inventory.bowl){E(578,368,19,8,'#19282c');E(578,365,15,5,'#6bb5c1')}
-if(!inventory.extinguisher){R(870,770,18,48,'#ad3828');R(875,764,8,8,'#ddd1aa')}
-if(!foodFound){R(1292,228,27,18,'#806b54');E(1305,229,12,5,'#d5c0a1')}
-if(inventory.blanket||inventory.prepared){R(190,672,73,30,'#625038');R(196,666,61,19,inventory.prepared?'#c1a46a':'#a78c56');}
-if(phase==='lamp'){R(950,671,340,17,'#725437');R(960,688,13,28,'#4f4031');R(1265,688,13,28,'#4f4031');if(!inventory.starTin){R(978,635,26,35,'#9a9a8f');R(975,631,32,6,'#c8c4b4');R(983,642,16,2,'#c2ad76')}if(!inventory.headlamp){ctx.strokeStyle='#8f7650';ctx.lineWidth=4;ctx.beginPath();ctx.arc(1225,649,14,.1,Math.PI-.1);ctx.stroke();E(1225,649,8,6,'#d8bd78');E(1225,649,3,3,'#f7e5a6')}}
-if(inventory.starLamp){R(1064,683,33,24,'#615443');R(1071,668,20,15,'#a39b87');E(1081,666,13,7,'rgba(111,202,231,.18)')}
+  if(phase==='lamp'&&!inventory.starTin){
+    R(1224,538,23,25,'#857d6d');
+    E(1235,538,12,4,'#d8c5a3');
+  }
+  if(phase==='lamp'&&!inventory.headlamp){
+    E(1237,612,14,8,'#37352f');
+    E(1231,610,5,5,'#ead6a0');
+  }
 }
 function drawIntroTrees(){for(const [x,y,s] of [[85,307,1.1],[220,310,1.45],[320,307,.9],[750,309,1.3],[790,311,1]]){R(x-3*s,y-14*s,6*s,17*s,'#62472e');for(let i=0;i<3;i++){let w=(28-i*5)*s,top=y-(34-i*9)*s;R(x-w/2,top,w,9*s,['#173d32','#1d4938','#24543d'][i]);R(x-w/2+4*s,top-5*s,w-8*s,5*s,['#275640','#326648','#3a704d'][i])}R(x-2*s,y-38*s,4*s,6*s,'#48744d')}}
 function drawIntroScene(){ctx.clearRect(0,0,W,H);let sky=ctx.createLinearGradient(0,0,0,360);sky.addColorStop(0,'#102438');sky.addColorStop(.72,'#476678');sky.addColorStop(1,'#8a8d72');ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);for(let i=0;i<6;i++){let x=i*155-30,top=130+(i%3)*30;ctx.fillStyle=i%2?'#253f4c':'#304c58';ctx.beginPath();ctx.moveTo(x,278);ctx.lineTo(x+82,top);ctx.lineTo(x+160,278);ctx.closePath();ctx.fill();R(x+72,top+8,15,5,'#95a39a')}R(0,280,800,34,'#1b4a59');for(let x=20;x<800;x+=53){R(x,286+(x%3)*5,27,2,'#45808a');R(x+13,296+(x%4)*3,12,2,'#80a29a')}R(0,314,800,7,'#a0a08a');for(let x=0;x<800;x+=16){let h=(x*71)%19;R(x,303-h,4,8,'#1e3c34');R(x+5,311-h,4,7,'#345c46')}for(let y=323;y<450;y+=16)for(let x=0;x<800;x+=16){let h=(x*13+y*7)%5;R(x,y,16,16,['#385941','#3d6145','#425f43','#35553e','#486a48'][h]);if((x+y)%7===0)R(x+5,y+4,3,2,'#b0a45e')}
@@ -263,18 +343,36 @@ function drawDetailedIntroScene(){ctx.clearRect(0,0,W,H);drawLitImage(art.forest
 function drawPickupFx(){if(pickupFx<=0)return;const sx=screenX(player.x),sy=screenY(player.y)-60*camera.zoom-Math.sin((90-pickupFx)*.12)*3,a=Math.min(1,pickupFx/18);ctx.save();ctx.globalAlpha=a;ctx.translate(sx,sy);ctx.rotate(-.65);ctx.strokeStyle='#d7b77a';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-10,10);ctx.lineTo(11,-12);ctx.stroke();ctx.fillStyle='#d9e1d7';ctx.beginPath();ctx.moveTo(6,-16);ctx.lineTo(20,-17);ctx.lineTo(14,-5);ctx.lineTo(5,-8);ctx.closePath();ctx.fill();ctx.restore();ctx.save();ctx.globalAlpha=a;R(Math.max(15,sx-73),Math.max(82,sy-47),146,23,'rgba(10,26,22,.88)');ctx.fillStyle='#f4d184';ctx.font='bold 11px system-ui';ctx.textAlign='center';ctx.fillText('CAMP HATCHET  +1',Math.max(88,sx),Math.max(98,sy-31));ctx.restore()}
 function drawClueFx(){if(clueFx<=0)return;let index=Math.max(0,trailClues.lastIndexOf(true)),o=clueSpots[index],p=1-clueFx/100,a=Math.min(1,clueFx/24);ctx.save();ctx.globalAlpha=a;ctx.strokeStyle='#f4d184';ctx.lineWidth=2;ctx.beginPath();ctx.arc(o.x,o.y-22,18+p*35,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#fff2bd';ctx.font='bold 7px system-ui';ctx.textAlign='center';ctx.fillText(`TRAIL SIGN ${trailClues.filter(Boolean).length}/3`,o.x,o.y-51-p*8);ctx.restore()}
 function drawLoadingState(){const ready=criticalAssets.filter(im=>im.complete&&im.naturalWidth).length,p=ready/criticalAssets.length;ctx.clearRect(0,0,W,H);let g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0d211d');g.addColorStop(1,'#07110f');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);ctx.fillStyle='#ecdfbd';ctx.font='700 25px Georgia,serif';ctx.textAlign='center';ctx.fillText('HEIMR',W/2,184);ctx.fillStyle='#9eb9ad';ctx.font='11px system-ui';ctx.fillText('BUILDING THE WOODLINE',W/2,207);R(270,228,260,6,'#17312b');R(270,228,260*p,6,'#d9b66d');ctx.fillStyle='#7f9a8e';ctx.font='9px system-ui';ctx.fillText(ready+' / '+criticalAssets.length+' WORLD SOURCES',W/2,254);ctx.textAlign='left'}
-function draw(){if(!criticalAssetsReady()&&performance.now()-assetLoadStarted<8000){drawLoadingState();return}if(phase==='intro'){if(art.forest.complete&&art.forest.naturalWidth)drawDetailedIntroScene();else drawTopDownIntroScene();return}ctx.clearRect(0,0,W,H);ctx.save();let bridgeShake=bridgeFx>88?Math.sin(frame*2.4)*2.2:0;ctx.translate(screenX(0)+bridgeShake,screenY(0));ctx.scale(camera.zoom,camera.zoom);if(last==='forest')drawForest();else drawHome();
-const actors=[{y:finn.y,f:()=>finnSprite(finn.x,finn.y)},{y:player.y,f:()=>playerSprite(player.x,player.y)}];if(last==='forest')clueSpots.forEach((o,i)=>actors.push({y:o.y,f:()=>drawTrailSign(o,i)}));if(['shard','return','careprep','food','done','lamp','wonder','flight','attack','runend','run'].includes(phase))actors.push({y:dragon.y,f:()=>dragonSprite(dragon.x,dragon.y)});if((last==='forest'&&['briefing','gear','meetFinn','search','return','flight','attack','runend'].includes(phase))||(last==='home'&&['lamp','wonder'].includes(phase)))actors.push({y:dad.y,f:()=>dadSprite(dad.x,dad.y)});if(phase==='attack')actors.push({y:enemy.y,f:()=>{if(invuln===0||Math.floor(frame/5)%2===0)enemySprite(enemy.x,enemy.y)}});
+function draw(){if(!criticalAssetsReady()&&performance.now()-assetLoadStarted<8000){drawLoadingState();return}if(phase==='intro'){if(art.forest.complete&&art.forest.naturalWidth)drawDetailedIntroScene();else drawTopDownIntroScene();return}ctx.clearRect(0,0,W,H);if(last==='home')R(0,0,W,H,'#0d0b09');ctx.save();let bridgeShake=bridgeFx>88?Math.sin(frame*2.4)*2.2:0;ctx.translate(screenX(0)+bridgeShake,screenY(0));ctx.scale(camera.zoom,camera.zoom);if(last==='forest')drawForest();else drawHome();
+const actors=[{y:player.y,f:()=>playerSprite(player.x,player.y)}];
+// Indoors, Finn is already curled up in the painted basket.
+if(last==='forest')actors.push({y:finn.y,f:()=>finnSprite(finn.x,finn.y)});if(last==='forest')clueSpots.forEach((o,i)=>actors.push({y:o.y,f:()=>drawTrailSign(o,i)}));if(['shard','return','careprep','food','done','lamp','wonder','flight','attack','runend','run'].includes(phase))actors.push({y:dragon.y,f:()=>dragonSprite(dragon.x,dragon.y)});if((last==='forest'&&['briefing','gear','meetFinn','search','return','flight','attack','runend'].includes(phase))||(last==='home'&&['lamp','wonder'].includes(phase)))actors.push({y:dad.y,f:()=>dadSprite(dad.x,dad.y)});if(phase==='attack')actors.push({y:enemy.y,f:()=>{if(invuln===0||Math.floor(frame/5)%2===0)enemySprite(enemy.x,enemy.y)}});
 // The forest master already contains the foliage. Its opaque crop rectangles
 // would repaint the trail over actors. Only independent sprites join the depth sort.
 actors.sort((a,b)=>a.y-b.y).forEach(a=>a.f());drawClueFx();if(lampFlash>0){E(enemy.x,enemy.y-8,48,36,`rgba(163,239,255,${lampFlash/44})`);ctx.strokeStyle=`rgba(197,247,255,${lampFlash/30})`;ctx.lineWidth=3;ctx.beginPath();ctx.arc(enemy.x,enemy.y-8,26+(26-lampFlash),0,Math.PI*2);ctx.stroke()}if(smoke>0){ctx.fillStyle=`rgba(235,239,226,${Math.min(.72,smoke/210)})`;ctx.beginPath();ctx.ellipse(enemy.x,enemy.y,95,55,0,0,6.283);ctx.fill()}drawDebugCollision();
 // Rain in outdoor scene only
 if(last==='forest'){ctx.strokeStyle='#b8d7dc49';ctx.lineWidth=1;for(let i=0;i<90;i++){let x=(i*103+frame*2)%(world.w/2),y=(i*71+frame*5)%(world.h/2);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-3,y+9);ctx.stroke()}}
 ctx.restore();drawPickupFx();if(phase==='wonder'||dialog?.kind==='wonder')drawStarCanopy();drawMissionMarker();hud();drawContextAction();if(showMap)mapPanel();if(dialog)(portraitScreen()?portraitDialogPanel():dialogPanel());if(paused)pausePanel();}
-function missionTarget(){if(last==='forest'){if(phase==='briefing')return[dad.x,dad.y,'DAD'];if(phase==='gear')return[475,710,'HATCHET'];if(phase==='meetFinn')return[finn.x,finn.y,'FINN'];if(phase==='search'){let n=trailClues.filter(Boolean).length;if(n<2){let o=clueSpots.find((_,i)=>!trailClues[i]);return[o.x,o.y,'TRAIL SIGN']}if(!inventory.cedarWedge&&!bridgeFixed)return[720,485,'CEDAR WEDGE'];if(!bridgeFixed)return[820,460,'CROSSING'];return[1265,188,'BLUE LIGHT']}if(phase==='shard')return[1265,188,'HEIMR'];if(phase==='return')return[390,730,'HOME'];if(phase==='attack')return[820,460,'CROSSING'];if(phase==='flight')return[dragon.x,dragon.y,'HEIMR']}if(last==='home'){if(phase==='careprep'){let t=[{x:225,y:492,k:'blanket',n:'BLANKET'},{x:578,y:368,k:'bowl',n:'WATER'},{x:880,y:770,k:'extinguisher',n:'EXTINGUISHER'}].find(o=>!inventory[o.k]);return t?[t.x,t.y,t.n]:[210,685,'FINN’S BED']}if(phase==='food')return[1300,250,'KITCHEN'];if(phase==='done')return[1080,710,'DAD'];if(phase==='lamp'){if(!inventory.starTin)return[990,650,'COFFEE TIN'];if(!inventory.headlamp)return[1225,650,'HEADLAMP'];return[1080,710,'DAD']}}return null}
-function drawMissionMarker(){if(dialog||paused)return;let t=missionTarget();if(!t)return;let [wx,wy,label]=t,sx=screenX(wx),sy=screenY(wy),{left,right}=portraitScreen()?portraitView:{left:0,right:W},
+function missionTarget(){if(last==='forest'){if(phase==='briefing')return[dad.x,dad.y,'DAD'];if(phase==='gear')return[475,710,'HATCHET'];if(phase==='meetFinn')return[finn.x,finn.y,'FINN'];if(phase==='search'){let n=trailClues.filter(Boolean).length;if(n<2){let o=clueSpots.find((_,i)=>!trailClues[i]);return[o.x,o.y,'TRAIL SIGN']}if(!inventory.cedarWedge&&!bridgeFixed)return[720,485,'CEDAR WEDGE'];if(!bridgeFixed)return[820,460,'CROSSING'];return[1265,188,'BLUE LIGHT']}if(phase==='shard')return[1265,188,'HEIMR'];if(phase==='return')return[390,730,'HOME'];if(phase==='attack')return[820,460,'CROSSING'];if(phase==='flight')return[dragon.x,dragon.y,'HEIMR']}if(last==='home'){
+let prop;
+if(phase==='careprep')prop=nearestCabinProp(cabinCare)||cabinBed;
+if(phase==='food')prop=cabinFood;
+if(phase==='lamp')prop=nearestCabinProp([cabinTin,cabinLamp]);
+if(prop)return[prop.x,prop.y,prop.n];
+if(phase==='done'||phase==='lamp')return[dad.x,dad.y,'DAD'];
+}return null}
+function drawMissionMarker(){if(dialog||paused||showMap)return;let t=missionTarget();if(!t)return;let [wx,wy,label]=t,sx=screenX(wx),sy=screenY(wy),{left,right}=portraitScreen()?portraitView:{left:0,right:W},
 top=portraitScreen()?154:95,visible=sx>left+32&&sx<right-32&&sy>top&&sy<H-38,
-pulse=1+Math.sin(frame*.12)*.12;ctx.save();if(visible){ctx.strokeStyle='rgba(255,213,123,.84)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(sx,sy-22,15*pulse,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#ffe29c';ctx.beginPath();ctx.moveTo(sx,sy-40);ctx.lineTo(sx-6,sy-29);ctx.lineTo(sx+6,sy-29);ctx.closePath();ctx.fill();ctx.fillStyle='#fff0ca';ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText(label,sx,sy-48)}else{let cx=W/2,cy=H/2,dx=sx-cx,dy=sy-cy,scale=Math.min(((right-left)/2-34)/Math.max(1,Math.abs(dx)),(dy<0?cy-top+32:H-36-cy)/Math.max(1,Math.abs(dy))),ax=cx+dx*scale,ay=cy+dy*scale,angle=Math.atan2(dy,dx);ctx.translate(ax,ay);ctx.rotate(angle);ctx.fillStyle='#f2c66e';ctx.beginPath();ctx.moveTo(13,0);ctx.lineTo(-8,-7);ctx.lineTo(-8,7);ctx.closePath();ctx.fill();ctx.rotate(-angle);ctx.fillStyle='#fff0ca';ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText(label,ax>right-78?'right':ax<left+78?'left':'center',ay<top?ay+22:ay-11)}ctx.restore()}
+pulse=1+Math.sin(frame*.12)*.12;
+if(last==='home'){
+  ctx.strokeStyle='#ffd283';
+  ctx.lineWidth=1.5;
+  ctx.beginPath();
+  ctx.ellipse(sx,sy,8*pulse,5*pulse,0,0,Math.PI*2);
+  ctx.stroke();
+  return;
+}
+ctx.save();if(visible){ctx.strokeStyle='rgba(255,213,123,.84)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(sx,sy-22,15*pulse,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#ffe29c';ctx.beginPath();ctx.moveTo(sx,sy-40);ctx.lineTo(sx-6,sy-29);ctx.lineTo(sx+6,sy-29);ctx.closePath();ctx.fill();ctx.fillStyle='#fff0ca';ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText(label,sx,sy-48)}else{let cx=W/2,cy=H/2,dx=sx-cx,dy=sy-cy,scale=Math.min(((right-left)/2-34)/Math.max(1,Math.abs(dx)),(dy<0?cy-top+32:H-36-cy)/Math.max(1,Math.abs(dy))),ax=cx+dx*scale,ay=cy+dy*scale,angle=Math.atan2(dy,dx);ctx.translate(ax,ay);ctx.rotate(angle);ctx.fillStyle='#f2c66e';ctx.beginPath();ctx.moveTo(13,0);ctx.lineTo(-8,-7);ctx.lineTo(-8,7);ctx.closePath();ctx.fill();ctx.rotate(-angle);ctx.fillStyle='#fff0ca';ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText(label,ax>right-78?'right':ax<left+78?'left':'center',ay<top?ay+22:ay-11)}ctx.restore()}
 function actionVerb(){if(dialog)return dialog.choices?'CHOOSE':dialog.kind==='comic'?'PAGE':'NEXT';if(phase==='briefing'||phase==='meetFinn'||phase==='done')return'TALK';if(phase==='gear')return Math.hypot(player.x-475,player.y-710)<90?'TAKE':'ACT';if(phase==='careprep'||phase==='food'||phase==='lamp')return'TAKE';if(phase==='search'){if(clueSpots.some((o,i)=>!trailClues[i]&&Math.hypot(player.x-o.x,player.y-o.y)<82))return'READ';if(!brushCleared&&Math.hypot(player.x-995,player.y-520)<82)return'CHOP';if(!inventory.cedarWedge&&!bridgeFixed&&Math.hypot(player.x-720,player.y-485)<80)return'TAKE';if(Math.hypot(player.x-820,player.y-460)<84)return bridgeFixed?'CROSS':inventory.cedarWedge?'BRACE':'CHECK';return'ACT'}if(phase==='attack')return'USE';return'ACT'}
 function drawPortraitHud(){R(222,0,356,100,'rgba(8,22,19,.94)');ctx.strokeStyle='#9bb3a6';ctx.strokeRect(228.5,8.5,343,83);ctx.fillStyle='#fff3d2';ctx.font='bold 13px system-ui';ctx.fillText(last==='home'?'THE HOUSE':phase==='attack'?'THE SHADOW':'THE WOODLINE',239,28);ctx.fillStyle='#eef4ea';ctx.font='12px system-ui';wrapText(objective,239,48,322,14);ctx.fillStyle='#efd69a';ctx.font='bold 10px system-ui';ctx.textAlign='right';ctx.fillText(phase==='attack'?`LAMP ${shadowHits}/3  ·  ♥ ${health}`:'TOKENS '+inventory.tokens,561,86);ctx.textAlign='left'}
 function hud(){let fb=document.querySelector('[data-press="f"]'),eb=document.querySelector('[data-press="e"]');if(fb){fb.querySelector('small').textContent=phase==='attack'?'STAR LAMP':'FINN';fb.setAttribute('aria-label',phase==='attack'?'Flash Heimr’s star lamp':'Whistle for Finn')}if(eb){const verb=actionVerb(),next=!!dialog;eb.className=next?'primary dialog-next':'primary';eb.querySelector('small').textContent=verb;eb.setAttribute('aria-label',next?'Continue the conversation':verb.charAt(0)+verb.slice(1).toLowerCase())}
@@ -305,9 +403,16 @@ const x=Math.max(left+width/2+14,Math.min(right-width/2-14,screenX(player.x))),f
 const y=Math.max(122,footY+32<=H-78?footY+32:footY-60*camera.zoom-18);
 ctx.fillStyle='rgba(9,25,22,.92)';ctx.fillRect(x-width/2,y-16,width,25);ctx.strokeStyle='#ceb87b';ctx.lineWidth=1;ctx.strokeRect(x-width/2+.5,y-15.5,width-1,24);ctx.textAlign='center';ctx.fillStyle='#f3e7c9';ctx.fillText(msg,x,y);ctx.restore()}
 function mapPanel(){const portrait=portraitScreen(),x=portrait?222:175,y=65,w=portrait?356:450,h=315,pad=portrait?20:21,textX=x+pad,textW=w-pad*2;R(x,y,w,h,'#0a1715f4');ctx.strokeStyle='#9dbaaa';ctx.strokeRect(x+.5,y+.5,w-1,h-1);ctx.fillStyle='#eee4ca';ctx.font='bold 14px system-ui';ctx.fillText('TRAIL NOTES',textX,92);ctx.fillStyle='#9fb6a8';ctx.font='12px system-ui';let rows=['flight','attack','runend','run'].includes(phase)?['THE YARD → OLD CEDAR CROSSING → COAST ROAD',phase==='flight'?'Help Heimr try the air beside Dad and Finn.':'Flash the star lamp when the shadow closes in.',shadowRepelled?'The shadow has recoiled. Reach the crossing.':'The crossing is blocked until the star lamp drives it back.',phase==='run'?'Chapter One complete. The Run begins.':'Keep Finn and Heimr close.']:last==='forest'?['PORCH → WOODLINE → OLD CEDAR CROSSING → CLEARING',`Trail signs ${trailClues.filter(Boolean).length}/3 · Cedar wedge ${inventory.cedarWedge?'found':bridgeFixed?'placed':'not found'}`,'Optional keepsakes: glass bead · salmon scale · Finn’s red ball.','Find two signs, wedge the log, then follow Finn to the glow.']:phase==='lamp'?['THE HOUSE','Finn’s bed · folded blanket · water bowl','Workbench: empty coffee tin · Dad’s headlamp','Help Dad make a surprise for the room.']:['THE HOUSE','Finn’s bed · folded blanket · water bowl','Fire extinguisher beside the entry','Kitchen counter · herring eggs'];rows.forEach((s,i)=>wrapText(s,textX,130+i*48,textW,15));ctx.fillStyle='#dfc77f';ctx.fillText(portrait?'MAP or A to close':'M or E to close',textX,359)}
-function pausePanel(){const portrait=portraitScreen(),x=portrait?222:205,w=portrait?356:390,textX=x+(portrait?20:28);R(x,155,w,145,'#081210f5');ctx.strokeStyle='#b49a69';ctx.strokeRect(x+.5,155.5,w-1,144);ctx.fillStyle='#eee6d2';ctx.font='bold 16px system-ui';ctx.fillText('PAUSED',textX,187);ctx.font='12px system-ui';ctx.fillStyle='#b5c5b7';ctx.fillText('E resume     R restart chapter',textX,220);ctx.fillText('Your progress saves in this browser.',textX,246)}
+function pausePanel(){const portrait=portraitScreen(),x=portrait?222:205,w=portrait?356:390,textX=x+(portrait?20:28);R(x,155,w,145,'#081210f5');ctx.strokeStyle='#b49a69';ctx.strokeRect(x+.5,155.5,w-1,144);ctx.fillStyle='#eee6d2';ctx.font='bold 16px system-ui';ctx.fillText('PAUSED',textX,187);ctx.font='12px system-ui';ctx.fillStyle='#b5c5b7';ctx.fillText('E resume     R restart chapter',textX,220);ctx.fillText(cabinVisit?'Cabin visit · progress is temporary.':'Your progress saves in this browser.',textX,246)}
 function setupLaunch(){const overlay=document.getElementById('launchOverlay'),studio=document.getElementById('studioSlate'),games=document.getElementById('gamesSlate'),title=document.getElementById('titleSlate'),slots=document.getElementById('slotsSlate'),slotList=document.getElementById('slotList'),play=document.getElementById('playButton'),skip=document.getElementById('skipLaunch');let timer;const showMenu=()=>{clearTimeout(timer);studio.hidden=true;games.hidden=true;title.hidden=false;slots.hidden=true;skip.hidden=true;refreshLaunch()};const showGames=()=>{studio.hidden=true;games.hidden=false;title.hidden=true;slots.hidden=true;timer=setTimeout(showMenu,1900)};timer=setTimeout(showGames,1900);skip.onclick=showMenu;const refreshLaunch=()=>{const save=getSave();play.textContent=(save?'CONTINUE':'START GAME')+' · '+slotLabel(activeSlot).toUpperCase()};document.getElementById('saveSlotsButton').onclick=()=>{title.hidden=true;slots.hidden=false;skip.hidden=true;slotList.innerHTML='';for(let n=1;n<=3;n++){const data=readSlot(n);const isComplete=data&&(data.phase==='run'||data.chapterComplete===true),b=document.createElement('button');b.className='slot-btn'+(n===activeSlot?' active':'');b.innerHTML=slotLabel(n).toUpperCase()+'<span class="slot-detail">SLOT '+n+' · '+(data?(isComplete?'Chapter 1 complete':(data.phase||'In progress').replace(/^[a-z]/,c=>c.toUpperCase())):'Empty')+'</span>';b.onclick=()=>{localStorage.setItem(storageKey('heimr-active-slot'),String(n));location.reload()};slotList.appendChild(b)}document.getElementById('newGameButton').textContent='NEW GAME · '+slotLabel(activeSlot).toUpperCase()};document.getElementById('slotBackButton').onclick=()=>{slots.hidden=true;title.hidden=false;refreshLaunch()};document.getElementById('newGameButton').onclick=()=>{if(getSave()&&!confirm('Replace the saved adventure in Slot '+activeSlot+'?'))return;clearSlot(activeSlot);location.reload()};play.onclick=()=>{overlay.hidden=true;if(phase==='briefing'&&!introSeen)enterWoodline();canvas.focus()};}
-setupLaunch();
+window.addEventListener('resize',measureCabinView);
+measureCabinView();
+if(last==='home'){putOnCabinFloor(player);putOnCabinFloor(dad)}
+if(cabinVisit){
+  enterCabin();
+  document.getElementById('launchOverlay').hidden=true;
+  canvas.focus();
+}else setupLaunch();
 function loop(){update();draw();requestAnimationFrame(loop)}loop();
 })();
 </script></body></html>
