@@ -67,18 +67,37 @@ act('Bridge repair',820,460,'search');
 assert.ok(g.bridgeFixed,'crossing now solid');
 act('Find dragon',1265,188,'shard');next();g.interact();g.closeDialog();check('Make connection','return');
 act('Home again',390,730,'careprep');
-act('Blanket',225,492,'careprep');
-act('Bowl',578,368,'careprep');
-act('Extinguisher',880,770,'careprep');
-act('Make bed',210,685,'careprep');g.closeDialog();check('Care prepared','food');
-act('Herring eggs',1300,250,'food');
+for(const [x,y] of [[300,315],[700,412],[1260,630],[790,713],[69,630]]){
+  assert.ok(g.blocked(x,y),'painted furniture, walls and trim must block cabin movement');
+}
+const paths=[[g.player.x,g.player.y]];
+const reachable=new Set([paths[0].join(',')]);
+for(const [x,y] of paths){
+  for(const [dx,dy] of [[5,0],[-5,0],[0,5],[0,-5]]){
+    const next=[x+dx,y+dy];
+    const key=next.join(',');
+    if(!reachable.has(key)&&!g.blocked(...next)){
+      reachable.add(key);
+      paths.push(next);
+    }
+  }
+}
+const cabinAct=(label,x,y,phase)=>{
+  assert.ok(reachable.has([x,y].join(',')),label+' must be reachable from the cabin entrance');
+  act(label,x,y,phase);
+};
+cabinAct('Blanket',360,525,'careprep');
+cabinAct('Bowl',550,445,'careprep');
+cabinAct('Extinguisher',875,665,'careprep');
+cabinAct('Make bed',345,675,'careprep');g.closeDialog();check('Care prepared','food');
+cabinAct('Herring eggs',1265,410,'food');
 g.closeDialog();check('Fed Heimr','food');
 g.closeDialog();check('First night completed','done');
 assert.equal(g.completed,false,'dinner is a midpoint, not chapter completion');
 g.closeDialog();check('Start lamp','lamp');
-act('Coffee tin',990,650,'lamp');
-act('Headlamp',1225,650,'lamp');
-act('Dad builds starlight',1080,710,'wonder');
+cabinAct('Coffee tin',1145,555,'lamp');
+cabinAct('Headlamp',1145,625,'lamp');
+cabinAct('Dad builds starlight',1050,630,'wonder');
 g.closeDialog();g.closeDialog();check('Move to flight','flight');
 act('First flight',g.dragon.x,g.dragon.y,'flight');
 const flightResumeWindow={PointerEvent:function(){},addEventListener(){}};
@@ -128,4 +147,21 @@ assert.equal(migrationWindow.__probe.player.x,610,'legacy player position must m
 migrationWindow.__probe.save();
 assert.deepEqual(JSON.parse(store.get('heimr-save-slot-2')),legacy,'migration must leave the rollback save untouched');
 assert.equal(JSON.parse(store.get('heimr-save-v8-slot-2')).version,8,'continued progress must write to the new v8 slot');
+const cabinSave={version:8,last:'home',phase:'careprep',x:700,y:412,inventory:{blanket:true}};
+store.set('heimr-active-slot','3');
+store.set('heimr-save-v8-slot-3',JSON.stringify(cabinSave));
+const cabinResumeWindow={PointerEvent:function(){},addEventListener(){}};
+new Function('window','document','Image','localStorage','performance','requestAnimationFrame','setTimeout','clearTimeout','confirm',source)
+  (cabinResumeWindow,document,FakeImage,localStorage,{now:()=>1000},()=>{},()=>0,()=>{},()=>true);
+const cabinResume=cabinResumeWindow.__probe;
+assert.ok(!cabinResume.blocked(cabinResume.player.x,cabinResume.player.y),'old cabin saves inside furniture must resume on nearby walkable floor');
+assert.ok(cabinResume.inventory.blanket,'relocating a cabin save must preserve its objectives and inventory');
+const cabinVisitWindow={PointerEvent:function(){},addEventListener(){}};
+const beforeVisit=new Map(store);
+new Function('window','document','Image','localStorage','performance','requestAnimationFrame','setTimeout','clearTimeout','confirm','location',source)
+  (cabinVisitWindow,document,FakeImage,localStorage,{now:()=>1000},()=>{},()=>0,()=>{},()=>true,{search:'?scene=cabin'});
+const cabinVisit=cabinVisitWindow.__probe;
+assert.equal(cabinVisit.phase,'careprep','the direct cabin link must start at the cabin visit');
+cabinVisit.save();
+assert.deepEqual(store,beforeVisit,'a cabin visit must leave all chapter saves alone');
 console.log('HEIMR scripted opening-to-run progression: '+milestones+' milestones OK (DOM simulation, not device input testing)');
