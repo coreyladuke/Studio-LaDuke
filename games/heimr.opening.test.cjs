@@ -18,8 +18,8 @@ for(const file of assets){
 assert.match(html,/const SPRITE_CELL=72/, 'walk sheets must use a shared pixel grid');
 assert.match(html,/\[0,1,2,1\]\[Math\.floor\(walk\*2\)%4\]/, 'walk animation must use two contact poses and a passing pose');
 assert.match(html,/row=directionFrame\(dir\),col=walkColumn/, 'all actors must select a directional row and gait column');
-assert.match(html,/player\.moving=true/, 'Maverick movement must drive the gait');
-assert.match(html,/finn\.walk\+=\.12;finn\.moving=true/, 'Finn must visibly trot while following');
+assert.match(html,/player\.moving=travelled>0/, 'Maverick movement must drive the gait');
+assert.match(html,/finn\.walk\+=\.16;finn\.moving=true/, 'Finn must visibly trot while following');
 assert.match(html,/dad\.dir=Math\.atan2\(player\.y-dad\.y,player\.x-dad\.x\)/, 'Dad must turn toward Maverick');
 
 assert.match(html,/const openingSolids=/, 'opening art needs authored solid geometry');
@@ -34,7 +34,7 @@ assert.ok(html.includes("if(phase==='gear')return Math.hypot(player.x-475,player
 assert.match(html,/pickupFx=90/, 'hatchet pickup must trigger visible feedback');
 assert.match(html,/CAMP HATCHET  \+1/, 'hatchet pickup must identify the obtained item');
 
-assert.match(html,/canvas\{height:min\(54%,112\.5vw\);width:100%;object-fit:cover;object-position:center\}/, 'portrait framing must preserve at least half the canvas width');
+assert.match(html,/canvas\{height:min\(64%,112\.5vw,calc\(100% - 176px\)\);width:100%;object-fit:cover;object-position:center\}/, 'portrait framing must preserve at least half the canvas width');
 assert.match(html,/bottom:max\(8%,calc\(env\(safe-area-inset-bottom\) \+ 10px\)\)/, 'portrait controls must use the lower deck while respecting the safe area');
 assert.match(html,/function drawPortraitHud\(\)/, 'portrait crop must have a dedicated readable HUD composition');
 assert.match(html,/function portraitDialogPanel\(\)/, 'portrait crop must keep dialogue and its button in view');

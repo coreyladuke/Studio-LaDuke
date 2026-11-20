@@ -29,7 +29,7 @@ const store=new Map(),localStorage={getItem:k=>store.get(k)||null,
   setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)};
 const window={PointerEvent:function(){},addEventListener(){}};
 class FakeImage{constructor(){this.complete=true;this.naturalWidth=1536;this.naturalHeight=1024;this.src=''}}
-const source=match[1].replace(/\}\)\(\);\s*$/, 'window.__probe={player,dragon,dad,finn,inventory,get phase(){return phase},get dialog(){return dialog},get completed(){return completed},get bridgeFixed(){return bridgeFixed},get trailClues(){return trailClues},get foodFound(){return foodFound},get flightStage(){return flightStage},get shadowHits(){return shadowHits},get shadowRepelled(){return shadowRepelled},testReadyLamp(){lampCooldown=0},interact,closeDialog,useStarLamp,save,blocked,draw};})();');
+const source=match[1].replace(/\}\)\(\);\s*$/, 'window.__probe={player,dragon,dad,finn,inventory,get phase(){return phase},get dialog(){return dialog},get completed(){return completed},get bridgeFixed(){return bridgeFixed},get trailClues(){return trailClues},get foodFound(){return foodFound},get flightStage(){return flightStage},get shadowHits(){return shadowHits},get shadowRepelled(){return shadowRepelled},testReadyLamp(){lampCooldown=0},interact,closeDialog,useStarLamp,save,blocked,draw,loop,movePlayer,setMovement(value){keys.d=value}};})();');
 assert.ok(source.includes('window.__probe'),'game test instrumentation should attach');
 new Function('window','document','Image','localStorage','performance','requestAnimationFrame','setTimeout','clearTimeout','confirm',source)
   (window,document,FakeImage,localStorage,{now:()=>1000},()=>{},()=>0,()=>{},()=>true);
@@ -164,4 +164,25 @@ const cabinVisit=cabinVisitWindow.__probe;
 assert.equal(cabinVisit.phase,'careprep','the direct cabin link must start at the cabin visit');
 cabinVisit.save();
 assert.deepEqual(store,beforeVisit,'a cabin visit must leave all chapter saves alone');
+function cabinDistanceAtRefreshRate(hz){
+  const fixture={PointerEvent:function(){},addEventListener(){}};
+  new Function('window','document','Image','localStorage','performance','requestAnimationFrame','setTimeout','clearTimeout','confirm','location',source)
+    (fixture,document,FakeImage,localStorage,{now:()=>1000},()=>{},()=>0,()=>{},()=>true,{search:'?scene=cabin'});
+  const actor=fixture.__probe;
+  const startX=actor.player.x;
+  actor.setMovement(true);
+  for(let i=1;i<=hz;i++)actor.loop(1000+i*1000/hz);
+  assert.ok(actor.player.moving,'walking through open floor drives the gait');
+  return actor.player.x-startX;
+}
+const distance60=cabinDistanceAtRefreshRate(60),distance120=cabinDistanceAtRefreshRate(120);
+assert.ok(distance60>=230&&distance60<=237,'full speed should cross about 236 world units per second');
+assert.ok(Math.abs(distance60-distance120)<4,'display refresh rate must not change movement speed');
+Object.assign(cabinVisit.player,{x:760,y:454,walk:1});
+cabinVisit.movePlayer(0,-1);
+assert.equal(cabinVisit.player.y,454,'Maverick stops at the dining chairs');
+assert.equal(cabinVisit.player.walk,1,'holding a direction against furniture must not advance the gait');
+assert.equal(cabinVisit.player.moving,false);
+cabinVisit.movePlayer(0,.4);
+assert.ok(cabinVisit.player.y>455&&cabinVisit.player.y<456,'light thumb pressure moves slower than a full push');
 console.log('HEIMR scripted opening-to-run progression: '+milestones+' milestones OK (DOM simulation, not device input testing)');
