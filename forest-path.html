@@ -241,7 +241,7 @@
         scene.classList.remove("fire-high");
         fireStatus.textContent = "The fire settles.";
       }, 3200);
-      if (soundPlaying()) tone(190, .09, "triangle", .02);
+      if (soundPlaying(true)) tone(190, .09, "triangle", .02);
       if (reducedMotion.matches) return;
       for (let i = 0; i < 9; i++) {
         const spark = document.createElement("i");
@@ -268,7 +268,7 @@
     document.getElementById("token").addEventListener("click",event=>{
       event.currentTarget.classList.add("token-found");
       try{localStorage.setItem("studioLadukeAdventureToken","found")}catch(error){}
-      if(soundPlaying()){
+      if(soundPlaying(true)){
         tone(523,.08,"triangle",.025);
         setTimeout(()=>{if(soundPlaying())tone(784,.12,"triangle",.025)},90);
       }
