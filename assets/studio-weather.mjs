@@ -103,5 +103,10 @@ export function ambientSound(control, audio, scene, { inside = false } = {}) {
   window.addEventListener("pagehide", () => audio.pause());
   window.addEventListener("pageshow", event => { if (event.persisted) sync(); });
   sync();
-  return () => !audio.paused;
+  // A stored preference may be blocked by autoplay on a fresh page. Resume it
+  // inside the next sound-producing click, while user activation is still live.
+  return (resumeFromGesture = false) => {
+    if (resumeFromGesture && enabled && audio.paused) sync();
+    return !audio.paused;
+  };
 }
