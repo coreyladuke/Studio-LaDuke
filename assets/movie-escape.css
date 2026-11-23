@@ -71,3 +71,14 @@ button,a,input{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-v
 .foot{font-size:9px}.door-reveal{top:51%}
 }
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
+
+.foot #replay{margin-left:13px;border:1px solid #cfa46b;background:#291e23d9;color:#ffe1b1;padding:5px 9px;font:11px Georgia,serif;letter-spacing:0;border-radius:4px}
+.foot #replay:hover{background:#593c45}
+@media(max-width:650px){.foot #replay{font-size:10px;margin-left:6px;padding:5px 6px}.foot .separator{margin:0 5px}}
+/* Solving a scene clears the objective and reveals an usher's ticket,
+   allowing the physical 3D exit door to remain visible. */
+#theater[data-solved="true"] .objective{opacity:0;pointer-events:none}
+.door-reveal{top:auto;bottom:clamp(175px,25vh,217px);padding:10px 16px;min-height:85px;max-width:min(350px,84vw);background:linear-gradient(130deg,#30252de8,#4e3335ed)}
+.door-reveal p{margin:3px 0 9px;font-size:15px}
+.door-reveal #nextRoom{font-size:14px;min-height:43px;padding:10px 15px}
+@media(max-width:650px){.door-reveal{bottom:clamp(181px,27vh,228px);max-width:85vw}}
