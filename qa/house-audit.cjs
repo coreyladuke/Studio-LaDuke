@@ -40,6 +40,12 @@ async function main(){
    for(const label of details.props){
     try{
      let btn=page.getByRole("button",{name:label,exact:true}).first();
+     for(let look=0;look<6;look++){
+      const rect=await btn.boundingBox();if(!rect)break;
+      if(rect.x<14){const left=page.locator("#left");if(await left.isDisabled())break;await left.click({force:true});}
+      else if(rect.x+rect.width>390){const right=page.locator("#right");if(await right.isDisabled())break;await right.click({force:true});}
+      else break;
+     }
      await btn.click({force:true,timeout:2200});
      interactions++;
      if(await page.locator("#dialog").isVisible()){
