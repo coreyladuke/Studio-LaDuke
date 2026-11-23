@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#171217">
+<title>The Movie Maze · Studio LaDuke</title>
+<meta name="description" content="A five-room cinematic escape-room adventure inside Studio LaDuke, with interactive 3D movie-inspired sets and progressive hints.">
+<link rel="icon" href="favicon.png">
+<link rel="stylesheet" href="assets/movie-escape.css?v=20261123a">
+</head>
+<body>
+<main id="theater" data-film="ghost" aria-label="Studio LaDuke movie-inspired escape-room experience">
+ <canvas id="cinema3d" tabindex="0" aria-label="3D movie-themed escape room. Drag to look around, then tap objects or use Inspect Objects to solve each puzzle."></canvas>
+ <div id="filmFallback" hidden><p>The three-dimensional scenery isn't available here. The puzzle objects below still work, so you can play without 3D graphics.</p></div>
+ <div id="loading" role="status" aria-live="polite"><span>✳</span>Opening the screening room</div>
+ <header class="top">
+  <a href="house.html?room=escape" id="returnHouse" title="Return to the House escape room">↶ <span>Return to the House</span></a>
+  <div class="brand"><span class="eyebrow">STUDIO LADUKE PRESENTS</span><strong>THE MOVIE MAZE</strong></div>
+  <button id="sound" type="button" aria-pressed="false" aria-label="Toggle original ambient sounds">♫ <span>Sound off</span></button>
+ </header>
+ <section id="chapter" aria-live="polite">
+  <span id="act">ACT I / V</span>
+  <h1 id="filmTitle">GHOSTBUSTERS</h1>
+  <p id="filmSubtitle">The Containment Room</p>
+ </section>
+ <section class="objective" aria-labelledby="goalLabel"><h2 id="goalLabel">YOUR SCENE</h2><p id="goal">Find the right sequence and release the next door.</p></section>
+ <section class="bottom-controls" aria-label="Escape room controls">
+  <button id="inspect" type="button" aria-expanded="false" aria-controls="propDrawer">Inspect objects</button>
+  <div class="look"><button type="button" id="left" aria-label="Look left">‹</button><span>Drag to look</span><button type="button" id="right" aria-label="Look right">›</button></div>
+  <button id="hint" type="button" aria-controls="hintNote">Hint in 1:30</button>
+ </section>
+ <section id="propDrawer" class="prop-drawer" aria-label="Physical objects in this room" hidden>
+   <div class="drawer-title"><span>THINGS TO TOUCH</span><button id="closeProps" type="button" aria-label="Close object list">×</button></div>
+   <div id="props"></div>
+ </section>
+ <div id="hintNote" class="hint-note" role="status" aria-live="polite" hidden><span class="hint-stamp">A NOTE FROM THE PROJECTIONIST</span><p id="hintText"></p><button type="button" id="closeHint">Fold note</button></div>
+ <form id="roomCode" hidden autocomplete="off" aria-label="Overlook room-number puzzle">
+   <label for="number">What number belongs on the mysterious door?</label>
+   <div><input id="number" name="number" inputmode="numeric" pattern="[0-9]*" maxlength="3" placeholder="•••" required aria-label="Three digit door code"><button type="submit">Try the key</button><button type="button" id="closeCode">×</button></div>
+ </form>
+ <section id="doorReveal" class="door-reveal" hidden aria-live="polite">
+  <p id="successText">Something clicks behind the wall...</p>
+  <button id="nextRoom" type="button">Open the next door <span aria-hidden="true">➜</span></button>
+ </section>
+ <div id="message" role="status" aria-live="polite" aria-atomic="true"></div>
+ <div class="foot"><span id="progress">1 / 5</span><span class="separator">✳</span><span>Five movies · Five puzzles · One secret room</span></div>
+ <div id="gate" class="gate" hidden role="dialog" aria-modal="true" aria-label="The movie maze entrance">
+  <div><span class="gate-mark">🍿</span><h2>There's a cinema behind this wall.</h2>
+  <p>First find the three clues in the House escape room. The brass keypad opens this passage.</p>
+  <a href="house.html?room=escape">Return to the brass keypad</a></div>
+ </div>
+</main>
+<script type="module">
+import("./assets/movie-escape.js?v=20261123a").catch(()=>{
+ document.getElementById("loading").hidden=true;
+ document.getElementById("filmFallback").hidden=false;
+ document.getElementById("inspect").disabled=false;
+});
+</script>
+</body></html>
