@@ -90,8 +90,8 @@ function activate(which,type,ctx){
   if(which==="coat"&&type==="chest"){plate.classList.toggle("pocket-open");ctx.toast(plate.classList.contains("pocket-open")?"Old tickets, little treasures, and a few things worth remembering.":"The drawer slides closed.");return true;}
   if(which==="foyer"&&type==="star"){plate.classList.toggle("star-awake");ctx.toast("Five music notes. One star. This one belongs here.");return true;}
   if(which!=="living")return false;
-  if(type==="sofa"){plate.classList.toggle("pick-found");ctx.toast(plate.classList.contains("pick-found")?"A guitar pick was tucked between the cushions.":"The cushions settle back into place.");return true;}
-  if(type==="tv"){plate.classList.toggle("tv-playing");ctx.toast(plate.classList.contains("tv-playing")?"A little original Studio LaDuke magic on the screen.":"The television clicks off.");return true;}
+  if(type==="sofa"){plate.classList.toggle("pick-found");ctx.toast(plate.classList.contains("pick-found")?"A guitar pick was tucked behind the old records.":"The record crate settles back into place.");return true;}
+  if(type==="tv"){plate.classList.toggle("tv-playing");ctx.toast(plate.classList.contains("tv-playing")?"A soft light wakes up on the vintage stereo.":"The stereo clicks off.");return true;}
   if(type==="pick"){plate.classList.toggle("pick-found");ctx.toast("A lucky pick. The music hasn't gone anywhere.");return true;}
   if(type==="lamp"){plate.classList.toggle("lamp-dim");ctx.toast(plate.classList.contains("lamp-dim")?"The lamplight falls away.":"Warm light fills the corner.");return true;}
   if(type==="yellow"||type==="pink"){const cls=type+"-spot";plate.classList.toggle(cls);ctx.toast(type==="yellow"?"The yellow Strat: the guitar bought at sixteen.":"The pink guitar: the newer addition to the family.");return true;}
