@@ -11,7 +11,7 @@
 </head>
 <body>
 <main id="experience">
-  <canvas id="world" aria-label="Interactive 3D Studio LaDuke house. Drag to look around or use the Look buttons. Explore the atrium and living room."></canvas>
+  <canvas id="world" tabindex="0" aria-label="Interactive 3D Studio LaDuke house. Drag to look around or use the Look buttons. Press 1 for the atrium, 2 for the living room, or use the room navigation buttons."></canvas>
   <div id="still" hidden><img src="assets/front-room-wide.webp" alt="Warm carved-wood Studio LaDuke interior, with checkerboard floor and rainy trees outside."><p>The interactive 3D view isn't supported in this browser. You can still explore the original House.</p><a href="house.html?room=foyer">Enter the original House</a></div>
   <div id="loading" role="status" aria-live="polite"><span class="loading-mark">✳</span><span>Opening the House</span></div>
   <header class="masthead">
@@ -35,6 +35,6 @@
   <div id="discovery" role="status" aria-live="polite" aria-atomic="true"></div>
   <p class="footnote" id="status">A living 3D study · The House will keep growing</p>
 </main>
-<script type="module" src="assets/studio-house-3d.js"></script>
+<script type="module">import("./assets/studio-house-3d.js").catch(()=>{document.getElementById("loading").hidden=true;document.getElementById("still").hidden=false;});</script>
 </body>
 </html>
