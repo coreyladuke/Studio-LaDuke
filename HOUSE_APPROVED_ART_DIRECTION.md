@@ -25,6 +25,10 @@ The house must **not** feel run-down, neglected, creepy, generic, uniformly brow
 | **11C** | Playful architectural journey | Old-school wood and carved rails with color, glass and unusual turns |
 | **12B** | **Five-note-star stained-glass installation** | Signature central architecture, based on the **owner's actual five music notes**, not an invented star |
 
+## Batch 02 approved choices (November 23, 2026)
+
+**1D, 2D, 3D, 4C.** Exploration remains free with an optional hidden narrative thread; discoveries are mixed-media curiosities connected to places. The original five-note star is an expansive **central atrium skylight** casting time-of-day colored light, and the orange-and-purple modular living room sofa is a **curved semicircle around an extraordinary vintage coffee table**. These refine, but do not replace, the original twelve approved choices.
+
 ## Color and material grammar
 Palette ingredients, not a paint bucket dumped equally into every room:
 
