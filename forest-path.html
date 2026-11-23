@@ -56,6 +56,32 @@
     }
     .audio-toggle:focus-visible { outline: 2px solid #edf0e8; outline-offset: 2px; }
 
+
+    /* This hanging cedar plaque belongs to the panoramic scene, not the viewport. */
+    .woods-sign{
+      position:absolute;z-index:19;left:24.4%;top:28%;width:14.5%;min-width:156px;max-width:242px;
+      padding:11px 10px 8px;text-align:center;pointer-events:none;transform:rotate(-2deg);
+      border:3px solid #3b2618;border-radius:8px 5px 7px 6px;
+      background:repeating-linear-gradient(176deg,#61412a 0 8px,#65442c 9px 17px,#50331f 18px 21px);
+      box-shadow:inset 0 2px 2px #a07b4c88,inset 0 -4px 9px #201208aa,3px 7px 9px #000a;
+    }
+    .woods-sign::before,.woods-sign::after{
+      content:"";position:absolute;bottom:100%;height:30px;width:3px;
+      border-left:2px solid #31271f;border-right:1px solid #a18a5a;
+    }
+    .woods-sign::before{left:19%;transform:rotate(5deg)}
+    .woods-sign::after{right:19%;transform:rotate(-5deg)}
+    .woods-sign .woods-title{
+      color:#f5dfa9;margin:0 0 5px;font:700 clamp(.95rem,1.7vw,1.5rem)/1.1 Georgia,serif;
+      text-transform:none;letter-spacing:.02em;text-shadow:0 2px 2px #241409,0 0 3px #241409;
+    }
+    .woods-sign .audio-toggle{
+      pointer-events:auto;min-height:32px;padding:4px 11px;border:1px solid #947348;
+      border-radius:2px;background:linear-gradient(#3b2a1d,#25190f);color:#ebd2a4;
+      font:700 .7rem/1 Georgia,serif;text-shadow:0 1px 1px #180d07;text-decoration:none;
+    }
+    .woods-sign .audio-toggle:focus-visible{outline:2px solid #f4c96d;outline-offset:3px}
+
     .hotspot{position:absolute;z-index:10;display:block;padding:0;border:1px solid transparent;border-radius:18px;background:transparent;color:transparent;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
     .hotspot::after{content:attr(data-tip);position:absolute;left:50%;bottom:9%;transform:translate(-50%,6px);width:max-content;max-width:230px;color:#fff0cf;font:700 .88rem/1 Georgia,serif;text-shadow:0 1px 2px #06100e,0 0 8px #06100e,0 0 13px #06100e;opacity:0;transition:opacity .18s ease,transform .18s ease;pointer-events:none}
     .hotspot:focus-visible{outline:0;background:transparent}
@@ -199,14 +225,13 @@
         <img src="assets/alders-arcade-cabinet.webp" alt="" width="210" height="350">
       </a>
       <button class="hotspot token" id="token" type="button" data-tip="Questionable coin" aria-label="Pick up the copper adventure token"></button>
+      <div class="woods-sign">
+        <h1 class="woods-title">The Woods</h1>
+        <button class="audio-toggle" id="audioToggle" type="button" aria-pressed="false">Sound on</button>
+      </div>
     </div>
   </main>
-
-  <header class="woods-header">
-    <h1 class="woods-title">The Woods</h1>
-    <button class="audio-toggle" id="audioToggle" type="button" aria-pressed="false">Sound on</button>
-  </header>
-  <span class="visually-hidden" id="fireStatus" role="status"></span>
+<span class="visually-hidden" id="fireStatus" role="status"></span>
   <div class="toast scene-note" id="toast" aria-live="polite"></div>
   <div class="ink-threshold" id="inkThreshold" aria-hidden="true"></div>
 

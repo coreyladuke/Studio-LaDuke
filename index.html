@@ -9,6 +9,8 @@
   >
 
   <title>Studio LaDuke</title>
+  <link rel="icon" href="/favicon.png" type="image/png" sizes="96x96">
+  <meta name="theme-color" content="#121c19">
 
   <style>
     * {
@@ -157,13 +159,13 @@
       position: absolute;
       inset: 0;
       background: #040a19;
-      opacity: calc(var(--outside-darkness, .45) * .78);
+      opacity: calc(var(--outside-darkness, .45) * .42);
     }
     .front-room[data-season="autumn"] .wet-pane::before { background: #11131f; }
     .front-room[data-season="autumn"] .wet-pane { filter: sepia(.16); }
     .front-room[data-season="winter"] .wet-pane::before { background: #102133; }
-    .front-room .rain-layer { opacity: 1; }
-    .front-room:not([data-weather="rain"]) .wet-pane :is(.bead,.rivulet) { display: none; }
+    .front-room .rain-layer { opacity: 0; }
+    .front-room:not(.raining) .wet-pane :is(.bead,.rivulet) { display: none; }
     .front-room[data-weather="snow"] .wet-pane::after {
       content: ""; position: absolute; inset: 0;
       background-image: radial-gradient(circle, #eaf6efbe 0 1px, transparent 1.6px);
@@ -329,7 +331,7 @@
       overflow:hidden;
       background: transparent;
     }
-    .front-room.raining .wet-pane { background: #17222b27; }
+    .front-room.raining .wet-pane { background: transparent; }
     .wet-pane .bead {
       position:absolute;
       width:var(--size);
@@ -1008,11 +1010,7 @@
       <img src="assets/everybody-home-cover.webp" alt="" width="620" height="945">
     </div>
     <a class="room-hotspot book-hotspot" href="books.html" aria-label="Open Everybody Deserves to Go Home"></a>
-    <button class="room-hotspot window-hotspot" id="windowHotspot" type="button" aria-label="Look out the window" aria-controls="windowActions" aria-expanded="false"></button>
-    <div class="window-actions" id="windowActions" hidden>
-      <a href="forest-path.html">The Woods <span aria-hidden="true">↗</span></a>
-      <button id="rainSound" type="button" aria-pressed="false">Sound on</button>
-    </div>
+    <button class="room-hotspot window-hotspot" id="windowHotspot" type="button" aria-label="Make rain fall outside the window" aria-pressed="false"></button>
     <button class="note-star" id="noteStar" type="button" aria-label="Spin the five-note star"><img src="assets/studio-note-star.webp" alt=""></button>
     <a class="room-hotspot brain-secret" id="brainSecret" href="brain.html" aria-label="Enter the hidden room inside my head" hidden></a>
 
@@ -1127,14 +1125,13 @@
   </nav>
 
   <script type="module">
-    import { ambientSound, studioConditions } from "./assets/studio-weather.mjs";
+    import { studioConditions } from "./assets/studio-weather.mjs";
 
     const menuButton = document.getElementById("menuButton");
     const menuPanel = document.getElementById("menuPanel");
     const menuShade = document.getElementById("menuShade");
     const frontRoom = document.querySelector(".front-room");
     const frontToast = document.getElementById("frontToast");
-    const windowActions = document.getElementById("windowActions");
     const brainSecret = document.getElementById("brainSecret");
     const lampHotspot = document.getElementById("lampHotspot");
     const guitarHotspot = document.getElementById("guitarHotspot");
@@ -1144,7 +1141,6 @@
     let toastTimer;
     let audioContext;
     const rainAudio = document.getElementById("rainAudio");
-    const rainSound = document.getElementById("rainSound");
     let bobReadyForDoor = false;
     let guitarChordIndex = 0;
     let guitarTimer;
@@ -1249,17 +1245,46 @@
         bobReadyForDoor = false;
       }, 7000);
     });
-
-    ambientSound(rainSound, rainAudio, frontRoom, { inside: true });
-    frontRoom.addEventListener("studio-weather", event => {
-      frontRoom.classList.toggle("raining", event.detail === "rain");
-    });
-    studioConditions(frontRoom);
-
-    windowHotspot.addEventListener("click", () => {
-      windowActions.hidden = !windowActions.hidden;
-      windowHotspot.setAttribute("aria-expanded", String(!windowActions.hidden));
-    });
+     // The glass changes the weather. It never opens a floating menu.
+     studioConditions(frontRoom);
+     rainAudio.src = "audio/front-room-rain.mp3";
+     rainAudio.volume = 0.16;
+     let rainActive = false;
+     let rainContext;
+     function rainBehindGlass() {
+       if (rainContext) return rainContext;
+       const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+       if (!AudioContextClass) return null;
+       rainContext = new AudioContextClass();
+       const source = rainContext.createMediaElementSource(rainAudio);
+       const glass = rainContext.createBiquadFilter();
+       glass.type = "lowpass";
+       glass.frequency.value = 1250;
+       glass.Q.value = 0.55;
+       source.connect(glass);
+       glass.connect(rainContext.destination);
+       return rainContext;
+     }
+     windowHotspot.addEventListener("click", async () => {
+       rainActive = !rainActive;
+       frontRoom.classList.toggle("raining", rainActive);
+       windowHotspot.setAttribute("aria-pressed", String(rainActive));
+       windowHotspot.setAttribute("aria-label", rainActive
+         ? "Let the rain outside the window clear"
+         : "Make rain fall outside the window");
+       if (rainActive) {
+         try {
+           const context = rainBehindGlass();
+           if (context && context.state === "suspended") await context.resume();
+           await rainAudio.play();
+         } catch (error) {
+           // Rain on the glass stays available when sound is blocked.
+         }
+       } else {
+         rainAudio.pause();
+       }
+     });
+     window.addEventListener("pagehide", () => rainAudio.pause());
 
     const noteStar = document.getElementById("noteStar");
     let starTimer;
