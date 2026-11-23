@@ -97,7 +97,16 @@ function createRoom(stage){
  floor.rotation.x=-Math.PI/2;floor.castShadow=false;
  const walls=id==="beetle"?mat("#8c8287",.82):id==="shining"?mat("#713c35",.74):id==="ghost"?mat("#35444a",.42,.36):id==="wayne"?M.wood:M.oak;
  box(.7,6.65,23,-7.85,3.32,-2.4,walls);box(.7,6.65,23,7.85,3.32,-2.4,walls);
- box(16,6.66,.7,0,3.32,-11.48,walls);
+ // Architectural exit opening at x≈6, 2m wide. Never fake a hinged door in front of solid masonry.
+ box(13,6.66,.7,-1.5,3.32,-11.48,walls);
+ box(1,6.66,.7,7.5,3.32,-11.48,walls);
+ box(2,2.55,.7,6,5.38,-11.48,walls);
+ const beyond=mesh(new THREE.PlaneGeometry(2.0,3.86),new THREE.MeshBasicMaterial({color:"#a89570",transparent:true,opacity:.24,side:THREE.DoubleSide}),6,1.96,-12.8);
+ beyond.castShadow=false;
+ box(.16,3.7,2.2,5.02,1.92,-12.45,M.woodDark);
+ box(.16,3.7,2.2,6.99,1.92,-12.45,M.woodDark);
+ box(1.95,.12,2.2,6,.06,-12.45,M.wood);
+ 
  box(16,.46,22,0,6.66,-2.4,id==="beetle"?M.woodDark:M.wood);
  // intricate trim is spatial, with cast shadows
  for(const y of [.13,1.21,1.42,5.42,6.17]){
