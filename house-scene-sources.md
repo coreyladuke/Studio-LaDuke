@@ -21,4 +21,4 @@ The house is an **imaginary interactive environment**. These are supplementary p
 | Recording Booth | https://www.pexels.com/photo/39371478/ |
 | Little Cinema | https://www.pexels.com/photo/40467089/ |
 
-**Reliability note:** background URLs are served by the Pexels image CDN. Every supplementary scene has a local Studio LaDuke artwork fallback for network failures. This is a transitional content source, not approval of final visual continuity. In the finished owner-approved build, replace any photograph that does not look like a believable part of the same house.
+**Reliability note:** sixteen optimized background plates are now **stored locally** under `assets/house-plates/pexels-{photo_id}.jpg`; the live page no longer depends on a third-party image CDN to render them. The images are still transitional: self-hosting fixes load reliability, **not** the need for owner-specific art direction and visual continuity.
