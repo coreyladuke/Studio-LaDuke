@@ -6,7 +6,7 @@ const KEY="studioladuke.house.discovery.v1";
 const THREAD_KEY="studioladuke.house.thread.enabled.v1";
 let threadOn=false;
 try{threadOn=localStorage.getItem(THREAD_KEY)==="true"}catch(_){}
-const threadHints=["An unusual star sits near the beginning. Look for five notes.","Something interesting got lost where people sit and listen.","Check the little things that get left in pockets.","An ordinary library can hide an extraordinary route.","One instrument has been part of this house for years.","Some of the best worlds in the house belong to someone else.","Three clues open a place you were not supposed to find.","Look inside the vault. The smallest things still matter."];
+const threadHints=["An unusual star sits near the beginning. Look for five notes.","Something interesting got lost where people sit and listen.","Check the little things that get left in pockets.","An ordinary library can hide an extraordinary route.","One instrument has been part of this house for years.","Some of the best worlds in the house belong to someone else.","Three clues open a cinema passage. Find the brass keypad.","Look inside the vault. The smallest things still matter.","Beyond the keypad: cold, hot, safe. Follow the movie clues.","The hotel carpet may conceal a three-digit number.","The waiting room has more than one way to be heard.","A basement show needs a signal from the guitar to the camera.","The final round of the pie contest opens another door."];
 const entries=[
  {id:"foyer:star",room:"foyer",label:"Five notes, one star",media:{kind:"ticket",ticket:"FIVE NOTES",caption:"THE SKYLIGHT IS STILL BEING MADE"},detail:"The star hangs over the way in. Upstairs, the instruments have stories of their own."},
  {id:"living:sofa",room:"living",label:"Something between the cushions",media:{kind:"ticket",ticket:"STUDIO LADUKE",caption:"A LITTLE SOMETHING FROM THE RECORD CRATE"},detail:"There is always something left behind where people used to sit and listen."},
@@ -15,7 +15,12 @@ const entries=[
  {id:"music:yellow",room:"music",label:"Sixteen",media:{kind:"destination",to:"music.html",action:"Enter the Music Room"},detail:"The yellow guitar came into this story a long time ago."},
  {id:"attic:board",room:"attic",label:"A world inside a world",media:{kind:"image",src:"assets/cartridge-maverick.webp",alt:"Super Maverick cartridge artwork"},detail:"The adventures upstairs aren't all the owner's. Some belong to Maverick."},
  {id:"escape:solved",room:"escape",label:"Three clues. One door.",media:{kind:"ticket",ticket:"4 · 7 · 2",caption:"A DOOR OPENED"},detail:"You found the way through. Something unusual waits on the other side."},
- {id:"vault:chest",room:"vault",label:"Keep the unusual",media:{kind:"destination",to:"forgotten-works.html",action:"Browse forgotten works"},detail:"A secret doesn't need to be expensive to be worth keeping."}
+ {id:"vault:chest",room:"vault",label:"Keep the unusual",media:{kind:"destination",to:"forgotten-works.html",action:"Browse forgotten works"},detail:"A secret doesn't need to be expensive to be worth keeping."},
+ {id:"escape:movie-ghost",room:"escape",label:"Containment restored",media:{kind:"ticket",ticket:"GHOSTBUSTERS",caption:"COLD · HOT · SAFE"},detail:"Three relays flashed and the containment grid turned green."},
+ {id:"escape:movie-shining",room:"escape",label:"The corridor's number",media:{kind:"ticket",ticket:"THE SHINING",caption:"THE OVERLOOK CORRIDOR"},detail:"The carpet held the missing number. A hotel door finally gave way."},
+ {id:"escape:movie-beetle",room:"escape",label:"The next waiting number",media:{kind:"ticket",ticket:"BEETLEJUICE",caption:"YOUR TURN AT LAST"},detail:"A bell, a numbered ticket, and a strange sculpture woke a crooked doorway."},
+ {id:"escape:movie-wayne",room:"escape",label:"The basement broadcast",media:{kind:"ticket",ticket:"WAYNE'S WORLD",caption:"LIVE FROM THE BASEMENT"},detail:"A guitar, an amplifier, and a camera finally got the signal moving."},
+ {id:"escape:movie-stand",room:"escape",label:"The pie contest trophy",media:{kind:"ticket",ticket:"STAND BY ME",caption:"THE PIE CONTEST"},detail:"Three pies, a trophy, and the last secret doorway to the vault."}
 ];
 let found=new Set();
 try{const raw=JSON.parse(localStorage.getItem(KEY)||"[]");if(Array.isArray(raw))found=new Set(raw.filter(x=>entries.some(e=>e.id===x)))}catch(_){}
