@@ -31,9 +31,37 @@ const rooms={
  escape:{image:"assets/prism-workbench.webp",warm:[800,440]},
  vault:{image:"assets/forgotten-works.webp",warm:[1170,460]}
 };
+/* The owner's room-by-room maximalist palette approval.
+   These are identity tokens, not a substitute for completed room art. */
+const approvedRoomIdentity={
+ foyer:["ground","#f16627","#6636a8"],coat:["ground","#6636a8","#f16627"],
+ living:["ground","#f16627","#6636a8"],hall:["ground","#6636a8","#1cb5b3"],
+ dining:["ground","#ffc42b","#6636a8"],kitchen:["ground","#f16627","#1cb5b3"],
+ pantry:["ground","#5d7351","#ffc42b"],art:["ground","#1cb5b3","#f16627"],
+ bath:["ground","#f16627","#18191b"],mud:["ground","#5d7351","#f16627"],
+ laundry:["ground","#6636a8","#ffc42b"],porch:["ground","#1cb5b3","#ffc42b"],
+ landing:["upstairs","#6636a8","#f16627"],bed:["upstairs","#6636a8","#edd9b7"],
+ closet:["upstairs","#1cb5b3","#6636a8"],bath2:["upstairs","#6636a8","#d64d62"],
+ guest:["upstairs","#d64d62","#5d7351"],library:["upstairs","#d64d62","#ffc42b"],
+ music:["upstairs","#1cb5b3","#6636a8"],roof:["upstairs","#ffc42b","#1cb5b3"],
+ attic:["attic","#ffc42b","#f16627"],
+ basement:["basement","#6636a8","#1cb5b3"],arcade:["basement","#f16627","#6636a8"],
+ recording:["basement","#d64d62","#1cb5b3"],cinema:["basement","#6636a8","#f16627"],
+ escape:["basement","#5d7351","#6636a8"],vault:["basement","#ffc42b","#6636a8"]
+};
+function applyApprovedIdentity(room){
+ const spec=approvedRoomIdentity[room];
+ if(!spec)return;
+ const body=document.body;
+ body.dataset.houseRoom=room;
+ body.dataset.houseZone=spec[0];
+ body.style.setProperty("--room-accent",spec[1]);
+ body.style.setProperty("--room-secondary",spec[2]);
+}
 document.body.classList.add("directed-house");
 function escapeAttr(v){return String(v).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");}
 function scene(which){
+ applyApprovedIdentity(which);
  if(["foyer","coat","living"].includes(which))return V2.scene(which);
  const r=rooms[which];if(!r)return "";
  const src=escapeAttr(r.image),fallback=escapeAttr(r.fallback||r.image);
