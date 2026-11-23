@@ -2,6 +2,10 @@
 
 You are working in the actual repository **coreyladuke/Studio-LaDuke**, with production published at **https://studioladuke.com**. The owner has explicitly requested a full, continuous design and QA rescue, not concept art, generic placeholders, plans, or reassuring prose. **Do the work in code, run the application in a real browser, examine the actual rendered screens, refine, and repeat.** Do not send the owner into the site until objective checks AND visual/experiential sign-off justify it.
 
+## Owner-approved creative direction, binding
+
+On November 23, 2026 the owner chose `1C, 2C, 3C, 4C, 5C, 6C, 7C, 8C, 9B, 10C, 11C, 12B`. Read the **entire** `HOUSE_APPROVED_ART_DIRECTION.md` and `HOUSE_ROOM_IMPLEMENTATION_PLAN.md` first and follow them. Think well-kept maximalist artist's house: orange/purple vinyl modular couch, checkerboard floors in selected rooms, ornate old woodwork with surprising color, carved/curved/secret architecture, layered vintage plus theatrical lighting, authentic curiosities and personal artwork, a charming-to-extraordinary progression, and **the original five-music-note-star as central stained glass**. Colorful, lively and wild but livable, **never run-down**. Preserve the user's actual guitar photographs, original art and site functionality. The room-specific notes in the implementation plan override the formerly restrained all-brown cabin visual assumptions. A palette token alone is not full room reconstruction.
+
 ## Before any edit
 
 1. Check out the current production branch `main`, inspect deployment status and site navigation, then read `HOUSE_SIGNOFF.md`, `HOUSE_VISUAL_BLOCKERS.md`, `house-scene-sources.md`, `qa/house-audit.cjs`, `house.html`, `assets/house-director.js`, `assets/house-director.css`, and `assets/house-v2.js`. Preserve all protected/private owner-only generators, inboxes, proof approvals and credentials. Never expose private materials.
