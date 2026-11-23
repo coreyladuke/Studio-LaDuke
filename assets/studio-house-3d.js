@@ -52,6 +52,19 @@ function woodTexture(){
  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(2.3,2.3);t.anisotropy=4;return t;
 }
 const grain=woodTexture();mats.walnut.map=grain;mats.walnut.needsUpdate=true;
+const pbrLoader=new THREE.TextureLoader();
+function loadWoodMap(filename,onReady,isColor=false){
+ pbrLoader.load("assets/pbr/"+filename,tex=>{
+  tex.wrapS=tex.wrapT=THREE.RepeatWrapping;
+  tex.repeat.set(2.2,2.2);
+  tex.anisotropy=4;
+  if(isColor)tex.colorSpace=THREE.SRGBColorSpace;
+  onReady(tex);mats.walnut.needsUpdate=true;
+ },undefined,()=>{/* keep procedural wood material if offline */});
+}
+loadWoodMap("wood-floor-diff.webp",tex=>{mats.walnut.map=tex;},true);
+loadWoodMap("wood-floor-rough.webp",tex=>{mats.walnut.roughnessMap=tex;});
+loadWoodMap("wood-floor-nor_gl.webp",tex=>{mats.walnut.normalMap=tex;mats.walnut.normalScale=new THREE.Vector2(.32,.32);});
 function checkerTexture(){
  const c=document.createElement("canvas");c.width=1024;c.height=1024;const g=c.getContext("2d");
  for(let y=0;y<8;y++)for(let x=0;x<8;x++){
