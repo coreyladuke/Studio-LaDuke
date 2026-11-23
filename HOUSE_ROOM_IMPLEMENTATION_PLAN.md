@@ -1,6 +1,8 @@
 # Studio LaDuke — Approved full-house implementation plan
 **Revision: November 23, 2026 · Owner selections `1C 2C 3C 4C 5C 6C 7C 8C 9B 10C 11C 12B`**
 
+**Batch 02 locked:** `1D, 2D, 3D, 4C`. Open wandering plus optional hidden thread; mixed-media collectibles; central atrium skylight containing actual five-note star and shifting local-time light; curved orange-purple couch and eccentric vintage coffee table.
+
 **Binding documents:** `HOUSE_APPROVED_ART_DIRECTION.md` (creative approval), `HOUSE_VISUAL_BLOCKERS.md` (currently known defects), `HOUSE_SIGNOFF.md` (release gate), and the existing repository code.
 
 ## Work rules
@@ -14,7 +16,7 @@
 
 ## Work queue
 
-**P0 identity sample:** finish `foyer` (authentic stained-glass star), `living` (orange/purple modular vinyl sofa) and `hall` (real carved architecture and checkered transitions). Capture a synchronized style sample with the same geometry, materials and lighting. Reject if still photographic collage.
+**P0 identity sample:** build `foyer` + `hall` + `landing` around ONE believable atrium and skylight, with the authentic five-note shape, and build `living` with a curved semicircular orange/purple vinyl couch around a statement coffee table. Capture a synchronized style sample with the same geometry, materials and lighting. Reject if still photographic collage.
 
 **P1 contiguous ground floor:** `coat → dining → kitchen → pantry → art → bath → mud → laundry → porch`. Follow an actual walking path and verify all connected transitions.
 
@@ -28,10 +30,10 @@
 
 | Room / code | Palette, floor and architecture | Hero and tactile behavior | Done only when... |
 |---|---|---|---|
-| **Front Hall `foyer`** | Cream/walnut with narrow black-white checker floor and a plum stair/arch accent. Carved door jambs, real architectural glass opening. | **Owner's true five-music-note star** as an illuminated stained-glass installation, not a generic five-point star. Show moving light across tiles on interaction. | Door mapping to front, living, coat and workshop is true to built thresholds; stained-glass likeness confirmed. |
+| **Front Hall `foyer`** | Cream/walnut checker-tile arrival, old woodwork opening onto a **central atrium**. | **Owner's true five-note-star stained-glass skylight above the atrium**, projecting locally time-sensitive light across floors and stairs. | Foyer sightline agrees with main hall and upper landing; true five-note shape and exits verified. |
 | **Coat Closet `coat`** | Compact warm cabinetry, deep plum inside, decorative wood hooks and striped runner. | Coats and a **real sewn pocket** that opens, reveals stubs and a guitar pick physically, then closes. | No duplicate pantry-shelf image; touch region on the pocket, not empty air. |
-| **Living Room `living`** | **Black/white checker threshold → wood and rug**, carved arches, warm walnut, touches of teal and brass. | **Chunky orange-and-purple modular vinyl couch** (orange bases, purple rolled/tufted bolsters), lamps, movie/music artifacts and lived-in personal discoveries. | A recognizable living room, not the Music Room plate; couch is unquestionably the hero, with real furnishings and object-specific actions. |
-| **Main Hall `hall`** | Playfully irregular woodwork: carved newel, alternating checkerboard risers, one colored-glass panel, cream walls with deep wood wainscoting. | A real stair, inset art and physical branch points. Subtle echoes of star colors guide guests deeper. | A unique corridor, not the same asset as foyer; physically coherent access to art, living and upstairs. |
+| **Living Room `living`** | Checker threshold leading to wood/rug, carved arch, warm walnut and glowing glass. | **Curved semicircular channel-tufted orange-and-purple modular vinyl sofa**, enveloping a **wild vintage coffee table** with tangible objects. | Distinct photoreal/dimensional living room, no recycled Music Room plate, proper couch depth and aligned interactions. |
+| **Main Hall `hall`** | Carved newel, checkered risers and walnut wainscoting circling the **central atrium below the glass skylight**. | A real stair, inset art and physical branch points. Subtle echoes of star colors guide guests deeper. | A unique corridor, not the same asset as foyer; physically coherent access to art, living and upstairs. |
 | **Dining Nook `dining`** | Warm wood floor and mustard/plum upholstery around a checker-inlaid table, colored glass pendant. | A handmade board-game box actually opens or launches a playable game. | No anonymous bright dining photo; all kitchen/pantry/living exits work. |
 | **Kitchen `kitchen`** | Apricot cabinets, dark cedar shelves, black-and-white tile backsplash, chrome and warm brass knobs. | Kettle/stove steam and a small pasta-related discovery, with real counters and rain outside. | Visible physical kettle aligns with interaction; recognizably a kitchen. |
 | **Pantry `pantry`** | Sage green shelving, cream jars, orange/yellow labeled bins; simple patterned tile. | A jar/canister slides forward revealing a small oddity or family snack note. | Real food storage, not the same crate photo as vault/closet. |
@@ -45,7 +47,7 @@
 
 | Room / code | Palette, floor and architecture | Hero and tactile behavior | Done only when... |
 |---|---|---|---|
-| **Upstairs Landing `landing`** | Intricate carved staircase, checkered risers, warm wood and modest purple glass landing. | Four physical doorway choices and a rain-streaked window. | Upstairs volume logically joins main hall, library, guest and bedroom. |
+| **Upstairs Landing `landing`** | Carved staircase and checker-pattern risers overlooking the **same central atrium and five-note skylight**. | Four physical doorway choices and a rain-streaked window. | Upstairs volume logically joins main hall, library, guest and bedroom. |
 | **Bedroom `bed`** | Aubergine/cream with vintage walnut, amber glass lights, small pattern accents; more restful than showpiece rooms. | Distinct real bed and bedside lamp switch with warm-to-dark lighting. | Light actually changes the photographed/rendered space; bed remains inviting. |
 | **Walk-in Closet `closet`** | Teal wardrobe interiors, black lacquer racks, checker drawer liner, brass rails. | **Signature black Raven wing denim jacket**, hats, fabric pattern samples, moccasins, costume runway rack. | Art and garments are anchored to authentic user design references and can be examined. |
 | **Upstairs Bath `bath2`** | Purple tile details, warm cream, stained-glass window, carved mirror frame. | Mirror fog / light interaction. | Clearly part of same building and visually distinct from downstairs bath. |
