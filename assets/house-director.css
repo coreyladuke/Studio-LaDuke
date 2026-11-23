@@ -1,0 +1,52 @@
+/* House Director: tactile, cinematic physical interactions across Studio LaDuke. */
+body.directed-house .room-sign{display:none}
+body.directed-house #painting svg.house-directed{width:100%;height:100%;display:block;filter:contrast(1.06) saturate(.88)}
+body.directed-house #plate::after{box-shadow:inset 0 0 90px 12px #0609089c}
+body.directed-house #painting .scene-spot{opacity:0;transition:opacity .4s}
+body.directed-house #plate.discovered #painting .scene-spot{opacity:1}
+body.directed-house #painting .scene-lamp-shade,
+body.directed-house #painting .scene-mist,
+body.directed-house #painting .scene-reveal,
+body.directed-house #painting .scene-film,
+body.directed-house #painting .scene-steam,
+body.directed-house #painting .scene-prism,
+body.directed-house #painting .scene-spark{opacity:0;transition:opacity .55s}
+body.directed-house #plate.lamp-dim .scene-lamp-shade{opacity:.83}
+body.directed-house #plate.mirror-fog .scene-mist{opacity:.57}
+body.directed-house #plate.drawer-open .scene-reveal{opacity:1}
+body.directed-house #plate.tv-playing .scene-film{opacity:1}
+body.directed-house #plate.steam-on .scene-steam{opacity:1}
+body.directed-house #plate.light-on .scene-prism{opacity:1}
+body.directed-house #plate.spark-on .scene-spark{opacity:1}
+body.directed-house #floorTag{min-width:135px;max-width:min(220px,54vw);border:1px solid #d8b8795d;border-radius:3px;background:#131d19d9;box-shadow:0 3px 11px #000a}
+body.directed-house #floorTag strong{font-size:13px}
+body.directed-house #floorTag small{font-size:10px}
+body.directed-house #mapOpen{background:#28291fed;border:1px solid #d4ac70;box-shadow:0 3px 10px #0008;border-radius:7px}
+body.directed-house #frontLink{border-radius:4px;background:#1d2824e3;box-shadow:0 3px 8px #0008}
+body.directed-house .door .doorface{display:none}
+body.directed-house .door .plaque{position:absolute;top:51%;min-height:0;max-width:170px;width:max-content;white-space:nowrap;padding:7px 10px;background:#2d271cdd;opacity:0;transform:translate(-50%,8px);pointer-events:none;transition:opacity .15s,transform .15s;font:16px Georgia,serif;color:#ffe5b4;border:1px solid #c49b61}
+body.directed-house .door:hover .plaque,body.directed-house .door:focus-visible .plaque{opacity:1;transform:translate(-50%,0)}
+body.directed-house .door{background:transparent;filter:none;border:0;outline-offset:0;min-width:80px;top:264px;height:405px}
+body.directed-house .door::before{content:"";position:absolute;inset:9px 13px;border:2px solid transparent;border-radius:6px;box-shadow:none;transition:border-color .15s,background .15s}
+body.directed-house .door::after{content:"";position:absolute;top:61%;right:19px;width:15px;height:15px;border-radius:50%;border:2px solid #4b3925;background:radial-gradient(circle at 32% 27%,#fce0a4,#b58b50 48%,#513421 78%);box-shadow:0 1px 8px #000a,0 0 7px #f9d48851}
+body.directed-house .door:hover::before,body.directed-house .door:focus-visible::before{border-color:#daba7a91;background:linear-gradient(90deg,#e4bd6513,transparent 65%);box-shadow:inset 0 0 40px #b78b3352}
+body.directed-house .door:focus-visible{outline:3px solid #efca8c;filter:none}
+body.directed-house .prop{height:96px;width:96px;filter:none;touch-action:manipulation}
+body.directed-house .prop>svg,body.directed-house .prop>img{opacity:0;pointer-events:none}
+body.directed-house .prop::before{content:"";position:absolute;left:calc(50% - 6px);top:calc(50% - 6px);width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,#e8c997,#ba9456 40%,#463421 78%);box-shadow:0 0 13px #edc68355,0 2px 3px #070705a6;opacity:.74}
+body.directed-house .prop:hover::before,body.directed-house .prop:focus-visible::before{background:#ffdeaa;box-shadow:0 0 22px #ffe0aacc}
+body.directed-house .prop:hover,body.directed-house .prop:focus-visible{background:#d5a96413;outline:2px solid #dbb67c99;border-radius:50%;filter:none}
+body.directed-house .prop .hint{opacity:0;position:absolute;top:80%;left:50%;width:max-content;max-width:280px;white-space:normal;transform:translateX(-50%);padding:7px 9px;z-index:99;background:#151a17ed;color:#ffebc8;border:1px solid #dbb9858a;font-size:13px}
+body.directed-house .prop:hover .hint,body.directed-house .prop:focus-visible .hint{opacity:1}
+body.directed-house #toast{bottom:90px;width:max-content;border-radius:3px;background:#111b1ae9;max-width:calc(100vw - 32px);font-size:14px}
+@media(max-width:650px){
+ body.directed-house .door::after{width:18px;height:18px}
+ body.directed-house .door{min-width:100px}
+ body.directed-house #floorTag{max-width:47vw}
+ body.directed-house #floorTag strong{font-size:12px}
+ body.directed-house #floorTag small{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){
+ body.directed-house .scene-spot,body.directed-house #painting .scene-mist,
+ body.directed-house #painting .scene-reveal,body.directed-house #painting .scene-film{transition:none!important}
+}
