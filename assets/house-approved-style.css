@@ -148,3 +148,27 @@ body.directed-house[data-atrium-period="morning"] #painting::after{opacity:.27}
 @media(prefers-reduced-motion:reduce){
  body.directed-house[data-atrium-period] #painting::after{animation:none!important}
 }
+
+/* Real modeled rooms appear as an in-world carved-brass gateway in the accessible floor plan. */
+body.directed-house .house3d-map-door{
+ display:flex;align-items:center;gap:12px;text-decoration:none;
+ margin:23px 8px 18px;padding:16px 14px;color:#ffe1a0;
+ border:2px solid #9e7644;border-radius:5px 15px 5px 10px;
+ background:linear-gradient(135deg,#4d2a20 0%,#271b2b 48%,#492e63 100%);
+ box-shadow:0 5px 0 #251714,0 13px 20px #0006,inset 0 0 0 2px #c8a56b36;
+ transform:rotate(-1deg);transition:transform .2s,box-shadow .2s;
+}
+body.directed-house .house3d-map-door:hover,
+body.directed-house .house3d-map-door:focus-visible{
+ transform:rotate(0) translateY(-3px);
+ box-shadow:0 7px 0 #251714,0 16px 24px #0007;
+ outline:3px solid #f6b963;outline-offset:3px;
+}
+body.directed-house .house3d-map-door .house3d-mark{
+ display:grid;place-items:center;flex:none;
+ width:46px;height:46px;border-radius:50%;border:2px solid #dfb879;
+ color:#f4c07c;font-size:29px;background:radial-gradient(circle,#62412c,#261b21);
+}
+body.directed-house .house3d-map-door strong{display:block;color:#ffe2a9;font:700 17px/1.15 Georgia,serif}
+body.directed-house .house3d-map-door small{display:block;margin-top:5px;color:#e4c8b2;font:12px/1.3 Arial,sans-serif}
+@media(prefers-reduced-motion:reduce){body.directed-house .house3d-map-door{transform:none;transition:none}}
