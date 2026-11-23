@@ -72,6 +72,21 @@ All are separate entry points and must be opened on both mobile and desktop, not
 
 **Current automated QA evidence:** 27 room renderers, 27 object-action smoke paths, all top-level page loads and their assets passed the latest local browser run. This does **not** clear visual sign-off, physical doorway alignment, quality of real objects, or deep game playthroughs. The detailed owner-protecting defect list is in [`HOUSE_VISUAL_BLOCKERS.md`](HOUSE_VISUAL_BLOCKERS.md).
 
+## Additional nested HTML entrypoints (8)
+
+A static link/asset audit has now checked **all 27 HTML files and 245 local references**, with **zero missing local paths**. This is existence validation, not proof that those destinations are visually complete or playable. Add each to the visual/gameplay review:
+
+- [ ] `bob-bureau/index.html` | mobile/desktop screenshot, meaningful interactions, route in and back
+- [ ] `commissions/index.html` | mobile/desktop screenshot, meaningful interactions, route in and back
+- [ ] `game/visual-comparison.html` | mobile/desktop screenshot, meaningful interactions, route in and back
+- [ ] `games/alder-crawl.html` | mobile/desktop screenshot, meaningful interactions, route in and back
+- [ ] `games/heimr-visual-system.html` | mobile/desktop screenshot, meaningful interactions, route in and back
+- [ ] `games/heimr.html` | mobile/desktop screenshot, meaningful interactions, route in and back
+- [ ] `games/heimr.viewport-review.html` | mobile/desktop screenshot, meaningful interactions, route in and back
+- [ ] `games/prism.html` | mobile/desktop screenshot, meaningful interactions, route in and back
+
+**Current site-wide link audit:** `node qa/site-links-audit.cjs` (latest run: 27 HTML files, 245 local references, 0 missing). This supplements but does not replace the 27-room screenshot and object-action test `qa/house-audit.cjs`.
+
 ## Known release-blockers pending review
 
 - The 16 supplementary Pexels background plates need a style-continuity review and should be replaced if they look like unrelated homes rather than one coherent imaginary house. Source credits: `house-scene-sources.md`.
