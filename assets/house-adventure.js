@@ -15,6 +15,7 @@ const entries=[
 ];
 let found=new Set();
 try{const raw=JSON.parse(localStorage.getItem(KEY)||"[]");if(Array.isArray(raw))found=new Set(raw.filter(x=>entries.some(e=>e.id===x)))}catch(_){}
+const announce=document.createElement("span");announce.id="housePocketAnnouncement";announce.setAttribute("role","status");announce.setAttribute("aria-live","polite");
 const toggle=document.createElement("button");toggle.type="button";toggle.id="housePocketToggle";
 toggle.setAttribute("aria-label","Open your discoveries pocketbook");toggle.setAttribute("aria-expanded","false");toggle.setAttribute("aria-controls","housePocketPanel");
 const shade=document.createElement("div");shade.id="housePocketShade";shade.hidden=true;
@@ -37,16 +38,16 @@ function collect(room,type){
  const id=room+":"+type;
  if(!entries.some(e=>e.id===id)||found.has(id))return false;
  found.add(id);try{localStorage.setItem(KEY,JSON.stringify([...found]))}catch(_){}
- redraw();return true;
+ redraw();const entry=entries.find(e=>e.id===id);announce.textContent=entry.label+' added to the pocketbook';toggle.classList.remove('new-find');void toggle.offsetWidth;toggle.classList.add('new-find');setTimeout(()=>toggle.classList.remove('new-find'),850);return true;
 }
 function clear(){found.clear();try{localStorage.removeItem(KEY)}catch(_){}redraw();}
 function init(){
- document.body.append(toggle,shade,panel);redraw();
+ document.body.append(toggle,shade,panel,announce);redraw();
  toggle.addEventListener("click",open);shade.addEventListener("click",close);
  panel.querySelector("#housePocketClose").addEventListener("click",close);
  panel.querySelector("#housePocketReset").addEventListener("click",clear);
  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!panel.hidden){e.preventDefault();e.stopImmediatePropagation();close()}},true);
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
-window.StudioHouseAdventure={collect,close,get count(){return found.size}};
+window.StudioHouseAdventure={collect,close,get count(){return found.size},get isOpen(){return !panel.hidden}};
 })();
