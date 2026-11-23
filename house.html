@@ -86,13 +86,14 @@ body.lights-out #plate{filter:brightness(.65)}
 <aside id="map" hidden aria-label="House floor plan"><button id="closeMap" aria-label="Close map" type="button">×</button><h2>Studio LaDuke</h2><p>THE HOUSE. Walk through the physical doors or use this folded floor plan if you get turned around.</p><div id="floorContents"></div></aside>
 <div id="dialogShade" hidden></div>
 <section id="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle" hidden><button id="closeDialog" aria-label="Close" type="button">×</button><h2 id="dialogTitle"></h2><p id="dialogText"></p><form id="codeForm" hidden><label for="codeInput">Three-digit code</label><input id="codeInput" required inputmode="numeric" pattern="[0-9]{3}" maxlength="3" autocomplete="off"><button type="submit">Unlock</button></form><div id="dialogButtons" class="buttons"></div></section>
+<script src="assets/house-v2.js"></script>
 <script>
 "use strict";
 (function(){
 const R={
  foyer:{n:"Front Hall",f:0,d:"A place to hang your coat and come inside.",e:[["Front door","index.html"],["Living room","living"],["Coat closet","coat"]],p:[["star",825,590,"The star","Five music notes arranged into the Studio LaDuke star."]]},
  coat:{n:"Coat Closet",f:0,d:"Boots, coats and a suspicious umbrella.",e:[["Front hall","foyer"]],p:[["chest",795,580,"A forgotten pocket","Old ticket stubs, guitar picks and useful little things."]]},
- living:{n:"Living Room",f:0,d:"Come in. Sit down. Stay a while.",e:[["Front hall","foyer"],["Dining room","dining"],["Main hallway","hall"],["Back porch","porch","outside"]],p:[["sofa",790,730,"Sit on the couch","It's raining outside, and no one is asking you to do anything."],["tv",800,335,"The television","Original cartoons, short films and Studio LaDuke projects will play here."],["pick",380,385,"The metal guitar pick","WHEN WORDS FAIL MUSIC SPEAKS."]]},
+ living:{n:"Living Room",f:0,d:"Come in. Sit down. Stay a while.",e:[["Front hall","foyer"],["Dining room","dining"],["Main hallway","hall"],["Back porch","porch","outside"]],p:[["sofa",688,734,"The couch","Look between the cushions."],["tv",1225,480,"The television","An original Studio short."],["pick",830,774,"A guitar pick","A little lucky find."],["yellow",380,405,"The yellow Strat","Sixteen years old. A guitar with history."],["pink",1245,390,"The pink guitar","A newer guitar on the wall."],["lamp",1090,507,"The floor lamp","A softer light."]]},
  hall:{n:"Main Hall",f:0,d:"Doors to rooms worth getting lost in.",photo:"assets/front-room-doors.webp",e:[["Living room","living"],["Art studio","art"],["Stairs upstairs","landing","up"]],p:[["stairs",1230,730,"Basement stairs","The other staircase is by the mudroom.","basement"]]},
  dining:{n:"Dining Nook",f:0,d:"A table for dinner and original board games.",e:[["Living room","living"],["Kitchen","kitchen"],["Pantry","pantry"]],p:[["board",790,685,"The board game","This table is ready for the first original Studio LaDuke board game."]]},
  kitchen:{n:"Kitchen",f:0,d:"Rain on the glass. Something on the stove.",e:[["Dining nook","dining"],["Laundry","laundry"],["Back porch","porch","outside"]],p:[["cup",785,670,"Put the kettle on","A good evening for pasta and a movie."]]},
@@ -171,11 +172,11 @@ function toast(t){clearTimeout(toastTimer);id("toast").textContent=t;id("toast")
 function resize(){scale=Math.max(innerWidth/1600,innerHeight/900);maxPan=Math.max(0,(1600*scale-innerWidth)/2);plate.style.setProperty("--scale",scale);setPan(Math.min(maxPan,Math.max(-maxPan,pan)));}
 function setPan(p){pan=Math.min(maxPan,Math.max(-maxPan,p));plate.style.setProperty("--pan",pan+"px");id("left").disabled=pan>=maxPan-2;id("right").disabled=pan<=-maxPan+2;}
 function draw(){
- const r=R[here];if(!r)return;painting.innerHTML=r.photo?'<img src="'+r.photo+'" alt=""><div class="wash"></div>':lightPanel(r);
+ const r=R[here];if(!r)return;document.body.classList.remove("scene-living","scene-foyer","scene-coat");plate.classList.remove("pocket-open","star-awake","tv-playing","pick-found","lamp-dim","yellow-spot","pink-spot");if(["living","foyer","coat"].includes(here))document.body.classList.add("scene-"+here);painting.innerHTML=(window.StudioHouseV2&&window.StudioHouseV2.scene(here))||(r.photo?'<img src="'+r.photo+'" alt=""><div class="wash"></div>':lightPanel(r));
  id("roomName").textContent=r.n;id("roomDescription").textContent=r.d;id("floorName").textContent=floors[r.f];doorBox.replaceChildren();objectBox.replaceChildren();
- let pos=r.e.length===1?[800]:r.e.length===2?[440,1150]:r.e.length===3?[300,805,1300]:[170,560,1035,1430];
+ let pos=r.e.length===1?[800]:r.e.length===2?[440,1150]:r.e.length===3?[300,805,1300]:[170,560,1035,1430];if(here==="foyer")pos=[190,1340,490];if(here==="coat")pos=[186];
  r.e.forEach(function(d,i){let b=document.createElement("button");b.className="door";b.type="button";b.style.left=pos[i]+"px";b.dataset.way=d[2]||"";b.setAttribute("aria-label","Go to "+d[0]);b.innerHTML='<span class="doorface"></span><span class="plaque">'+escapeHtml(d[0])+'</span>';b.addEventListener("click",function(){go(d[1]);});doorBox.append(b);});
- (r.p||[]).forEach(function(p){let b=document.createElement("button");b.className="prop";b.type="button";b.style.left=p[1]+"px";b.style.top=p[2]+"px";b.setAttribute("aria-label",p[3]);b.innerHTML=propArt(p[0])+'<span class="hint">'+escapeHtml(p[3])+'</span>';b.addEventListener("click",function(){if(p[5]==="code")code();else if(p[5]==="night"){document.body.classList.toggle("lights-out");toast(p[4]);}else detail(p[3],p[4],p[5]);});objectBox.append(b);});
+ (r.p||[]).forEach(function(p){let b=document.createElement("button");b.className="prop";b.type="button";b.style.left=p[1]+"px";b.style.top=p[2]+"px";b.setAttribute("aria-label",p[3]);b.innerHTML=propArt(p[0])+'<span class="hint">'+escapeHtml(p[3])+'</span>';b.addEventListener("click",function(){if(window.StudioHouseV2&&window.StudioHouseV2.activate(here,p[0],{plate:plate,toast:toast}))return;if(p[5]==="code")code();else if(p[5]==="night"){document.body.classList.toggle("lights-out");toast(p[4]);}else detail(p[3],p[4],p[5]);});objectBox.append(b);});
  resize();setPan(0);makeMap();document.title=r.n+" · Studio LaDuke House";
 }
 function go(to,replace){if(/\.html/.test(to)){location.href=to;return;}if(!R[to]){toast("That door isn't ready.");return;}if(to==="vault"&&!sessionStorage.getItem("laduke-escape-done")){toast("The vault is sealed.");return;}hideDetail(false);hideMap(false);here=to;document.body.classList.remove("lights-out");if(replace)history.replaceState({room:to},"","house.html?room="+to);else history.pushState({room:to},"","house.html?room="+to);draw();}
@@ -198,7 +199,7 @@ window.addEventListener("resize",resize);
 window.addEventListener("popstate",function(){let q=new URLSearchParams(location.search).get("room");here=R[q]?q:"living";draw();});
 document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(!id("dialog").hidden)hideDetail(true);else if(!id("map").hidden)hideMap(true);return;}if(!id("dialog").hidden||!id("map").hidden)return;if(e.key==="ArrowLeft"){e.preventDefault();setPan(pan+180);}if(e.key==="ArrowRight"){e.preventDefault();setPan(pan-180);}if(e.key.toLowerCase()==="m"&&!e.metaKey&&!e.ctrlKey)showMap();});
 const initial=new URLSearchParams(location.search).get("room");here=R[initial]?initial:"living";if(!R[initial])history.replaceState({room:here},"","house.html?room="+here);draw();
-try{if(!sessionStorage.getItem("laduke-house-seen")){toast("Look left or right. Open real doors. The little floor plan will help if you get lost.");sessionStorage.setItem("laduke-house-seen","1");}}catch(e){}
+try{if(!sessionStorage.getItem("laduke-house-seen")){toast("Drag to look around. Touch the objects to discover their stories.");sessionStorage.setItem("laduke-house-seen","1");}}catch(e){}
 })();
 </script>
 </body></html>
