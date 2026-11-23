@@ -46,6 +46,12 @@
 | Escape Room (`escape`) | Critical | Highly saturated violet Prism bench photography looks unrelated to house; clue glints not grounded | Real atmospheric escape room with discoverable physical green lamp, reel, trophy, keypad and working 472 code |
 | Curiosity Vault (`vault`) | Critical | Duplicated coat/pantry storage photo, missing vault reveal | Distinct genuinely secret memorabilia/curiosity space, only accessible after solving escape |
 
+## Batch 02 art requirements locked November 23, 2026
+
+- **3D central atrium:** The owner's true five-note symbol must be architectural stained glass inside a **large skylight**, with actual day/night ambience and connected sightlines from foyer, hall and upstairs landing. Current CSS color shift is only lighting groundwork, not a finished skylight. The current foyer star prop is **not** sufficient.
+- **4C living room:** Replace the reused music-room photographic plate with a believable living room featuring a **curving semicircular 1970s orange-purple tufted vinyl sofa** gathered around an exciting vintage coffee table. Do not ship a flat cartoon/vector sofa over a photograph. Both lounge and table need physically aligned interactions.
+- **1D/2D adventure:** Hidden narrative optional/off by default, all rooms freely accessible subject to the existing escape puzzle, mixed-media discovers stored locally, no invented claims about the owner's authentic recordings or mementos.
+
 ## Common blockers, all rooms
 
 1. **Physical camera and door mapping.** Doors currently use a positional overlay on still photos. A green test doesn't establish that the doorway/hit region visually aligns. At phone scale, target must be object-aligned and never look like an unrelated floating hotspot.
