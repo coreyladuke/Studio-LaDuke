@@ -4,6 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#171b16"><title>The House · Studio LaDuke</title>
 <link rel="icon" href="favicon.png" type="image/png">
+<link rel="stylesheet" href="assets/house-director.css">
 <style>
 :root{--cream:#f7e4bf;--brass:#e7b978;--dark:#15201b}
 *{box-sizing:border-box}
@@ -87,6 +88,7 @@ body.lights-out #plate{filter:brightness(.65)}
 <div id="dialogShade" hidden></div>
 <section id="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle" hidden><button id="closeDialog" aria-label="Close" type="button">×</button><h2 id="dialogTitle"></h2><p id="dialogText"></p><form id="codeForm" hidden><label for="codeInput">Three-digit code</label><input id="codeInput" required inputmode="numeric" pattern="[0-9]{3}" maxlength="3" autocomplete="off"><button type="submit">Unlock</button></form><div id="dialogButtons" class="buttons"></div></section>
 <script src="assets/house-v2.js"></script>
+<script src="assets/house-director.js"></script>
 <script>
 "use strict";
 (function(){
@@ -172,11 +174,11 @@ function toast(t){clearTimeout(toastTimer);id("toast").textContent=t;id("toast")
 function resize(){scale=Math.max(innerWidth/1600,innerHeight/900);maxPan=Math.max(0,(1600*scale-innerWidth)/2);plate.style.setProperty("--scale",scale);setPan(Math.min(maxPan,Math.max(-maxPan,pan)));}
 function setPan(p){pan=Math.min(maxPan,Math.max(-maxPan,p));plate.style.setProperty("--pan",pan+"px");id("left").disabled=pan>=maxPan-2;id("right").disabled=pan<=-maxPan+2;}
 function draw(){
- const r=R[here];if(!r)return;document.body.classList.remove("scene-living","scene-foyer","scene-coat");plate.classList.remove("pocket-open","star-awake","tv-playing","pick-found","lamp-dim","yellow-spot","pink-spot");if(["living","foyer","coat"].includes(here))document.body.classList.add("scene-"+here);painting.innerHTML=(window.StudioHouseV2&&window.StudioHouseV2.scene(here))||(r.photo?'<img src="'+r.photo+'" alt=""><div class="wash"></div>':lightPanel(r));
- id("roomName").textContent=r.n;id("roomDescription").textContent=r.d;id("floorName").textContent=floors[r.f];doorBox.replaceChildren();objectBox.replaceChildren();
- let pos=r.e.length===1?[800]:r.e.length===2?[440,1150]:r.e.length===3?[300,805,1300]:[170,560,1035,1430];if(here==="foyer")pos=[190,1340,490,805];if(here==="coat")pos=[186];
+ const r=R[here];if(!r)return;document.body.classList.remove("scene-living","scene-foyer","scene-coat");plate.classList.remove("pocket-open","star-awake","tv-playing","pick-found","lamp-dim","yellow-spot","pink-spot","discovered","mirror-fog","drawer-open","steam-on","light-on","spark-on");if(["living","foyer","coat"].includes(here))document.body.classList.add("scene-"+here);painting.innerHTML=(window.StudioHouseDirector&&window.StudioHouseDirector.scene(here))||(window.StudioHouseV2&&window.StudioHouseV2.scene(here))||(r.photo?'<img src="'+r.photo+'" alt=""><div class="wash"></div>':lightPanel(r));
+ id("roomName").textContent=r.n;id("roomDescription").textContent=r.d;id("floorName").textContent=r.n;id("floorTag").querySelector("small").textContent=floors[r.f]+" · Swipe to look";doorBox.replaceChildren();objectBox.replaceChildren();
+ let pos=r.e.length===1?[800]:r.e.length===2?[440,1150]:r.e.length===3?[300,805,1300]:[170,560,1035,1430];if(here==="foyer")pos=[190,1340,490,805];if(here==="coat")pos=[186];if(!["living","foyer","coat"].includes(here))pos=r.e.length===1?[800]:r.e.length===2?[420,1180]:r.e.length===3?[250,800,1350]:[170,560,1040,1430];
  r.e.forEach(function(d,i){let b=document.createElement("button");b.className="door";b.type="button";b.style.left=pos[i]+"px";b.dataset.way=d[2]||"";b.setAttribute("aria-label","Go to "+d[0]);b.innerHTML='<span class="doorface"></span><span class="plaque">'+escapeHtml(d[0])+'</span>';b.addEventListener("click",function(){go(d[1]);});doorBox.append(b);});
- (r.p||[]).forEach(function(p){let b=document.createElement("button");b.className="prop";b.type="button";b.style.left=p[1]+"px";b.style.top=p[2]+"px";b.setAttribute("aria-label",p[3]);b.innerHTML=propArt(p[0])+'<span class="hint">'+escapeHtml(p[3])+'</span>';b.addEventListener("click",function(){if(window.StudioHouseV2&&window.StudioHouseV2.activate(here,p[0],{plate:plate,toast:toast}))return;if(p[5]==="code")code();else if(p[5]==="night"){document.body.classList.toggle("lights-out");toast(p[4]);}else detail(p[3],p[4],p[5]);});objectBox.append(b);});
+ (r.p||[]).forEach(function(p){let b=document.createElement("button");b.className="prop";b.type="button";b.style.left=p[1]+"px";b.style.top=p[2]+"px";b.setAttribute("aria-label",p[3]);b.innerHTML=propArt(p[0])+'<span class="hint">'+escapeHtml(p[3])+'</span>';b.addEventListener("click",function(){if(p[5]==="code"){code();return;}if(p[5]==="night"){document.body.classList.toggle("lights-out");if(window.StudioHouseDirector)window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast});return;}if(p[5]){go(p[5]);return;}if(window.StudioHouseDirector&&window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast}))return;if(window.StudioHouseV2&&window.StudioHouseV2.activate(here,p[0],{plate:plate,toast:toast}))return;detail(p[3],p[4],p[5]);});objectBox.append(b);});
  resize();setPan(0);makeMap();document.title=r.n+" · Studio LaDuke House";
 }
 function go(to,replace){if(/\.html/.test(to)){location.href=to;return;}if(!R[to]){toast("That door isn't ready.");return;}if(to==="vault"&&!sessionStorage.getItem("laduke-escape-done")){toast("The vault is sealed.");return;}hideDetail(false);hideMap(false);here=to;document.body.classList.remove("lights-out");if(replace)history.replaceState({room:to},"","house.html?room="+to);else history.pushState({room:to},"","house.html?room="+to);draw();}
