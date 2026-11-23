@@ -140,3 +140,12 @@ Serve the repo locally and run `npm install --no-save playwright && npx playwrig
 **QA evidence:** New browser regression verified opt-in default off, story hint on, mixed-media cards, local persistence across reloads, passage between rooms, and time-of-day light in the three atrium rooms; 0 browser/asset errors. Full smoke test still passes **27/27 rooms and 19/19 top-level HTML pages**. Repository local-reference audit: **27 HTML pages**, **248 local references**, **0 missing**. Published-site mobile browser verified Pocketbook toggle, foyer discovery, morning atrium light in America/Sitka time, and no browser errors.
 
 **Release gate stays closed:** The authentic five-note glazed skylight and structural atrium, photoreal curved orange/purple vinyl sofa plus coffee table, owner-specific art fidelity, object-aligned door hotspots, and whole-house visual sign-off are still incomplete. Do not ask the owner to inspect the full house yet.
+
+## Live exploration refinement, November 23, 2026
+
+- **Camera history improvement**: Returning to a previously visited room using an internal door, the map, or browser Back now restores that room's previous horizontal view instead of snapping the camera to center. The stored value is the *intended pan target*, so an easing animation in progress does not create a partially restored angle.
+- Verified in browser with an iPhone-size viewport, using Front Hall → Living Room → browser Back. **Live production** check restored the same ~257 px camera position, with no JavaScript exceptions or failed network requests. Commit: `54fb12a7f23b08ddec00f9c75112bbd474ec45f6`.
+- A local **SVG-overlay atrium skylight** prototype was rendered at the Front Hall, Main Hall, and upstairs landing. It responded to touch but looked pasted over existing room photography; **rejected and never published**. This is a design blocker, not a valid finished implementation. Do not simply add flat graphics over stock rooms.
+- **Tooling**: Runway was checked only for optional image capability; no generated artwork or Runway credits were used. There is no connection prerequisite for normal GitHub/Vercel coding and testing.
+
+**Release status:** The true five-note star/skylight and curved orange-purple couch still require cohesive, image-quality physical scenes. Keep all visual sign-off boxes unchecked until verified.
