@@ -366,7 +366,7 @@ function initialize(){
   if(e.key==="ArrowRight"){e.preventDefault();yawAim=Math.max(-.76,yawAim-.14);}
  });
  loading.hidden=true;
- lastTime=performance.now();requestAnimationFrame(render);
+ lastTime=performance.now();renderStarted=lastTime;requestAnimationFrame(render);
 }
 function render(now){
  requestAnimationFrame(render);
@@ -389,6 +389,16 @@ function render(now){
   }
  }
  renderer.render(scene,camera);frame++;
+ if(!qualityTuned && frame>8 && now-renderStarted>4000){
+  qualityTuned=true;
+  const fps=frame*1000/Math.max(1,now-renderStarted);
+  if(fps<22){
+   // Slow phones get lower GPU work without losing any puzzle or interaction.
+   renderer.shadowMap.enabled=false;
+   renderer.setPixelRatio(Math.min(1,devicePixelRatio||1));
+   renderer.setSize(innerWidth,innerHeight,false);
+  }
+ }
 }
-window.__movieMaze3d={get meshes(){let n=0;roomRoot?.traverse(o=>{if(o.isMesh)n++});return n},get frame(){return frame},get activeRoom(){return game.stage.id},get clickable(){return clickables.length},get quality(){return renderer?.getPixelRatio()},get reduced(){return reduced.matches}};
+window.__movieMaze3d={get meshes(){let n=0;roomRoot?.traverse(o=>{if(o.isMesh)n++});return n},get frame(){return frame},get activeRoom(){return game.stage.id},get clickable(){return clickables.length},get quality(){return renderer?.getPixelRatio()},get reduced(){return reduced.matches},get exitAngle(){return exitHinge?.rotation.y||0}};
 initialize();
