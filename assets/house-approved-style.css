@@ -132,3 +132,19 @@ body.directed-house #lookbar button:active{transform:scale(.94)}
  body.directed-house #painting img{animation:none!important}
  body.directed-house #lookbar button:active{transform:none}
 }
+
+/* Batch 02: a central skylight's shared daylight signature.
+   The authentic five-note glazed architecture remains a custom-art blocker. */
+body.directed-house[data-atrium-period] #painting::after{
+ content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+ background:
+ radial-gradient(ellipse 40% 53% at 50% 3%,var(--atrium-light-color) 0,transparent 88%),
+ linear-gradient(115deg,transparent 35%,var(--atrium-light-color) 51%,transparent 58%);
+ opacity:.18;mix-blend-mode:screen;
+}
+body.directed-house[data-atrium-period="evening"] #painting::after{opacity:.31}
+body.directed-house[data-atrium-period="night"] #painting::after{opacity:.12}
+body.directed-house[data-atrium-period="morning"] #painting::after{opacity:.27}
+@media(prefers-reduced-motion:reduce){
+ body.directed-house[data-atrium-period] #painting::after{animation:none!important}
+}
