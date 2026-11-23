@@ -33,6 +33,16 @@
     <button type="button" id="look-right" aria-label="Look right">›</button>
   </div>
   <div id="discovery" role="status" aria-live="polite" aria-atomic="true"></div>
+  <nav id="accessible-objects" class="accessible-objects" aria-label="Keyboard access to the modeled objects">
+    <strong>Touch the room</strong>
+    <button type="button" data-object="glass">Look through the colored glass</button>
+    <button type="button" data-object="lamp">Switch the purple lamp</button>
+    <button type="button" data-object="sofa">Explore the curved vinyl couch</button>
+    <button type="button" data-object="table">Turn the coffee table</button>
+    <button type="button" data-object="record">Play with the turntable</button>
+    <button type="button" data-object="art">Study the artwork</button>
+    <button type="button" data-object="weather">Look at the rainy woods</button>
+  </nav>
   <p class="footnote" id="status">A living 3D study · The House will keep growing</p>
 </main>
 <script type="module">import("./assets/studio-house-3d.js").catch(()=>{document.getElementById("loading").hidden=true;document.getElementById("still").hidden=false;});</script>
