@@ -5,7 +5,7 @@ const game=window.StudioMovieMaze;
 if(!game)throw Error("Movie Maze game logic must load before its renderer.");
 const canvas=document.getElementById("cinema3d"),loading=document.getElementById("loading");
 const reduced=matchMedia("(prefers-reduced-motion: reduce)");
-let renderer,scene,camera,roomRoot,roomLights=[],clocks=[],clickables=[],vivid=[],frame=0,lastTime=performance.now(),yaw=0,pitch=0,yawAim=0,pitchAim=0,entryTime=0,qualityTuned=false;
+let renderer,scene,camera,roomRoot,roomLights=[],clocks=[],clickables=[],vivid=[],frame=0,lastTime=performance.now(),yaw=0,pitch=0,yawAim=0,pitchAim=0,entryTime=0,qualityTuned=false,exitHinge=null,exitLight=null,renderStarted=0;
 const raycaster=new THREE.Raycaster(),cursor=new THREE.Vector2(),touch={down:false,drag:false,x:0,y:0,startX:0,startY:0};
 const C={wood:"#764a31",gold:"#dbad68",cream:"#eddfc5",ink:"#191b1f",red:"#ac3c3a",purple:"#713d8b"};
 function mat(color,roughness=.7,metalness=0,extras={}){return new THREE.MeshStandardMaterial({color,roughness,metalness,...extras});}
@@ -122,6 +122,23 @@ function createRoom(stage){
  plaque(stage.film,0,5.35,-10.85,5.5,.83,{background:id==="beetle"?"#232328":"#321e21",size:86});
  plaque(stage.subtitle.toUpperCase(),0,4.39,-10.84,4.5,.52,{background:"#312526",size:62});
  plaque(stage.clue,0,2.61,-10.80,6.9,.65,{background:id==="shining"?"#5e2c22":"#28302d",size:53});
+ // Every chapter has a physical side door, not merely a "next" menu button.
+ // It only swings open after the actual puzzle is solved.
+ const frame=box(2.11,3.92,.34,5.95,2.01,-10.47,M.woodDark);
+ for(const x of [5.0,6.9])box(.15,4.04,.23,x,2.02,-10.23,M.brass);
+ box(2.13,.19,.25,5.95,4.01,-10.23,M.brass);
+ const hinge=new THREE.Group();hinge.position.set(5.04,.12,-10.1);roomRoot.add(hinge);
+ box(1.82,3.61,.16,.91,1.83,0,M.wood,hinge);
+ box(1.52,3.27,.10,.91,1.83,.13,M.woodDark,hinge);
+ box(1.43,2.94,.08,.91,1.86,.20,M.wood,hinge);
+ const plaqueTex=labelTexture("NEXT REEL",{background:"#3a2828",size:104});
+ mesh(new THREE.PlaneGeometry(1.48,.48),new THREE.MeshBasicMaterial({map:plaqueTex,side:THREE.DoubleSide}),.91,2.83,.26,hinge);
+ const knob=cyl(.09,.09,.11,1.62,1.84,.26,M.brass,18,hinge);knob.rotation.x=Math.PI/2;
+ const doorTouch=box(1.75,3.66,.32,.92,1.9,.08,new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}),hinge);
+ doorTouch.castShadow=false;hinge.userData.action="next";clickables.push(hinge);
+ exitHinge=hinge;
+ exitLight=new THREE.PointLight("#ffe8a4",0,5);exitLight.position.set(5.93,2.05,-10.04);roomRoot.add(exitLight);
+
  const key=new THREE.SpotLight(theme[1],13,17,.9,.5,1.1);
  key.position.set(-1,6,-5);key.target.position.set(0,1.3,-6);key.castShadow=true;key.shadow.mapSize.set(512,512);roomRoot.add(key,key.target);vivid.push({kind:"light",light:key});
  const build={ghost:buildGhost,shining:buildShining,beetle:buildBeetle,wayne:buildWayne,stand:buildStand}[id];
@@ -328,7 +345,7 @@ function initialize(){
   const hits=raycaster.intersectObjects(clickables,true);
   if(hits.length){let m=hits[0].object;
    while(m&&!m.userData.action)m=m.parent;
-   if(m&&m.userData.action)game.interact(m.userData.action);
+   if(m&&m.userData.action){if(m.userData.action==="next"){if(game.solved)game.next();else game.toast("Finish this movie puzzle before opening the next door.");}else game.interact(m.userData.action);}
   }else displayMessage("Drag to explore. Touch the props, or use Inspect objects.");
  });
  canvas.addEventListener("pointercancel",()=>onPoint.down=false);
@@ -347,6 +364,10 @@ function render(now){
  const dt=Math.min(.05,(now-lastTime)/1000||.016);lastTime=now;
  if(document.hidden||!renderer)return;
  const pace=reduced.matches?1:Math.min(1,dt*8);
+ if(exitHinge){
+  exitHinge.rotation.y+=( (game.solved?-.95:0)-exitHinge.rotation.y)*Math.min(1,dt*3);
+  if(exitLight)exitLight.intensity+=( (game.solved?7:0)-exitLight.intensity)*Math.min(1,dt*4);
+ }
  yaw+=(yawAim-yaw)*pace;pitch+=(pitchAim-pitch)*pace;
  let ease=1;if(!reduced.matches)ease=Math.min(1,(now-entryTime)/1200);
  camera.position.set(0,2.15,7.1+(1-ease)*2.5);
