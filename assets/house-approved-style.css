@@ -1,0 +1,101 @@
+/* Approved Studio LaDuke house identity, 2026-11-23.
+   These tokens/controls establish continuity across the existing site.
+   They do NOT count as finished custom room art. */
+body.directed-house{
+ --house-orange:#f16627;--house-purple:#6636a8;--house-aubergine:#34204d;
+ --house-turquoise:#1cb5b3;--house-yellow:#ffc42b;--house-rose:#d64d62;
+ --house-cream:#edd9b7;--house-wood:#593723;--house-ink:#18191b;
+ --room-accent:#f16627;--room-secondary:#6636a8;
+ --room-wood:#593723;--room-light:#e7c393;--room-zing:#ffc42b;
+ color-scheme:dark;
+}
+body.directed-house #floorTag{
+ position:relative;overflow:hidden;
+ padding:13px 13px 8px;
+ border:1px solid color-mix(in srgb,var(--room-accent) 56%,#ebd09c);
+ border-radius:6px;
+ background:linear-gradient(115deg,#191b1de8 5%,#39253bdc 60%,#181719e8);
+ box-shadow:0 8px 17px #000a,inset 0 0 0 1px #dfba7a2c;
+}
+body.directed-house #floorTag::before{
+ content:"";position:absolute;inset:0 0 auto;height:6px;pointer-events:none;
+ background:conic-gradient(#19191a 25%,#f3e9d8 0 50%,#19191a 0 75%,#f3e9d8 0);
+ background-size:12px 12px;
+}
+body.directed-house #floorTag::after{
+ content:"";position:absolute;inset:6px auto 5px 0;width:4px;pointer-events:none;
+ background:var(--room-accent);
+ box-shadow:0 0 12px var(--room-accent);
+}
+body.directed-house #floorTag strong{color:#fff3dd;letter-spacing:.01em}
+body.directed-house #floorTag small{color:#e8cda9}
+body.directed-house #mapOpen,
+body.directed-house #frontLink{
+ border-color:color-mix(in srgb,var(--room-accent) 64%,#dabb86);
+ background:linear-gradient(145deg,#231e24eb,#31242be8);
+ box-shadow:0 4px 11px #0009,inset 0 0 0 1px #ead6a21a;
+}
+body.directed-house #mapOpen:hover,
+body.directed-house #frontLink:hover,
+body.directed-house #lookbar button:hover{
+ background:linear-gradient(125deg,var(--room-secondary),#322333);
+ color:#fff1d9;
+}
+body.directed-house #lookbar button{
+ border-color:color-mix(in srgb,var(--room-accent) 38%,#bba17b);
+ background:#201d24d9;
+}
+body.directed-house .door:hover::before,
+body.directed-house .door:focus-visible::before{
+ border-color:var(--room-accent);
+ box-shadow:inset 0 0 30px color-mix(in srgb,var(--room-accent) 30%,transparent);
+}
+body.directed-house .prop:focus-visible,
+body.directed-house .door:focus-visible{
+ outline-color:var(--house-yellow);
+}
+body.directed-house #map{
+ color:#302821;
+ border-right:9px solid var(--house-wood);
+ background:linear-gradient(90deg,transparent,#fff9f017),
+ repeating-linear-gradient(0deg,#e9d9b8 0 36px,#e2cbaa 36px 38px);
+}
+body.directed-house #map .floorhead{
+ border-color:var(--room-accent);
+ color:var(--house-aubergine);
+}
+body.directed-house .floorlinks button[aria-current="location"]{
+ background:var(--house-aubergine);color:#fff5e4;
+}
+body.directed-house #dialog{
+ border-color:var(--room-wood);
+ box-shadow:0 19px 70px #000d,inset 0 0 0 3px #e8be82;
+}
+body.directed-house #dialog .buttons button,
+body.directed-house #codeForm button{
+ background:var(--house-aubergine);
+}
+body.directed-house #codeForm input:focus-visible,
+body.directed-house #closeMap:focus-visible,
+body.directed-house #closeDialog:focus-visible{
+ outline:3px solid var(--room-accent);outline-offset:3px;
+}
+body.directed-house[data-house-zone="basement"] #floorTag{
+ background:linear-gradient(115deg,#17131beb,#3b174edc 70%,#1b1720f2);
+}
+body.directed-house[data-house-zone="attic"] #floorTag{
+ background:linear-gradient(115deg,#2c1b19e9,#532a3ce8,#35211de8);
+}
+body.directed-house[data-house-zone="upstairs"] #floorTag{
+ background:linear-gradient(115deg,#201919e9,#393026d9,#242029ed);
+}
+@media(max-width:650px){
+ body.directed-house #floorTag{padding:12px 8px 7px}
+ body.directed-house #floorTag::before{height:5px}
+}
+@media(prefers-reduced-motion:reduce){
+ body.directed-house #floorTag::after{box-shadow:none}
+ body.directed-house #mapOpen,
+ body.directed-house #frontLink,
+ body.directed-house #lookbar button{transition:none!important}
+}
