@@ -125,3 +125,18 @@ Serve the repo locally and run `npm install --no-save playwright && npx playwrig
 **Open visual release blockers:** all custom high-fidelity rooms, actual five-note-star stained glass, genuine personal guitars and artwork, orange/purple modular couch, physically anchored doors and object hitboxes, cohesive architecture, deeper game playthroughs and final iPhone Safari review. No owner walkthrough approval.
 
 **Next owner input:** `HOUSE_NEXT_CHOICES.md` contains Batch 02 codes **1–4**, with A/B/C/D options and free-text alternative. The previously approved 12 decisions stay unchanged.
+
+## Iteration log — November 23, 2026: Batch 02 selections 1D / 2D / 3D / 4C
+
+**Owner-approved, locked:** Free exploration + opt-in hidden thread, mixed-media curiosities, the authentic five-note skylight above a **central atrium**, and a **semicircular curved orange-and-purple modular sofa** gathered around a characterful vintage coffee table. Full contractual details: `HOUSE_NEXT_CHOICES.md` and `HOUSE_ROOM_IMPLEMENTATION_PLAN.md`.
+
+**Published incremental implementation (not visual completion):**
+- `assets/house-adventure.js`: optional **Follow a hidden thread** switch defaults off, offers progressive narrative hints, and preserves all unrestricted exploration. Toggle persists locally and never gates rooms.
+- Pocketbook entries now render varied media: clearly imaginary ticket-like props, actual existing site book/cartridge artwork, and destinations (including Music Room), while avoiding unconfirmed five-note artwork. No stock music is misrepresented as an original recording.
+- `assets/house-adventure.css`: physical paper and scrapbook media styles and accessible story switch.
+- `assets/house-director.js` and `assets/house-approved-style.css`: time-of-day colored atrium lighting shared by **foyer, main hall and upstairs landing**, using the visitor's local clock. The complete skylight glass geometry, lighting integration and atrium architecture are **not yet built**.
+- The previously rejected flat couch illustration remains discarded. **4C is a precise art requirement, not a complete sofa currently present on site**.
+
+**QA evidence:** New browser regression verified opt-in default off, story hint on, mixed-media cards, local persistence across reloads, passage between rooms, and time-of-day light in the three atrium rooms; 0 browser/asset errors. Full smoke test still passes **27/27 rooms and 19/19 top-level HTML pages**. Repository local-reference audit: **27 HTML pages**, **248 local references**, **0 missing**. Published-site mobile browser verified Pocketbook toggle, foyer discovery, morning atrium light in America/Sitka time, and no browser errors.
+
+**Release gate stays closed:** The authentic five-note glazed skylight and structural atrium, photoreal curved orange/purple vinyl sofa plus coffee table, owner-specific art fidelity, object-aligned door hotspots, and whole-house visual sign-off are still incomplete. Do not ask the owner to inspect the full house yet.
