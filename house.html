@@ -6,6 +6,7 @@
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="stylesheet" href="assets/house-director.css">
 <link rel="stylesheet" href="assets/house-approved-style.css">
+<link rel="stylesheet" href="assets/house-adventure.css">
 <style>
 :root{--cream:#f7e4bf;--brass:#e7b978;--dark:#15201b}
 *{box-sizing:border-box}
@@ -90,6 +91,7 @@ body.lights-out #plate{filter:brightness(.65)}
 <section id="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle" hidden><button id="closeDialog" aria-label="Close" type="button">×</button><h2 id="dialogTitle"></h2><p id="dialogText"></p><form id="codeForm" hidden><label for="codeInput">Three-digit code</label><input id="codeInput" required inputmode="numeric" pattern="[0-9]{3}" maxlength="3" autocomplete="off"><button type="submit">Unlock</button></form><div id="dialogButtons" class="buttons"></div></section>
 <script src="assets/house-v2.js"></script>
 <script src="assets/house-director.js"></script>
+<script src="assets/house-adventure.js"></script>
 <script>
 "use strict";
 (function(){
@@ -195,17 +197,18 @@ function draw(){
  id("roomName").textContent=r.n;id("roomDescription").textContent=r.d;id("floorName").textContent=r.n;id("floorTag").querySelector("small").textContent=floors[r.f]+" · Swipe to look";doorBox.replaceChildren();objectBox.replaceChildren();
  let pos=r.e.length===1?[800]:r.e.length===2?[440,1150]:r.e.length===3?[300,805,1300]:[170,560,1035,1430];if(here==="foyer")pos=[190,1340,490,805];if(here==="coat")pos=[186];if(!["living","foyer","coat"].includes(here))pos=r.e.length===1?[800]:r.e.length===2?[420,1180]:r.e.length===3?[250,800,1350]:[170,560,1040,1430];
  r.e.forEach(function(d,i){let b=document.createElement("button");b.className="door";b.type="button";b.style.left=pos[i]+"px";b.dataset.way=d[2]||"";b.setAttribute("aria-label","Go to "+d[0]);b.innerHTML='<span class="doorface"></span><span class="plaque">'+escapeHtml(d[0])+'</span>';b.addEventListener("click",function(){go(d[1]);});doorBox.append(b);});
- (r.p||[]).forEach(function(p){let b=document.createElement("button");b.className="prop";b.type="button";b.style.left=p[1]+"px";b.style.top=p[2]+"px";b.setAttribute("aria-label",p[3]);b.innerHTML=propArt(p[0])+'<span class="hint">'+escapeHtml(p[3])+'</span>';b.addEventListener("click",function(){if(p[5]==="code"){code();return;}if(p[5]==="night"){document.body.classList.toggle("lights-out");if(window.StudioHouseDirector)window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast});return;}if(p[5]){go(p[5]);return;}if(window.StudioHouseDirector&&window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast}))return;if(window.StudioHouseV2&&window.StudioHouseV2.activate(here,p[0],{plate:plate,toast:toast}))return;detail(p[3],p[4],p[5]);});objectBox.append(b);});
+ (r.p||[]).forEach(function(p){let b=document.createElement("button");b.className="prop";b.type="button";b.style.left=p[1]+"px";b.style.top=p[2]+"px";b.setAttribute("aria-label",p[3]);b.innerHTML=propArt(p[0])+'<span class="hint">'+escapeHtml(p[3])+'</span>';b.addEventListener("click",function(){if(window.StudioHouseAdventure)window.StudioHouseAdventure.collect(here,p[0]);if(p[5]==="code"){code();return;}if(p[5]==="night"){document.body.classList.toggle("lights-out");if(window.StudioHouseDirector)window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast});return;}if(p[5]){go(p[5]);return;}if(window.StudioHouseDirector&&window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast}))return;if(window.StudioHouseV2&&window.StudioHouseV2.activate(here,p[0],{plate:plate,toast:toast}))return;detail(p[3],p[4],p[5]);});objectBox.append(b);});
  stopPan();resize();setPan(0,true);makeMap();document.title=r.n+" · Studio LaDuke House";
 }
 function go(to,replace){if(/\.html/.test(to)){location.href=to;return;}if(!R[to]){toast("That door isn't ready.");return;}if(to==="vault"&&!sessionStorage.getItem("laduke-escape-done")){toast("The vault is sealed.");return;}hideDetail(false);hideMap(false);here=to;document.body.classList.remove("lights-out");if(replace)history.replaceState({room:to},"","house.html?room="+to);else history.pushState({room:to},"","house.html?room="+to);draw();}
+window.StudioHouseGo=function(to){go(to);};
 function makeMap(){let box=id("floorContents");box.replaceChildren();floors.forEach(function(f,i){let h=document.createElement("div");h.className="floorhead";h.textContent=f;box.append(h);let group=document.createElement("div");group.className="floorlinks";Object.keys(R).filter(function(k){return R[k].f===i && (k!=="vault"||sessionStorage.getItem("laduke-escape-done"));}).forEach(function(k){let b=document.createElement("button");b.type="button";b.textContent=R[k].n;if(k===here)b.setAttribute("aria-current","location");b.addEventListener("click",function(){go(k);});group.append(b);});box.append(group);});}
 function showMap(){id("shade").hidden=false;id("map").hidden=false;id("closeMap").focus();}
 function hideMap(focus){id("shade").hidden=true;id("map").hidden=true;if(focus!==false)id("mapOpen").focus();}
 function detail(title,copy,to){detailFocus=document.activeElement;id("dialogTitle").textContent=title;id("dialogText").textContent=copy;id("dialogButtons").replaceChildren();id("codeForm").hidden=true;if(to){let b=document.createElement("button");b.type="button";b.textContent=/\.html/.test(to)?"Visit this part of Studio LaDuke":"Go there";b.addEventListener("click",function(){go(to);});id("dialogButtons").append(b);}id("dialogShade").hidden=false;id("dialog").hidden=false;id("closeDialog").focus();}
 function hideDetail(focus){id("dialogShade").hidden=true;id("dialog").hidden=true;if(focus!==false&&detailFocus&&detailFocus.focus)detailFocus.focus();}
 function code(){detail("The sealed vault","Three small clues are hidden here. Enter the code.");id("codeForm").hidden=false;id("codeInput").value="";id("codeInput").focus();}
-id("codeForm").addEventListener("submit",function(e){e.preventDefault();if(id("codeInput").value.trim()==="472"){try{sessionStorage.setItem("laduke-escape-done","1");}catch(e){}hideDetail(false);go("vault");}else{id("codeInput").value="";toast("The lock refuses to open.");id("codeInput").focus();}});
+id("codeForm").addEventListener("submit",function(e){e.preventDefault();if(id("codeInput").value.trim()==="472"){try{sessionStorage.setItem("laduke-escape-done","1");}catch(e){}if(window.StudioHouseAdventure)window.StudioHouseAdventure.collect("escape","solved");hideDetail(false);go("vault");}else{id("codeInput").value="";toast("The lock refuses to open.");id("codeInput").focus();}});
 id("mapOpen").addEventListener("click",showMap);id("closeMap").addEventListener("click",function(){hideMap(true);});id("shade").addEventListener("click",function(){hideMap(true);});
 id("closeDialog").addEventListener("click",function(){hideDetail(true);});id("dialogShade").addEventListener("click",function(){hideDetail(true);});
 id("left").addEventListener("click",function(){setPan(pan+Math.max(180,innerWidth*.66));});id("right").addEventListener("click",function(){setPan(pan-Math.max(180,innerWidth*.66));});
