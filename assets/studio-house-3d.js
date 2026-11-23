@@ -330,6 +330,7 @@ async function setSound(){
  }}
 }
 $("sound").addEventListener("click",()=>{setSound().catch(()=>emit("Audio is not available on this device."));});
+for(const b of document.querySelectorAll("#accessible-objects button[data-object]"))b.addEventListener("click",()=>interact(b.dataset.object));
 // Render only while tab visible; bound GPU workload for phones.
 const clockStart=performance.now();let prev=clockStart,frames=0;
 function render(t){
