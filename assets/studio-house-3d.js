@@ -345,7 +345,18 @@ async function setSound(){
 $("sound").addEventListener("click",()=>{setSound().catch(()=>emit("Audio is not available on this device."));});
 for(const b of document.querySelectorAll("#accessible-objects button[data-object]"))b.addEventListener("click",()=>interact(b.dataset.object));
 // Render only while tab visible; bound GPU workload for phones.
-const clockStart=performance.now();let prev=clockStart,frames=0;
+const clockStart=performance.now();let prev=clockStart,frames=0,qualityTuned=false;
+function tuneMobileQuality(now){
+ if(qualityTuned||now-clockStart<4200||frames<8)return;
+ qualityTuned=true;
+ const observedFPS=frames*1000/Math.max(1,now-clockStart);
+ if(observedFPS<24){
+  // Only lower the visual workload if this very device is struggling.
+  renderer.shadowMap.enabled=false;
+  renderer.setPixelRatio(Math.min(devicePixelRatio||1,1));
+  renderer.setSize(innerWidth,innerHeight,false);
+ }
+}
 function render(t){
  requestAnimationFrame(render);
  const dt=Math.min(.045,(t-prev)/1000||.016);prev=t;
@@ -365,7 +376,7 @@ function render(t){
   rainGeo.attributes.position.needsUpdate=true;
   vinyl.rotation.y+=dt*.24;
  }
- renderer.render(scene,camera);frames++;
+ renderer.render(scene,camera);frames++;tuneMobileQuality(t);
 }
 function resize(){const w=innerWidth,h=innerHeight;camera.aspect=w/h;camera.fov=w<700?66:62;camera.updateProjectionMatrix();renderer.setSize(w,h,false);}
 addEventListener("resize",resize);resize();loading.hidden=true;
