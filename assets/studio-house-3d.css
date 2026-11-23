@@ -39,3 +39,12 @@ button,a{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-visible
 .footnote{position:absolute;z-index:3;bottom:max(9px,env(safe-area-inset-bottom));left:14px;margin:0;color:#b7a693;font:10px Arial,sans-serif;opacity:.65}
 @media(max-width:600px){.masthead{padding-left:12px;padding-right:12px}.identity h1{font-size:20px}.identity .overline{font-size:8px}.backdoor,.sound-control{font-size:0;padding:7px 10px;min-width:42px;justify-content:center}.backdoor .handle,.sound-symbol{font-size:22px}.scene-caption{top:calc(max(82px,env(safe-area-inset-top)) + 36px);max-width:85vw}.room-controls{bottom:118px;gap:7px}.room-controls button{font-size:12px;padding:9px 9px 9px 6px;gap:5px}.engrave{width:23px;height:23px;font-size:11px}.instruction{font-size:10px}.look-controls{bottom:max(54px,calc(37px + env(safe-area-inset-bottom)));gap:7px}.look-controls button{width:42px;height:42px}.footnote{font-size:9px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
+
+/* A discoverable keyboard path to every real model interaction. It stays
+   out of the art until focused, then opens as a little wooden object ledger. */
+.accessible-objects{position:absolute;left:-100vw;bottom:140px;z-index:20;display:grid;gap:6px;width:min(310px,calc(100vw - 25px));padding:15px;border:6px solid #80512f;background:linear-gradient(105deg,#332622,#462940);box-shadow:0 16px 30px #000d}
+.accessible-objects:focus-within{left:max(12px,env(safe-area-inset-left))}
+.accessible-objects strong{color:#ffe4b2;letter-spacing:.07em;font:700 18px Georgia,serif}
+.accessible-objects button{padding:9px 10px;text-align:left;color:#f3dfc6;border:1px solid #c0936f;background:#1f1b20}
+.accessible-objects button:hover,.accessible-objects button:focus-visible{background:#58305f;color:#fff2d2}
+@media(max-width:600px){.accessible-objects{bottom:125px}}
