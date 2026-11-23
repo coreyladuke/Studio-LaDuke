@@ -105,3 +105,23 @@ A static link/asset audit has now checked **all 27 HTML files and 245 local refe
 ## Repeatable audit
 
 Serve the repo locally and run `npm install --no-save playwright && npx playwright install chromium && python3 -m http.server 8765`, then in a separate shell run `node qa/house-audit.cjs`. The script writes screenshots and JSON under `/tmp/studio-laduke-house-qa`. Review every screenshot visually and fix problems before marking **V**.
+
+## Iteration log — November 23, 2026: exploration and connected discoveries
+
+**Code completed and published, not visual sign-off:**
+
+- The panorama camera now eases arrow/keyboard movement and adds restrained pointer-release momentum. Direct finger dragging remains immediate, and `prefers-reduced-motion` disables the motion smoothing.
+- `assets/house-adventure.js` and `assets/house-adventure.css`: optional physical-ticket-styled **Pocketbook** recording eight real room discoveries, with safe local-only persistence, keyboard access, an accessible announcement and reset control.
+- `assets/house-approved-style.css`: gentle cross-room fade and room-specific colored-glass lighting, retaining the approved orange/purple/checkerboard design tokens without turning real photos into cartoons.
+- Integration in `house.html`: discoveries are recorded when relevant physical objects are interacted with; resolving the escape code records its own event. Journal navigation returns to its room.
+- A preliminary vector couch test did **not** match the photo-rich art target and was **discarded**, not integrated. The approved orange-and-purple couch remains a critical visual-to-build item.
+
+**QA actually performed for this batch:**
+- Current local browser test: **27/27 scene renderers**, zero browser script/asset errors, zero failed non-puzzle interaction steps; **19/19 root entry pages** loaded. This is functional smoke coverage, not gameplay completion.
+- Link audit: **27 total HTML files**, **248 local references**, **0 missing files**.
+- iPhone-size Playwright interaction proof: open the Living Room, collect its object, open/close Pocketbook, reload and retain progress, use smoothly eased camera arrows, travel to Front Hall, and confirm reduced-motion immediate panning.
+- **Live production** browser proof: new stylesheet loaded, Pocketbook opened and showed an entry after object interaction, zero browser exceptions, zero failed asset/network requests.
+
+**Open visual release blockers:** all custom high-fidelity rooms, actual five-note-star stained glass, genuine personal guitars and artwork, orange/purple modular couch, physically anchored doors and object hitboxes, cohesive architecture, deeper game playthroughs and final iPhone Safari review. No owner walkthrough approval.
+
+**Next owner input:** `HOUSE_NEXT_CHOICES.md` contains Batch 02 codes **1–4**, with A/B/C/D options and free-text alternative. The previously approved 12 decisions stay unchanged.
