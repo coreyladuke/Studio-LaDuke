@@ -52,11 +52,18 @@
     }
     .threshold-return { left: 10%; top: 49%; width: 22%; height: 26%; }
     .threshold-forward { left: 53%; top: 39%; width: 39%; height: 19%; }
+    /* The door and bench are the navigation. Keep the title for screen readers
+       without printing website text over the hand-drawn room illustration. */
     .greenhouse-entry .entry-title {
-      position: absolute; top: max(10px, env(safe-area-inset-top)); left: 50%;
-      transform: translateX(-50%); margin: 0; text-align: center; white-space: nowrap;
-      color: #fff4d7; text-shadow: 0 2px 3px #27251a, 0 0 13px #212019;
-      font: 700 clamp(1rem, 3vw, 1.7rem)/1.1 Georgia, serif;
+      position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+      overflow:hidden;clip-path:inset(50%);white-space:nowrap;
+    }
+    .threshold-view :is(.threshold-return,.threshold-forward) {
+      font-size:0;color:transparent;text-shadow:none;text-decoration:none;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .threshold-view :is(.threshold-return,.threshold-forward):hover {
+      background:radial-gradient(ellipse,rgba(255,244,215,.10),transparent 78%);
     }
     .room-ui .topbar :is(.nav, .reset) {
       background: none; border: 0; box-shadow: none; border-radius: 0;
@@ -127,8 +134,8 @@
       <div class="threshold-view">
         <img src="assets/bob-greenhouse-threshold.webp" alt="An open green greenhouse door with a brass handle, looking past a wooden stool to Bob at the potting bench" width="1024" height="1536">
         <h1 id="greenhouseTitle" class="entry-title">Bob’s greenhouse</h1>
-        <a class="threshold-return" href="forest-path.html?from=bob">← The Woods</a>
-        <button class="threshold-forward" id="approachBench" type="button">Potting bench →</button>
+        <a class="threshold-return" href="forest-path.html?from=bob" aria-label="Open the greenhouse door and return to The Woods"></a>
+        <button class="threshold-forward" id="approachBench" type="button" aria-label="Approach Bob at the potting bench"></button>
       </div>
     </section>
   </main>
