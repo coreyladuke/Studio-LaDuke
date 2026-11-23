@@ -124,7 +124,8 @@ function createRoom(stage){
  plaque(stage.clue,0,2.61,-10.80,6.9,.65,{background:id==="shining"?"#5e2c22":"#28302d",size:53});
  const key=new THREE.SpotLight(theme[1],13,17,.9,.5,1.1);
  key.position.set(-1,6,-5);key.target.position.set(0,1.3,-6);key.castShadow=true;key.shadow.mapSize.set(512,512);roomRoot.add(key,key.target);vivid.push({kind:"light",light:key});
- const decor=roomId=>({ghost:buildGhost,shining:buildShining,beetle:buildBeetle,wayne:buildWayne,stand:buildStand})[roomId]();
+ const build={ghost:buildGhost,shining:buildShining,beetle:buildBeetle,wayne:buildWayne,stand:buildStand}[id];
+ const decor=build();
  decor.userData.puzzleStage=stage.id;
 }
 function pedestal(x,z,width=1.55,material=M.wood){
