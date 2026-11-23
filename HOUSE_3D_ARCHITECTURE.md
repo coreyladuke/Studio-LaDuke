@@ -11,6 +11,7 @@ Owner-approved decisions: `1C,2C,3C,4C,5C,6C,7C,8C,9B,10C,11C,12B`; refinements 
 - Entry: `house-3d.html`. The regular `house.html` floor map includes an accessible physical-style gateway.
 - Engine: **Three.js pinned to 0.187.0** (MIT licensed, using a free versioned jsDelivr ESM URL). No model-generation API charge and no subscription. Source: https://threejs.org/docs/ and https://github.com/mrdoob/three.js/
 - Styling: `assets/studio-house-3d.css`; modeled scene: `assets/studio-house-3d.js`.
+- **Current PBR upgrade:** locally hosted 512px wood-floor diffuse, normal and roughness maps under `assets/pbr/`, optimized as WebP and loaded with a procedural fallback. Original asset: [Poly Haven Wood Floor](https://polyhaven.com/a/wood_floor), **CC0**. These maps are a free realism improvement, not a claim of fully photo-real furnished rooms.
 - Camera: smooth movement between an atrium viewpoint and curved-sofa living room. Mouse or touch drag to look; keyboard arrows, numbered room shortcuts, and physical-style room buttons.
 - Architecture: actual 3D walls, beams, mouldings, checker floor, balcony, 13-step staircase with railing, five-section stained glass skylight, curved modular purple/orange vinyl couch, chrome and checker inlaid coffee table, real 3D framing around existing Studio LaDuke artwork.
 - Atmosphere: physically lit materials, rain streak geometry, swaying 3D trees, moving scene details, local-clock skylight lighting, original user-initiated synthesised bowl-like chime and wind. **No copyrighted music playback**; no ambient autoplay.
@@ -21,7 +22,7 @@ Owner-approved decisions: `1C,2C,3C,4C,5C,6C,7C,8C,9B,10C,11C,12B`; refinements 
 
 ## No-cost toolchain
 
-1. **Code-built 3D geometry:** Three.js, with authoring from OpenAI-generated and human-reviewed JavaScript. Work in parametric geometry first to test space/interaction. Turn any promising design into a reusable reusable module, not a one-off collage.
+1. **Code-built 3D geometry:** Three.js, with authoring from OpenAI-generated and human-reviewed JavaScript. Work in parametric geometry first to test space/interaction. Turn any promising design into a reusable module, not a one-off collage.
 2. **Free 3D authoring:** Blender (GPL), using optional Blender Python scripts to generate and refine real `glTF/.glb` meshes with UVs and bakes. Avoid paid cloud rendering/generation. Assets are authored locally and then committed to the repository. See https://www.blender.org/
 3. **Free photographic/PBR materials:** Poly Haven (CC0) for wood, stained metal, HDR lighting, forest stone; ambientCG (CC0) as additional texture source. Download the final chosen assets, optimize, self-host, and log their provenance. Do not call external live asset APIs on every page view. See https://polyhaven.com/license and https://ambientcg.com.
 4. **Free CC0 geometry for initial blocking:** Kenney (e.g., Furniture Kit, CC0) only as an initial scale and prototype resource. Custom/realistic authored assets replace low-poly placeholder shapes when they look generic. See https://kenney.nl/assets/furniture-kit.
