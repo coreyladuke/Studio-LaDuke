@@ -1,0 +1,29 @@
+# Studio LaDuke: full-house completion mandate
+
+You are working in the actual repository **coreyladuke/Studio-LaDuke**, with production published at **https://studioladuke.com**. The owner has explicitly requested a full, continuous design and QA rescue, not concept art, generic placeholders, plans, or reassuring prose. **Do the work in code, run the application in a real browser, examine the actual rendered screens, refine, and repeat.** Do not send the owner into the site until objective checks AND visual/experiential sign-off justify it.
+
+## Before any edit
+
+1. Check out the current production branch `main`, inspect deployment status and site navigation, then read `HOUSE_SIGNOFF.md`, `HOUSE_VISUAL_BLOCKERS.md`, `house-scene-sources.md`, `qa/house-audit.cjs`, `house.html`, `assets/house-director.js`, `assets/house-director.css`, and `assets/house-v2.js`. Preserve all protected/private owner-only generators, inboxes, proof approvals and credentials. Never expose private materials.
+2. Inventory **all 27 House rooms across four floors**, **19 top-level HTML entry pages**, plus every additional reachable route under nested `games/`, `commissions/`, or other directories. Record all navigational edges, back paths, accessible controls, and source media.
+3. Ground the visual target in the photoreal, lived-in Studio LaDuke entrance/workshop art and the owner's actual personal objects. This is a warm, strange, immersive, rainy Southeast Alaska world that visitors inhabit, not a set of generic stock photographs and rectangular dialogs. Use the user's real supplied art and guitar images where available; **never invent a lookalike and represent it as authentic**.
+
+## Execute for every room and page, without skipping
+
+4. **Capture before** screenshots from iPhone Safari or a compatible WebKit run at phone viewport and desktop. Inspect centered, fully panned left and right views. Follow a human visitor's actual route to the room; do not only deep-link.
+5. Identify and fix the **largest scene mismatch** first: true spatial materials/depth and lighting, consistency between rooms, believable doorway locations, room-specific furniture, correct user-owned art, actual yellow Tom DeLonge Strat bought at sixteen, actual pink guitar, real five-note star, accessible physical affordances, and an Easter egg only when it belongs. Read the owner's other room directions, but do not substitute generic examples.
+6. Remove disconnected decorative objects, repeated image plates, generic glowing dots, beige text popups, fake doors, dead-end clicks, placeholder descriptions and inconsistent overlays. A touch target must lie precisely on the photographed or rendered object. Each object should animate, reveal a physical discovery, perform an actual action, open an intentional destination, or be removed. Preserve the escape-room clue chain and keypad, working door paths, legitimate public pages, and internal history.
+7. Test room behavior: tap every visible door/object, test swipe-to-pan with inertial-safe interactions, keyboard navigation/focus, reduced-motion setting, back/forward history, quick room changes, overlay escape close, safe areas, loading, screen reader labels and no console/network errors. Deep-test all games by actually playing through the intended sequences, not just loading their pages. Test mobile and desktop.
+8. Capture **after** screenshots at identical viewpoints and compare against before and the reference target. Be willing to discard and rebuild a bad attempt. Repeat visual/code/test cycles until the room is both technically and artistically acceptable. Mark the room `B`, `T`, `V`, `S` in `HOUSE_SIGNOFF.md` only when independently substantiated, with screenshot evidence and notes.
+9. Commit real improvements to `main` and verify the deployed production output after each coherent batch. Preserve working parts, do not silently overwrite unrelated projects, and do not call a successful git push a successful visual result.
+10. **Never treat stock photo substitution as the final room.** The current repo's self-hosted Pexels imagery is transitional and contains glaring visual contradictions documented room by room. Replace it with coherent, custom art directed to one continuous world; check authenticity and rights. Give priority to critical defects including Maverick's Attic, Music Room, Escape Room, Curiosity Vault, Living Room and duplicated hallways.
+
+## Final gate
+
+Do a complete literal tour: enter through the site's front page, walk every linked door and floor, tap every prop, solve the escape room, play the arcade/games, open every nested page, and return back successfully. Test all 27 rooms and **all reachable** pages at mobile, desktop and reduced motion. Re-run `qa/house-audit.cjs` and add deeper tests as needed. Capture evidence of each viewpoint and interaction. No missing assets, console errors, inaccessible routes, content placeholders, obvious visual mismatches, privacy exposure or dead ends. Incomplete visual items stay explicitly **NOT APPROVED** and the owner is **not** invited to review.
+
+## Communication
+
+The owner has already explained the target many times. Do not ask them to restate it. Give concise factual checkpoints, cite commits and screenshots, list unresolved blockers plainly. Do not claim you're working in the background without a running tool-supported task. If the workflow or browser stops, preserve progress in the repo and name the exact next step. **Only invite the owner into the site after every sign-off item has passed**, with the final result, evidence, and live link.
+
+**Finish standard:** The site must feel like entering one extraordinary, personal Studio LaDuke world, not visiting 27 unrelated design mockups.
