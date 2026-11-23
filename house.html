@@ -125,7 +125,11 @@ const R={
 const floors=["Ground floor","Second floor","Maverick's Attic","Basement"];
 const id=function(x){return document.getElementById(x);};
 const camera=id("camera"),plate=id("plate"),painting=id("painting"),doorBox=id("doors"),objectBox=id("objects");
-let here="",scale=1,maxPan=0,pan=0,drag=null,suppress=false,toastTimer=0,detailFocus=null;
+let here="",scale=1,maxPan=0,pan=0,panTarget=0,panFrame=0,drag=null,suppress=false,toastTimer=0,detailFocus=null;
+const reduceMotion=window.matchMedia("(prefers-reduced-motion: reduce)");
+function clampPan(p){return Math.min(maxPan,Math.max(-maxPan,p));}
+function paintPan(){plate.style.setProperty("--pan",pan+"px");id("left").disabled=pan>=maxPan-2;id("right").disabled=pan<=-maxPan+2;}
+function stopPan(){if(panFrame)cancelAnimationFrame(panFrame);panFrame=0;}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
 function lightPanel(r){
  const theme={0:["#70523c","#34271e","#99714e"],1:["#685441","#2d2826","#a58862"],2:["#514331","#292521","#7b6845"],3:["#3e4039","#1e2521","#66614d"]}[r.f];
@@ -172,15 +176,27 @@ function propArt(type){
  return '<svg viewBox="0 0 100 120" aria-hidden="true">'+(pics[type]||pics.book)+'</svg>';
 }
 function toast(t){clearTimeout(toastTimer);id("toast").textContent=t;id("toast").classList.add("show");toastTimer=setTimeout(function(){id("toast").classList.remove("show");},4000);}
-function resize(){scale=Math.max(innerWidth/1600,innerHeight/900);maxPan=Math.max(0,(1600*scale-innerWidth)/2);plate.style.setProperty("--scale",scale);setPan(Math.min(maxPan,Math.max(-maxPan,pan)));}
-function setPan(p){pan=Math.min(maxPan,Math.max(-maxPan,p));plate.style.setProperty("--pan",pan+"px");id("left").disabled=pan>=maxPan-2;id("right").disabled=pan<=-maxPan+2;}
+function resize(){scale=Math.max(innerWidth/1600,innerHeight/900);maxPan=Math.max(0,(1600*scale-innerWidth)/2);plate.style.setProperty("--scale",scale);setPan(pan,true);}
+function setPan(p,immediate){
+ panTarget=clampPan(p);
+ if(immediate||reduceMotion.matches){stopPan();pan=panTarget;paintPan();return;}
+ if(panFrame)return;
+ function frame(){
+  const delta=panTarget-pan;
+  if(Math.abs(delta)<.7){pan=panTarget;panFrame=0;paintPan();return;}
+  pan+=delta*.24;
+  paintPan();
+  panFrame=requestAnimationFrame(frame);
+ }
+ panFrame=requestAnimationFrame(frame);
+}
 function draw(){
  const r=R[here];if(!r)return;document.body.classList.remove("scene-living","scene-foyer","scene-coat");plate.classList.remove("pocket-open","star-awake","tv-playing","pick-found","lamp-dim","yellow-spot","pink-spot","discovered","mirror-fog","drawer-open","steam-on","light-on","spark-on");if(["living","foyer","coat"].includes(here))document.body.classList.add("scene-"+here);painting.innerHTML=(window.StudioHouseDirector&&window.StudioHouseDirector.scene(here))||(window.StudioHouseV2&&window.StudioHouseV2.scene(here))||(r.photo?'<img src="'+r.photo+'" alt=""><div class="wash"></div>':lightPanel(r));
  id("roomName").textContent=r.n;id("roomDescription").textContent=r.d;id("floorName").textContent=r.n;id("floorTag").querySelector("small").textContent=floors[r.f]+" · Swipe to look";doorBox.replaceChildren();objectBox.replaceChildren();
  let pos=r.e.length===1?[800]:r.e.length===2?[440,1150]:r.e.length===3?[300,805,1300]:[170,560,1035,1430];if(here==="foyer")pos=[190,1340,490,805];if(here==="coat")pos=[186];if(!["living","foyer","coat"].includes(here))pos=r.e.length===1?[800]:r.e.length===2?[420,1180]:r.e.length===3?[250,800,1350]:[170,560,1040,1430];
  r.e.forEach(function(d,i){let b=document.createElement("button");b.className="door";b.type="button";b.style.left=pos[i]+"px";b.dataset.way=d[2]||"";b.setAttribute("aria-label","Go to "+d[0]);b.innerHTML='<span class="doorface"></span><span class="plaque">'+escapeHtml(d[0])+'</span>';b.addEventListener("click",function(){go(d[1]);});doorBox.append(b);});
  (r.p||[]).forEach(function(p){let b=document.createElement("button");b.className="prop";b.type="button";b.style.left=p[1]+"px";b.style.top=p[2]+"px";b.setAttribute("aria-label",p[3]);b.innerHTML=propArt(p[0])+'<span class="hint">'+escapeHtml(p[3])+'</span>';b.addEventListener("click",function(){if(p[5]==="code"){code();return;}if(p[5]==="night"){document.body.classList.toggle("lights-out");if(window.StudioHouseDirector)window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast});return;}if(p[5]){go(p[5]);return;}if(window.StudioHouseDirector&&window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast}))return;if(window.StudioHouseV2&&window.StudioHouseV2.activate(here,p[0],{plate:plate,toast:toast}))return;detail(p[3],p[4],p[5]);});objectBox.append(b);});
- resize();setPan(0);makeMap();document.title=r.n+" · Studio LaDuke House";
+ stopPan();resize();setPan(0,true);makeMap();document.title=r.n+" · Studio LaDuke House";
 }
 function go(to,replace){if(/\.html/.test(to)){location.href=to;return;}if(!R[to]){toast("That door isn't ready.");return;}if(to==="vault"&&!sessionStorage.getItem("laduke-escape-done")){toast("The vault is sealed.");return;}hideDetail(false);hideMap(false);here=to;document.body.classList.remove("lights-out");if(replace)history.replaceState({room:to},"","house.html?room="+to);else history.pushState({room:to},"","house.html?room="+to);draw();}
 function makeMap(){let box=id("floorContents");box.replaceChildren();floors.forEach(function(f,i){let h=document.createElement("div");h.className="floorhead";h.textContent=f;box.append(h);let group=document.createElement("div");group.className="floorlinks";Object.keys(R).filter(function(k){return R[k].f===i && (k!=="vault"||sessionStorage.getItem("laduke-escape-done"));}).forEach(function(k){let b=document.createElement("button");b.type="button";b.textContent=R[k].n;if(k===here)b.setAttribute("aria-current","location");b.addEventListener("click",function(){go(k);});group.append(b);});box.append(group);});}
@@ -193,9 +209,28 @@ id("codeForm").addEventListener("submit",function(e){e.preventDefault();if(id("c
 id("mapOpen").addEventListener("click",showMap);id("closeMap").addEventListener("click",function(){hideMap(true);});id("shade").addEventListener("click",function(){hideMap(true);});
 id("closeDialog").addEventListener("click",function(){hideDetail(true);});id("dialogShade").addEventListener("click",function(){hideDetail(true);});
 id("left").addEventListener("click",function(){setPan(pan+Math.max(180,innerWidth*.66));});id("right").addEventListener("click",function(){setPan(pan-Math.max(180,innerWidth*.66));});
-camera.addEventListener("pointerdown",function(e){if(e.button!==0||!id("dialog").hidden||!id("map").hidden)return;drag={x:e.clientX,p:pan,m:false};});
-camera.addEventListener("pointermove",function(e){if(!drag)return;let dx=e.clientX-drag.x;if(Math.abs(dx)>9){if(!drag.m){drag.m=true;try{camera.setPointerCapture(e.pointerId);}catch(error){}}camera.classList.add("dragging");setPan(drag.p+dx);}});
-function finish(){if(!drag)return;suppress=drag.m;drag=null;camera.classList.remove("dragging");}
+camera.addEventListener("pointerdown",function(e){
+ if(e.button!==0||!id("dialog").hidden||!id("map").hidden)return;
+ stopPan();panTarget=pan;
+ drag={x:e.clientX,p:pan,m:false,lastX:e.clientX,lastT:performance.now(),velocity:0,pointerId:e.pointerId};
+});
+camera.addEventListener("pointermove",function(e){
+ if(!drag||e.pointerId!==drag.pointerId)return;
+ const dx=e.clientX-drag.x,now=performance.now(),dt=Math.max(8,now-drag.lastT);
+ if(Math.abs(dx)>9){
+  if(!drag.m){drag.m=true;try{camera.setPointerCapture(e.pointerId);}catch(error){}}
+  camera.classList.add("dragging");
+  drag.velocity=Math.max(-2.6,Math.min(2.6,(e.clientX-drag.lastX)/dt));
+  drag.lastX=e.clientX;drag.lastT=now;
+  setPan(drag.p+dx,true);
+ }
+});
+function finish(){
+ if(!drag)return;
+ const wasDragging=drag.m,speed=drag.velocity;
+ suppress=wasDragging;drag=null;camera.classList.remove("dragging");
+ if(wasDragging&&!reduceMotion.matches&&Math.abs(speed)>.18)setPan(pan+speed*115);
+}
 camera.addEventListener("pointerup",finish);camera.addEventListener("pointercancel",finish);window.addEventListener("pointerup",finish);
 camera.addEventListener("click",function(e){if(suppress){suppress=false;e.preventDefault();e.stopImmediatePropagation();}},true);
 window.addEventListener("resize",resize);
