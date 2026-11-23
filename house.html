@@ -189,10 +189,10 @@ id("codeForm").addEventListener("submit",function(e){e.preventDefault();if(id("c
 id("mapOpen").addEventListener("click",showMap);id("closeMap").addEventListener("click",function(){hideMap(true);});id("shade").addEventListener("click",function(){hideMap(true);});
 id("closeDialog").addEventListener("click",function(){hideDetail(true);});id("dialogShade").addEventListener("click",function(){hideDetail(true);});
 id("left").addEventListener("click",function(){setPan(pan+Math.max(180,innerWidth*.66));});id("right").addEventListener("click",function(){setPan(pan-Math.max(180,innerWidth*.66));});
-camera.addEventListener("pointerdown",function(e){if(e.button!==0||!id("dialog").hidden||!id("map").hidden)return;drag={x:e.clientX,p:pan,m:false};camera.setPointerCapture(e.pointerId);});
-camera.addEventListener("pointermove",function(e){if(!drag)return;let dx=e.clientX-drag.x;if(Math.abs(dx)>9){drag.m=true;camera.classList.add("dragging");setPan(drag.p+dx);}});
+camera.addEventListener("pointerdown",function(e){if(e.button!==0||!id("dialog").hidden||!id("map").hidden)return;drag={x:e.clientX,p:pan,m:false};});
+camera.addEventListener("pointermove",function(e){if(!drag)return;let dx=e.clientX-drag.x;if(Math.abs(dx)>9){if(!drag.m){drag.m=true;try{camera.setPointerCapture(e.pointerId);}catch(error){}}camera.classList.add("dragging");setPan(drag.p+dx);}});
 function finish(){if(!drag)return;suppress=drag.m;drag=null;camera.classList.remove("dragging");}
-camera.addEventListener("pointerup",finish);camera.addEventListener("pointercancel",finish);
+camera.addEventListener("pointerup",finish);camera.addEventListener("pointercancel",finish);window.addEventListener("pointerup",finish);
 camera.addEventListener("click",function(e){if(suppress){suppress=false;e.preventDefault();e.stopImmediatePropagation();}},true);
 window.addEventListener("resize",resize);
 window.addEventListener("popstate",function(){let q=new URLSearchParams(location.search).get("room");here=R[q]?q:"living";draw();});
