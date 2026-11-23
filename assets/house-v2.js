@@ -28,6 +28,8 @@ const css = [
 '#plate.tv-playing #tv-off{opacity:0}',
 '#plate.pick-found #found-pick{opacity:1;transform:translateY(0)}',
 '#plate.pocket-open #pocket-contents{opacity:1;transform:translateY(-20px)}',
+'#plate.pocket-open #pocket-dark{opacity:.8}',
+'#painting #pocket-dark{transition:opacity .4s}',
 '#plate.pocket-open #coat-pocket-flap{transform:translateY(46px) rotate(8deg)}',
 '#plate.star-awake #scene-star-glow{opacity:1}',
 '#plate.yellow-spot #guitar-yellow-halo,#plate.pink-spot #guitar-pink-halo{opacity:.94}',
@@ -73,14 +75,19 @@ function foyer(){return '<svg class="house-scene house-photo" xmlns="'+NS+'" vie
 '<image href="assets/studio-note-star.webp" x="1092" y="447" width="64" height="64"/>'+
 '<rect width="1600" height="900" fill="url(#night)" opacity=".18" pointer-events="none"/>'+
 '</svg>';}
-function coat(){let s=sceneBase();s+=door(80,238,210,433,false);s+='<g><rect x="425" y="185" width="744" height="470" fill="#3b2921" stroke="#271711" stroke-width="22"/><path d="M458 242h680M455 364h685" stroke="#8e6546" stroke-width="18"/><path d="M480 272v72m105 -72v72m110 -72v72m105 -72v72m110 -72v72m105 -72v72" stroke="#634b37" stroke-width="11"/></g>';
-s+='<g><path d="M645 344Q676 270 708 309L760 343Q808 368 855 344L924 305Q964 280 976 344L1049 668H550Z" fill="#304c4c" stroke="#203031" stroke-width="23"/><path d="M732 321l61 80 -45 120m143 -198l-91 78 53 118" stroke="#648182" stroke-width="10" fill="none"/><path d="M691 455h113v117H691ZM832 456h119v117H832Z" fill="#375757" stroke="#92aaa4" stroke-width="5"/><path d="M665 411L583 629M966 410l58 213" stroke="#89a29b" stroke-width="12"/><path id="coat-pocket-flap" d="M727 531Q801 513 870 534L855 595H741Z" fill="#385b5b" stroke="#abb9aa" stroke-width="9"/><g id="pocket-contents"><path d="M755 524l5 -104 55 13 6 106Z" fill="#d9c39f" stroke="#654c35" stroke-width="4"/><path d="M781 441h23M773 454h35M774 465h23" stroke="#755b44" stroke-width="4"/><path d="M837 525Q879 514 876 550Q863 580 848 587Q815 547 837 525Z" fill="#c8a775" stroke="#4f3528" stroke-width="5"/><text x="850" y="548" text-anchor="middle" font-size="11" fill="#30251b" font-family="Georgia">♫</text></g></g>';
-s+='<g><rect x="585" y="697" width="512" height="67" fill="url(#wood)" stroke="#281a16" stroke-width="16"/><path d="M633 767v120m418 -120v120" stroke="#573b2b" stroke-width="25"/><path d="M620 687q25 -40 52 0m85 0q25 -40 52 0m86 0q25 -40 52 0" fill="#524c36" stroke="#a38d68" stroke-width="14"/></g><rect width="1600" height="900" fill="url(#night)" opacity=".36"/>';
-return s+'</svg>';}
+function coat(){return '<svg class="house-scene house-photo" xmlns="'+NS+'" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">'+grad()+
+'<image href="assets/forgotten-works.webp" width="1600" height="900" preserveAspectRatio="xMidYMid slice"/>'+
+'<rect width="1600" height="900" fill="url(#night)" opacity=".3" pointer-events="none"/>'+
+'<rect id="pocket-dark" width="1600" height="900" fill="#090c0b" opacity="0"/>'+
+'<g id="pocket-contents"><rect x="385" y="146" width="831" height="610" rx="7" fill="#100f0c" opacity=".8"/>'+
+'<image href="assets/workshop-drawer.webp" x="422" y="175" width="757" height="555" preserveAspectRatio="xMidYMid slice"/>'+
+'<rect x="422" y="175" width="757" height="555" fill="none" stroke="#8a643e" stroke-width="22"/>'+
+'<rect x="436" y="189" width="729" height="527" fill="none" stroke="#2d1d14" stroke-width="5"/></g>'+
+'</svg>';}
 function scene(which){if(which==="living")return living();if(which==="foyer")return foyer();if(which==="coat")return coat();return "";}
 function activate(which,type,ctx){
   const plate=ctx.plate;
-  if(which==="coat"&&type==="chest"){plate.classList.toggle("pocket-open");ctx.toast(plate.classList.contains("pocket-open")?"A ticket and a guitar pick. Both worth keeping.":"The pocket folds shut.");return true;}
+  if(which==="coat"&&type==="chest"){plate.classList.toggle("pocket-open");ctx.toast(plate.classList.contains("pocket-open")?"Old tickets, little treasures, and a few things worth remembering.":"The drawer slides closed.");return true;}
   if(which==="foyer"&&type==="star"){plate.classList.toggle("star-awake");ctx.toast("Five music notes. One star. This one belongs here.");return true;}
   if(which!=="living")return false;
   if(type==="sofa"){plate.classList.toggle("pick-found");ctx.toast(plate.classList.contains("pick-found")?"A guitar pick was tucked between the cushions.":"The cushions settle back into place.");return true;}
