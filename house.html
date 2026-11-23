@@ -238,7 +238,7 @@ camera.addEventListener("pointerup",finish);camera.addEventListener("pointercanc
 camera.addEventListener("click",function(e){if(suppress){suppress=false;e.preventDefault();e.stopImmediatePropagation();}},true);
 window.addEventListener("resize",resize);
 window.addEventListener("popstate",function(){let q=new URLSearchParams(location.search).get("room");here=R[q]?q:"living";draw();});
-document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(!id("dialog").hidden)hideDetail(true);else if(!id("map").hidden)hideMap(true);return;}if(!id("dialog").hidden||!id("map").hidden)return;if(e.key==="ArrowLeft"){e.preventDefault();setPan(pan+180);}if(e.key==="ArrowRight"){e.preventDefault();setPan(pan-180);}if(e.key.toLowerCase()==="m"&&!e.metaKey&&!e.ctrlKey)showMap();});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(!id("dialog").hidden)hideDetail(true);else if(!id("map").hidden)hideMap(true);return;}if(!id("dialog").hidden||!id("map").hidden||(window.StudioHouseAdventure&&window.StudioHouseAdventure.isOpen))return;if(e.key==="ArrowLeft"){e.preventDefault();setPan(pan+180);}if(e.key==="ArrowRight"){e.preventDefault();setPan(pan-180);}if(e.key.toLowerCase()==="m"&&!e.metaKey&&!e.ctrlKey)showMap();});
 const initial=new URLSearchParams(location.search).get("room");here=R[initial]?initial:"living";if(!R[initial])history.replaceState({room:here},"","house.html?room="+here);draw();
 try{if(!sessionStorage.getItem("laduke-house-seen")){sessionStorage.setItem("laduke-house-seen","1");}}catch(e){}
 })();
