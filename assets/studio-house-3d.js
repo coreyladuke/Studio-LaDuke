@@ -222,6 +222,42 @@ const vinyl=cyl(.32,.32,.017,-.42,1.5,-.05,mats.aubergine,48,cabinet);
 const recordLabel=cyl(.078,.078,.024,-.42,1.52,-.05,mats.gold,32,cabinet);
 interactiveObject(vinyl,"Play with the vintage turntable","record");
 animated.push({record:vinyl});
+// Real owner-created art in physically modeled frames, not floating interface cards.
+const textureLoader=new THREE.TextureLoader();
+function frameArtwork(url,x,y,z,angle,width,height,label){
+ const g=new THREE.Group();scene.add(g);g.position.set(x,y,z);g.rotation.y=angle;
+ box(width+.25,height+.25,.15,0,0,0,mats.walnutLight,g);
+ box(width+.085,height+.08,.015,0,0,.095,mats.brass,g);
+ const backing=box(width,height,.025,0,0,.113,mats.black,g);
+ textureLoader.load(url,tex=>{
+  tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=4;
+  const mat=new THREE.MeshStandardMaterial({map:tex,roughness:.81,metalness:0});
+  const paper=mesh(new THREE.PlaneGeometry(width*.91,height*.91),mat,0,0,.132,g);
+  paper.castShadow=false;
+ },undefined,()=>{});
+ box(width+.22,.045,.19,0,-(height+.2)/2,.06,mats.walnutLight,g);
+ interactiveObject(backing,label,"art");return g;
+}
+frameArtwork("assets/corey-boat-sketch.jpeg",-8.48,2.78,-4.5,Math.PI/2,1.45,1.85,"A framed original boat sketch");
+frameArtwork("assets/corey-carved-paddle.jpeg",8.48,2.65,-1.7,-Math.PI/2,1.4,2.05,"The carved paddle artwork");
+frameArtwork("assets/corey-cedar-earrings.jpeg",-8.48,2.68,-.1,Math.PI/2,1.35,1.6,"Cedar earrings");
+
+// Woven, hand-detailed textile under the curved modular vinyl sofa.
+function textileTexture(){
+ const cv=document.createElement("canvas");cv.width=cv.height=512;const g=cv.getContext("2d");
+ g.fillStyle="#513253";g.fillRect(0,0,512,512);
+ for(let i=0;i<13000;i++){
+  const x=seeded(i+555)*512,y=seeded(i+8355)*512;
+  g.fillStyle=i%4===0?"#d28d592b":i%3===0?"#f2bee724":"#120b170e";
+  g.fillRect(x,y,1+seeded(i+91)*2,1);
+ }
+ g.strokeStyle="#d87637";g.lineWidth=17;g.strokeRect(19,19,474,474);
+ g.strokeStyle="#e8b86e";g.lineWidth=5;g.strokeRect(46,46,420,420);
+ const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;return tex;
+}
+const rug=mesh(new THREE.CircleGeometry(3.25,56),new THREE.MeshStandardMaterial({map:textileTexture(),roughness:.98,metalness:0}),3.55,.027,-5.8);
+rug.rotation.x=-Math.PI/2;rug.scale.set(1.3,.86,1);rug.castShadow=false;
+
 // sculptural framed original-inspired abstract artwork; not attributed to the owner
 const art=new THREE.Group();scene.add(art);art.position.set(-1.45,3.0,-10.47);
 box(1.95,2.35,.18,0,0,0,mats.walnutLight,art);
