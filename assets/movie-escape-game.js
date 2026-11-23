@@ -5,11 +5,11 @@
 "use strict";
 const PROGRESS_KEY="studioladuke.movie.maze.v1", ENTRY_KEY="laduke-escape-done";
 const stages=[
- {id:"ghost",film:"GHOSTBUSTERS",subtitle:"The Containment Room",name:"Ghostbusters · Containment",goal:"The containment system has three relays. Study the wall directions, then prime the switches in the correct order.",
+ {id:"ghost",film:"GHOSTBUSTERS",subtitle:"The Containment Room",name:"Ghostbusters · Containment",goal:"The ghost trap hides the starting clue. Arm it, then find the right relay sequence to open the next door.",
   clue:"COLD → HOT → SAFE. The final light should be green.",
-  type:"sequence",order:["blue","red","green"],
+  type:"sequence",order:["trap","blue","red","green"],
   props:[["blue","Blue cold relay"],["red","Red hot relay"],["green","Green safe relay"],["trap","Inspect the ghost trap"]],
-  hints:["Follow the painted relay diagram, not the order of the switches.","Start with the cold blue cell, then the red one.","Press BLUE, then RED, then GREEN."],
+  hints:["The ghost trap must be armed before the relays will respond.","Arm the trap, then prime the cold blue relay, then hot red.","Touch TRAP, BLUE, RED, GREEN in that order."],
   success:"The containment grid glows green. A door clicks open in the dark."},
  {id:"shining",film:"THE SHINING",subtitle:"The Overlook Corridor",name:"The Shining · Corridor",goal:"A room number has disappeared. Count the motifs on the carpet, in the order written beside the mysterious door.",
   clue:"FIRST: red diamonds. SECOND: cream circles. THIRD: gold bars.",
@@ -26,10 +26,10 @@ const stages=[
   type:"sequence",order:["guitar","amp","camera"],props:[["guitar","Pick up the guitar"],["amp","Switch on the amplifier"],["camera","Start the video camera"],["poster","Read the Crucial Taunt poster"]],
   hints:["A signal must begin somewhere. The camera cannot hear an unplugged guitar.","Instrument first, amplifier second, recording equipment last.","Touch GUITAR, then AMP, then CAMERA."],
   success:"A red recording light shines. The basement show is on."},
- {id:"stand",film:"STAND BY ME",subtitle:"The Pie-Eating Contest",name:"Stand by Me · Contest",goal:"The trophy sits beside three pies. The judges' note says how to serve the last round.",
-  clue:"RED FIRST. GOLD SECOND. BLUE LAST. Don't touch the trophy until the pies are served.",
-  type:"sequence",order:["cherry","apple","blueberry"],props:[["cherry","Serve cherry pie"],["apple","Serve apple pie"],["blueberry","Serve blueberry pie"],["trophy","Inspect the pie-contest trophy"]],
-  hints:["The judges' handwritten note uses the colors of the pies.","Cherry is red; apple is golden; blueberry is blue.","Serve CHERRY, then APPLE, then BLUEBERRY."],
+ {id:"stand",film:"STAND BY ME",subtitle:"The Pie-Eating Contest",name:"Stand by Me · Contest",goal:"The trophy sits beside three pies. Serve the final round in the order written on the judges' note, then lift the trophy.",
+  clue:"RED FIRST. GOLD SECOND. BLUE LAST. THEN THE TROPHY.",
+  type:"sequence",order:["cherry","apple","blueberry","trophy"],props:[["cherry","Serve cherry pie"],["apple","Serve apple pie"],["blueberry","Serve blueberry pie"],["trophy","Inspect the pie-contest trophy"]],
+  hints:["Match the note's colors to the pie fillings, then remember what is awarded at the end.","Cherry is red, apple golden, blueberry blue. The trophy must be last.","CHERRY → APPLE → BLUEBERRY → TROPHY."],
   success:"The contest trophy rattles. Behind it, the Curiosity Vault opens."}
 ];
 let saved={stage:0,solved:[],steps:{},elapsed:{},hints:{}};
@@ -124,9 +124,9 @@ function interact(action){
  const c=chapter();
  if(action==="door"&&c.id==="shining"){$("roomCode").hidden=false;$("number").focus();return;}
  if(action==="door"&&c.id==="beetle"){toast("The green door is waiting for three things to happen first.");return;}
- if(action==="trap"){toast(c.clue);return;}
+ if(action==="trap"&&c.id!=="ghost"){toast(c.clue);return;}
  if(action==="poster"){toast(c.clue);return;}
- if(action==="trophy"){toast("The trophy won't move. Three pies first, says the judge's note.");return;}
+ if(action==="trophy"&&c.id!=="stand"){toast("The trophy is part of the final sequence.");return;}
  if(c.type==="code"){
   const info={diamonds:"Two red diamonds. A tiny 2 is scratched on the wall.",circles:"Three cream circles. Each is carefully carved.",bars:"Seven golden bars, all in the same row."}[action];
   if(info)toast(info);return;
