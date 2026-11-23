@@ -26,3 +26,54 @@
 #housePocketToggle.new-find{animation:pocketFind .72s cubic-bezier(.22,.8,.2,1)}
 @keyframes pocketFind{0%{transform:rotate(2deg) scale(1)}32%{transform:rotate(-4deg) scale(1.08);box-shadow:0 0 22px #ffd480,3px 5px 0 #3e271b8c}100%{transform:rotate(2deg) scale(1)}}
 @media(prefers-reduced-motion:reduce){#housePocketToggle.new-find{animation:none}}
+
+
+/* Batch 02: optional hidden narrative and varied found-object media. */
+#houseThread{
+ padding:10px 12px;margin:0 0 15px;
+ border:1px solid #99623c;
+ background:linear-gradient(120deg,#392342,#634071);
+ color:#fff3df;box-shadow:3px 3px 0 #9d774c;
+}
+#houseThreadToggle{
+ width:100%;display:block;padding:8px 9px;
+ border:1px solid #f9cf92;border-radius:2px;
+ background:#281a31;color:#fce9c5;
+ text-align:left;font:600 15px Georgia,serif;cursor:pointer;
+}
+#houseThreadToggle::before{content:"✧ ";color:#fcb464}
+#houseThreadToggle[aria-pressed=true]{background:#5b3066}
+#houseThreadHint{font:italic 14px/1.45 Georgia,serif;color:#fff0d4;margin:12px 2px 4px}
+#houseThreadToggle:focus-visible,#housePocketPanel li button:focus-visible,
+#housePocketPanel a:focus-visible{outline:3px solid #d46b22;outline-offset:2px}
+#housePocketPanel li .house-pocket-image{
+ display:block;width:min(100%,245px);max-height:180px;object-fit:contain;
+ padding:5px;margin:7px 0 5px;background:#c5a37a35;
+ border:2px solid #8f603e;box-shadow:2px 3px 0 #3c292433;
+}
+#housePocketPanel li .house-pocket-ticket{
+ position:relative;max-width:260px;margin:10px 0 7px;
+ padding:13px 15px 14px;background:#ecd2a4;
+ color:#553525;border:1px dashed #8b663c;
+ transform:rotate(-1.5deg);
+ box-shadow:3px 4px 0 #b79c80;
+}
+#housePocketPanel li .house-pocket-ticket::after{
+ content:"";position:absolute;top:0;right:15px;bottom:0;
+ border-right:2px dashed #b98c69;
+}
+#housePocketPanel li .house-pocket-ticket strong{
+ font:bold 19px Georgia,serif;letter-spacing:.045em
+}
+#housePocketPanel li .house-pocket-ticket span{
+ display:block;margin-top:4px;font:10px Georgia,serif;letter-spacing:.05em
+}
+#housePocketPanel li .house-pocket-destination{
+ display:inline-block;margin:7px 0;padding:6px 10px;
+ color:#fff4d8;background:#603b6c;
+ border:1px solid #f1ca7d;text-decoration:underline;
+ font:600 13px Georgia,serif;
+}
+@media (prefers-reduced-motion:reduce){
+ #housePocketPanel li .house-pocket-ticket{transform:none}
+}
