@@ -205,7 +205,13 @@ function draw(){
 }
 function go(to,replace){if(/\.html/.test(to)){location.href=to;return;}if(!R[to]){toast("That door isn't ready.");return;}if(to==="vault"&&!sessionStorage.getItem("laduke-escape-done")){toast("The vault is sealed.");return;}saveView();hideDetail(false);hideMap(false);here=to;document.body.classList.remove("lights-out");if(replace)history.replaceState({room:to},"","house.html?room="+to);else history.pushState({room:to},"","house.html?room="+to);draw();}
 window.StudioHouseGo=function(to){go(to);};
-function makeMap(){let box=id("floorContents");box.replaceChildren();floors.forEach(function(f,i){let h=document.createElement("div");h.className="floorhead";h.textContent=f;box.append(h);let group=document.createElement("div");group.className="floorlinks";Object.keys(R).filter(function(k){return R[k].f===i && (k!=="vault"||sessionStorage.getItem("laduke-escape-done"));}).forEach(function(k){let b=document.createElement("button");b.type="button";b.textContent=R[k].n;if(k===here)b.setAttribute("aria-current","location");b.addEventListener("click",function(){go(k);});group.append(b);});box.append(group);});}
+function makeMap(){let box=id("floorContents");box.replaceChildren();floors.forEach(function(f,i){let h=document.createElement("div");h.className="floorhead";h.textContent=f;box.append(h);let group=document.createElement("div");group.className="floorlinks";Object.keys(R).filter(function(k){return R[k].f===i && (k!=="vault"||sessionStorage.getItem("laduke-escape-done"));}).forEach(function(k){let b=document.createElement("button");b.type="button";b.textContent=R[k].n;if(k===here)b.setAttribute("aria-current","location");b.addEventListener("click",function(){go(k);});group.append(b);});box.append(group);});
+ const gateway=document.createElement("a");
+ gateway.href="house-3d.html";
+ gateway.className="house3d-map-door";
+ gateway.innerHTML='<span class="house3d-mark" aria-hidden="true">✦</span><span><strong>Step inside the 3D House</strong><small>The modeled atrium and colorful living room</small></span>';
+ box.append(gateway);
+}
 function showMap(){id("shade").hidden=false;id("map").hidden=false;id("closeMap").focus();}
 function hideMap(focus){id("shade").hidden=true;id("map").hidden=true;if(focus!==false)id("mapOpen").focus();}
 function detail(title,copy,to){detailFocus=document.activeElement;id("dialogTitle").textContent=title;id("dialogText").textContent=copy;id("dialogButtons").replaceChildren();id("codeForm").hidden=true;if(to){let b=document.createElement("button");b.type="button";b.textContent=/\.html/.test(to)?"Visit this part of Studio LaDuke":"Go there";b.addEventListener("click",function(){go(to);});id("dialogButtons").append(b);}id("dialogShade").hidden=false;id("dialog").hidden=false;id("closeDialog").focus();}
