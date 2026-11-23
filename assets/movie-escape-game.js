@@ -105,6 +105,7 @@ function enter(index){
  $("goal").textContent=c.goal;$("progress").textContent=(stageIndex+1)+" / 5";
  $("number").value="";$("roomCode").hidden=true;$("hintNote").hidden=true;closeProps();
  $("doorReveal").hidden=!isSolved();
+ $("theater").dataset.solved=String(isSolved());
  $("replay").hidden=!(stageIndex===4&&isSolved());
  $("successText").textContent=c.success;
  $("nextRoom").innerHTML=stageIndex===4?"Enter the Curiosity Vault <span aria-hidden='true'>➜</span>":"Open the next door <span aria-hidden='true'>➜</span>";
@@ -146,6 +147,7 @@ function complete(){
  soundCue(true);
  saved.solved=[...new Set([...saved.solved,stageIndex])].sort((a,b)=>a-b);save();
  updateHint();$("roomCode").hidden=true;closeProps();$("hintNote").hidden=true;
+ $("theater").dataset.solved="true";
  $("doorReveal").hidden=false;$("successText").textContent=chapter().success;
  if(stageIndex===4)$("replay").hidden=false;
  toast("The next door has opened.");
