@@ -2,7 +2,7 @@
 
 **Release gate: BLOCKED.** This is the explicit list of remaining mismatches discovered by looking at all 27 mobile room screenshots and the contact sheets for 19 linked top-level pages. A Playwright smoke test passing is not equivalent to a visual/interaction approval.
 
-**Target:** ONE believable, richly detailed, lived-in Studio LaDuke house: rainy SE Alaska atmosphere, wood/cedar grain, authored art and tactile objects, personal guitars and movie Easter eggs, grounded doorways, coherent proportions and camera. No generic photomontage/stock photographs where the room is supposed to show one particular person's belongings. All doors should lead where they appear to lead.
+**Target (updated for approved maximalist direction, November 23, 2026):** A beautifully maintained, *high-character*, brightly accented, retro artist's home with carved wood, varied checkerboards, dramatic color, exciting architecture and playful discoveries. The living room's approved orange-and-purple modular sofa and the authentic five-note-star stained glass are critical. The owner specifically rejected a too-perfect brown luxury cabin or run-down look. Original earlier target detail: ONE believable, richly detailed, lived-in Studio LaDuke house: rainy SE Alaska atmosphere, wood/cedar grain, authored art and tactile objects, personal guitars and movie Easter eggs, grounded doorways, coherent proportions and camera. No generic photomontage/stock photographs where the room is supposed to show one particular person's belongings. All doors should lead where they appear to lead.
 
 ## Ground floor
 
