@@ -99,3 +99,36 @@ body.directed-house[data-house-zone="upstairs"] #floorTag{
  body.directed-house #frontLink,
  body.directed-house #lookbar button{transition:none!important}
 }
+
+
+/* A restrained colored-glass glow connects the rooms without painting over
+   actual art. Every new scene settles smoothly instead of snapping into view. */
+body.directed-house #painting::before{
+ content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+ background:
+  radial-gradient(ellipse at 87% 26%,var(--room-accent) 0,transparent 46%),
+  radial-gradient(ellipse at 5% 80%,var(--room-secondary) 0,transparent 57%);
+ mix-blend-mode:soft-light;opacity:.21;
+}
+body.directed-house #painting svg.house-scene,
+body.directed-house #painting img{
+ animation:house-arrive .38s ease-out both;
+}
+@keyframes house-arrive{
+ from{opacity:.64;filter:brightness(.79) saturate(.75)}
+ to{opacity:1;filter:brightness(1) saturate(1)}
+}
+body.directed-house #painting svg.house-directed{
+ filter:contrast(1.06) saturate(.92);
+}
+body.directed-house #lookbar button,
+body.directed-house .door,
+body.directed-house .prop{
+ -webkit-tap-highlight-color:transparent;
+}
+body.directed-house #lookbar button:active{transform:scale(.94)}
+@media(prefers-reduced-motion:reduce){
+ body.directed-house #painting svg.house-scene,
+ body.directed-house #painting img{animation:none!important}
+ body.directed-house #lookbar button:active{transform:none}
+}
