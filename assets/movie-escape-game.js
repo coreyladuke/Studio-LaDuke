@@ -41,6 +41,39 @@ try{const raw=JSON.parse(localStorage.getItem(PROGRESS_KEY)||"null");if(raw&&typ
  saved.hints=saved.hints&&typeof saved.hints==="object"?saved.hints:{};
 }}catch(_){}
 let stageIndex=saved.stage,renderStage=()=>{},messageTimer=0,frameLast=performance.now(),lastSaved=0;
+let soundOn=false,audioCtx=null,hum=null,humGain=null;
+function soundCue(success=false){
+ if(!soundOn||!audioCtx)return;
+ const now=audioCtx.currentTime,notes=success?[392,523.25,659.25]:[330];
+ notes.forEach((freq,i)=>{
+  const oscillator=audioCtx.createOscillator(),volume=audioCtx.createGain();
+  oscillator.type="sine";oscillator.frequency.value=freq;
+  const start=now+i*.14,duration=success?.55:.16;
+  volume.gain.setValueAtTime(.0001,start);
+  volume.gain.exponentialRampToValueAtTime(success?.032:.011,start+.025);
+  volume.gain.exponentialRampToValueAtTime(.0001,start+duration);
+  oscillator.connect(volume).connect(audioCtx.destination);
+  oscillator.start(start);oscillator.stop(start+duration+.04);
+ });
+}
+async function toggleSound(){
+ const button=$("sound");
+ try{
+  if(!audioCtx){
+   audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+   const filter=audioCtx.createBiquadFilter();filter.type="lowpass";filter.frequency.value=170;
+   hum=audioCtx.createOscillator();hum.type="triangle";hum.frequency.value=52;
+   humGain=audioCtx.createGain();humGain.gain.value=0;
+   hum.connect(filter).connect(humGain).connect(audioCtx.destination);hum.start();
+  }
+  await audioCtx.resume();soundOn=!soundOn;
+  humGain.gain.setTargetAtTime(soundOn?.009:0,audioCtx.currentTime,.15);
+  button.setAttribute("aria-pressed",String(soundOn));
+  button.querySelector("span").textContent=soundOn?"Sound on":"Sound off";
+  if(soundOn)soundCue();
+ }catch(_){button.disabled=true;toast("Sound isn't available here. The puzzles still work.");}
+}
+
 const hintTimes=[90000,180000,270000];
 const $=id=>document.getElementById(id);
 function save(){try{localStorage.setItem(PROGRESS_KEY,JSON.stringify(saved))}catch(_){}}
@@ -87,6 +120,7 @@ function enter(index){
 function closeProps(){$("propDrawer").hidden=true;$("inspect").setAttribute("aria-expanded","false");}
 function interact(action){
  if(!syncGate()||isSolved())return;
+ soundCue(false);
  const c=chapter();
  if(action==="door"&&c.id==="shining"){$("roomCode").hidden=false;$("number").focus();return;}
  if(action==="door"&&c.id==="beetle"){toast("The green door is waiting for three things to happen first.");return;}
@@ -108,6 +142,7 @@ function interact(action){
 }
 function complete(){
  if(isSolved())return;
+ soundCue(true);
  saved.solved=[...new Set([...saved.solved,stageIndex])].sort((a,b)=>a-b);save();
  updateHint();$("roomCode").hidden=true;closeProps();$("hintNote").hidden=true;
  $("doorReveal").hidden=false;$("successText").textContent=chapter().success;
@@ -135,6 +170,7 @@ function next(){
  if(stageIndex===4){window.location.href="house.html?room=vault";return;}
  enter(stageIndex+1);
 }
+$("sound").addEventListener("click",toggleSound);
 $("inspect").addEventListener("click",()=>{
  const opening=$("propDrawer").hidden;closeProps();
  if(opening){$("propDrawer").hidden=false;$("inspect").setAttribute("aria-expanded","true");$("props").querySelector("button")?.focus();}
