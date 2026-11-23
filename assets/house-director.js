@@ -4,7 +4,7 @@
 "use strict";
 const V2=window.StudioHouseV2;
 if(!V2)return;
-const pex=(id)=>"https://images.pexels.com/photos/"+id+"/pexels-photo-"+id+".jpeg?auto=compress&cs=tinysrgb&w=1600&h=900&fit=crop";
+const pex=(id)=>"assets/house-plates/pexels-"+id+".jpg";
 const rooms={
  hall:{image:"assets/front-room-doors.webp",warm:[1195,460]},
  dining:{image:pex(7163611),warm:[950,300],fallback:"assets/front-room-wide.webp"},
