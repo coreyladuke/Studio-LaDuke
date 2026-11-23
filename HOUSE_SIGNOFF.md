@@ -18,33 +18,33 @@ Legend: **B** = built, **T** = automated runtime and interaction tests, **V** = 
 
 | Floor | Room (route) | B | T | V | S | Notes |
 |---|---|---|---|---|---|---|
-| Ground | Front Hall (`foyer`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Ground | Coat Closet (`coat`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Ground | Living Room (`living`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Ground | Main Hall (`hall`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Ground | Dining Nook (`dining`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Ground | Kitchen (`kitchen`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Ground | Pantry (`pantry`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Ground | The Art Studio (`art`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Ground | Downstairs Bathroom (`bath`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Ground | Mudroom (`mud`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Ground | Laundry Room (`laundry`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Ground | Back Porch (`porch`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Second | Upstairs Landing (`landing`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Second | Bedroom (`bed`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Second | Walk-in Closet (`closet`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Second | Upstairs Bathroom (`bath2`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Second | Guest Room (`guest`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Second | The Library (`library`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Second | Music Room (`music`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Second | The Roof Lookout (`roof`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Attic | Maverick's Attic (`attic`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Basement | Basement Landing (`basement`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Basement | Basement Arcade (`arcade`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Basement | Recording Booth (`recording`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Basement | The Little Cinema (`cinema`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Basement | The Escape Room (`escape`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
-| Basement | The Curiosity Vault (`vault`) | [x] | [ ] | [ ] | [ ] | Scene migration committed; visual approval pending |
+| Ground | Front Hall (`foyer`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Ground | Coat Closet (`coat`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Ground | Living Room (`living`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Ground | Main Hall (`hall`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Ground | Dining Nook (`dining`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Ground | Kitchen (`kitchen`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Ground | Pantry (`pantry`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Ground | The Art Studio (`art`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Ground | Downstairs Bathroom (`bath`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Ground | Mudroom (`mud`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Ground | Laundry Room (`laundry`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Ground | Back Porch (`porch`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Second | Upstairs Landing (`landing`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Second | Bedroom (`bed`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Second | Walk-in Closet (`closet`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Second | Upstairs Bathroom (`bath2`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Second | Guest Room (`guest`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Second | The Library (`library`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Second | Music Room (`music`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Second | The Roof Lookout (`roof`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Attic | Maverick's Attic (`attic`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Basement | Basement Landing (`basement`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Basement | Basement Arcade (`arcade`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Basement | Recording Booth (`recording`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Basement | The Little Cinema (`cinema`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Basement | The Escape Room (`escape`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
+| Basement | The Curiosity Vault (`vault`) | [x] | [x] | [ ] | [ ] | Automated mobile scene/object smoke tests passed; visual approval blocked |
 
 ## Linked top-level pages (19)
 
@@ -69,6 +69,8 @@ All are separate entry points and must be opened on both mobile and desktop, not
 - [ ] `pool.html` | load / navigation / interactive controls / visual consistency / accessible responsive behavior
 - [ ] `projects.html` | load / navigation / interactive controls / visual consistency / accessible responsive behavior
 - [ ] `workshop.html` | load / navigation / interactive controls / visual consistency / accessible responsive behavior
+
+**Current automated QA evidence:** 27 room renderers, 27 object-action smoke paths, all top-level page loads and their assets passed the latest local browser run. This does **not** clear visual sign-off, physical doorway alignment, quality of real objects, or deep game playthroughs. The detailed owner-protecting defect list is in [`HOUSE_VISUAL_BLOCKERS.md`](HOUSE_VISUAL_BLOCKERS.md).
 
 ## Known release-blockers pending review
 
