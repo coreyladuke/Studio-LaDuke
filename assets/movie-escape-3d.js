@@ -144,7 +144,6 @@ function buildGhost(){
   const b=cyl(.38,.38,.22,0,1.58,.74,led,28,p);b.rotation.x=Math.PI/2;
   ring(.39,.035,0,1.58,.85,M.chrome,p).rotation.x=0;
   cyl(.055,.055,.6,-.36,.84,.67,M.brass,9,p).rotation.z=.22;
-  plaque(name,0,2.42,.72,1.4,.4,{background:"#292c31",size:102}).parent?.remove?.(); // placards are separately rebuilt on the console below
   const tag=labelTexture(name,{background:"#30303b",size:108});
   mesh(new THREE.PlaneGeometry(1.33,.37),new THREE.MeshBasicMaterial({map:tag}),0,2.23,.75,p);
   const glow=new THREE.PointLight(color,2.3,4);glow.position.set(0,1.7,.92);p.add(glow);vivid.push({kind:"pulse",light:glow,phase:x});
