@@ -128,6 +128,9 @@ const floors=["Ground floor","Second floor","Maverick's Attic","Basement"];
 const id=function(x){return document.getElementById(x);};
 const camera=id("camera"),plate=id("plate"),painting=id("painting"),doorBox=id("doors"),objectBox=id("objects");
 let here="",scale=1,maxPan=0,pan=0,panTarget=0,panFrame=0,drag=null,suppress=false,toastTimer=0,detailFocus=null;
+const roomViews=new Map();
+function saveView(){if(here)roomViews.set(here,maxPan>0?panTarget/maxPan:0);}
+function restoreView(room){return roomViews.has(room)?roomViews.get(room)*maxPan:0;}
 const reduceMotion=window.matchMedia("(prefers-reduced-motion: reduce)");
 function clampPan(p){return Math.min(maxPan,Math.max(-maxPan,p));}
 function paintPan(){plate.style.setProperty("--pan",pan+"px");id("left").disabled=pan>=maxPan-2;id("right").disabled=pan<=-maxPan+2;}
@@ -198,9 +201,9 @@ function draw(){
  let pos=r.e.length===1?[800]:r.e.length===2?[440,1150]:r.e.length===3?[300,805,1300]:[170,560,1035,1430];if(here==="foyer")pos=[190,1340,490,805];if(here==="coat")pos=[186];if(!["living","foyer","coat"].includes(here))pos=r.e.length===1?[800]:r.e.length===2?[420,1180]:r.e.length===3?[250,800,1350]:[170,560,1040,1430];
  r.e.forEach(function(d,i){let b=document.createElement("button");b.className="door";b.type="button";b.style.left=pos[i]+"px";b.dataset.way=d[2]||"";b.setAttribute("aria-label","Go to "+d[0]);b.innerHTML='<span class="doorface"></span><span class="plaque">'+escapeHtml(d[0])+'</span>';b.addEventListener("click",function(){go(d[1]);});doorBox.append(b);});
  (r.p||[]).forEach(function(p){let b=document.createElement("button");b.className="prop";b.type="button";b.style.left=p[1]+"px";b.style.top=p[2]+"px";b.setAttribute("aria-label",p[3]);b.innerHTML=propArt(p[0])+'<span class="hint">'+escapeHtml(p[3])+'</span>';b.addEventListener("click",function(){if(window.StudioHouseAdventure)window.StudioHouseAdventure.collect(here,p[0]);if(p[5]==="code"){code();return;}if(p[5]==="night"){document.body.classList.toggle("lights-out");if(window.StudioHouseDirector)window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast});return;}if(p[5]){go(p[5]);return;}if(window.StudioHouseDirector&&window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast}))return;if(window.StudioHouseV2&&window.StudioHouseV2.activate(here,p[0],{plate:plate,toast:toast}))return;detail(p[3],p[4],p[5]);});objectBox.append(b);});
- stopPan();resize();setPan(0,true);makeMap();document.title=r.n+" · Studio LaDuke House";
+ stopPan();resize();setPan(restoreView(here),true);makeMap();document.title=r.n+" · Studio LaDuke House";
 }
-function go(to,replace){if(/\.html/.test(to)){location.href=to;return;}if(!R[to]){toast("That door isn't ready.");return;}if(to==="vault"&&!sessionStorage.getItem("laduke-escape-done")){toast("The vault is sealed.");return;}hideDetail(false);hideMap(false);here=to;document.body.classList.remove("lights-out");if(replace)history.replaceState({room:to},"","house.html?room="+to);else history.pushState({room:to},"","house.html?room="+to);draw();}
+function go(to,replace){if(/\.html/.test(to)){location.href=to;return;}if(!R[to]){toast("That door isn't ready.");return;}if(to==="vault"&&!sessionStorage.getItem("laduke-escape-done")){toast("The vault is sealed.");return;}saveView();hideDetail(false);hideMap(false);here=to;document.body.classList.remove("lights-out");if(replace)history.replaceState({room:to},"","house.html?room="+to);else history.pushState({room:to},"","house.html?room="+to);draw();}
 window.StudioHouseGo=function(to){go(to);};
 function makeMap(){let box=id("floorContents");box.replaceChildren();floors.forEach(function(f,i){let h=document.createElement("div");h.className="floorhead";h.textContent=f;box.append(h);let group=document.createElement("div");group.className="floorlinks";Object.keys(R).filter(function(k){return R[k].f===i && (k!=="vault"||sessionStorage.getItem("laduke-escape-done"));}).forEach(function(k){let b=document.createElement("button");b.type="button";b.textContent=R[k].n;if(k===here)b.setAttribute("aria-current","location");b.addEventListener("click",function(){go(k);});group.append(b);});box.append(group);});}
 function showMap(){id("shade").hidden=false;id("map").hidden=false;id("closeMap").focus();}
@@ -237,7 +240,7 @@ function finish(){
 camera.addEventListener("pointerup",finish);camera.addEventListener("pointercancel",finish);window.addEventListener("pointerup",finish);
 camera.addEventListener("click",function(e){if(suppress){suppress=false;e.preventDefault();e.stopImmediatePropagation();}},true);
 window.addEventListener("resize",resize);
-window.addEventListener("popstate",function(){let q=new URLSearchParams(location.search).get("room");here=R[q]?q:"living";draw();});
+window.addEventListener("popstate",function(){saveView();let q=new URLSearchParams(location.search).get("room");here=R[q]?q:"living";draw();});
 document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(!id("dialog").hidden)hideDetail(true);else if(!id("map").hidden)hideMap(true);return;}if(!id("dialog").hidden||!id("map").hidden||(window.StudioHouseAdventure&&window.StudioHouseAdventure.isOpen))return;if(e.key==="ArrowLeft"){e.preventDefault();setPan(pan+180);}if(e.key==="ArrowRight"){e.preventDefault();setPan(pan-180);}if(e.key.toLowerCase()==="m"&&!e.metaKey&&!e.ctrlKey)showMap();});
 const initial=new URLSearchParams(location.search).get("room");here=R[initial]?initial:"living";if(!R[initial])history.replaceState({room:here},"","house.html?room="+here);draw();
 try{if(!sessionStorage.getItem("laduke-house-seen")){sessionStorage.setItem("laduke-house-seen","1");}}catch(e){}
