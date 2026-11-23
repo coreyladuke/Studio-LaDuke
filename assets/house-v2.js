@@ -24,6 +24,8 @@ const css = [
 '#painting .rainline{animation:houseRain 5s linear infinite}',
 '@keyframes houseRain{to{transform:translateY(280px)}}',
 '#plate.lamp-dim #room-lamp-glow{opacity:.04}',
+'#plate.lamp-dim #lamp-shadow{opacity:.77}',
+'#painting #lamp-shadow{transition:opacity .4s}',
 '#plate.tv-playing #tv-on{opacity:1}',
 '#plate.tv-playing #tv-off{opacity:0}',
 '#plate.pick-found #found-pick{opacity:1;transform:translateY(0)}',
@@ -61,9 +63,9 @@ function door(x,y,w,h,kind){let arch=kind==="arch";return '<g><path d="M'+x+' '+
 function sceneBase(floor){let s= '<svg class="house-scene" xmlns="'+NS+'" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">'+grad()+'<rect width="1600" height="900" fill="url(#wal)"/><path d="M0 0L230 110V595L0 900ZM1600 0L1370 110V595L1600 900Z" fill="#231c1b" opacity=".52"/><path d="M0 0H1600V130L0 87Z" fill="#251b18"/><path d="M0 130H1600" stroke="#ac7d4b" stroke-width="22"/><path d="M0 588L800 552L1600 588V900H0Z" fill="url(#floor)"/><path d="M0 589L800 559L1600 589" fill="none" stroke="#221713" stroke-width="19"/>';s+=woodgrain();for(let i=0;i<8;i++){let x=i*225;s+='<path d="M'+x+' 0L'+(x+18)+' 127" stroke="#b48750" stroke-opacity=".27" stroke-width="13"/>';};s+='<rect x="0" y="0" width="1600" height="900" fill="#fff" filter="url(#grain)" opacity=".45" pointer-events="none"/>';return s;}
 function living(){return '<svg class="house-scene house-photo" xmlns="'+NS+'" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">'+grad()+
 '<image href="assets/denali-music-room.webp" x="0" y="0" width="1600" height="900" preserveAspectRatio="xMidYMid slice"/>'+
-'<ellipse id="room-lamp-glow" cx="1225" cy="345" rx="290" ry="370" fill="url(#glow)" opacity=".18"/>'+
+'<ellipse id="room-lamp-glow" cx="1225" cy="345" rx="290" ry="370" fill="url(#glow)" opacity=".18"/>'+'<rect id="lamp-shadow" x="1110" y="50" width="490" height="740" fill="#090e0c" opacity="0"/>'+
 '<g id="tv-off"><circle cx="800" cy="480" r="6" fill="#663f28" stroke="#2e281f" stroke-width="2"/></g>'+
-'<g id="tv-on"><ellipse cx="802" cy="480" rx="68" ry="26" fill="url(#glow)" opacity=".52"/><circle cx="800" cy="480" r="6" fill="#e8bd70"/><circle cx="822" cy="480" r="5" fill="#91ca85"/><circle cx="842" cy="480" r="5" fill="#e8bd70"/></g>'+
+'<g id="tv-on"><ellipse cx="802" cy="480" rx="147" ry="85" fill="url(#glow)" opacity=".52"/><circle cx="800" cy="480" r="6" fill="#e8bd70"/><circle cx="822" cy="480" r="5" fill="#91ca85"/><circle cx="842" cy="480" r="5" fill="#e8bd70"/></g>'+
 '<path id="found-pick" d="M828 732Q854 726 848 753Q841 774 827 786Q805 756 811 741Z" fill="#e6c386" stroke="#4c362a" stroke-width="5"/>'+
 '<ellipse id="guitar-yellow-halo" cx="1243" cy="345" rx="90" ry="160" fill="url(#glow)" opacity=".1"/>'+
 '<ellipse id="guitar-pink-halo" cx="485" cy="365" rx="90" ry="160" fill="url(#glow)" opacity=".1"/>'+
@@ -79,16 +81,16 @@ function coat(){return '<svg class="house-scene house-photo" xmlns="'+NS+'" view
 '<image href="assets/forgotten-works.webp" width="1600" height="900" preserveAspectRatio="xMidYMid slice"/>'+
 '<rect width="1600" height="900" fill="url(#night)" opacity=".3" pointer-events="none"/>'+
 '<rect id="pocket-dark" width="1600" height="900" fill="#090c0b" opacity="0"/>'+
-'<g id="pocket-contents"><rect x="385" y="146" width="831" height="610" rx="7" fill="#100f0c" opacity=".8"/>'+
-'<image href="assets/workshop-drawer.webp" x="422" y="175" width="757" height="555" preserveAspectRatio="xMidYMid slice"/>'+
-'<rect x="422" y="175" width="757" height="555" fill="none" stroke="#8a643e" stroke-width="22"/>'+
-'<rect x="436" y="189" width="729" height="527" fill="none" stroke="#2d1d14" stroke-width="5"/></g>'+
+'<g id="pocket-contents"><rect x="563" y="245" width="474" height="334" rx="7" fill="#100f0c" opacity=".8"/>'+
+'<image href="assets/workshop-drawer.webp" x="579" y="261" width="442" height="301" preserveAspectRatio="xMidYMid meet"/>'+
+'<rect x="579" y="261" width="442" height="301" fill="none" stroke="#8a643e" stroke-width="18"/>'+
+'<rect x="587" y="269" width="426" height="285" fill="none" stroke="#2d1d14" stroke-width="5"/></g>'+
 '</svg>';}
 function scene(which){if(which==="living")return living();if(which==="foyer")return foyer();if(which==="coat")return coat();return "";}
 function activate(which,type,ctx){
   const plate=ctx.plate;
-  if(which==="coat"&&type==="chest"){plate.classList.toggle("pocket-open");ctx.toast(plate.classList.contains("pocket-open")?"Old tickets, little treasures, and a few things worth remembering.":"The drawer slides closed.");return true;}
-  if(which==="foyer"&&type==="star"){plate.classList.toggle("star-awake");ctx.toast("Five music notes. One star. This one belongs here.");return true;}
+  if(which==="coat"&&type==="chest"){plate.classList.toggle("pocket-open");return true;}
+  if(which==="foyer"&&type==="star"){plate.classList.toggle("star-awake");return true;}
   if(which!=="living")return false;
   if(type==="sofa"){plate.classList.toggle("pick-found");ctx.toast(plate.classList.contains("pick-found")?"A guitar pick was tucked behind the old records.":"The record crate settles back into place.");return true;}
   if(type==="tv"){plate.classList.toggle("tv-playing");ctx.toast(plate.classList.contains("tv-playing")?"A soft light wakes up on the vintage stereo.":"The stereo clicks off.");return true;}
