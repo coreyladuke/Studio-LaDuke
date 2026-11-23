@@ -15,14 +15,14 @@ function fallback(){loading.hidden=true;still.hidden=false;}
 try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:"high-performance"});}catch(err){fallback();throw err;}
 renderer.setPixelRatio(Math.min(devicePixelRatio||1,innerWidth<700?1.4:1.7));
 renderer.outputColorSpace=THREE.SRGBColorSpace;
-renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.40;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.72;
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 scene=new THREE.Scene();scene.background=new THREE.Color("#161c20");
 scene.fog=new THREE.Fog("#222a2e",22,60);
 camera=new THREE.PerspectiveCamera(68,innerWidth/innerHeight,.08,90);
 const viewpoints={
- atrium:{pos:new THREE.Vector3(-.45,2.08,7.55),look:new THREE.Vector3(0,2.83,-4.0),title:"THE ATRIUM",quote:"An artist lives here. You can probably tell."},
- lounge:{pos:new THREE.Vector3(3.42,1.75,-.4),look:new THREE.Vector3(3.35,1.12,-5.1),title:"THE LIVING ROOM",quote:"Not everything in here is meant to make sense."}
+ atrium:{pos:new THREE.Vector3(-.55,2.04,3.75),look:new THREE.Vector3(0,3.64,-4.2),title:"THE ATRIUM",quote:"An artist lives here. You can probably tell."},
+ lounge:{pos:new THREE.Vector3(3.38,2.02,-2.25),look:new THREE.Vector3(3.45,.92,-5.2),title:"THE LIVING ROOM",quote:"Not everything in here is meant to make sense."}
 };
 const camAim=viewpoints.atrium.look.clone();
 camera.position.copy(viewpoints.atrium.pos);camera.lookAt(camAim);
@@ -233,9 +233,9 @@ for(let i=0;i<5;i++){
 }
 interactiveObject(art.children[1],"Study the strange little painting","art");
 // real lamps, layered light and quality defaults
-scene.add(new THREE.AmbientLight("#ecc9ab",.72));
-const hemi=new THREE.HemisphereLight("#b8dce5","#462d27",1.58);scene.add(hemi);
-const daylight=new THREE.DirectionalLight("#ffe4b4",2.5);daylight.position.set(-5,12,-8);daylight.castShadow=true;
+scene.add(new THREE.AmbientLight("#ecc9ab",.92));
+const hemi=new THREE.HemisphereLight("#c9e1e9","#654b42",1.87);scene.add(hemi);
+const daylight=new THREE.DirectionalLight("#ffe5b5",3.0);daylight.position.set(-5,12,-8);daylight.castShadow=true;
 daylight.shadow.mapSize.set(1024,1024);daylight.shadow.camera.left=-13;daylight.shadow.camera.right=13;daylight.shadow.camera.top=13;daylight.shadow.camera.bottom=-13;
 daylight.shadow.normalBias=.045;scene.add(daylight);
 const glassGlow=new THREE.SpotLight("#ca94fa",15,18,.61,.65,1.0);
@@ -317,7 +317,7 @@ function render(t){
  }
  renderer.render(scene,camera);frames++;
 }
-function resize(){const w=innerWidth,h=innerHeight;camera.aspect=w/h;camera.fov=w<700?74:65;camera.updateProjectionMatrix();renderer.setSize(w,h,false);}
+function resize(){const w=innerWidth,h=innerHeight;camera.aspect=w/h;camera.fov=w<700?66:62;camera.updateProjectionMatrix();renderer.setSize(w,h,false);}
 addEventListener("resize",resize);resize();loading.hidden=true;
 requestAnimationFrame(render);
 window.__studio3d={get room(){return room},get frames(){return frames},get meshes(){let n=0;scene.traverse(o=>{if(o.isMesh)n++});return n},get interactive(){return interactive.length},get pixelRatio(){return renderer.getPixelRatio()},get reduced(){return reduced.matches},enter};
