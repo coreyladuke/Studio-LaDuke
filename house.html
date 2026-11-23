@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#171b16"><title>The House · Studio LaDuke</title>
+<link rel="icon" href="favicon.png" type="image/png">
+<style>
+:root{--cream:#f7e4bf;--brass:#e7b978;--dark:#15201b}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080b09;color:var(--cream);font:16px Georgia,"Times New Roman",serif}
+button,a,input{font:inherit}button{cursor:pointer}a{color:inherit}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--brass);outline-offset:3px}
+[hidden]{display:none!important}
+#camera{position:fixed;inset:0;overflow:hidden;background:#111b16;touch-action:none;cursor:grab}
+#camera.dragging{cursor:grabbing}
+#plate{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform:translate(calc(-50% + var(--pan,0px)),-50%) scale(var(--scale,1));transform-origin:center;overflow:hidden;box-shadow:0 0 120px #000e;isolation:isolate;user-select:none}
+#plate::after{content:"";position:absolute;inset:0;z-index:8;pointer-events:none;box-shadow:inset 0 0 130px 25px #0a0e0aaf}
+#painting{position:absolute;inset:0;background:radial-gradient(ellipse at center,#685038,#251e18)}
+#painting svg,#painting img{width:100%;height:100%;display:block;object-fit:cover}
+#painting img{filter:saturate(.85) contrast(1.05)}
+#painting .wash{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,#0003,#0000 43%,#0005)}
+.room-sign{position:absolute;z-index:12;top:30px;left:50%;transform:translateX(-50%) rotate(-1deg);min-width:310px;max-width:690px;text-align:center;padding:16px 28px 13px;border:4px solid #462d1c;outline:2px solid #ae7840;outline-offset:-9px;color:#ffe5ac;background:repeating-linear-gradient(2deg,#694329 0 13px,#75492b 14px 23px,#50301c 24px 27px);text-shadow:0 2px 3px #261307;box-shadow:0 11px 17px #0009}
+.room-sign:before,.room-sign:after{content:"";position:absolute;bottom:100%;height:34px;border-left:3px solid #41382a;border-right:1px solid #d9b67f}
+.room-sign:before{left:17%}.room-sign:after{right:17%}
+.room-sign h1{font-size:29px;line-height:1.1;margin:0}
+.room-sign p{font-style:italic;font-size:14px;margin:5px 0 0;color:#e4c99b}
+#doors,#objects{position:absolute;inset:0;z-index:10;pointer-events:none}
+.door{position:absolute;top:353px;width:174px;height:354px;transform:translateX(-50%);background:transparent;border:none;padding:0;pointer-events:auto;color:#f9e5c1;filter:drop-shadow(5px 9px 12px #0009)}
+.door .doorface{position:absolute;inset:0;border:13px solid #663e25;outline:5px solid #301d14;background:repeating-linear-gradient(93deg,#4f331f 0 17px,#603d25 18px 32px,#4b311e 33px 41px);box-shadow:inset 0 0 0 9px #24150eaa,inset 0 0 0 12px #b0875299}
+.door .doorface:after{content:"";position:absolute;right:11px;top:61%;width:15px;height:15px;border-radius:50%;border:2px solid #634322;background:radial-gradient(circle at 30% 30%,#fff0b0,#b98d45 70%,#674a29)}
+.door .plaque{position:absolute;top:49px;left:50%;transform:translateX(-50%);width:146px;min-height:46px;display:grid;place-items:center;padding:7px 5px;color:#f7deb2;font-size:17px;line-height:1.15;text-shadow:0 2px 2px #150c07;background:linear-gradient(150deg,#80532d,#3c291b);border:2px solid #a77c4f;box-shadow:0 4px 5px #0007}
+.door:hover,.door:focus-visible{filter:drop-shadow(0 0 21px #e8bc77a6) drop-shadow(5px 9px 9px #0009)}
+.door[data-way="up"] .plaque:before{content:"↗";margin-right:4px}
+.door[data-way="down"] .plaque:before{content:"↘";margin-right:4px}
+.door[data-way="secret"] .plaque:before{content:"✦";margin-right:4px}
+.door[data-way="outside"] .plaque:before{content:"♧";margin-right:4px}
+.prop{position:absolute;width:90px;height:94px;border:0;background:transparent;transform:translate(-50%,-50%);padding:0;pointer-events:auto;color:#e8c68b;text-shadow:0 3px 5px #000;filter:drop-shadow(0 5px 5px #0009)}
+.prop svg{width:100%;height:100%;display:block;transition:transform .15s}
+.prop:hover svg,.prop:focus-visible svg{transform:scale(1.09) translateY(-5px)}
+.prop .hint{position:absolute;top:98%;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:14px;opacity:0;padding:6px 8px;background:#24190fe8;border:1px solid #a27b46}
+.prop:hover .hint,.prop:focus-visible .hint{opacity:1}
+#lookbar{position:fixed;z-index:20;bottom:max(15px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:9px;color:#eed9ae;text-align:center;text-shadow:0 2px 5px #000;max-width:calc(100vw - 16px)}
+#lookbar button{width:48px;height:48px;border-radius:50%;background:#19231dbd;border:1px solid #a98a58a8;color:#f8e5bf;font-size:28px;flex:none;backdrop-filter:blur(8px)}
+#lookbar button:disabled{opacity:.27}
+#floorTag{padding:8px 14px;background:#17221cbd;border:1px solid #9f805980;border-radius:18px;min-width:135px;backdrop-filter:blur(8px)}
+#floorTag strong{display:block;font-size:14px}
+#floorTag small{display:block;font-size:11px;color:#dec7a0}
+#mapOpen{position:fixed;top:max(15px,env(safe-area-inset-top));left:max(15px,env(safe-area-inset-left));z-index:21;width:49px;height:49px;border-radius:50%;border:1px solid #b8955b;background:#242316dc;color:#f5dcb0;font-size:26px}
+#frontLink{position:fixed;top:max(17px,env(safe-area-inset-top));right:max(16px,env(safe-area-inset-right));z-index:21;background:#15221bc9;border:1px solid #bd9f6f8a;border-radius:20px;padding:11px 14px;font-size:12px;text-decoration:none}
+#shade,#dialogShade{position:fixed;inset:0;background:#080a07c5;backdrop-filter:blur(6px);z-index:28}
+#map{position:fixed;z-index:29;left:0;top:0;bottom:0;width:min(470px,100vw);padding:35px 25px;overflow:auto;color:#412d21;background:repeating-linear-gradient(#e7d4ae 0 38px,#dfc9a3 39px 40px);border-right:8px solid #604026;box-shadow:10px 0 40px #000a}
+#map h2{font-size:31px;margin:10px 0}#map p{font-size:15px;line-height:1.4}
+#closeMap,#closeDialog{float:right;width:42px;height:42px;border:0;border-radius:50%;background:#583e2a;color:#ffe8bd;font-size:26px}
+.floorhead{margin:23px 0 9px;border-bottom:1px solid #a38c69;letter-spacing:.13em;text-transform:uppercase;font:bold 12px Georgia,serif;padding-bottom:7px}
+.floorlinks{display:flex;flex-wrap:wrap;gap:7px}
+.floorlinks button{min-height:40px;padding:9px 11px;background:#ffffff2b;color:#412d21;border:1px solid #9a7b57;font-weight:700;font-size:13px}
+.floorlinks button[aria-current="location"]{background:#49311f;color:#ffedc8}
+#dialogShade{z-index:32}
+#dialog{position:fixed;z-index:33;top:50%;left:50%;transform:translate(-50%,-50%);width:min(600px,calc(100vw - 28px));max-height:85dvh;overflow:auto;background:linear-gradient(150deg,#e9d6b1,#d9c195);border:10px solid #6b482c;color:#2e2219;padding:27px;box-shadow:0 15px 75px #000d}
+#dialog h2{font-size:27px;margin:0 40px 13px 0}#dialog p{font-size:17px;line-height:1.5}
+#dialog .buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+#dialog .buttons button{background:#5c3b29;color:#ffedc5;border:1px solid #987650;padding:10px 16px;min-height:42px}
+#codeForm{display:flex;align-items:center;gap:9px;margin-top:14px}
+#codeForm input{background:#fff4dc;color:#33251b;border:1px solid #a27b4d;padding:9px;width:100px;font-size:24px;letter-spacing:.1em}
+#codeForm button{background:#503421;color:#fff0d5;padding:11px;border:0}
+#toast{position:fixed;z-index:23;bottom:87px;left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 28px);padding:11px 16px;background:#15221bef;border:1px solid #cbaa70;color:#f7dfb0;opacity:0;pointer-events:none;text-align:center;box-shadow:0 7px 30px #0009;transition:opacity .2s}
+#toast.show{opacity:1}
+body.lights-out #plate{filter:brightness(.65)}
+@media(max-width:650px){#lookbar{gap:6px}#lookbar button{width:43px;height:43px}#floorTag{padding:8px;min-width:120px}.room-sign{min-width:275px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<a id="frontLink" href="index.html">↖ Front door</a>
+<button id="mapOpen" type="button" aria-label="Open house floor plan" title="House floor plan">⌂</button>
+<main id="camera" aria-label="Explore Studio LaDuke House">
+ <div id="plate" role="group" aria-label="Your current room">
+  <div id="painting" aria-hidden="true"></div>
+  <div class="room-sign"><h1 id="roomName"></h1><p id="roomDescription"></p></div>
+  <div id="doors" aria-label="Doors in this room"></div><div id="objects" aria-label="Objects to explore"></div>
+ </div>
+</main>
+<div id="lookbar"><button id="left" type="button" aria-label="Look left">‹</button><div id="floorTag"><strong id="floorName"></strong><small>Drag to look around</small></div><button id="right" type="button" aria-label="Look right">›</button></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="shade" hidden></div>
+<aside id="map" hidden aria-label="House floor plan"><button id="closeMap" aria-label="Close map" type="button">×</button><h2>Studio LaDuke</h2><p>THE HOUSE. Walk through the physical doors or use this folded floor plan if you get turned around.</p><div id="floorContents"></div></aside>
+<div id="dialogShade" hidden></div>
+<section id="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle" hidden><button id="closeDialog" aria-label="Close" type="button">×</button><h2 id="dialogTitle"></h2><p id="dialogText"></p><form id="codeForm" hidden><label for="codeInput">Three-digit code</label><input id="codeInput" required inputmode="numeric" pattern="[0-9]{3}" maxlength="3" autocomplete="off"><button type="submit">Unlock</button></form><div id="dialogButtons" class="buttons"></div></section>
+<script>
+"use strict";
+(function(){
+const R={
+ foyer:{n:"Front Hall",f:0,d:"A place to hang your coat and come inside.",e:[["Front door","index.html"],["Living room","living"],["Coat closet","coat"]],p:[["star",825,590,"The star","Five music notes arranged into the Studio LaDuke star."]]},
+ coat:{n:"Coat Closet",f:0,d:"Boots, coats and a suspicious umbrella.",e:[["Front hall","foyer"]],p:[["chest",795,580,"A forgotten pocket","Old ticket stubs, guitar picks and useful little things."]]},
+ living:{n:"Living Room",f:0,d:"Come in. Sit down. Stay a while.",e:[["Front hall","foyer"],["Dining room","dining"],["Main hallway","hall"],["Back porch","porch","outside"]],p:[["sofa",790,730,"Sit on the couch","It's raining outside, and no one is asking you to do anything."],["tv",800,335,"The television","Original cartoons, short films and Studio LaDuke projects will play here."],["pick",380,385,"The metal guitar pick","WHEN WORDS FAIL MUSIC SPEAKS."]]},
+ hall:{n:"Main Hall",f:0,d:"Doors to rooms worth getting lost in.",photo:"assets/front-room-doors.webp",e:[["Living room","living"],["Art studio","art"],["Stairs upstairs","landing","up"]],p:[["stairs",1230,730,"Basement stairs","The other staircase is by the mudroom.","basement"]]},
+ dining:{n:"Dining Nook",f:0,d:"A table for dinner and original board games.",e:[["Living room","living"],["Kitchen","kitchen"],["Pantry","pantry"]],p:[["board",790,685,"The board game","This table is ready for the first original Studio LaDuke board game."]]},
+ kitchen:{n:"Kitchen",f:0,d:"Rain on the glass. Something on the stove.",e:[["Dining nook","dining"],["Laundry","laundry"],["Back porch","porch","outside"]],p:[["cup",785,670,"Put the kettle on","A good evening for pasta and a movie."]]},
+ pantry:{n:"Pantry",f:0,d:"Food, snacks and things in jars.",e:[["Dining nook","dining"]],p:[["chest",770,600,"Look through the pantry","Popcorn. Pasta. A packet of something mysterious."]]},
+ art:{n:"The Art Studio",f:0,d:"Paint, draw, carve, sew. Make a mess.",photo:"assets/corey-studio.webp",e:[["Main hall","hall"],["Bathroom","bath"],["Mudroom","mud"],["Workshop","workshop.html"]],p:[["brush",195,580,"Pick up a brush","Even unfinished art belongs somewhere."],["book",1100,645,"Unfinished things","Sketchbooks, fabric experiments, designs, ideas and pieces still becoming."]]},
+ bath:{n:"Downstairs Bathroom",f:0,d:"A proper bathroom. Of course.",e:[["Art studio","art"]],p:[["mirror",780,430,"The mirror","Warm water and a moment of quiet."]]},
+ mud:{n:"Mudroom",f:0,d:"Drop your wet boots. The woods are out back.",e:[["Art studio","art"],["Laundry","laundry"],["The Woods","forest-path.html","outside"],["Down to basement","basement","down"]],p:[["paw",790,690,"Finn's little door","Finn knows a secret way to the living room.","living"]]},
+ laundry:{n:"Laundry Room",f:0,d:"Real houses have socks to lose.",e:[["Kitchen","kitchen"],["Mudroom","mud"]],p:[["cup",825,610,"Check the laundry","One sock has disappeared. Of course it has."]]},
+ porch:{n:"Back Porch",f:0,d:"Right on the edge of the rain-soaked woods.",e:[["Living room","living"],["Kitchen","kitchen"],["Into the Woods","forest-path.html","outside"]],p:[["rain",840,500,"Look into the trees","The fire pit and Bob's greenhouse are just beyond the porch."]]},
+ landing:{n:"Upstairs Landing",f:1,d:"You always wanted a second story.",e:[["Downstairs","hall","down"],["Bedroom","bed"],["Guest room","guest"],["Library","library"]],p:[["window",780,430,"The upstairs window","Rain falling between tall cedars, almost at eye level."]]},
+ bed:{n:"Bedroom",f:1,d:"A quiet room with the light turned down.",e:[["Upstairs landing","landing"],["Walk-in closet","closet"],["Bathroom","bath2"]],p:[["lamp",810,440,"Bedside lamp","The room gets darker when you turn the light off.","night"]]},
+ closet:{n:"Walk-in Closet",f:1,d:"A wardrobe for things you've designed.",e:[["Bedroom","bed"]],p:[["hanger",820,610,"The design rack","Raven jacket, hats, moccasins and the runway still to come."]]},
+ bath2:{n:"Upstairs Bathroom",f:1,d:"Warm steam, cedar and quiet.",e:[["Bedroom","bed"]],p:[["mirror",780,430,"Fog the mirror","The mirror clouds over in the steam."]]},
+ guest:{n:"Guest Room",f:1,d:"Somebody might want to stay.",e:[["Upstairs landing","landing"]],p:[["lamp",810,455,"Switch the lamp","A warm bedside light.","night"]]},
+ library:{n:"The Library",f:1,d:"There is something strange behind the books.",photo:"assets/writing-desk.webp",e:[["Upstairs landing","landing"],["Music room","music"]],p:[["book",350,405,"Open a book","Stories, comics, and Everybody Deserves to Go Home.","books.html"],["shelf",1240,500,"Move the crooked bookcase","Behind the shelf, a narrow stair climbs into Maverick's attic.","attic"]]},
+ music:{n:"Music Room",f:1,d:"Where the walls have stories and the guitars do too.",photo:"assets/denali-music-room.webp",e:[["Library","library"],["Roof lookout","roof","up"]],p:[["yellow",890,340,"Tom DeLonge Strat","The yellow Tom DeLonge Strat was bought when the owner was sixteen."],["pink",1195,360,"The pink guitar","The pink semi-hollow guitar arrived in 2025."],["pick",555,390,"Music speaks","WHEN WORDS FAIL MUSIC SPEAKS."],["record",710,680,"Hear some music","Visit the original Studio LaDuke music room.","music.html"]]},
+ roof:{n:"The Roof Lookout",f:1,d:"A place where nothing is due.",e:[["Music room","music"],["Upstairs landing","landing"]],p:[["rain",820,530,"The view","Cedars, water, rain and the lights of an imaginary Ketchikan evening."]]},
+ attic:{n:"Maverick's Attic",f:2,d:"His roof. His games. His secret kingdom.",e:[["Bookcase stairs","library","down"],["Maverick's Fort","mavericks-fort.html"]],p:[["board",830,665,"The building table","LEGO shelves, drawings, original games and Dad-sized adventures."],["star",1110,410,"The skylight","A shark and snow leopard constellation might be visible up there."]]},
+ basement:{n:"Basement Landing",f:3,d:"The house keeps its stranger stories downstairs.",e:[["Up to mudroom","mud","up"],["Arcade","arcade"],["Recording booth","recording"],["Little cinema","cinema"]],p:[["switch",785,615,"The utility panel","Light is green. Trap is clean."]]},
+ arcade:{n:"Basement Arcade",f:3,d:"The good kind of trouble.",e:[["Basement landing","basement"],["Pool table","pool.html"],["Escape room","escape"]],p:[["joystick",760,530,"The cabinets","Studio LaDuke original arcade games.","directory.html"],["trophy",1130,585,"The trophy","A trophy for a tall-tale contest. The rules were apparently questionable."]]},
+ recording:{n:"Recording Booth",f:3,d:"Make a little noise.",e:[["Basement landing","basement"],["Cinema","cinema"]],p:[["record",790,535,"Record a song","This is where Moments and original recordings will eventually live.","music.html"],["yellow",1130,505,"The amp","There is a hand-written label on it: USE YOUR EARS."]]},
+ cinema:{n:"The Little Cinema",f:3,d:"Movies have a special place in this house.",e:[["Basement landing","basement"],["Recording booth","recording"]],p:[["tv",820,540,"Turn on the projector","A home for original Studio LaDuke shorts, movie memories and handmade effects."],["trophy",1160,660,"Inspect the movie trophy","Its engraving reads: WORLD'S LEAST RELIABLE STORYTELLER."]]},
+ escape:{n:"The Escape Room",f:3,d:"Find three clues to unlock a hidden place.",e:[["Back to arcade","arcade"]],p:[["switch",520,535,"Green light","The light glows green. Under it is scratched: FIRST = 4."],["record",850,535,"Old reel","It clicks seven times. SECOND = 7."],["trophy",1150,535,"Odd trophy","The bottom reads THIRD = 2."],["lock",840,748,"The brass keypad","Three digits. The clues are all in this room.","code"]]},
+ vault:{n:"The Curiosity Vault",f:3,d:"The room nobody was supposed to find.",e:[["Back to escape room","escape"]],p:[["chest",820,580,"Open the chest","A space for strange relics, original props and discoveries still to come."]]}
+};
+const floors=["Ground floor","Second floor","Maverick's Attic","Basement"];
+const id=function(x){return document.getElementById(x);};
+const camera=id("camera"),plate=id("plate"),painting=id("painting"),doorBox=id("doors"),objectBox=id("objects");
+let here="",scale=1,maxPan=0,pan=0,drag=null,suppress=false,toastTimer=0,detailFocus=null;
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function lightPanel(r){
+ const theme={0:["#70523c","#34271e","#99714e"],1:["#685441","#2d2826","#a58862"],2:["#514331","#292521","#7b6845"],3:["#3e4039","#1e2521","#66614d"]}[r.f];
+ const x=theme[0],y=theme[1],z=theme[2];
+ const planks=Array.from({length:22},function(_,i){return '<path d="M'+(i*73)+' 685L'+(800+(i*73-800)*2)+' 900" stroke="#170e0c" opacity=".26" stroke-width="4"/>';}).join("");
+ const lines=Array.from({length:18},function(_,i){return '<path d="M0 '+(i*33+120)+'Q800 '+(i*33+125)+' 1600 '+(i*33+120)+'" stroke="#261b16" opacity=".15" stroke-width="3"/>';}).join("");
+ let prop="";
+ if(["living","cinema"].includes(here))prop='<rect x="560" y="690" width="480" height="147" rx="28" fill="#937554" stroke="#4b3022" stroke-width="17"/><rect x="590" y="635" width="420" height="110" rx="30" fill="#ae9473" stroke="#6d4b32" stroke-width="12"/><path d="M800 655V770" stroke="#745a43" stroke-width="7"/>';
+ if(["bed","guest","attic"].includes(here))prop='<rect x="525" y="635" width="550" height="216" rx="25" fill="#bda184" stroke="#553b30" stroke-width="20"/><rect x="545" y="655" width="210" height="65" rx="15" fill="#ede1c6"/><rect x="780" y="655" width="220" height="65" rx="15" fill="#ede1c6"/>';
+ if(["dining","kitchen","art"].includes(here))prop='<ellipse cx="800" cy="730" rx="270" ry="82" fill="#9d7951" stroke="#53341f" stroke-width="16"/><path d="M650 755L620 885M950 755L980 885" stroke="#5c3e26" stroke-width="30"/>';
+ if(["bath","bath2"].includes(here))prop='<path d="M550 660Q570 835 710 842H890Q1030 840 1050 660Z" fill="#c2c9b9" stroke="#5d7166" stroke-width="17"/>';
+ if(["library","arcade","vault","pantry"].includes(here))prop='<rect x="580" y="525" width="435" height="325" fill="#5c3d2b" stroke="#322117" stroke-width="17"/><path d="M580 630H1015M580 745H1015" stroke="#bb8b50" stroke-width="14"/>';
+ if(["music","recording","basement"].includes(here))prop='<rect x="580" y="665" width="435" height="180" fill="#2c2b29" stroke="#161c1b" stroke-width="17"/><circle cx="700" cy="750" r="62" fill="#11191a" stroke="#66615a" stroke-width="14"/><circle cx="912" cy="750" r="62" fill="#11191a" stroke="#66615a" stroke-width="14"/>';
+ if(["porch","roof"].includes(here))prop='<path d="M0 640H1600M130 600V890M380 600V890M630 600V890M880 600V890M1130 600V890M1380 600V890" stroke="#96704e" stroke-width="34"/>';
+ return '<svg viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="wall" x2="0" y2="1"><stop stop-color="'+x+'"/><stop offset="1" stop-color="'+y+'"/></linearGradient><linearGradient id="floor" x2="0" y2="1"><stop stop-color="'+z+'"/><stop offset="1" stop-color="#291c16"/></linearGradient></defs><rect width="1600" height="900" fill="url(#wall)"/>'+lines+'<path d="M0 0L125 200V670L0 900M1600 0L1475 200V670L1600 900" fill="#000" opacity=".14"/><polygon points="0,900 0,680 800,558 1600,680 1600,900" fill="url(#floor)"/>'+planks+'<rect x="650" y="239" width="300" height="240" fill="#4e746b" stroke="#875d3b" stroke-width="22"/><path d="M800 238V479M650 362H950" stroke="#8f6241" stroke-width="17"/>'+prop+'</svg>';
+}
+function propArt(type){
+ if(type==="yellow"||type==="pink"){let c=type==="yellow"?"#f4d11c":"#e7abb4";return '<svg viewBox="0 0 100 120" aria-hidden="true"><g transform="rotate(13 50 55)"><path d="M44 55L45 5H56L57 55" fill="#7a5838" stroke="#39291d" stroke-width="3"/><path d="M45 20H56M45 32H56M45 45H56" stroke="#ead5aa" stroke-width="2"/><path d="M37 56Q17 41 15 67Q10 84 32 104L66 107Q91 95 83 70Q77 50 64 52L58 67L44 68Z" fill="'+c+'" stroke="#352824" stroke-width="4"/><path d="M38 70Q55 57 71 72L64 93H37Z" fill="#f5ece1" stroke="#5d4b3a"/><rect x="44" y="76" width="20" height="10" rx="3" fill="#222"/><path d="M48 9V94M52 9V94" stroke="#d2c1aa"/></g></svg>';}
+ const pics={
+  cup:'<path d="M20 31H74V95H20Z" fill="#e7d4ad" stroke="#62432c" stroke-width="6"/><path d="M74 45Q105 39 84 74H74" fill="none" stroke="#e7d4ad" stroke-width="10"/>',
+  sofa:'<rect x="8" y="48" width="84" height="50" rx="12" fill="#947456" stroke="#503729" stroke-width="7"/><rect x="19" y="30" width="65" height="45" rx="14" fill="#ae8d6c"/>',
+  tv:'<rect x="7" y="21" width="86" height="60" rx="6" fill="#202726" stroke="#a78a63" stroke-width="7"/><rect x="19" y="31" width="63" height="39" fill="#5d887b"/><path d="M30 98H71" stroke="#bda171" stroke-width="9"/>',
+  star:'<path d="M50 6L65 39L94 37L72 60L80 93L50 75L20 93L28 60L6 37L35 39Z" fill="#d4b16f" stroke="#62482d" stroke-width="6"/><text x="50" y="67" text-anchor="middle" font-size="33" fill="#533820">♫</text>',
+  pick:'<path d="M50 9Q93 10 85 50Q75 84 50 109Q20 85 15 50Q6 10 50 9Z" fill="#79543a" stroke="#bd9868" stroke-width="6"/><text x="50" y="55" text-anchor="middle" font-size="12" fill="#fff0c5">MUSIC</text>',
+  book:'<path d="M10 21Q31 15 50 28Q70 15 90 21V100Q67 91 50 105Q30 91 10 100Z" fill="#ddc497" stroke="#513725" stroke-width="6"/><path d="M50 28V105" stroke="#ae8154" stroke-width="4"/>',
+  shelf:'<rect x="13" y="9" width="74" height="100" fill="#795034" stroke="#301e17" stroke-width="7"/><path d="M14 45H86M14 79H86" stroke="#c2935d" stroke-width="10"/><path d="M24 20V42M42 20V42M60 18V42M75 19V42" stroke="#e1b77b" stroke-width="10"/>',
+  brush:'<path d="M25 105L74 24" stroke="#d09a55" stroke-width="15"/><path d="M69 26Q77 3 92 10Q95 27 81 36" fill="#bd7352" stroke="#e1d4bc" stroke-width="5"/>',
+  board:'<rect x="9" y="20" width="82" height="80" fill="#d9b47e" stroke="#62452a" stroke-width="8"/><path d="M9 45H91M9 72H91M36 20V100M64 20V100" stroke="#8b6a3e" stroke-width="5"/><circle cx="22" cy="32" r="9" fill="#b44134"/><circle cx="76" cy="88" r="9" fill="#456657"/>',
+  lamp:'<path d="M25 14H76L87 54H13Z" fill="#e6c18d" stroke="#735137" stroke-width="7"/><path d="M50 55V104M21 106H81" stroke="#ac8a61" stroke-width="8"/>',
+  mirror:'<rect x="16" y="9" width="69" height="102" rx="21" fill="#79a6a3" stroke="#a77c51" stroke-width="11"/><path d="M36 27L54 39L37 76" fill="none" stroke="#d0e1d6" stroke-width="7"/>',
+  window:'<rect x="14" y="12" width="73" height="96" fill="#567c70" stroke="#ad815b" stroke-width="9"/><path d="M50 12V108M14 60H87" stroke="#ad815b" stroke-width="7"/>',
+  hanger:'<path d="M46 36Q40 18 53 16Q72 16 54 38V48L91 77H10L46 48Z" fill="none" stroke="#d0b78b" stroke-width="8"/>',
+  rain:'<path d="M50 8Q83 64 80 79Q74 108 50 109Q19 108 19 80Q18 62 50 8Z" fill="#7cb1b3" stroke="#d1e9dd" stroke-width="6"/>',
+  paw:'<ellipse cx="50" cy="76" rx="31" ry="23" fill="#b88e59"/><circle cx="17" cy="40" r="11" fill="#b88e59"/><circle cx="41" cy="29" r="11" fill="#b88e59"/><circle cx="66" cy="29" r="11" fill="#b88e59"/><circle cx="86" cy="43" r="11" fill="#b88e59"/>',
+  stairs:'<path d="M10 104H90V86H70V67H50V48H29V29H10" fill="none" stroke="#d0aa78" stroke-width="13"/>',
+  switch:'<rect x="22" y="14" width="58" height="91" rx="9" fill="#384a43" stroke="#141b18" stroke-width="8"/><circle cx="51" cy="45" r="17" fill="#5cdb83" stroke="#b9f8c1" stroke-width="5"/>',
+  record:'<circle cx="50" cy="60" r="45" fill="#222" stroke="#89745a" stroke-width="5"/><circle cx="50" cy="60" r="21" fill="#6a4942" stroke="#c2a37b" stroke-width="4"/><circle cx="50" cy="60" r="5" fill="#eee0b5"/>',
+  joystick:'<rect x="10" y="67" width="80" height="37" rx="8" fill="#523d31" stroke="#241c17" stroke-width="7"/><path d="M45 68V37" stroke="#c5ac86" stroke-width="9"/><circle cx="45" cy="27" r="19" fill="#c84e41"/><circle cx="72" cy="84" r="8" fill="#eac777"/>',
+  trophy:'<path d="M27 14H74V60Q73 78 50 80Q27 76 27 60Z" fill="#dbb56e" stroke="#704a2b" stroke-width="6"/><path d="M27 28Q0 16 17 59L29 66M74 28Q104 16 85 59L71 66" fill="none" stroke="#d6ad69" stroke-width="8"/><path d="M50 80V100M29 104H71" stroke="#d6ad69" stroke-width="10"/>',
+  chest:'<rect x="11" y="42" width="78" height="66" fill="#754c32" stroke="#372517" stroke-width="7"/><path d="M11 42V31Q50 6 89 31V42" fill="#ab7e48" stroke="#372517" stroke-width="6"/><path d="M50 44V106M11 70H89" stroke="#c8a06d" stroke-width="7"/>',
+  lock:'<rect x="22" y="50" width="56" height="56" rx="8" fill="#ae8c55" stroke="#36271c" stroke-width="8"/><path d="M32 50V34Q32 10 50 10Q70 10 70 34V50" fill="none" stroke="#dbb678" stroke-width="10"/><circle cx="50" cy="76" r="6" fill="#3e3327"/>'
+ };
+ return '<svg viewBox="0 0 100 120" aria-hidden="true">'+(pics[type]||pics.book)+'</svg>';
+}
+function toast(t){clearTimeout(toastTimer);id("toast").textContent=t;id("toast").classList.add("show");toastTimer=setTimeout(function(){id("toast").classList.remove("show");},4000);}
+function resize(){scale=Math.max(innerWidth/1600,innerHeight/900);maxPan=Math.max(0,(1600*scale-innerWidth)/2);plate.style.setProperty("--scale",scale);setPan(Math.min(maxPan,Math.max(-maxPan,pan)));}
+function setPan(p){pan=Math.min(maxPan,Math.max(-maxPan,p));plate.style.setProperty("--pan",pan+"px");id("left").disabled=pan>=maxPan-2;id("right").disabled=pan<=-maxPan+2;}
+function draw(){
+ const r=R[here];if(!r)return;painting.innerHTML=r.photo?'<img src="'+r.photo+'" alt=""><div class="wash"></div>':lightPanel(r);
+ id("roomName").textContent=r.n;id("roomDescription").textContent=r.d;id("floorName").textContent=floors[r.f];doorBox.replaceChildren();objectBox.replaceChildren();
+ let pos=r.e.length===1?[800]:r.e.length===2?[440,1150]:r.e.length===3?[300,805,1300]:[170,560,1035,1430];
+ r.e.forEach(function(d,i){let b=document.createElement("button");b.className="door";b.type="button";b.style.left=pos[i]+"px";b.dataset.way=d[2]||"";b.setAttribute("aria-label","Go to "+d[0]);b.innerHTML='<span class="doorface"></span><span class="plaque">'+escapeHtml(d[0])+'</span>';b.addEventListener("click",function(){go(d[1]);});doorBox.append(b);});
+ (r.p||[]).forEach(function(p){let b=document.createElement("button");b.className="prop";b.type="button";b.style.left=p[1]+"px";b.style.top=p[2]+"px";b.setAttribute("aria-label",p[3]);b.innerHTML=propArt(p[0])+'<span class="hint">'+escapeHtml(p[3])+'</span>';b.addEventListener("click",function(){if(p[5]==="code")code();else if(p[5]==="night"){document.body.classList.toggle("lights-out");toast(p[4]);}else detail(p[3],p[4],p[5]);});objectBox.append(b);});
+ resize();setPan(0);makeMap();document.title=r.n+" · Studio LaDuke House";
+}
+function go(to,replace){if(/\.html/.test(to)){location.href=to;return;}if(!R[to]){toast("That door isn't ready.");return;}if(to==="vault"&&!sessionStorage.getItem("laduke-escape-done")){toast("The vault is sealed.");return;}hideDetail(false);hideMap(false);here=to;document.body.classList.remove("lights-out");if(replace)history.replaceState({room:to},"","house.html?room="+to);else history.pushState({room:to},"","house.html?room="+to);draw();}
+function makeMap(){let box=id("floorContents");box.replaceChildren();floors.forEach(function(f,i){let h=document.createElement("div");h.className="floorhead";h.textContent=f;box.append(h);let group=document.createElement("div");group.className="floorlinks";Object.keys(R).filter(function(k){return R[k].f===i && (k!=="vault"||sessionStorage.getItem("laduke-escape-done"));}).forEach(function(k){let b=document.createElement("button");b.type="button";b.textContent=R[k].n;if(k===here)b.setAttribute("aria-current","location");b.addEventListener("click",function(){go(k);});group.append(b);});box.append(group);});}
+function showMap(){id("shade").hidden=false;id("map").hidden=false;id("closeMap").focus();}
+function hideMap(focus){id("shade").hidden=true;id("map").hidden=true;if(focus!==false)id("mapOpen").focus();}
+function detail(title,copy,to){detailFocus=document.activeElement;id("dialogTitle").textContent=title;id("dialogText").textContent=copy;id("dialogButtons").replaceChildren();id("codeForm").hidden=true;if(to){let b=document.createElement("button");b.type="button";b.textContent=/\.html/.test(to)?"Visit this part of Studio LaDuke":"Go there";b.addEventListener("click",function(){go(to);});id("dialogButtons").append(b);}id("dialogShade").hidden=false;id("dialog").hidden=false;id("closeDialog").focus();}
+function hideDetail(focus){id("dialogShade").hidden=true;id("dialog").hidden=true;if(focus!==false&&detailFocus&&detailFocus.focus)detailFocus.focus();}
+function code(){detail("The sealed vault","Three small clues are hidden here. Enter the code.");id("codeForm").hidden=false;id("codeInput").value="";id("codeInput").focus();}
+id("codeForm").addEventListener("submit",function(e){e.preventDefault();if(id("codeInput").value.trim()==="472"){try{sessionStorage.setItem("laduke-escape-done","1");}catch(e){}hideDetail(false);go("vault");}else{id("codeInput").value="";toast("The lock refuses to open.");id("codeInput").focus();}});
+id("mapOpen").addEventListener("click",showMap);id("closeMap").addEventListener("click",function(){hideMap(true);});id("shade").addEventListener("click",function(){hideMap(true);});
+id("closeDialog").addEventListener("click",function(){hideDetail(true);});id("dialogShade").addEventListener("click",function(){hideDetail(true);});
+id("left").addEventListener("click",function(){setPan(pan+Math.max(180,innerWidth*.66));});id("right").addEventListener("click",function(){setPan(pan-Math.max(180,innerWidth*.66));});
+camera.addEventListener("pointerdown",function(e){if(e.button!==0||!id("dialog").hidden||!id("map").hidden)return;drag={x:e.clientX,p:pan,m:false};camera.setPointerCapture(e.pointerId);});
+camera.addEventListener("pointermove",function(e){if(!drag)return;let dx=e.clientX-drag.x;if(Math.abs(dx)>9){drag.m=true;camera.classList.add("dragging");setPan(drag.p+dx);}});
+function finish(){if(!drag)return;suppress=drag.m;drag=null;camera.classList.remove("dragging");}
+camera.addEventListener("pointerup",finish);camera.addEventListener("pointercancel",finish);
+camera.addEventListener("click",function(e){if(suppress){suppress=false;e.preventDefault();e.stopImmediatePropagation();}},true);
+window.addEventListener("resize",resize);
+window.addEventListener("popstate",function(){let q=new URLSearchParams(location.search).get("room");here=R[q]?q:"living";draw();});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(!id("dialog").hidden)hideDetail(true);else if(!id("map").hidden)hideMap(true);return;}if(!id("dialog").hidden||!id("map").hidden)return;if(e.key==="ArrowLeft"){e.preventDefault();setPan(pan+180);}if(e.key==="ArrowRight"){e.preventDefault();setPan(pan-180);}if(e.key.toLowerCase()==="m"&&!e.metaKey&&!e.ctrlKey)showMap();});
+const initial=new URLSearchParams(location.search).get("room");here=R[initial]?initial:"living";if(!R[initial])history.replaceState({room:here},"","house.html?room="+here);draw();
+try{if(!sessionStorage.getItem("laduke-house-seen")){toast("Look left or right. Open real doors. The little floor plan will help if you get lost.");sessionStorage.setItem("laduke-house-seen","1");}}catch(e){}
+})();
+</script>
+</body></html>
