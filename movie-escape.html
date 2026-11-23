@@ -50,11 +50,10 @@
   <a href="house.html?room=escape">Return to the brass keypad</a></div>
  </div>
 </main>
+<script src="assets/movie-escape-game.js?v=20261123a"></script>
 <script type="module">
-import("./assets/movie-escape.js?v=20261123a").catch(()=>{
- document.getElementById("loading").hidden=true;
- document.getElementById("filmFallback").hidden=false;
- document.getElementById("inspect").disabled=false;
+import("./assets/movie-escape-3d.js?v=20261123a").catch(()=>{
+ window.StudioMovieMaze?.revealFallback();
 });
 </script>
 </body></html>
