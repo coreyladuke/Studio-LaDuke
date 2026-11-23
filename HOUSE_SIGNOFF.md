@@ -2,6 +2,13 @@
 
 **Status: NOT APPROVED FOR OWNER WALKTHROUGH.** This checklist is a gate, not a list of nice-to-have polish. A successful deployment or passing browser smoke test does not imply that a room feels finished.
 
+## Approved direction (binding)
+**Owner approved:** `1C, 2C, 3C, 4C, 5C, 6C, 7C, 8C, 9B, 10C, 11C, 12B` on November 23, 2026. Read `HOUSE_APPROVED_ART_DIRECTION.md` and `HOUSE_ROOM_IMPLEMENTATION_PLAN.md` before editing or signing off any room.
+
+**Art-direction gate:** Handsome and playful, **not run-down**. Rich carved wooden details, varied black/white checker patterns, layered warm and theatrical color, richly colored vintage architecture and one singular physical object or surprise per key room. The living room needs the approved **orange-and-purple modular vinyl couch**; the central stained glass must depict the **actual five-note star**. The house escalates in wonder without losing architectural continuity. Generic well-appointed cabin plates **do not pass** this visual standard.
+
+The approved palette-token stylesheet (`assets/house-approved-style.css`) and `approvedRoomIdentity` in `assets/house-director.js` provide a **shared interface foundation only**. They do not count as completed rooms, custom furnishings, physically mapped doorways or final visual approval.
+
 ## Required standard for every scene
 
 - [ ] Scene visually belongs to the same atmospheric, lived-in Studio LaDuke world, with dimensional furniture, believable materials, lighting and depth; no generic room templates
