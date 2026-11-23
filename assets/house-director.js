@@ -57,6 +57,18 @@ function applyApprovedIdentity(room){
  body.dataset.houseZone=spec[0];
  body.style.setProperty("--room-accent",spec[1]);
  body.style.setProperty("--room-secondary",spec[2]);
+ // Batch 02 / 3D: physically consistent shared atrium light. This is
+ // environmental lighting, not a substitute for the authentic glass artwork.
+ if(room==="foyer"||room==="hall"||room==="landing"){
+  const hour=new Date().getHours(); // viewer local time; never geolocate visitors
+  const period=hour>=6&&hour<11?"morning":hour>=11&&hour<17?"day":hour>=17&&hour<21?"evening":"night";
+  const tint={morning:"#fbd18a",day:"#e5dbad",evening:"#b18cdd",night:"#6271b2"}[period];
+  body.dataset.atriumPeriod=period;
+  body.style.setProperty("--atrium-light-color",tint);
+ }else{
+  delete body.dataset.atriumPeriod;
+  body.style.removeProperty("--atrium-light-color");
+ }
 }
 document.body.classList.add("directed-house");
 function escapeAttr(v){return String(v).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");}
