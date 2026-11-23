@@ -80,7 +80,7 @@ body.lights-out #plate{filter:brightness(.65)}
   <div id="doors" aria-label="Doors in this room"></div><div id="objects" aria-label="Objects to explore"></div>
  </div>
 </main>
-<div id="lookbar"><button id="left" type="button" aria-label="Look left">‹</button><div id="floorTag"><strong id="floorName"></strong><small>Drag to look around</small></div><button id="right" type="button" aria-label="Look right">›</button></div>
+<div id="lookbar"><button id="left" type="button" aria-label="Look left">‹</button><div id="floorTag"><strong id="floorName"></strong><small>Swipe · Touch · Explore</small></div><button id="right" type="button" aria-label="Look right">›</button></div>
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="shade" hidden></div>
 <aside id="map" hidden aria-label="House floor plan"><button id="closeMap" aria-label="Close map" type="button">×</button><h2>Studio LaDuke</h2><p>THE HOUSE. Walk through the physical doors or use this folded floor plan if you get turned around.</p><div id="floorContents"></div></aside>
@@ -93,7 +93,7 @@ body.lights-out #plate{filter:brightness(.65)}
 const R={
  foyer:{n:"Front Hall",f:0,d:"A place to hang your coat and come inside.",e:[["Front door","index.html"],["Living room","living"],["Coat closet","coat"]],p:[["star",1123,479,"The star","Five music notes arranged into the Studio LaDuke star."]]},
  coat:{n:"Coat Closet",f:0,d:"Boots, coats and a suspicious umbrella.",e:[["Front hall","foyer"]],p:[["chest",795,580,"A forgotten pocket","Old ticket stubs, guitar picks and useful little things."]]},
- living:{n:"Living Room",f:0,d:"Come in. Sit down. Stay a while.",e:[["Front hall","foyer"],["Dining room","dining"],["Main hallway","hall"],["Back porch","porch","outside"]],p:[["sofa",688,734,"The couch","Look between the cushions."],["tv",1225,480,"The television","An original Studio short."],["pick",830,774,"A guitar pick","A little lucky find."],["yellow",380,405,"The yellow Strat","Sixteen years old. A guitar with history."],["pink",1245,390,"The pink guitar","A newer guitar on the wall."],["lamp",1090,507,"The floor lamp","A softer light."]]},
+ living:{n:"Living Room",f:0,d:"Come in. Sit down. Stay a while.",e:[["Front hall","foyer"],["Dining room","dining"],["Main hallway","hall"],["Back porch","porch","outside"]],p:[["sofa",951,718,"The record crate","Look through the old records."],["tv",808,469,"The stereo","Try the vintage stereo."],["pick",827,763,"A guitar pick","A little lucky find."],["lamp",1250,320,"The table lamp","A softer light."]]},
  hall:{n:"Main Hall",f:0,d:"Doors to rooms worth getting lost in.",photo:"assets/front-room-doors.webp",e:[["Living room","living"],["Art studio","art"],["Stairs upstairs","landing","up"]],p:[["stairs",1230,730,"Basement stairs","The other staircase is by the mudroom.","basement"]]},
  dining:{n:"Dining Nook",f:0,d:"A table for dinner and original board games.",e:[["Living room","living"],["Kitchen","kitchen"],["Pantry","pantry"]],p:[["board",790,685,"The board game","This table is ready for the first original Studio LaDuke board game."]]},
  kitchen:{n:"Kitchen",f:0,d:"Rain on the glass. Something on the stove.",e:[["Dining nook","dining"],["Laundry","laundry"],["Back porch","porch","outside"]],p:[["cup",785,670,"Put the kettle on","A good evening for pasta and a movie."]]},
@@ -199,7 +199,7 @@ window.addEventListener("resize",resize);
 window.addEventListener("popstate",function(){let q=new URLSearchParams(location.search).get("room");here=R[q]?q:"living";draw();});
 document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(!id("dialog").hidden)hideDetail(true);else if(!id("map").hidden)hideMap(true);return;}if(!id("dialog").hidden||!id("map").hidden)return;if(e.key==="ArrowLeft"){e.preventDefault();setPan(pan+180);}if(e.key==="ArrowRight"){e.preventDefault();setPan(pan-180);}if(e.key.toLowerCase()==="m"&&!e.metaKey&&!e.ctrlKey)showMap();});
 const initial=new URLSearchParams(location.search).get("room");here=R[initial]?initial:"living";if(!R[initial])history.replaceState({room:here},"","house.html?room="+here);draw();
-try{if(!sessionStorage.getItem("laduke-house-seen")){toast("Drag to look around. Touch the objects to discover their stories.");sessionStorage.setItem("laduke-house-seen","1");}}catch(e){}
+try{if(!sessionStorage.getItem("laduke-house-seen")){sessionStorage.setItem("laduke-house-seen","1");}}catch(e){}
 })();
 </script>
 </body></html>
