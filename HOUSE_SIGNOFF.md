@@ -149,3 +149,26 @@ Serve the repo locally and run `npm install --no-save playwright && npx playwrig
 - **Tooling**: Runway was checked only for optional image capability; no generated artwork or Runway credits were used. There is no connection prerequisite for normal GitHub/Vercel coding and testing.
 
 **Release status:** The true five-note star/skylight and curved orange-purple couch still require cohesive, image-quality physical scenes. Keep all visual sign-off boxes unchecked until verified.
+
+## New free real-3D foundation, November 23, 2026
+
+**User authorization:** Use every practical *free* method, OpenAI-authored code, open-source software, and properly licensed no-cost assets. Do **not** incur paid API, model-generation, Runway, software, storage or other subscription costs without a new explicit price approval.
+
+**Published code:**
+- `house-3d.html`, `assets/studio-house-3d.js`, `assets/studio-house-3d.css`; reachable from the original House floor plan (carved wood/brass gateway). The original 27-room house is preserved unchanged as the fallback.
+- First genuine 3D atrium and living room: **408 meshes / 20 interactive targets** at latest local/prod stage, with full 3D staircase, carved trim, balcony, checker floor, glass skylight, real spatial orange/purple curved modular vinyl couch, sculptural coffee table, lamps and turntable.
+- Physical lighting and material response, swaying trees and rain geometry visible beyond windows, local-clock atmosphere, and optional synthetically generated bowl/wind sound. No autoplay, no copyright media, no paid audio.
+- Real existing owner art mounted in spatial frames. Models have raycast object actions plus keyboard-accessible object controls. Progress earned in new 3D scene is recorded in the existing on-device House Pocketbook.
+- Self-hosted CC0 512px PBR color/roughness/normal maps from Poly Haven's **wood_floor** (`assets/pbr/`), with a built-in procedural fallback; source and license in `HOUSE_3D_ARCHITECTURE.md`.
+- Adaptive detail for slower devices, capped pixel resolution, reduced-motion behavior, hidden-tab render pause and fallback to original House if WebGL or CDN module import fails.
+
+**Verified:**
+- Published browser tests in desktop and 390x844 phone-sized Chromium showed WebGL scene render, room transitions, no network or JavaScript errors at the tested revision, and correct fallback when the Three.js CDN was intentionally blocked.
+- Full cross-page journey verified on the published site: **Front Hall → floor-plan 3D gateway → modeled Living Room → keyboard-selected vinyl sofa → back to old House → Pocketbook**, retaining discovery `living:sofa` with no errors.
+- Repository static audit: **28 HTML files / 253 local links and asset references / 0 missing** at the tested revision.
+- PBR asset URLs returned HTTP 200 from the live site; final post-cache-bust browser verification of the three runtime texture requests remains open until it is observed.
+- Testing used cloud Chromium with software GPU emulation, NOT an actual iPhone Safari. Do not claim stable 30/60 FPS on real hardware.
+
+**Still not approved for complete House walkthrough:** two modeled viewpoints are a *foundation*, not 27 completed 3D rooms. Current first-model aesthetic is spatially real but still too stylized/low-poly to meet the owner's ultimate photoreal/exciting bar. The original actual five-note skylight artwork requires source-faithful tracing, vinyl needs physically plausible tufting and shading, and every doorway/hit region must be physically correct. The visual quality gate remains closed.
+
+**Canonical plan:** `HOUSE_3D_ARCHITECTURE.md` and the earlier approved art direction. Continue with genuine PBR materials, precise custom objects, animated environment, mobile optimization and room-by-room migration; do not regress into stock-photo overlays or call the whole house done.
