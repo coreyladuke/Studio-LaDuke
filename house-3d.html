@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#171a19">
+<title>Studio LaDuke · The Living House</title>
+<meta name="description" content="Step inside Studio LaDuke: a dimensional artist's house with changing light, rainy Southeast Alaska woods, and unexpected discoveries.">
+<link rel="icon" href="favicon.png">
+<link rel="stylesheet" href="assets/studio-house-3d.css">
+</head>
+<body>
+<main id="experience">
+  <canvas id="world" aria-label="Interactive 3D Studio LaDuke house. Drag to look around or use the Look buttons. Explore the atrium and living room."></canvas>
+  <div id="still" hidden><img src="assets/front-room-wide.webp" alt="Warm carved-wood Studio LaDuke interior, with checkerboard floor and rainy trees outside."><p>The interactive 3D view isn't supported in this browser. You can still explore the original House.</p><a href="house.html?room=foyer">Enter the original House</a></div>
+  <div id="loading" role="status" aria-live="polite"><span class="loading-mark">✳</span><span>Opening the House</span></div>
+  <header class="masthead">
+    <a href="house.html?room=foyer" class="backdoor" aria-label="Return to the original Studio LaDuke House"><span class="handle">↶</span><span>Back to the House</span></a>
+    <div class="identity"><span class="overline">A place worth getting lost in</span><h1>STUDIO <em>LaDuke</em></h1></div>
+    <button id="sound" class="sound-control" type="button" aria-pressed="false" aria-label="Enable original ambient room sounds"><span class="sound-symbol">♫</span><span id="soundLabel">Sound off</span></button>
+  </header>
+  <section class="scene-caption" aria-live="polite">
+    <span id="where-label">THE ATRIUM</span>
+    <p id="scene-quote">An artist lives here. You can probably tell.</p>
+  </section>
+  <nav class="room-controls" aria-label="Explore modeled rooms">
+    <button type="button" id="atrium" data-place="atrium" aria-pressed="true"><span class="engrave">I</span><span>Atrium</span></button>
+    <button type="button" id="lounge" data-place="lounge" aria-pressed="false"><span class="engrave">II</span><span>Living Room</span></button>
+  </nav>
+  <div class="look-controls" aria-label="Look around the room">
+    <button type="button" id="look-left" aria-label="Look left">‹</button>
+    <span class="instruction">Drag to look around · Touch the objects</span>
+    <button type="button" id="look-right" aria-label="Look right">›</button>
+  </div>
+  <div id="discovery" role="status" aria-live="polite" aria-atomic="true"></div>
+  <p class="footnote" id="status">A living 3D study · The House will keep growing</p>
+</main>
+<script type="module" src="assets/studio-house-3d.js"></script>
+</body>
+</html>
