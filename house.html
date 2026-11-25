@@ -80,6 +80,12 @@ body.directed-house #plate .door[data-aligned]::after{display:none}
 body.directed-house #plate .door[data-aligned] .plaque{display:block}
 body.directed-house #plate .prop .hint{pointer-events:none}
 #camera.dragging :is(.hint,.plaque){visibility:hidden}
+.entry-plan{position:relative;aspect-ratio:360/220;margin:0 0 20px}
+.entry-plan svg{position:absolute;inset:0;width:100%;height:100%;color:#7d583b}
+.entry-plan button{position:absolute;transform:translate(-50%,-50%);width:29%;min-height:44px;padding:3px;background:#ebd6b2;border:1px solid #8b6849;color:#362419;font:bold 13px Georgia,serif}
+.entry-plan button[aria-current="location"]{background:#49311f;color:#ffedc8}
+#roomPassages{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 14px}
+#roomPassages button{min-height:44px;color:#452b1c;border:1px solid #8b6849;background:#ecdbbe;padding:6px 9px}
 </style>
 </head>
 <body>
@@ -95,20 +101,20 @@ body.directed-house #plate .prop .hint{pointer-events:none}
 <div id="lookbar"><button id="left" type="button" aria-label="Look left">‹</button><div id="floorTag"><strong id="floorName"></strong><small>Swipe · Touch · Explore</small></div><button id="right" type="button" aria-label="Look right">›</button></div>
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="shade" hidden></div>
-<aside id="map" hidden aria-label="House floor plan"><button id="closeMap" aria-label="Close map" type="button">×</button><h2>Studio LaDuke</h2><p>THE HOUSE. Walk through the physical doors or use this folded floor plan if you get turned around.</p><div id="floorContents"></div></aside>
+<aside id="map" hidden aria-label="House floor plan"><button id="closeMap" aria-label="Close map" type="button">×</button><h2>The House</h2><div id="floorContents"></div></aside>
 <div id="dialogShade" hidden></div>
 <section id="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle" hidden><button id="closeDialog" aria-label="Close" type="button">×</button><h2 id="dialogTitle"></h2><p id="dialogText"></p><form id="codeForm" hidden><label for="codeInput">Three-digit code</label><input id="codeInput" required inputmode="numeric" pattern="[0-9]{3}" maxlength="3" autocomplete="off"><button type="submit">Unlock</button></form><div id="dialogButtons" class="buttons"></div></section>
 <script src="assets/house-v2.js"></script>
-<script src="assets/house-director.js"></script>
+<script src="assets/house-director.js?v=20261124-entry"></script>
 <script src="assets/house-adventure.js"></script>
 <script>
 "use strict";
 (function(){
 const R={
- foyer:{n:"Front Hall",f:0,d:"A place to hang your coat and come inside.",e:[["Front door","index.html"],["Living room","living"],["Coat closet","coat"],["Workshop","workshop.html"]],p:[["star",1123,479,"The star","Five music notes arranged into the Studio LaDuke star."]]},
+ foyer:{n:"Front Hall",f:0,d:"A place to hang your coat and come inside.",e:[["Front door","index.html"],["Living room","living"],["Coat closet","coat"],["Workshop","workshop.html"],["Main hall","hall"]],p:[["star",1123,479,"The star","Five music notes arranged into the Studio LaDuke star."]]},
  coat:{n:"Coat Closet",f:0,d:"Boots, coats and a suspicious umbrella.",e:[["Front hall","foyer"]],p:[["chest",795,580,"A forgotten pocket","Old ticket stubs, guitar picks and useful little things."]]},
- living:{n:"Living Room",f:0,d:"Come in. Sit down. Stay a while.",e:[["Front hall","foyer"],["Dining room","dining"],["Main hallway","hall"],["Back porch","porch","outside"]],p:[["sofa",951,718,"The record crate","Look through the old records."],["tv",808,469,"The stereo","Try the vintage stereo."],["pick",827,763,"A guitar pick","A little lucky find."],["lamp",1250,320,"The table lamp","A softer light."]]},
- hall:{n:"Main Hall",f:0,d:"Doors to rooms worth getting lost in.",photo:"assets/front-room-doors.webp",e:[["Living room","living"],["Art studio","art"],["Stairs upstairs","landing","up"]],p:[["stairs",1230,730,"Basement stairs","The other staircase is by the mudroom.","basement"]]},
+ living:{n:"Living Room",f:0,d:"Come in. Sit down. Stay a while.",e:[["Front hall","foyer"],["Dining room","dining"],["Back porch","porch","outside"]],p:[["sofa",951,718,"The record crate","Look through the old records."],["tv",808,469,"The stereo","Try the vintage stereo."],["pick",827,763,"A guitar pick","A little lucky find."],["lamp",1250,320,"The table lamp","A softer light."]]},
+ hall:{n:"Main Hall",f:0,d:"A book-lined passage leads deeper into the house.",photo:"assets/house-plates/pexels-35695313.jpg",e:[["Front hall","foyer"],["Art studio","art"],["Stairs upstairs","landing","up"],["Basement stairs","basement","down"]]},
  dining:{n:"Dining Nook",f:0,d:"A table for dinner and original board games.",e:[["Living room","living"],["Kitchen","kitchen"],["Pantry","pantry"]],p:[["board",790,685,"The board game","This table is ready for the first original Studio LaDuke board game."]]},
  kitchen:{n:"Kitchen",f:0,d:"Rain on the glass. Something on the stove.",e:[["Dining nook","dining"],["Laundry","laundry"],["Back porch","porch","outside"]],p:[["cup",785,670,"Put the kettle on","A good evening for pasta and a movie."]]},
  pantry:{n:"Pantry",f:0,d:"Food, snacks and things in jars.",e:[["Dining nook","dining"]],p:[["chest",770,600,"Look through the pantry","Popcorn. Pasta. A packet of something mysterious."]]},
@@ -206,7 +212,8 @@ function setPan(p,immediate){
 }
 // Bounds are measured against the 1600 × 900 room art. Other exits are available on the map.
 const photographedExits={
- foyer:{living:[145,195,272,483],"workshop.html":[646,195,306,490]},
+ foyer:{living:[145,195,272,483],"workshop.html":[646,195,306,490],hall:[1184,195,288,486]},
+ hall:{landing:[635,135,393,580]},
  living:{foyer:[0,168,112,565]}
 };
 const livingProps={
@@ -225,14 +232,67 @@ function placeOnPlate(button,bounds){
 function draw(){
  const r=R[here];if(!r)return;document.body.classList.remove("scene-living","scene-foyer","scene-coat");plate.classList.remove("pocket-open","star-awake","tv-playing","pick-found","lamp-dim","yellow-spot","pink-spot","discovered","mirror-fog","drawer-open","steam-on","light-on","spark-on");if(["living","foyer","coat"].includes(here))document.body.classList.add("scene-"+here);painting.innerHTML=(window.StudioHouseDirector&&window.StudioHouseDirector.scene(here))||(window.StudioHouseV2&&window.StudioHouseV2.scene(here))||(r.photo?'<img src="'+r.photo+'" alt=""><div class="wash"></div>':lightPanel(r));
  id("roomName").textContent=r.n;id("roomDescription").textContent=r.d;id("floorName").textContent=r.n;id("floorTag").querySelector("small").textContent=floors[r.f]+" · Swipe to look";doorBox.replaceChildren();objectBox.replaceChildren();
- let pos=r.e.length===1?[800]:r.e.length===2?[440,1150]:r.e.length===3?[300,805,1300]:[170,560,1035,1430];if(here==="foyer")pos=[190,1340,490,805];if(here==="coat")pos=[186];if(!["living","foyer","coat"].includes(here))pos=r.e.length===1?[800]:r.e.length===2?[420,1180]:r.e.length===3?[250,800,1350]:[170,560,1040,1430];
+ let pos=r.e.length===1?[800]:r.e.length===2?[440,1150]:r.e.length===3?[300,805,1300]:[170,560,1035,1430];if(here==="coat")pos=[186];if(!["living","foyer","coat"].includes(here))pos=r.e.length===1?[800]:r.e.length===2?[420,1180]:r.e.length===3?[250,800,1350]:[170,560,1040,1430];
  r.e.forEach(function(d,i){const bounds=photographedExits[here]?.[d[1]];if(photographedExits[here]&&!bounds)return;let b=document.createElement("button");b.className="door";b.type="button";b.style.left=pos[i]+"px";if(bounds)placeOnPlate(b,bounds);b.dataset.way=d[2]||"";b.setAttribute("aria-label","Go to "+d[0]);b.innerHTML='<span class="doorface"></span><span class="plaque">'+escapeHtml(d[0])+'</span>';b.addEventListener("click",function(){go(d[1]);});doorBox.append(b);});
  (r.p||[]).forEach(function(p){let b=document.createElement("button");b.className="prop";b.type="button";b.style.left=p[1]+"px";b.style.top=p[2]+"px";if(here==="living"&&livingProps[p[0]])placeOnPlate(b,livingProps[p[0]]);b.setAttribute("aria-label",p[3]);b.innerHTML=propArt(p[0])+'<span class="hint">'+escapeHtml(p[3])+'</span>';b.addEventListener("click",function(){if(window.StudioHouseAdventure)window.StudioHouseAdventure.collect(here,p[0]);if(p[5]==="code"){code();return;}if(p[5]==="night"){document.body.classList.toggle("lights-out");if(window.StudioHouseDirector)window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast});return;}if(p[5]){go(p[5]);return;}if(window.StudioHouseDirector&&window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast}))return;if(window.StudioHouseV2&&window.StudioHouseV2.activate(here,p[0],{plate:plate,toast:toast}))return;detail(p[3],p[4],p[5]);});objectBox.append(b);});
  stopPan();resize();setPan(restoreView(here),true);makeMap();document.title=r.n+" · Studio LaDuke House";
 }
 function go(to,replace){if(/\.html/.test(to)){location.href=to;return;}if(!R[to]){toast("That door isn't ready.");return;}if(to==="vault"&&sessionStorage.getItem("laduke-movie-gauntlet-done")!=="1"){toast("The vault awaits the end of the movie maze.");return;}saveView();hideDetail(false);hideMap(false);here=to;document.body.classList.remove("lights-out");if(replace)history.replaceState({room:to},"","house.html?room="+to);else history.pushState({room:to},"","house.html?room="+to);draw();}
 window.StudioHouseGo=function(to){go(to);};
-function makeMap(){let box=id("floorContents");box.replaceChildren();floors.forEach(function(f,i){let h=document.createElement("div");h.className="floorhead";h.textContent=f;box.append(h);let group=document.createElement("div");group.className="floorlinks";Object.keys(R).filter(function(k){return R[k].f===i && (k!=="vault"||sessionStorage.getItem("laduke-movie-gauntlet-done")==="1");}).forEach(function(k){let b=document.createElement("button");b.type="button";b.textContent=R[k].n;if(k===here)b.setAttribute("aria-current","location");b.addEventListener("click",function(){go(k);});group.append(b);});box.append(group);});
+function mapButton(label,to){
+ const button=document.createElement("button");
+ button.type="button";
+ button.textContent=label;
+ if(to===here)button.setAttribute("aria-current","location");
+ button.addEventListener("click",()=>go(to));
+ return button;
+}
+function appendEntryPlan(box){
+ const heading=document.createElement("h3");
+ heading.className="floorhead";
+ heading.textContent="Front entrance";
+ box.append(heading);
+ const plan=document.createElement("div");
+ plan.className="entry-plan";
+ plan.setAttribute("role","group");
+ plan.setAttribute("aria-label","From the front door facing in, the Living Room is left, Workshop is straight ahead, and Main Hall is right.");
+ plan.innerHTML='<svg viewBox="0 0 360 220" aria-hidden="true"><path d="M60 55v28h120m0-28v46m120-46v28H180m0 74v30" fill="none" stroke="currentColor" stroke-width="2"/><path d="M119 123v-22h18m13 0h23m14 0h23m13 0h18v56h-52m-18 0h-52v-21" fill="none" stroke="currentColor" stroke-width="2"/></svg>';
+ const foyerLinks=R.foyer.e;
+ for(const [to,label,left,top] of [
+  ["living","Living Room",16.67,17],["workshop.html","Workshop",50,17],["hall","Main Hall",83.33,17],
+  ["foyer","Front Hall",50,59],["index.html","Front Door",50,89]
+ ]){
+  if(to!=="foyer"&&!foyerLinks.some(exit=>exit[1]===to))continue;
+  const button=mapButton(label,to);
+  button.style.left=left+"%";
+  button.style.top=top+"%";
+  plan.append(button);
+ }
+ box.append(plan);
+}
+function makeMap(){
+ const box=id("floorContents");
+ box.replaceChildren();
+ appendEntryPlan(box);
+ const passages=R[here].e.filter(([,to])=>!photographedExits[here]?.[to]);
+ if(passages.length){
+  const title=document.createElement("h3");title.className="floorhead";title.textContent="From "+R[here].n;
+  const group=document.createElement("div");group.id="roomPassages";
+  for(const [label,to] of passages)group.append(mapButton(label,to));
+  box.append(title,group);
+ }
+ const directory=document.createElement("details");
+ const summary=document.createElement("summary");summary.textContent="Room directory";
+ directory.append(summary);
+ floors.forEach((floor,i)=>{
+  const heading=document.createElement("div");heading.className="floorhead";heading.textContent=floor;
+  const group=document.createElement("div");group.className="floorlinks";
+  for(const [key,room] of Object.entries(R)){
+   if(room.f===i&&(key!=="vault"||sessionStorage.getItem("laduke-movie-gauntlet-done")==="1"))group.append(mapButton(room.n,key));
+  }
+  directory.append(heading,group);
+ });
+ box.append(directory);
  const gateway=document.createElement("a");
  gateway.href="house-3d.html";
  gateway.className="house3d-map-door";

@@ -5,16 +5,16 @@
 "use strict";
 const PROGRESS_KEY="studioladuke.movie.maze.v1", ENTRY_KEY="laduke-escape-done";
 const stages=[
- {id:"ghost",film:"GHOSTBUSTERS",subtitle:"The Containment Room",name:"Ghostbusters · Containment",goal:"The ghost trap hides the starting clue. Arm it, then find the right relay sequence to open the next door.",
+ {id:"ghost",film:"GHOSTBUSTERS",subtitle:"The Containment Room",name:"Ghostbusters · Containment",goal:"The containment vault has a fault. Check the equipment on the repair bench.",
   clue:"COLD → HOT → SAFE. The final light should be green.",
   type:"sequence",order:["trap","blue","red","green"],
-  props:[["blue","Blue cold relay"],["red","Red hot relay"],["green","Green safe relay"],["trap","Inspect the ghost trap"]],
+  props:[["blue","Blue cold relay"],["red","Red hot relay"],["green","Green safe relay"],["trap","Inspect the ghost trap"],["fan","Switch the bench fan"]],
   hints:["The ghost trap must be armed before the relays will respond.","Arm the trap, then prime the cold blue relay, then hot red.","Touch TRAP, BLUE, RED, GREEN in that order."],
   success:"The containment grid glows green. A door clicks open in the dark."},
- {id:"shining",film:"THE SHINING",subtitle:"The Overlook Corridor",name:"The Shining · Corridor",goal:"A room number has disappeared. Count the motifs on the carpet, in the order written beside the mysterious door.",
+ {id:"shining",film:"THE SHINING",subtitle:"The Overlook Corridor",name:"The Shining · Corridor",goal:"The room number is missing. Count the motifs on the wall panels in the order above the door.",
   clue:"FIRST: red diamonds. SECOND: cream circles. THIRD: gold bars.",
   type:"code",code:"237",props:[["diamonds","Count the red diamonds"],["circles","Count the cream circles"],["bars","Count the gold carpet bars"],["door","Inspect the numbered door"]],
-  hints:["The pattern on the carpet is the combination. The plaque describes the order.","There are two red diamonds, three cream circles, and seven gold bars.","Enter 237 on the door keypad."],
+  hints:["The wall panels give you the digits. The sign above the door gives their order.","There are two red diamonds, three cream circles, and seven gold bars.","Enter 237 on the door keypad."],
   success:"The old hotel lock turns. The corridor grows strangely quiet."},
  {id:"beetle",film:"BEETLEJUICE",subtitle:"The Waiting Room",name:"Beetlejuice · Waiting Room",goal:"The exit clerk is absent. Find the order of the three things on the waiting-room notice, then wake the peculiar doorway.",
   clue:"ANNOUNCEMENT → NUMBER → ODDITY.",
@@ -41,7 +41,7 @@ try{const raw=JSON.parse(localStorage.getItem(PROGRESS_KEY)||"null");if(raw&&typ
  saved.hints=saved.hints&&typeof saved.hints==="object"?saved.hints:{};
 }}catch(_){}
 let stageIndex=saved.stage,renderStage=()=>{},messageTimer=0,frameLast=performance.now(),lastSaved=0;
-let soundOn=false,audioCtx=null,hum=null,humGain=null;
+let soundOn=false,audioCtx=null,hum=null,humGain=null,fanRunning=false;
 function soundCue(success=false){
  if(!soundOn||!audioCtx)return;
  const now=audioCtx.currentTime,notes=success?[392,523.25,659.25]:[330];
@@ -98,6 +98,7 @@ function updateHint(){
  else{b.disabled=true;b.textContent="Hint in "+timeText(remain);}
 }
 function enter(index){
+ fanRunning=false;
  stageIndex=Math.max(0,Math.min(4,index));saved.stage=stageIndex;save();
  const c=chapter(),letters=["I","II","III","IV","V"];
  $("theater").dataset.film=c.id;$("act").textContent="ACT "+letters[stageIndex]+" / V";
@@ -112,7 +113,7 @@ function enter(index){
  const propBox=$("props");propBox.replaceChildren();
  for(const [action,label]of c.props){
   const btn=document.createElement("button");btn.type="button";btn.textContent=label;btn.dataset.action=action;
-  btn.addEventListener("click",()=>{interact(action);if(!isSolved()){}});
+  btn.addEventListener("click",()=>interact(action));
   propBox.append(btn);
  }
  updateHint();
@@ -121,12 +122,27 @@ function enter(index){
 }
 function closeProps(){$("propDrawer").hidden=true;$("inspect").setAttribute("aria-expanded","false");}
 function interact(action){
- if(!syncGate()||isSolved())return;
- soundCue(false);
+ if(!syncGate())return;
  const c=chapter();
+ if(c.id==="ghost"&&action==="fan"){
+  fanRunning=!fanRunning;
+  soundCue(false);
+  toast(fanRunning?"The fan rattles against its loose guard.":"The fan winds down.");
+  return;
+ }
+ if(isSolved())return;
+ soundCue(false);
+ if(c.id==="ghost"&&action==="trap"){
+  if(step()===0){saved.steps[stageIndex]=1;save();}
+  toast("Under the trap handle: "+c.clue);
+  return;
+ }
+ if(c.id==="ghost"&&step()===0){
+  toast("The relay bank has power, but nothing is connected at the bench.");
+  return;
+ }
  if(action==="door"&&c.id==="shining"){$("roomCode").hidden=false;$("number").focus();return;}
  if(action==="door"&&c.id==="beetle"){toast("The green door is waiting for three things to happen first.");return;}
- if(action==="trap"&&c.id!=="ghost"){toast(c.clue);return;}
  if(action==="poster"){toast(c.clue);return;}
  if(action==="trophy"&&c.id!=="stand"){toast("The trophy is part of the final sequence.");return;}
  if(c.type==="code"){
@@ -160,7 +176,7 @@ function complete(){
 }
 function submitCode(value){
  const c=chapter();if(c.type!=="code")return;
- if(value===c.code)complete();else{toast("The lock refuses that number. Inspect the carpet again.");$("number").value="";$("number").focus();}
+ if(value===c.code)complete();else{toast("The lock refuses that number. Inspect the wall panels again.");$("number").value="";$("number").focus();}
 }
 function onHint(){
  if(isSolved())return;
@@ -205,7 +221,7 @@ addEventListener("pagehide",save);
 function attachRenderer(draw){renderStage=typeof draw==="function"?draw:()=>{};renderStage(stageIndex)}
 function revealFallback(){const a=$("filmFallback");a.hidden=false;$("loading").hidden=true;}
 function reset(){saved={stage:0,solved:[],steps:{},elapsed:{},hints:{}};save();enter(0)}
-window.StudioMovieMaze={stages,get stageIndex(){return stageIndex},get stage(){return chapter()},get solved(){return isSolved()},get step(){return step()},get elapsed(){return elapsed()},get hintCount(){return hintCount()},interact,submitCode,attachRenderer,revealFallback,toast,enter,next,reset};
+window.StudioMovieMaze={stages,get fanRunning(){return fanRunning},get stageIndex(){return stageIndex},get stage(){return chapter()},get solved(){return isSolved()},get step(){return step()},get elapsed(){return elapsed()},get hintCount(){return hintCount()},interact,submitCode,attachRenderer,revealFallback,toast,enter,next,reset};
 if(!syncGate()){$("loading").hidden=true;$("filmFallback").hidden=true;}
 enter(stageIndex);
 requestAnimationFrame(tick);

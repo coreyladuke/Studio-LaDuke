@@ -5,7 +5,8 @@ const game=window.StudioMovieMaze;
 if(!game)throw Error("Movie Maze game logic must load before its renderer.");
 const canvas=document.getElementById("cinema3d"),loading=document.getElementById("loading");
 const reduced=matchMedia("(prefers-reduced-motion: reduce)");
-let renderer,scene,camera,roomRoot,roomLights=[],clocks=[],clickables=[],vivid=[],frame=0,lastTime=performance.now(),yaw=0,pitch=0,yawAim=0,pitchAim=0,entryTime=0,qualityTuned=false,exitHinge=null,exitLight=null,renderStarted=0;
+let renderer,scene,camera,roomRoot,roomLights=[],clocks=[],clickables=[],vivid=[],frame=0,lastTime=performance.now(),yaw=0,pitch=0,yawAim=0,pitchAim=0,entryTime=0,qualityTuned=false,exitHinge=null,exitLight=null,exitThreshold=null,renderStarted=0;
+const roomMaterials=new Set(),roomTextures=new Set();
 const raycaster=new THREE.Raycaster(),cursor=new THREE.Vector2(),touch={down:false,drag:false,x:0,y:0,startX:0,startY:0};
 const C={wood:"#764a31",gold:"#dbad68",cream:"#eddfc5",ink:"#191b1f",red:"#ac3c3a",purple:"#713d8b"};
 function mat(color,roughness=.7,metalness=0,extras={}){return new THREE.MeshStandardMaterial({color,roughness,metalness,...extras});}
@@ -17,7 +18,9 @@ const M={
  blue:mat("#3c7fbd",.33,.24),orange:mat("#c97634",.45,.12),grey:mat("#73787e",.47,.5),
  velvet:mat("#532e55",.91),cloth:mat("#d5bb90",.86)
 };
+const sharedMaterials=new Set(Object.values(M));
 function mesh(geo,material,x=0,y=0,z=0,parent=roomRoot){
+ if(material&&!sharedMaterials.has(material)){roomMaterials.add(material);if(material.map)roomTextures.add(material.map);}
  const obj=new THREE.Mesh(geo,material);obj.position.set(x,y,z);obj.castShadow=true;obj.receiveShadow=true;parent.add(obj);return obj;
 }
 function box(w,h,d,x,y,z,material,parent){return mesh(new THREE.BoxGeometry(w,h,d),material,x,y,z,parent)}
@@ -42,8 +45,8 @@ function labelTexture(text,opt={}){
  for(let i=0;i<lines.length;i++)x.fillText(lines[i],512,256+(i-(lines.length-1)/2)*(sz*1.25),930);
  const texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;return texture;
 }
-function plaque(text,x,y,z,w=3,h=1,options={}){
- const g=new THREE.Group();g.position.set(x,y,z);roomRoot.add(g);
+function plaque(text,x,y,z,w=3,h=1,options={},parent=roomRoot){
+ const g=new THREE.Group();g.position.set(x,y,z);parent.add(g);
  box(w+.12,h+.12,.09,0,0,0,M.woodDark,g);
  const map=labelTexture(text,options);
  const m=new THREE.MeshBasicMaterial({map,side:THREE.DoubleSide});
@@ -54,8 +57,13 @@ function stageFloorTexture(type){
  const c=document.createElement("canvas");c.width=c.height=1024;const g=c.getContext("2d");
  g.fillStyle=type==="ghost"?"#273136":type==="shining"?"#8a3b25":type==="beetle"?"#ddd7bf":type==="wayne"?"#7f5838":"#c9ab7d";g.fillRect(0,0,1024,1024);
  if(type==="ghost"){
-  for(let i=0;i<=20;i++){g.strokeStyle=i%5===0?"#c49e4e":"#607378";g.lineWidth=i%5===0?6:2;let k=i*51;g.beginPath();g.moveTo(k,0);g.lineTo(k,1024);g.moveTo(0,k);g.lineTo(1024,k);g.stroke();}
-  for(let i=0;i<14;i++){g.fillStyle="#a38d4180";g.fillRect(0,i*78+14,14,33);}
+  for(let i=0;i<9000;i++){
+   const x=(i*973)%1024,y=(i*i*37+i*13)%1024;
+   g.fillStyle=i%3?"#a18d7825":"#090c1140";
+   g.fillRect(x,y,1+i%4,1+i%3);
+  }
+  g.strokeStyle="#161c1e";g.lineWidth=5;g.strokeRect(2,2,1020,1020);
+  for(const x of [190,805]){g.fillStyle="#9a784341";g.fillRect(x,0,9,1024);}
  }else if(type==="shining"){
   // Original interpretation: bold scarlet/gold interlocking zigzags, not the film's exact carpet pattern.
   for(let row=0;row<7;row++)for(let col=0;col<6;col++){
@@ -83,11 +91,33 @@ function stageFloorTexture(type){
  const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;
  tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.repeat.set(2,2.5);tex.anisotropy=4;return tex;
 }
+function masonryTexture(){
+ const canvas=document.createElement("canvas");canvas.width=512;canvas.height=256;
+ const ctx=canvas.getContext("2d");
+ ctx.fillStyle="#373631";ctx.fillRect(0,0,512,256);
+ for(let row=0;row<8;row++)for(let col=-1;col<8;col++){
+  const x=col*64+(row%2)*32,y=row*32;
+  const tone=54+((row*27+col*13+50)%34);
+  ctx.fillStyle=`rgb(${tone+14},${tone-1},${tone-9})`;ctx.fillRect(x+2,y+2,61,28);
+  ctx.fillStyle="#e7b39221";ctx.fillRect(x+2,y+2,61,2);
+  ctx.fillStyle="#15131652";ctx.fillRect(x+2,y+27,61,3);
+ }
+ for(let i=0;i<5800;i++){
+  ctx.fillStyle=i%4?"#17141625":"#d9bfaa22";
+  ctx.fillRect((i*101)%512,(i*i*13+i*29)%256,2,1+i%3);
+ }
+ const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
+ texture.wrapS=texture.wrapT=THREE.RepeatWrapping;texture.repeat.set(3,1.3);texture.anisotropy=4;
+ return texture;
+}
 const lights={ghost:["#8ebd9e","#54d77e"],shining:["#eeaa72","#d67d4b"],beetle:["#a7e09b","#78f983"],wayne:["#ceaee9","#a8b4ff"],stand:["#edd5a1","#edaa78"]};
 function createRoom(stage){
  if(roomRoot){
   scene.remove(roomRoot);
-  roomRoot.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material&&o.material.map&&o.material.map.userData.disposeOnRoom)o.material.map.dispose();});
+  roomRoot.traverse(o=>o.geometry?.dispose());
+  for(const material of roomMaterials)material.dispose();
+  for(const texture of roomTextures)texture.dispose();
+  roomMaterials.clear();roomTextures.clear();
  }
  roomRoot=new THREE.Group();roomRoot.name="Studio Film: "+stage.film;scene.add(roomRoot);clickables=[];vivid=[];roomLights=[];
  const theme=lights[stage.id],id=stage.id;
@@ -95,7 +125,7 @@ function createRoom(stage){
  scene.fog=new THREE.Fog(scene.background,22,48);
  const floor=mesh(new THREE.PlaneGeometry(17,25),mat("#ffffff",.49,.03,{map:stageFloorTexture(id)}),0,-.014,-2);
  floor.rotation.x=-Math.PI/2;floor.castShadow=false;
- const walls=id==="beetle"?mat("#8c8287",.82):id==="shining"?mat("#713c35",.74):id==="ghost"?mat("#35444a",.42,.36):id==="wayne"?M.wood:M.oak;
+ const walls=id==="beetle"?mat("#8c8287",.82):id==="shining"?mat("#713c35",.74):id==="ghost"?mat("#d1b7a1",.94,0,{map:masonryTexture()}):id==="wayne"?M.wood:M.oak;
  box(.7,6.65,23,-7.85,3.32,-2.4,walls);box(.7,6.65,23,7.85,3.32,-2.4,walls);
  // Architectural exit opening at x≈6, 2m wide. Never fake a hinged door in front of solid masonry.
  box(13,6.66,.7,-1.5,3.32,-11.48,walls);
@@ -107,45 +137,43 @@ function createRoom(stage){
  box(.16,3.7,2.2,6.99,1.92,-12.45,M.woodDark);
  box(1.95,.12,2.2,6,.06,-12.45,M.wood);
  
- box(16,.46,22,0,6.66,-2.4,id==="beetle"?M.woodDark:M.wood);
+ box(16,.46,22,0,6.66,-2.4,id==="beetle"||id==="ghost"?M.iron:M.wood);
  // intricate trim is spatial, with cast shadows
- for(const y of [.13,1.21,1.42,5.42,6.17]){
+ if(id!=="ghost")for(const y of [.13,1.21,1.42,5.42,6.17]){
   for(const x of [-7.43,7.43])box(.14,.13,23,x,y,-2.4,y===1.21?M.brass:M.oak);
-  box(15.2,.16,.18,0,y,-11.05,y===1.21?M.brass:M.oak);
+  if(y>=4)box(15.2,.16,.18,0,y,-11.05,M.oak);
+  else box(12.45,.16,.18,-1.25,y,-11.05,y===1.21?M.brass:M.oak);
  }
- for(const z of [-9.4,-6.1,-2.7,.6,4.1,7.6])for(const x of [-7.4,7.4]){
+ if(id!=="ghost")for(const z of [-9.4,-6.1,-2.7,.6,4.1,7.6])for(const x of [-7.4,7.4]){
   box(.22,6.2,.24,x,3.1,z,M.woodDark);
   box(.31,.2,.31,x,1.42,z,M.brass);
  }
- for(const x of [-6.8,-2.6,2.6,6.8]){
+ if(id!=="ghost")for(const x of [-6.8,-2.6,2.6]){
   box(.2,5.6,.3,x,3.2,-11.0,M.woodDark);
   box(.35,.28,.38,x,5.85,-10.89,M.brass);
  }
  // vintage projector-inspired ceiling fixtures with physically colored light
- for(const x of [-5.5,0,5.5]){
+ if(id!=="ghost")for(const x of [-5.5,0,5.5]){
   cyl(.03,.03,.9,x,6.08,-4.3,M.brass);
   cyl(.32,.55,.4,x,5.42,-4.3,M.woodDark,20);
   cyl(.35,.35,.04,x,5.18,-4.3,M.brass);
-  const bulb=new THREE.PointLight(theme[0],8,8);bulb.position.set(x,5.25,-4.3);roomRoot.add(bulb);roomLights.push(bulb);
+  const bulb=new THREE.PointLight(theme[0],id==="ghost"?15:9,10);bulb.position.set(x,5.25,-4.3);roomRoot.add(bulb);roomLights.push(bulb);
  }
- plaque(stage.film,0,5.35,-10.85,5.5,.83,{background:id==="beetle"?"#232328":"#321e21",size:86});
- plaque(stage.subtitle.toUpperCase(),0,4.39,-10.84,4.5,.52,{background:"#312526",size:62});
- plaque(stage.clue,0,2.61,-10.80,6.9,.65,{background:id==="shining"?"#5e2c22":"#28302d",size:53});
- // Every chapter has a physical side door, not merely a "next" menu button.
- // It only swings open after the actual puzzle is solved.
- const frame=box(2.11,3.92,.34,5.95,2.01,-10.47,M.woodDark);
  for(const x of [5.0,6.9])box(.15,4.04,.23,x,2.02,-10.23,M.brass);
  box(2.13,.19,.25,5.95,4.01,-10.23,M.brass);
  const hinge=new THREE.Group();hinge.position.set(5.04,.12,-10.1);roomRoot.add(hinge);
  box(1.82,3.61,.16,.91,1.83,0,M.wood,hinge);
  box(1.52,3.27,.10,.91,1.83,.13,M.woodDark,hinge);
  box(1.43,2.94,.08,.91,1.86,.20,M.wood,hinge);
- const plaqueTex=labelTexture("NEXT REEL",{background:"#3a2828",size:104});
- mesh(new THREE.PlaneGeometry(1.48,.48),new THREE.MeshBasicMaterial({map:plaqueTex,side:THREE.DoubleSide}),.91,2.83,.26,hinge);
+ const exitName={ghost:"SERVICE",shining:"STAIRWELL",beetle:"DISCHARGE",wayne:"BACK STAIRS",stand:"OUT TO THE TRACKS"}[id];
+ const plaqueTex=labelTexture(exitName,{background:"#302720",size:70});
+ mesh(new THREE.PlaneGeometry(1.48,.38),new THREE.MeshBasicMaterial({map:plaqueTex}),.91,2.87,.26,hinge);
  const knob=cyl(.09,.09,.11,1.62,1.84,.26,M.brass,18,hinge);knob.rotation.x=Math.PI/2;
  const doorTouch=box(1.75,3.66,.32,.92,1.9,.08,new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}),hinge);
  doorTouch.castShadow=false;hinge.userData.action="next";clickables.push(hinge);
  exitHinge=hinge;
+ exitThreshold=box(1.68,3.42,.28,5.94,1.85,-10.18,new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));
+ exitThreshold.castShadow=false;exitThreshold.receiveShadow=false;exitThreshold.userData.action="next";
  exitLight=new THREE.PointLight("#ffe8a4",0,5);exitLight.position.set(5.93,2.05,-10.04);roomRoot.add(exitLight);
 
  const key=new THREE.SpotLight(theme[1],13,17,.9,.5,1.1);
@@ -162,31 +190,109 @@ function pedestal(x,z,width=1.55,material=M.wood){
 }
 function buildGhost(){
  const group=new THREE.Group();roomRoot.add(group);
- // Three independent containment relay consoles; real 3D toggles.
- const controls=[["red",-3.65,"#ed4745","HOT"],["green",.1,"#50ed82","SAFE"],["blue",3.65,"#548bf6","COLD"]];
- for(const [action,x,color,name]of controls){
-  const p=addProp(action,name+" relay",x,0,-5.8,2.1,2.3,1.7);
-  box(1.77,1.67,1.02,0,1.38,0,M.iron,p);box(1.51,.84,.15,0,1.59,.55,M.black,p);
-  const led=mat(color,.2,.3,{emissive:color,emissiveIntensity:.55});
-  const b=cyl(.38,.38,.22,0,1.58,.74,led,28,p);b.rotation.x=Math.PI/2;
-  ring(.39,.035,0,1.58,.85,M.chrome,p).rotation.x=0;
-  cyl(.055,.055,.6,-.36,.84,.67,M.brass,9,p).rotation.z=.22;
-  const tag=labelTexture(name,{background:"#30303b",size:108});
-  mesh(new THREE.PlaneGeometry(1.33,.37),new THREE.MeshBasicMaterial({map:tag}),0,2.23,.75,p);
-  const glow=new THREE.PointLight(color,2.3,4);glow.position.set(0,1.7,.92);p.add(glow);vivid.push({kind:"pulse",light:glow,phase:x});
+ const enamel=mat("#492523",.56,.4),conduit=mat("#716655",.59,.55);
+ const hazard=mat("#c49b3e",.72,.15),rubber=mat("#1c201e",.88);
+ const glass=mat("#23382d",.27,.18,{emissive:"#287f47",emissiveIntensity:.44});
+ // An industrial containment vault, set into the brick service wall.
+ for(const z of [-7.15,-2.3]){
+  const fluorescent=mat("#a8b0a0",.37,.14,{emissive:"#c6e4d7",emissiveIntensity:1.4});
+  box(4.22,.24,.48,-1.18,5.59,z,M.iron,group);
+  for(const offset of [-.124,.124])box(3.96,.08,.079,-1.18,5.44,z+offset,fluorescent,group);
+  for(const x of [-3.01,.69])box(.045,.81,.05,x,6.05,z,M.iron,group);
+  const fixture=new THREE.PointLight("#cee6e0",16,9);fixture.position.set(-1.18,5.31,z);group.add(fixture);
  }
- const trap=addProp("trap","Ghost trap box",0,0,-2.55,1.85,1.0,1.45);
- box(1.5,.35,.8,0,.31,0,M.iron,trap);for(const x of [-.44,.44]){
-  box(.22,.16,.9,x,.55,0,M.brass,trap);}
- box(.95,.12,.25,0,.61,.2,M.chrome,trap);box(.85,.05,.75,0,.6,0,M.black,trap);
- plaque("COLD → HOT → SAFE",0,3.35,-10.7,4.2,.45,{background:"#182622",size:64});
- const coil=new THREE.Group();coil.position.set(6.1,1.5,-8.4);roomRoot.add(coil);
- for(let i=0;i<7;i++)ring(.62+i*.045,.026,0,(i-3)*.17,0,M.brass,coil).rotation.x=Math.PI/2;
+ for(const z of [-8.9,-4.4,1.2])box(14.94,.29,.22,0,6.24,z,M.iron,group);
+ for(const x of [-7.28,7.28])for(const y of [1.17,4.67]){
+  cyl(.089,.089,20.4,x,y,-1.05,conduit,14,group).rotation.x=Math.PI/2;
+  for(const z of [-9,-6,-3,0,3,6])box(.16,.21,.23,x,y,z,M.iron,group);
+ }
+ const vault=new THREE.Group();vault.position.set(-2.8,0,-9.65);group.add(vault);
+ box(5.2,4.86,.67,0,2.5,0,M.iron,vault);
+ box(4.7,4.42,.25,0,2.48,.42,enamel,vault);
+ box(4.24,3.6,.22,0,2.41,.6,M.iron,vault);
+ box(2.6,2.16,.12,0,2.67,.78,rubber,vault);
+ box(2.23,1.78,.12,0,2.67,.86,glass,vault);
+ for(const x of [-1.58,1.58]){
+  box(.17,3.92,.26,x,2.42,.8,conduit,vault);
+  for(let row=0;row<7;row++)box(.32,.11,.08,x,.62+row*.57,.95,M.chrome,vault);
+ }
+ for(let i=0;i<12;i++){
+  const stripe=box(.2,.19,.08,-1.75+i*.32,.76,.86,i%2?hazard:rubber,vault);
+  stripe.rotation.z=.24;
+ }
+ for(let i=0;i<6;i++){
+  const slat=box(1.94,.064,.07,0,2.02+i*.24,1.01,conduit,vault);
+  slat.rotation.x=.28;
+ }
+ plaque("CONTAINMENT",0,4.45,.85,2.67,.4,{background:"#302821",size:94},vault);
+ const leak=new THREE.PointLight("#4fe68a",9,8);leak.position.set(-2.9,2.9,-8.61);group.add(leak);
+ for(const x of [-6.5,-5.99,1.4]){
+  tube([[x,.22,-9.8],[x,2.1,-9.8],[x,4.8,-9.9],[x+.55,5.3,-9.9],[x+2.4,5.3,-9.9]].map(v=>new THREE.Vector3(...v)),.085,conduit);
+ }
+ // A bank of three relays mounted together inside a service cabinet.
+ box(3.96,2.83,.53,2.45,1.82,-7.37,M.iron,group);
+ box(3.7,2.53,.13,2.45,1.82,-7.05,rubber,group);
+ plaque("RELAY BANK",2.45,2.87,-6.93,2.82,.31,{background:"#30382e",size:96});
+ const controls=[["red",1.34,"#eb5340","HOT",3],["green",2.45,"#54da77","SAFE",4],["blue",3.56,"#5791e6","COLD",2]];
+ for(const [action,x,color,name,step] of controls){
+  const p=addProp(action,name+" relay",x,1.33,-6.77,1.03,1.26,.44);
+  box(.87,1.08,.14,0,.3,0,conduit,p);
+  const led=mat(color,.24,.15,{emissive:color,emissiveIntensity:.51});
+  cyl(.14,.14,.11,0,.53,.12,led,20,p).rotation.x=Math.PI/2;
+  ring(.155,.026,0,.53,.13,M.iron,p);
+  const lever=cyl(.046,.06,.34,0,.13,.19,M.chrome,12,p);lever.rotation.x=.91;
+  vivid.push({kind:"relay",material:led,mesh:lever,step});
+  plaque(name,0,-.18,.11,.75,.25,{background:"#2e2b25",size:115},p);
+ }
+ // Trap and old meter share a scuffed repair bench in the foreground.
+ box(4.74,.21,1.61,-1.55,1.07,-3.02,M.wood,group);
+ for(const x of [-3.63,.51])box(.14,1.02,1.46,x,.53,-3.02,M.iron,group);
+ box(4.22,.54,.07,-1.56,.72,-2.27,M.woodDark,group);
+ const trap=addProp("trap","Ghost trap box",-1.72,1.19,-2.77,2.0,1.15,1.27);
+ box(1.74,.37,.95,0,.22,0,M.iron,trap);
+ box(1.39,.08,.79,0,.44,0,rubber,trap);
+ for(let i=0;i<8;i++)box(.15,.05,.6,-.53+i*.15,.49,0,i%2?rubber:hazard,trap);
+ for(const x of [-.83,.83])box(.12,.19,.91,x,.39,0,conduit,trap);
+ box(.78,.10,.14,0,.58,.34,M.chrome,trap);
+ const armed=mat("#64eb8c",.3,.1,{emissive:"#64eb8c",emissiveIntensity:.05});
+ box(.13,.085,.018,.62,.32,.487,armed,trap);
+ vivid.push({kind:"relay",material:armed,step:1});
+ tube([[-.99,1.45,-2.78],[-.11,1.20,-2.59],[.75,.11,-2.6],[2.05,.1,-3.47],[2.45,.25,-6.76]].map(v=>new THREE.Vector3(...v)),.046,rubber);
+ const fan=addProp("fan","Bench fan",-3.39,1.19,-3.03,1.1,1.51,.74);
+ cyl(.35,.41,.11,0,.065,0,M.iron,18,fan);
+ cyl(.035,.065,.52,0,.33,0,M.chrome,12,fan);
+ ring(.44,.033,0,.87,.07,conduit,fan);
+ ring(.34,.015,0,.87,.083,conduit,fan);
+ const rotor=new THREE.Group();rotor.position.set(0,.87,.04);fan.add(rotor);
+ for(let i=0;i<4;i++){
+  const arm=new THREE.Group();arm.rotation.z=i*Math.PI/2;rotor.add(arm);
+  box(.13,.27,.05,0,.15,0,M.iron,arm);
+ }
+ cyl(.1,.1,.15,0,.87,.11,M.iron,14,fan).rotation.x=Math.PI/2;
+ for(let i=0;i<8;i++){
+  const spoke=new THREE.Group();spoke.position.set(0,.87,.09);spoke.rotation.z=i*Math.PI/4;fan.add(spoke);
+  box(.014,.79,.012,0,0,0,conduit,spoke);
+ }
+ vivid.push({kind:"fan",mesh:rotor});
  return group;
 }
 function buildShining(){
  const group=new THREE.Group();roomRoot.add(group);
- // The three-dimensional panels must depict actual countable clues, not fake decorative text.
+ // Repeated guest-room frames establish a hotel corridor and carry the clues.
+ for(const side of [-1,1])for(const z of [-8.8,-4.5,.25,4.7]){
+  box(.24,3.16,1.44,side*7.36,1.59,z,M.woodDark,group);
+  box(.19,2.95,1.18,side*7.19,1.54,z,M.wood,group);
+  box(.14,.08,.14,side*7.05,1.48,z+side*.38,M.brass,group);
+  box(.13,.58,.27,side*7.24,3.62,z,M.brass,group);
+  const lamp=mat("#ffe0a9",.7,0,{emissive:"#ffc769",emissiveIntensity:.54});
+  box(.2,.34,.32,side*7.09,3.79,z,lamp,group);
+ }
+ for(const x of [-5.6,5.6])for(const z of [-3.4,-8.8]){
+  box(.49,6.15,.53,x,3.07,z,M.woodDark,group);
+  box(.63,.28,.66,x,5.92,z,M.brass,group);
+  box(.65,.22,.67,x,.14,z,M.brass,group);
+ }
+ plaque("RED DIAMONDS · CREAM CIRCLES · GOLD BARS",0,4.86,-10.62,5.8,.47,{size:58,background:"#452623"});
  const defs=[
  {id:"diamonds",x:-3.85,n:2,color:"#c74b34",title:"RED DIAMONDS"},
  {id:"circles",x:0,n:3,color:"#e6d5ab",title:"CREAM CIRCLES"},
@@ -218,7 +324,14 @@ function buildShining(){
 }
 function buildBeetle(){
  const group=new THREE.Group();roomRoot.add(group);
- // Slanted black/cream architectural stripes and twisted furniture.
+ // The queue backs up at a crooked public-service counter.
+ plaque("TAKE A NUMBER",0,4.57,-10.59,3.6,.64,{background:"#37263b",size:99});
+ plaque("ANNOUNCEMENT → NUMBER → ODDITY",0,3.68,-10.56,5.8,.57,{background:"#29252a",size:60});
+ for(const x of [-4.9,-2.5]){
+  cyl(.06,.08,.93,x,.49,-2.3,M.brass,12,group);
+  cyl(.21,.24,.09,x,.055,-2.3,M.iron,18,group);
+ }
+ tube([[-4.9,.86,-2.3],[-3.7,.61,-2.3],[-2.5,.86,-2.3]].map(v=>new THREE.Vector3(...v)),.045,M.velvet,group);
  for(let i=0;i<17;i++){
   const x=-7.5+i*.9;
   const stripe=box(.28,5.1,.045,x,2.9,-10.62,M.black);
@@ -247,12 +360,17 @@ function buildBeetle(){
  const glowMat=mat("#328744",.3,.22,{emissive:"#3ec74f",emissiveIntensity:.45});
  const d=box(2.35,3.62,.19,0,2.2,0,glowMat,door);d.rotation.z=.055;
  ring(.55,.07,0,2.3,.14,M.brass,door);
- plaque("NEXT?",0,3.4,.21,1.2,.42,{background:"#234d2b",size:114});
+ plaque("RECORDS",0,3.4,.21,1.2,.42,{background:"#234d2b",size:95},door);
  return group;
 }
 function buildWayne(){
  const group=new THREE.Group();roomRoot.add(group);
  // Dim home-video basement, original instruments, handmade band notice.
+ for(const z of [-9.6,-6.4,-3.2,0,3.2])box(14.8,.38,.27,0,5.98,z,M.woodDark,group);
+ for(const y of [1.2,2.16,3.12]){
+  box(2.45,.1,.5,3.55,y,-10.19,M.woodDark,group);
+  for(let i=0;i<8;i++)box(.092,.28,.36,2.75+i*.19,y+.19,-10.19,i%3?M.black:M.grey,group);
+ }
  for(let i=0;i<9;i++)box(15,.06,.08,0,1.3+i*.56,-10.6,i%2?M.oak:M.woodDark);
  const carpet=mesh(new THREE.PlaneGeometry(8,6.5),mat("#51395b",.95),0,.02,-4.3);carpet.rotation.x=-Math.PI/2;carpet.castShadow=false;
  const guitar=addProp("guitar","Electric guitar",-3.25,0,-5.25,2.2,3.3,1.5);
@@ -272,12 +390,33 @@ function buildWayne(){
  const lens=cyl(.38,.38,.35,0,2.5,.73,M.chrome,24,cameraObj);lens.rotation.x=Math.PI/2;
  const glass=mesh(new THREE.CircleGeometry(.25,24),mat("#316481",.19,.12),0,2.5,.93,cameraObj);
  box(.22,.16,.13,.54,2.86,.36,M.red,cameraObj);
- plaque("CRUCIAL TAUNT\nTONIGHT",4.5,3.3,-10.72,2.9,1.2,{background:"#4d265d",size:77});
+ const couch=new THREE.Group();couch.position.set(-4.25,0,-8.94);group.add(couch);
+ box(3.7,.47,1.48,0,.52,0,M.velvet,couch);
+ box(3.42,.92,.42,0,1.01,-.52,M.velvet,couch);
+ for(const x of [-1.71,1.71])box(.42,.53,1.34,x,.81,0,M.velvet,couch);
+ const poster=addProp("poster","Band poster",4.5,2.96,-10.55,2.5,1.25,.2);
+ plaque("CRUCIAL TAUNT\nTONIGHT",0,.34,0,2.4,1.12,{background:"#4d265d",size:77},poster);
  return group;
 }
 function buildStand(){
  const group=new THREE.Group();roomRoot.add(group);
- // Wood-paneled town hall with hand-made pie contest table and trophy.
+ // 1950s county fair booth, canvas awning, and the hand-made judging table.
+ const canvasCloth=mat("#e8cda4",.96);
+ for(const x of [-6.34,6.34]){
+  box(.13,4.07,.13,x,2.05,-7.35,M.wood,group);
+  box(.12,3.31,.12,x,1.68,-3.5,M.wood,group);
+ }
+ for(let i=0;i<13;i++){
+  const awning=box(.99,.061,4.02,-5.97+i*.995,3.79,-5.42,i%2?canvasCloth:M.red,group);
+  awning.rotation.x=.19;
+ }
+ const flags=[M.red,canvasCloth,M.blue,M.orange];
+ for(let i=0;i<15;i++){
+  const x=-6.2+i*.86;
+  const flag=mesh(new THREE.ConeGeometry(.22,.42,3),flags[i%4],x,3.4+Math.abs(x)*.055,-3.65,group);
+  flag.rotation.z=Math.PI;
+ }
+
  for(let i=0;i<11;i++)box(15,.075,.10,0,.9+i*.44,-10.7,i%2?M.oak:M.woodDark);
  const cloth=new THREE.MeshStandardMaterial({map:stageFloorTexture("stand"),roughness:.93});
  box(11.4,.18,2.4,0,.95,-5.75,cloth);
@@ -295,12 +434,14 @@ function buildStand(){
  const trophy=addProp("trophy","The pie-contest trophy",0,0,-9.15,2.2,3.5,1.7);
  box(1.5,.25,1.27,0,.3,0,M.woodDark,trophy);
  cyl(.19,.31,1.12,0,1.05,0,M.brass,18,trophy);
- const cup=cyl(.55,.31,.74,0,1.83,0,M.gold,32,trophy);
+ const cup=cyl(.55,.31,.74,0,1.83,0,M.brass,32,trophy);
  for(const x of [-.54,.54]){ring(.38,.065,x,1.92,0,M.brass,trophy).rotation.y=Math.PI/2;}
  sphere(.19,0,2.33,0,M.brass,trophy);
  const tag=labelTexture("THE PIE\nCONTEST",{background:"#463327",size:117});
  mesh(new THREE.PlaneGeometry(1.05,.45),new THREE.MeshBasicMaterial({map:tag}),0,.45,.7,trophy);
- // Original SE Alaska-like distant rail line: no licensed scene photography.
+ plaque("COUNTY FAIR • 1959",0,4.55,-10.63,5.8,.82,{background:"#744438",size:86});
+ plaque("JUDGES’ TABLE",0,3.48,-10.6,3.1,.49,{background:"#50362f",size:75});
+ // Original distant rail line. 
  for(const z of [-9,-8,-7,-6,-5])box(2.6,.08,.14,5.9,.13,z,M.woodDark);
  for(const x of [5.15,6.65])box(.10,.07,5.2,x,.21,-7,M.chrome);
  return group;
@@ -326,7 +467,7 @@ function initialize(){
  game.attachRenderer(i=>{
   createRoom(game.stages[i]);
   yaw=yawAim=0;pitch=pitchAim=0;entryTime=performance.now();
-  game.toast(game.stages[i].film+" · "+game.stages[i].subtitle);
+  
  });
  function resize(){
   const w=innerWidth,h=innerHeight;camera.aspect=w/h;camera.fov=w<600?69:62;camera.updateProjectionMatrix();
@@ -335,11 +476,11 @@ function initialize(){
  addEventListener("resize",resize);resize();
  const onPoint={down:false,moved:false,startX:0,startY:0,x:0,y:0};
  canvas.addEventListener("pointerdown",e=>{
-  if(e.button!==0)return;onPoint.down=true;onPoint.moved=false;onPoint.startX=onPoint.x=e.clientX;onPoint.startY=onPoint.y=e.clientY;
+  if(!e.isPrimary||e.button!==0)return;onPoint.down=true;onPoint.moved=false;onPoint.startX=onPoint.x=e.clientX;onPoint.startY=onPoint.y=e.clientY;
   try{canvas.setPointerCapture(e.pointerId)}catch(_){}
  });
  canvas.addEventListener("pointermove",e=>{
-  if(!onPoint.down)return;
+  if(!e.isPrimary||!onPoint.down)return;
   if(Math.abs(e.clientX-onPoint.startX)+Math.abs(e.clientY-onPoint.startY)>8)onPoint.moved=true;
   const dx=e.clientX-onPoint.x,dy=e.clientY-onPoint.y;
   onPoint.x=e.clientX;onPoint.y=e.clientY;
@@ -347,11 +488,11 @@ function initialize(){
   pitchAim=Math.max(-.33,Math.min(.36,pitchAim+dy*.003));
  });
  canvas.addEventListener("pointerup",e=>{
-  if(!onPoint.down)return;onPoint.down=false;if(onPoint.moved)return;
+  if(!e.isPrimary||!onPoint.down)return;onPoint.down=false;if(onPoint.moved)return;
   const r=canvas.getBoundingClientRect();
   cursor.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);
   raycaster.setFromCamera(cursor,camera);
-  const hits=raycaster.intersectObjects(clickables,true);
+  const hits=raycaster.intersectObjects(game.solved?[...clickables,exitThreshold]:clickables,true);
   if(hits.length){let m=hits[0].object;
    while(m&&!m.userData.action)m=m.parent;
    if(m&&m.userData.action){if(m.userData.action==="next"){if(game.solved)game.next();else game.toast("Finish this movie puzzle before opening the next door.");}else game.interact(m.userData.action);}
@@ -379,11 +520,18 @@ function render(now){
  }
  yaw+=(yawAim-yaw)*pace;pitch+=(pitchAim-pitch)*pace;
  let ease=1;if(!reduced.matches)ease=Math.min(1,(now-entryTime)/1200);
- camera.position.set(0,2.15,7.1+(1-ease)*2.5);
+ camera.position.set(0,2.25,(game.stage.id==="ghost"?4.85:7.1)+(1-ease)*1.4);
  camera.lookAt(Math.sin(yaw)*6,2.22+Math.sin(pitch)*4,-5.1);
+ for(const a of vivid){
+  if(a.kind==="relay"){
+   const active=game.solved||game.step>=a.step;
+   a.material.emissiveIntensity=active?1.65:.22;
+   if(a.mesh)a.mesh.rotation.x=active?-.9:.91;
+  }
+ }
  if(!reduced.matches){
   for(const a of vivid){
-   if(a.kind==="pulse")a.light.intensity=2.3+Math.sin(now*.002+a.phase)*.24;
+   if(a.kind==="fan"&&game.fanRunning)a.mesh.rotation.z+=dt*19;
    if(a.kind==="sculpt")a.mesh.rotation.y=Math.sin(now*.0005)*.065;
    if(a.kind==="light")a.light.intensity=13+Math.sin(now*.0006)*.55;
   }
@@ -402,3 +550,4 @@ function render(now){
 }
 window.__movieMaze3d={get meshes(){let n=0;roomRoot?.traverse(o=>{if(o.isMesh)n++});return n},get frame(){return frame},get activeRoom(){return game.stage.id},get clickable(){return clickables.length},get quality(){return renderer?.getPixelRatio()},get reduced(){return reduced.matches},get exitAngle(){return exitHinge?.rotation.y||0}};
 initialize();
+
