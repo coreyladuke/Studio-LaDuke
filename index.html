@@ -123,6 +123,7 @@
       place-items: center;
       background: radial-gradient(ellipse at 50% 40%, #392519, #17100d);
     }
+    .door-wall { touch-action: pan-y; }
     .door-wall[hidden] { display: none; }
     .door-wall .door-plate {
       position: relative;
@@ -1032,9 +1033,9 @@
   <button class="turn-room" id="turnRoom" type="button" aria-controls="doorWall" aria-expanded="false">Turn around</button>
   <section class="door-wall" id="doorWall" aria-label="Doors off the Front Room" hidden>
     <div class="door-plate">
-      <a href="house.html?room=coat">Coat Closet</a>
-      <a href="house.html?room=living">Living Room</a>
-      <a href="house.html?room=hall">Main Hall</a>
+      <a href="house.html?room=living">Living Room Archway</a>
+      <a href="workshop.html">Workshop Door</a>
+      <a href="house.html?room=hall">Main Hall Opening</a>
     </div>
   </section>
   <audio id="rainAudio" preload="none" loop></audio>
@@ -1313,6 +1314,27 @@
     }
     turnRoom.addEventListener("click", () => turn(doorWall.hidden));
 
+    let doorPointer;
+    let doorSwipe = false;
+    doorWall.addEventListener("pointerdown", (event) => {
+      if (!event.isPrimary || event.button !== 0) return;
+      doorSwipe = false;
+      doorPointer = {id: event.pointerId, x: event.clientX, y: event.clientY};
+    });
+    doorWall.addEventListener("pointermove", (event) => {
+      if (doorPointer?.id !== event.pointerId) return;
+      doorSwipe ||= Math.hypot(event.clientX - doorPointer.x, event.clientY - doorPointer.y) > 9;
+    });
+    function endDoorPointer(event) {
+      if (doorPointer?.id !== event.pointerId) return;
+      doorPointer = null;
+    }
+    doorWall.addEventListener("pointerup", endDoorPointer);
+    doorWall.addEventListener("pointercancel", endDoorPointer);
+    doorWall.addEventListener("click", (event) => {
+      if (doorSwipe && event.detail > 0) event.preventDefault();
+    }, true);
+
     function openMenu() {
       menuButton.classList.add("open");
       menuPanel.classList.add("open");
@@ -1370,3 +1392,4 @@
   <script src="assets/front-room.js?v=4" defer></script>
 </body>
 </html>
+

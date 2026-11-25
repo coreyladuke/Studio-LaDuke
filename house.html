@@ -86,11 +86,20 @@ body.directed-house #plate .prop .hint{pointer-events:none}
 .entry-plan button[aria-current="location"]{background:#49311f;color:#ffedc8}
 #roomPassages{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 14px}
 #roomPassages button{min-height:44px;color:#452b1c;border:1px solid #8b6849;background:#ecdbbe;padding:6px 9px}
+body.walk-room .room-sign{display:none}
+#turnWalk{position:fixed;top:max(76px,calc(env(safe-area-inset-top) + 60px));right:max(16px,env(safe-area-inset-right));z-index:21;min-height:44px;padding:8px 13px;color:#f7e4bf;background:#19231dec;border:1px solid #a98a58;border-radius:4px}
+body.directed-house #plate .door[data-walk] .plaque{display:grid;top:auto;bottom:10px;width:max-content;max-width:100%;min-width:142px;font-size:19px;opacity:1;transform:translateX(-50%);background:#241a13ef;border:1px solid #c7a374;pointer-events:none}
+#walkPlan{display:grid;justify-items:center;gap:0;margin-bottom:18px}
+#walkPlan button{min-height:44px;padding:7px 15px;background:#ecdbbe;color:#452b1c;border:1px solid #8b6849}
+#walkPlan button[aria-current]{background:#49311f;color:#ffedc8}
+#walkPlan .threshold-name{display:grid;justify-items:center;font-size:13px;color:#55391f}
+#walkPlan .threshold-name::before,#walkPlan .threshold-name::after{content:"";height:11px;border-left:1px solid #7d583b}
 </style>
 </head>
 <body>
-<a id="frontLink" href="index.html">↖ Front door</a>
+<a id="frontLink" href="index.html">↖ Front Door</a>
 <button id="mapOpen" type="button" aria-label="Open house floor plan" title="House floor plan">⌂</button>
+<button id="turnWalk" type="button" hidden>Turn around</button>
 <main id="camera" aria-label="Explore Studio LaDuke House">
  <div id="plate" role="group" aria-label="Your current room">
   <div id="painting" aria-hidden="true"></div>
@@ -107,28 +116,30 @@ body.directed-house #plate .prop .hint{pointer-events:none}
 <script src="assets/house-v2.js"></script>
 <script src="assets/house-director.js?v=20261124-entry"></script>
 <script src="assets/house-adventure.js"></script>
+<script src="assets/house-walk.js"></script>
 <script>
 "use strict";
 (function(){
+const walk=window.StudioHouseWalk;
 const R={
- foyer:{n:"Front Hall",f:0,d:"A place to hang your coat and come inside.",e:[["Front door","index.html"],["Living room","living"],["Coat closet","coat"],["Workshop","workshop.html"],["Main hall","hall"]],p:[["star",1123,479,"The star","Five music notes arranged into the Studio LaDuke star."]]},
- coat:{n:"Coat Closet",f:0,d:"Boots, coats and a suspicious umbrella.",e:[["Front hall","foyer"]],p:[["chest",795,580,"A forgotten pocket","Old ticket stubs, guitar picks and useful little things."]]},
+ foyer:{n:"Front Hall",f:0,d:"A place to hang your coat and come inside.",e:[["Front Door","index.html"],["Living Room Archway","living"],["Workshop Door","workshop.html"],[walk.opening.name,"hall"]],p:[["star",1123,479,"The star","Five music notes arranged into the Studio LaDuke star."]]},
+ coat:{n:"Coat Closet",f:0,d:"Boots, coats and a suspicious umbrella.",e:[["Coat Closet Door","hall"]],p:[["chest",795,580,"A forgotten pocket","Old ticket stubs, guitar picks and useful little things."]]},
  living:{n:"Living Room",f:0,d:"Come in. Sit down. Stay a while.",e:[["Front hall","foyer"],["Dining room","dining"],["Back porch","porch","outside"]],p:[["sofa",951,718,"The record crate","Look through the old records."],["tv",808,469,"The stereo","Try the vintage stereo."],["pick",827,763,"A guitar pick","A little lucky find."],["lamp",1250,320,"The table lamp","A softer light."]]},
- hall:{n:"Main Hall",f:0,d:"A book-lined passage leads deeper into the house.",photo:"assets/house-plates/pexels-35695313.jpg",e:[["Front hall","foyer"],["Art studio","art"],["Stairs upstairs","landing","up"],["Basement stairs","basement","down"]]},
+ hall:{n:"Main Hall",f:0,d:"The ground-floor passage leads to the Main Stairs.",e:[[walk.opening.name,"foyer"],["Art Studio Door","art"],["Hall Bathroom Door","bath"],["Coat Closet Door","coat"],["Mudroom Door","mud"],[walk.stairs.name,"landing","up"]]},
  dining:{n:"Dining Nook",f:0,d:"A table for dinner and original board games.",e:[["Living room","living"],["Kitchen","kitchen"],["Pantry","pantry"]],p:[["board",790,685,"The board game","This table is ready for the first original Studio LaDuke board game."]]},
  kitchen:{n:"Kitchen",f:0,d:"Rain on the glass. Something on the stove.",e:[["Dining nook","dining"],["Laundry","laundry"],["Back porch","porch","outside"]],p:[["cup",785,670,"Put the kettle on","A good evening for pasta and a movie."]]},
  pantry:{n:"Pantry",f:0,d:"Food, snacks and things in jars.",e:[["Dining nook","dining"]],p:[["chest",770,600,"Look through the pantry","Popcorn. Pasta. A packet of something mysterious."]]},
- art:{n:"The Art Studio",f:0,d:"Paint, draw, carve, sew. Make a mess.",photo:"assets/corey-studio.webp",e:[["Main hall","hall"],["Bathroom","bath"],["Mudroom","mud"],["Workshop","workshop.html"]],p:[["brush",195,580,"Pick up a brush","Even unfinished art belongs somewhere."],["book",1100,645,"Unfinished things","Sketchbooks, fabric experiments, designs, ideas and pieces still becoming."]]},
- bath:{n:"Downstairs Bathroom",f:0,d:"A proper bathroom. Of course.",e:[["Art studio","art"]],p:[["mirror",780,430,"The mirror","Warm water and a moment of quiet."]]},
- mud:{n:"Mudroom",f:0,d:"Drop your wet boots. The woods are out back.",e:[["Art studio","art"],["Laundry","laundry"],["The Woods","forest-path.html","outside"],["Down to basement","basement","down"]],p:[["paw",790,690,"Finn's little door","Finn knows a secret way to the living room.","living"]]},
+ art:{n:"The Art Studio",f:0,d:"Paint, draw, carve, sew. Make a mess.",photo:"assets/corey-studio.webp",e:[["Art Studio Door","hall"],["Bathroom","bath"],["Mudroom","mud"],["Workshop","workshop.html"]],p:[["brush",195,580,"Pick up a brush","Even unfinished art belongs somewhere."],["book",1100,645,"Unfinished things","Sketchbooks, fabric experiments, designs, ideas and pieces still becoming."]]},
+ bath:{n:"Downstairs Bathroom",f:0,d:"A proper bathroom. Of course.",e:[["Hall Bathroom Door","hall"],["Art studio","art"]],p:[["mirror",780,430,"The mirror","Warm water and a moment of quiet."]]},
+ mud:{n:"Mudroom",f:0,d:"Drop your wet boots. The woods are out back.",e:[["Mudroom Door","hall"],["Art studio","art"],["Laundry","laundry"],["The Woods","forest-path.html","outside"],["Down to basement","basement","down"]],p:[["paw",790,690,"Finn's little door","Finn knows a secret way to the living room.","living"]]},
  laundry:{n:"Laundry Room",f:0,d:"Real houses have socks to lose.",e:[["Kitchen","kitchen"],["Mudroom","mud"]],p:[["cup",825,610,"Check the laundry","One sock has disappeared. Of course it has."]]},
  porch:{n:"Back Porch",f:0,d:"Right on the edge of the rain-soaked woods.",e:[["Living room","living"],["Kitchen","kitchen"],["Into the Woods","forest-path.html","outside"]],p:[["rain",840,500,"Look into the trees","The fire pit and Bob's greenhouse are just beyond the porch."]]},
- landing:{n:"Upstairs Landing",f:1,d:"You always wanted a second story.",e:[["Downstairs","hall","down"],["Bedroom","bed"],["Guest room","guest"],["Library","library"]],p:[["window",780,430,"The upstairs window","Rain falling between tall cedars, almost at eye level."]]},
- bed:{n:"Bedroom",f:1,d:"A quiet room with the light turned down.",e:[["Upstairs landing","landing"],["Walk-in closet","closet"],["Bathroom","bath2"]],p:[["lamp",810,440,"Bedside lamp","The room gets darker when you turn the light off.","night"]]},
+ landing:{n:"Upstairs Landing",f:1,d:"The landing at the top of the Main Stairs.",e:[[walk.stairs.name,"hall","down"],["Main Bedroom Door","bed"],["Bedroom Two Door","guest"],["Library Door","library"]]},
+ bed:{n:"Bedroom",f:1,d:"A quiet room with the light turned down.",e:[["Main Bedroom Door","landing"],["Walk-in closet","closet"],["Bathroom","bath2"]],p:[["lamp",810,440,"Bedside lamp","The room gets darker when you turn the light off.","night"]]},
  closet:{n:"Walk-in Closet",f:1,d:"A wardrobe for things you've designed.",e:[["Bedroom","bed"]],p:[["hanger",820,610,"The design rack","Raven jacket, hats, moccasins and the runway still to come."]]},
  bath2:{n:"Upstairs Bathroom",f:1,d:"Warm steam, cedar and quiet.",e:[["Bedroom","bed"]],p:[["mirror",780,430,"Fog the mirror","The mirror clouds over in the steam."]]},
- guest:{n:"Guest Room",f:1,d:"Somebody might want to stay.",e:[["Upstairs landing","landing"]],p:[["lamp",810,455,"Switch the lamp","A warm bedside light.","night"]]},
- library:{n:"The Library",f:1,d:"There is something strange behind the books.",photo:"assets/writing-desk.webp",e:[["Upstairs landing","landing"],["Music room","music"]],p:[["book",350,405,"Open a book","Stories, comics, and Everybody Deserves to Go Home.","books.html"],["shelf",1240,500,"Move the crooked bookcase","Behind the shelf, a narrow stair climbs into Maverick's attic.","attic"]]},
+ guest:{n:"Guest Room",f:1,d:"Somebody might want to stay.",e:[["Bedroom Two Door","landing"]],p:[["lamp",810,455,"Switch the lamp","A warm bedside light.","night"]]},
+ library:{n:"The Library",f:1,d:"There is something strange behind the books.",photo:"assets/writing-desk.webp",e:[["Library Door","landing"],["Music room","music"]],p:[["book",350,405,"Open a book","Stories, comics, and Everybody Deserves to Go Home.","books.html"],["shelf",1240,500,"Move the crooked bookcase","Behind the shelf, a narrow stair climbs into Maverick's attic.","attic"]]},
  music:{n:"Music Room",f:1,d:"Where the walls have stories and the guitars do too.",photo:"assets/denali-music-room.webp",e:[["Library","library"],["Roof lookout","roof","up"]],p:[["yellow",890,340,"Tom DeLonge Strat","The yellow Tom DeLonge Strat was bought when the owner was sixteen."],["pink",1195,360,"The pink guitar","The pink semi-hollow guitar arrived in 2025."],["pick",555,390,"Music speaks","WHEN WORDS FAIL MUSIC SPEAKS."],["record",710,680,"Hear some music","Visit the original Studio LaDuke music room.","music.html"]]},
  roof:{n:"The Roof Lookout",f:1,d:"A place where nothing is due.",e:[["Music room","music"],["Upstairs landing","landing"]],p:[["rain",820,530,"The view","Cedars, water, rain and the lights of an imaginary Ketchikan evening."]]},
  attic:{n:"Maverick's Attic",f:2,d:"His roof. His games. His secret kingdom.",e:[["Bookcase stairs","library","down"],["Maverick's Fort","mavericks-fort.html"]],p:[["board",830,665,"The building table","LEGO shelves, drawings, original games and Dad-sized adventures."],["star",1110,410,"The skylight","A shark and snow leopard constellation might be visible up there."]]},
@@ -142,10 +153,14 @@ const R={
 const floors=["Ground floor","Second floor","Maverick's Attic","Basement"];
 const id=function(x){return document.getElementById(x);};
 const camera=id("camera"),plate=id("plate"),painting=id("painting"),doorBox=id("doors"),objectBox=id("objects");
-let here="",scale=1,maxPan=0,pan=0,panTarget=0,panFrame=0,drag=null,suppress=false,toastTimer=0,detailFocus=null;
+let here="",facing="forward",scale=1,maxPan=0,pan=0,panTarget=0,panFrame=0,drag=null,suppress=false,toastTimer=0,detailFocus=null;
 const roomViews=new Map();
-function saveView(){if(here)roomViews.set(here,maxPan>0?panTarget/maxPan:0);}
-function restoreView(room){return roomViews.has(room)?roomViews.get(room)*maxPan:0;}
+const viewKey=()=>here+":"+facing;
+function saveView(){if(here)roomViews.set(viewKey(),maxPan>0?panTarget/maxPan:0);}
+function restoreView(bounds){
+ if(roomViews.has(viewKey()))return roomViews.get(viewKey())*maxPan;
+ return bounds?(800-bounds[0]-bounds[2]/2)*scale:0;
+}
 const reduceMotion=window.matchMedia("(prefers-reduced-motion: reduce)");
 function clampPan(p){return Math.min(maxPan,Math.max(-maxPan,p));}
 function paintPan(){plate.style.setProperty("--pan",pan+"px");id("left").disabled=pan>=maxPan-2;id("right").disabled=pan<=-maxPan+2;}
@@ -213,7 +228,6 @@ function setPan(p,immediate){
 // Bounds are measured against the 1600 × 900 room art. Other exits are available on the map.
 const photographedExits={
  foyer:{living:[145,195,272,483],"workshop.html":[646,195,306,490],hall:[1184,195,288,486]},
- hall:{landing:[635,135,393,580]},
  living:{foyer:[0,168,112,565]}
 };
 const livingProps={
@@ -230,14 +244,21 @@ function placeOnPlate(button,bounds){
  button.dataset.aligned="";
 }
 function draw(){
- const r=R[here];if(!r)return;document.body.classList.remove("scene-living","scene-foyer","scene-coat");plate.classList.remove("pocket-open","star-awake","tv-playing","pick-found","lamp-dim","yellow-spot","pink-spot","discovered","mirror-fog","drawer-open","steam-on","light-on","spark-on");if(["living","foyer","coat"].includes(here))document.body.classList.add("scene-"+here);painting.innerHTML=(window.StudioHouseDirector&&window.StudioHouseDirector.scene(here))||(window.StudioHouseV2&&window.StudioHouseV2.scene(here))||(r.photo?'<img src="'+r.photo+'" alt=""><div class="wash"></div>':lightPanel(r));
+ const r=R[here];if(!r)return;
+ const view=walk.views[here]?.[facing];
+ const viewTarget=view?.edge?.rooms.find(room=>room!==here);
+ const defaultBounds=here==="foyer"?photographedExits.foyer.hall:view?.bounds;
+ document.body.classList.toggle("walk-room",Boolean(view));
+ id("turnWalk").hidden=!view;
+ id("turnWalk").setAttribute("aria-pressed",String(facing==="reverse"));
+ document.body.classList.remove("scene-living","scene-foyer","scene-coat");plate.classList.remove("pocket-open","star-awake","tv-playing","pick-found","lamp-dim","yellow-spot","pink-spot","discovered","mirror-fog","drawer-open","steam-on","light-on","spark-on");if(["living","foyer","coat"].includes(here))document.body.classList.add("scene-"+here);painting.innerHTML=walk.scene(here,facing)||(window.StudioHouseDirector&&window.StudioHouseDirector.scene(here))||(window.StudioHouseV2&&window.StudioHouseV2.scene(here))||(r.photo?'<img src="'+r.photo+'" alt=""><div class="wash"></div>':lightPanel(r));
  id("roomName").textContent=r.n;id("roomDescription").textContent=r.d;id("floorName").textContent=r.n;id("floorTag").querySelector("small").textContent=floors[r.f]+" · Swipe to look";doorBox.replaceChildren();objectBox.replaceChildren();
  let pos=r.e.length===1?[800]:r.e.length===2?[440,1150]:r.e.length===3?[300,805,1300]:[170,560,1035,1430];if(here==="coat")pos=[186];if(!["living","foyer","coat"].includes(here))pos=r.e.length===1?[800]:r.e.length===2?[420,1180]:r.e.length===3?[250,800,1350]:[170,560,1040,1430];
- r.e.forEach(function(d,i){const bounds=photographedExits[here]?.[d[1]];if(photographedExits[here]&&!bounds)return;let b=document.createElement("button");b.className="door";b.type="button";b.style.left=pos[i]+"px";if(bounds)placeOnPlate(b,bounds);b.dataset.way=d[2]||"";b.setAttribute("aria-label","Go to "+d[0]);b.innerHTML='<span class="doorface"></span><span class="plaque">'+escapeHtml(d[0])+'</span>';b.addEventListener("click",function(){go(d[1]);});doorBox.append(b);});
+ r.e.forEach(function(d,i){const bounds=view?(d[1]===viewTarget?view.bounds:null):photographedExits[here]?.[d[1]];if((view||photographedExits[here])&&!bounds)return;let b=document.createElement("button");b.className="door";b.type="button";b.style.left=pos[i]+"px";if(bounds)placeOnPlate(b,bounds);b.dataset.way=d[2]||"";if(d[0]===walk.opening.name||d[0]===walk.stairs.name)b.dataset.walk="";b.setAttribute("aria-label",b.hasAttribute("data-walk")?d[0]:"Go to "+d[0]);b.innerHTML='<span class="doorface"></span><span class="plaque">'+escapeHtml(d[0])+'</span>';b.addEventListener("click",function(){go(d[1]);});doorBox.append(b);});
  (r.p||[]).forEach(function(p){let b=document.createElement("button");b.className="prop";b.type="button";b.style.left=p[1]+"px";b.style.top=p[2]+"px";if(here==="living"&&livingProps[p[0]])placeOnPlate(b,livingProps[p[0]]);b.setAttribute("aria-label",p[3]);b.innerHTML=propArt(p[0])+'<span class="hint">'+escapeHtml(p[3])+'</span>';b.addEventListener("click",function(){if(window.StudioHouseAdventure)window.StudioHouseAdventure.collect(here,p[0]);if(p[5]==="code"){code();return;}if(p[5]==="night"){document.body.classList.toggle("lights-out");if(window.StudioHouseDirector)window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast});return;}if(p[5]){go(p[5]);return;}if(window.StudioHouseDirector&&window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast}))return;if(window.StudioHouseV2&&window.StudioHouseV2.activate(here,p[0],{plate:plate,toast:toast}))return;detail(p[3],p[4],p[5]);});objectBox.append(b);});
- stopPan();resize();setPan(restoreView(here),true);makeMap();document.title=r.n+" · Studio LaDuke House";
+ stopPan();resize();setPan(restoreView(defaultBounds),true);makeMap();document.title=r.n+" · Studio LaDuke House";
 }
-function go(to,replace){if(/\.html/.test(to)){location.href=to;return;}if(!R[to]){toast("That door isn't ready.");return;}if(to==="vault"&&sessionStorage.getItem("laduke-movie-gauntlet-done")!=="1"){toast("The vault awaits the end of the movie maze.");return;}saveView();hideDetail(false);hideMap(false);here=to;document.body.classList.remove("lights-out");if(replace)history.replaceState({room:to},"","house.html?room="+to);else history.pushState({room:to},"","house.html?room="+to);draw();}
+function go(to,replace){if(/\.html/.test(to)){location.href=to;return;}if(!R[to]){toast("That door isn't ready.");return;}if(to==="vault"&&sessionStorage.getItem("laduke-movie-gauntlet-done")!=="1"){toast("The vault awaits the end of the movie maze.");return;}saveView();hideDetail(false);hideMap(false);facing=here==="landing"&&to==="hall"?"reverse":"forward";here=to;document.body.classList.remove("lights-out");if(replace)history.replaceState({room:to,facing},"","house.html?room="+to);else history.pushState({room:to,facing},"","house.html?room="+to);draw();}
 window.StudioHouseGo=function(to){go(to);};
 function mapButton(label,to){
  const button=document.createElement("button");
@@ -270,11 +291,29 @@ function appendEntryPlan(box){
  }
  box.append(plan);
 }
+function appendWalkPlan(box){
+ const heading=document.createElement("h3");
+ heading.className="floorhead";
+ heading.textContent="Ground floor to upstairs";
+ const plan=document.createElement("div");
+ plan.id="walkPlan";
+ for(const [room,edge] of [["foyer",walk.opening],["hall",walk.stairs],["landing"]]){
+  plan.append(mapButton(R[room].n,room));
+  if(edge){
+   const label=document.createElement("span");
+   label.className="threshold-name";
+   label.textContent=edge.name;
+   plan.append(label);
+  }
+ }
+ box.append(heading,plan);
+}
 function makeMap(){
  const box=id("floorContents");
  box.replaceChildren();
  appendEntryPlan(box);
- const passages=R[here].e.filter(([,to])=>!photographedExits[here]?.[to]);
+ appendWalkPlan(box);
+ const passages=R[here].e;
  if(passages.length){
   const title=document.createElement("h3");title.className="floorhead";title.textContent="From "+R[here].n;
   const group=document.createElement("div");group.id="roomPassages";
@@ -307,16 +346,22 @@ function code(){detail("The hidden cinema","Find the three clues to open the sec
 id("codeForm").addEventListener("submit",function(e){e.preventDefault();if(id("codeInput").value.trim()==="472"){try{sessionStorage.setItem("laduke-escape-done","1");}catch(e){}if(window.StudioHouseAdventure)window.StudioHouseAdventure.collect("escape","solved");hideDetail(false);location.href="movie-escape.html";}else{id("codeInput").value="";toast("The lock refuses to open.");id("codeInput").focus();}});
 id("mapOpen").addEventListener("click",showMap);id("closeMap").addEventListener("click",function(){hideMap(true);});id("shade").addEventListener("click",function(){hideMap(true);});
 id("closeDialog").addEventListener("click",function(){hideDetail(true);});id("dialogShade").addEventListener("click",function(){hideDetail(true);});
+id("turnWalk").addEventListener("click",function(){
+ saveView();
+ facing=facing==="forward"?"reverse":"forward";
+ history.replaceState({room:here,facing},"",location.href);
+ draw();
+});
 id("left").addEventListener("click",function(){setPan(pan+Math.max(180,innerWidth*.66));});id("right").addEventListener("click",function(){setPan(pan-Math.max(180,innerWidth*.66));});
 camera.addEventListener("pointerdown",function(e){
  if(!e.isPrimary||e.button!==0||!id("dialog").hidden||!id("map").hidden)return;
  suppress=false;stopPan();panTarget=pan;
- drag={x:e.clientX,p:pan,m:false,lastX:e.clientX,lastT:performance.now(),velocity:0,pointerId:e.pointerId};
+ drag={x:e.clientX,y:e.clientY,p:pan,m:false,lastX:e.clientX,lastT:performance.now(),velocity:0,pointerId:e.pointerId};
 });
 camera.addEventListener("pointermove",function(e){
  if(!drag||e.pointerId!==drag.pointerId)return;
  const dx=e.clientX-drag.x,now=performance.now(),dt=Math.max(8,now-drag.lastT);
- if(drag.m||Math.abs(dx)>9){
+ if(drag.m||Math.hypot(dx,e.clientY-drag.y)>9){
   if(!drag.m){drag.m=true;try{camera.setPointerCapture(e.pointerId);}catch(error){}}
   camera.classList.add("dragging");
   drag.velocity=Math.max(-2.6,Math.min(2.6,(e.clientX-drag.lastX)/dt));
@@ -330,13 +375,15 @@ function finish(e){
  suppress=wasDragging;drag=null;camera.classList.remove("dragging");
  if(wasDragging&&!reduceMotion.matches&&Math.abs(speed)>.18)setPan(pan+speed*115);
 }
-camera.addEventListener("pointerup",finish);camera.addEventListener("pointercancel",finish);window.addEventListener("pointerup",finish);
+camera.addEventListener("pointerup",finish);camera.addEventListener("pointercancel",finish);camera.addEventListener("lostpointercapture",finish);window.addEventListener("pointerup",finish);
 camera.addEventListener("click",function(e){if(suppress&&e.detail>0){suppress=false;e.preventDefault();e.stopImmediatePropagation();}},true);
 window.addEventListener("resize",resize);
-window.addEventListener("popstate",function(){saveView();let q=new URLSearchParams(location.search).get("room");here=R[q]&&(q!=="vault"||sessionStorage.getItem("laduke-movie-gauntlet-done")==="1")?q:"escape";draw();});
+window.addEventListener("popstate",function(event){saveView();facing=event.state?.facing==="reverse"?"reverse":"forward";let q=new URLSearchParams(location.search).get("room");here=R[q]&&(q!=="vault"||sessionStorage.getItem("laduke-movie-gauntlet-done")==="1")?q:"escape";draw();});
 document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(!id("dialog").hidden)hideDetail(true);else if(!id("map").hidden)hideMap(true);return;}if(!id("dialog").hidden||!id("map").hidden||(window.StudioHouseAdventure&&window.StudioHouseAdventure.isOpen))return;if(e.key==="ArrowLeft"){e.preventDefault();setPan(pan+180);}if(e.key==="ArrowRight"){e.preventDefault();setPan(pan-180);}if(e.key.toLowerCase()==="m"&&!e.metaKey&&!e.ctrlKey)showMap();});
+facing=history.state?.facing==="reverse"?"reverse":"forward";
 const initial=new URLSearchParams(location.search).get("room");here=R[initial]&&(initial!=="vault"||sessionStorage.getItem("laduke-movie-gauntlet-done")==="1")?initial:"escape";if(!R[initial]||here!==initial)history.replaceState({room:here},"","house.html?room="+here);draw();
 try{if(!sessionStorage.getItem("laduke-house-seen")){sessionStorage.setItem("laduke-house-seen","1");}}catch(e){}
 })();
 </script>
 </body></html>
+

@@ -1,0 +1,99 @@
+name: House walk review
+on:
+  push:
+    branches: [dev/house-guide-walk]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-save --no-package-lock playwright
+      - run: npx playwright install --with-deps chromium
+      - name: Test the round trip and capture the thresholds
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 &
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import { mkdir } from 'node:fs/promises';
+          import { chromium, devices } from 'playwright';
+
+          await mkdir('walk-screenshots');
+          const browser = await chromium.launch();
+          try {
+            for (const mobile of [false, true]) {
+              const context = await browser.newContext({
+                ...(mobile ? devices['Pixel 7'] : { viewport: { width: 1440, height: 900 } }),
+                reducedMotion: 'reduce'
+              });
+              const page = await context.newPage();
+              const errors = [];
+              page.on('pageerror', error => errors.push(error.message));
+              const base = 'http://127.0.0.1:4173';
+              await page.goto(base + '/house.html?room=foyer');
+              const button = name => page.getByRole('button', { name, exact: true });
+              const shot = name => page.screenshot({
+                path: 'walk-screenshots/' + (mobile ? 'phone-' : 'desktop-') + name + '.png'
+              });
+              const use = target => mobile ? target.tap() : target.click();
+              const room = name => page.locator('#floorName').textContent().then(
+                actual => assert.equal(actual, name)
+              );
+              const opening = 'Main Hall Opening';
+              const stairs = 'Main Stairs';
+
+              await room('Front Hall');
+              await shot('01-front-hall-toward-main-hall');
+              if (mobile) {
+                const box = await button(opening).boundingBox();
+                assert.ok(box);
+                const x = Math.round(box.x + box.width / 2);
+                const y = Math.round(box.y + box.height * .4);
+                assert.equal(await page.evaluate(({x, y}) =>
+                  document.elementFromPoint(x, y).closest('button')?.getAttribute('aria-label'), {x, y}), opening);
+                const before = await page.locator('#plate').evaluate(el => el.style.getPropertyValue('--pan'));
+                const cdp = await context.newCDPSession(page);
+                await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+                for (const offset of [15, 30, 45, 60]) {
+                  await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x + offset, y }] });
+                }
+                await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+                await room('Front Hall');
+                assert.notEqual(await page.locator('#plate').evaluate(el => el.style.getPropertyValue('--pan')), before);
+              }
+              await use(button(opening));
+              await room('Main Hall');
+              await shot('02-main-hall-up-main-stairs');
+              await use(button(stairs));
+              await room('Upstairs Landing');
+              await use(button('Turn around'));
+              await shot('03-upstairs-landing-down-main-stairs');
+              await use(button('Open house floor plan'));
+              const plan = page.locator('#walkPlan');
+              assert.deepEqual(await plan.locator('.threshold-name').allTextContents(), [opening, stairs]);
+              assert.equal(await plan.locator('[aria-current=location]').textContent(), 'Upstairs Landing');
+              await shot('05-map-upstairs-landing');
+              await use(button('Close map'));
+              await use(button(stairs));
+              await room('Main Hall');
+              await shot('04-main-hall-toward-front-hall');
+              await use(button(opening));
+              await room('Front Hall');
+              assert.deepEqual(errors, []);
+              await context.close();
+            }
+          } finally {
+            await browser.close();
+          }
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: house-walk-thresholds
+          path: walk-screenshots/
