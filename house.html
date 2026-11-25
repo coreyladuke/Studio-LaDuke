@@ -16,6 +16,14 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
 [hidden]{display:none!important}
 #camera{position:fixed;inset:0;overflow:hidden;background:#111b16;touch-action:none;cursor:grab}
 #camera.dragging{cursor:grabbing}
+#walkLens{position:absolute;inset:0}
+#camera[data-crossing] #doors{visibility:hidden}
+#walkShade{position:absolute;inset:0;z-index:16;pointer-events:none;background:#17110d;opacity:0}
+#rainWalk{position:fixed;top:max(126px,calc(env(safe-area-inset-top) + 110px));left:max(15px,env(safe-area-inset-left));z-index:21;min-height:44px;padding:8px 13px;color:#f7e4bf;background:#19231dec;border:1px solid #a98a58;border-radius:4px}
+#rainWalk[aria-pressed="true"]{background:#483925}
+@media(pointer:coarse){body.directed-house #plate :is(.door,.prop):hover:not(:focus-visible)::before{border-color:transparent;box-shadow:none;background:none}}
+.walk-rain{animation:landing-rain 4s linear infinite}
+@keyframes landing-rain{to{transform:translateY(92px)}}
 #plate{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform:translate(calc(-50% + var(--pan,0px)),-50%) scale(var(--scale,1));transform-origin:center;overflow:hidden;box-shadow:0 0 120px #000e;isolation:isolate;user-select:none}
 #plate::after{content:"";position:absolute;inset:0;z-index:8;pointer-events:none;box-shadow:inset 0 0 130px 25px #0a0e0aaf}
 #painting{position:absolute;inset:0;background:radial-gradient(ellipse at center,#685038,#251e18)}
@@ -101,14 +109,17 @@ body.directed-house #plate .door[data-walk="opening"] .plaque{bottom:20%}
 <a id="frontLink" href="index.html">↖ Front Door</a>
 <button id="mapOpen" type="button" aria-label="Open house floor plan" title="House floor plan">⌂</button>
 <button id="turnWalk" type="button" hidden>Turn around</button>
+<button id="rainWalk" type="button" aria-pressed="false" hidden>Rain sound</button>
+<audio id="walkRainAudio" src="audio/front-room-rain.mp3" preload="none" loop></audio>
 <main id="camera" aria-label="Explore Studio LaDuke House">
- <div id="plate" role="group" aria-label="Your current room">
+ <div id="walkLens"><div id="plate" role="group" aria-label="Your current room">
   <div id="painting" aria-hidden="true"></div>
   <div class="room-sign"><h1 id="roomName"></h1><p id="roomDescription"></p></div>
   <div id="doors" aria-label="Doors in this room"></div><div id="objects" aria-label="Objects to explore"></div>
- </div>
+ </div></div>
+ <div id="walkShade" aria-hidden="true"></div>
 </main>
-<div id="lookbar"><button id="left" type="button" aria-label="Look left">‹</button><div id="floorTag"><strong id="floorName"></strong><small>Swipe · Touch · Explore</small></div><button id="right" type="button" aria-label="Look right">›</button></div>
+<div id="lookbar"><button id="left" type="button" aria-label="Look left">‹</button><div id="floorTag"><strong id="floorName" tabindex="-1"></strong><small>Swipe · Touch · Explore</small></div><button id="right" type="button" aria-label="Look right">›</button></div>
 <div id="provisionalView" hidden>Provisional view</div>
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="shade" hidden></div>
@@ -157,6 +168,18 @@ const id=function(x){return document.getElementById(x);};
 const camera=id("camera"),plate=id("plate"),painting=id("painting"),doorBox=id("doors"),objectBox=id("objects");
 let here="",facing="forward",scale=1,maxPan=0,pan=0,panTarget=0,panFrame=0,drag=null,suppress=false,toastTimer=0,detailFocus=null;
 const roomViews=new Map();
+const lens=id("walkLens"),shade=id("walkShade"),rain=id("walkRainAudio");
+const rainButton=id("rainWalk");
+let crossing=null;
+rainButton.addEventListener("click",async function(){
+ if(!rain.paused){rain.pause();return;}
+ try{rain.volume=.16;await rain.play();}
+ catch(error){toast("Rain sound is unavailable.");}
+});
+for(const event of ["playing","pause","ended"]){
+ rain.addEventListener(event,()=>rainButton.setAttribute("aria-pressed",String(!rain.paused)));
+}
+window.addEventListener("pagehide",()=>rain.pause());
 const viewKey=()=>here+":"+facing;
 function saveView(){if(here)roomViews.set(viewKey(),maxPan>0?panTarget/maxPan:0);}
 function restoreView(bounds){
@@ -252,16 +275,67 @@ function draw(){
  const aligned=here==="hall"?walk.hallBounds:here==="landing"?{hall:view?.bounds}:photographedExits[here];
  const defaultBounds=here==="foyer"?photographedExits.foyer.hall:view?.bounds;
  id("provisionalView").hidden=!view?.provisional;
+ rainButton.hidden=here!=="foyer"&&!view;
+ if(rainButton.hidden)rain.pause();
  id("turnWalk").hidden=here!=="landing";
  id("turnWalk").setAttribute("aria-pressed",String(facing==="reverse"));
  document.body.classList.remove("scene-living","scene-foyer","scene-coat");plate.classList.remove("pocket-open","star-awake","tv-playing","pick-found","lamp-dim","yellow-spot","pink-spot","discovered","mirror-fog","drawer-open","steam-on","light-on","spark-on");if(["living","foyer","coat"].includes(here))document.body.classList.add("scene-"+here);const directed=window.StudioHouseDirector?.scene(here);painting.innerHTML=walk.scene(here,facing)||directed||(window.StudioHouseV2&&window.StudioHouseV2.scene(here))||(r.photo?'<img src="'+r.photo+'" alt=""><div class="wash"></div>':lightPanel(r));
  id("roomName").textContent=r.n;id("roomDescription").textContent=r.d;id("floorName").textContent=r.n;id("floorTag").querySelector("small").textContent=floors[r.f]+" · Swipe to look";doorBox.replaceChildren();objectBox.replaceChildren();
  let pos=r.e.length===1?[800]:r.e.length===2?[440,1150]:r.e.length===3?[300,805,1300]:[170,560,1035,1430];if(here==="coat")pos=[186];if(!["living","foyer","coat"].includes(here))pos=r.e.length===1?[800]:r.e.length===2?[420,1180]:r.e.length===3?[250,800,1350]:[170,560,1040,1430];
- r.e.forEach(function(d,i){const bounds=aligned?.[d[1]];if(aligned&&!bounds)return;let b=document.createElement("button");b.className="door";b.type="button";b.style.left=pos[i]+"px";if(bounds)placeOnPlate(b,bounds);b.dataset.way=d[2]||"";if(d[0]===walk.opening.name)b.dataset.walk="opening";else if(d[0]===walk.stairs.name)b.dataset.walk="stairs";b.setAttribute("aria-label",b.hasAttribute("data-walk")?d[0]:"Go to "+d[0]);b.innerHTML='<span class="doorface"></span><span class="plaque">'+escapeHtml(d[0])+'</span>';b.addEventListener("click",function(){go(d[1]);});doorBox.append(b);});
+ r.e.forEach(function(d,i){const bounds=aligned?.[d[1]];if(aligned&&!bounds)return;let b=document.createElement("button");b.className="door";b.type="button";b.style.left=pos[i]+"px";if(bounds)placeOnPlate(b,bounds);b.dataset.way=d[2]||"";if(d[0]===walk.opening.name)b.dataset.walk="opening";else if(d[0]===walk.stairs.name)b.dataset.walk="stairs";b.setAttribute("aria-label",b.hasAttribute("data-walk")?d[0]:"Go to "+d[0]);b.innerHTML='<span class="doorface"></span><span class="plaque">'+escapeHtml(d[0])+'</span>';b.addEventListener("click",function(event){
+  const keyboard=event.isTrusted&&event.detail===0;
+  if(b.dataset.walk)crossThreshold(d[1],b,keyboard);
+  else go(d[1]);
+ });doorBox.append(b);});
  (r.p||[]).forEach(function(p){let b=document.createElement("button");b.className="prop";b.type="button";b.style.left=p[1]+"px";b.style.top=p[2]+"px";if(here==="living"&&livingProps[p[0]])placeOnPlate(b,livingProps[p[0]]);b.setAttribute("aria-label",p[3]);b.innerHTML=propArt(p[0])+'<span class="hint">'+escapeHtml(p[3])+'</span>';b.addEventListener("click",function(){if(window.StudioHouseAdventure)window.StudioHouseAdventure.collect(here,p[0]);if(p[5]==="code"){code();return;}if(p[5]==="night"){document.body.classList.toggle("lights-out");if(window.StudioHouseDirector)window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast});return;}if(p[5]){go(p[5]);return;}if(window.StudioHouseDirector&&window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast}))return;if(window.StudioHouseV2&&window.StudioHouseV2.activate(here,p[0],{plate:plate,toast:toast}))return;detail(p[3],p[4],p[5]);});objectBox.append(b);});
  stopPan();resize();setPan(restoreView(defaultBounds),true);makeMap();document.title=r.n+" · Studio LaDuke House";
 }
 function go(to,replace){if(/\.html/.test(to)){location.href=to;return;}if(!R[to]){toast("That door isn't ready.");return;}if(to==="vault"&&sessionStorage.getItem("laduke-movie-gauntlet-done")!=="1"){toast("The vault awaits the end of the movie maze.");return;}saveView();hideDetail(false);hideMap(false);facing=here==="landing"&&to==="hall"?"reverse":"forward";here=to;document.body.classList.remove("lights-out");if(replace)history.replaceState({room:to,facing},"","house.html?room="+to);else history.pushState({room:to,facing},"","house.html?room="+to);draw();}
+function clearCrossing(){
+ if(!crossing)return;
+ crossing.forEach(animation=>animation.cancel());
+ crossing=null;
+ delete camera.dataset.crossing;
+}
+function crossThreshold(to,door,keyboard){
+ if(crossing)return;
+ const arrive=()=>{
+  go(to);
+  if(keyboard)id("floorName").focus({preventScroll:true});
+ };
+ if(reduceMotion.matches||!lens.animate){arrive();return;}
+
+ stopPan();
+ const box=door.getBoundingClientRect();
+ const x=Math.min(innerWidth,Math.max(0,box.left+box.width/2));
+ const y=Math.min(innerHeight,Math.max(0,box.top+box.height*.52));
+ const rises=door.dataset.way==="up";
+ const descends=door.dataset.way==="down";
+ const elevation=rises?18:descends?-16:0;
+ const base={transformOrigin:x+"px "+y+"px",transform:"translateY(0) scale(1)"};
+ const approach={...base,transform:"translateY("+elevation+"px) scale(1.16)"};
+ camera.dataset.crossing="";
+ const departure=[
+  lens.animate([base,approach],{duration:190,easing:"cubic-bezier(.38,0,.64,1)",fill:"forwards"}),
+  shade.animate([{opacity:0},{opacity:.72}],{duration:190,fill:"forwards"})
+ ];
+ crossing=departure;
+ Promise.all(departure.map(animation=>animation.finished)).then(()=>{
+  if(crossing!==departure)return;
+  arrive();
+  departure.forEach(animation=>animation.cancel());
+  const center={transformOrigin:"50% 57%",transform:"translateY(0) scale(1)"};
+  const entry={...center,transform:"translateY("+(-elevation)+"px) scale(1.08)"};
+  const arrival=[
+   lens.animate([entry,center],{duration:245,easing:"ease-out"}),
+   shade.animate([{opacity:.72},{opacity:0}],{duration:245,easing:"ease-out"})
+  ];
+  crossing=arrival;
+  return Promise.all(arrival.map(animation=>animation.finished)).then(()=>{
+   if(crossing===arrival)clearCrossing();
+  });
+ }).catch(()=>{});
+}
 window.StudioHouseGo=function(to){go(to);};
 function mapButton(label,to){
  const button=document.createElement("button");
@@ -341,7 +415,7 @@ function makeMap(){
  gateway.innerHTML='<span class="house3d-mark" aria-hidden="true">✦</span><span><strong>Step inside the 3D House</strong><small>The modeled atrium and colorful living room</small></span>';
  box.append(gateway);
 }
-function showMap(){id("shade").hidden=false;id("map").hidden=false;id("closeMap").focus();}
+function showMap(){if(crossing)return;id("shade").hidden=false;id("map").hidden=false;id("closeMap").focus();}
 function hideMap(focus){id("shade").hidden=true;id("map").hidden=true;if(focus!==false)id("mapOpen").focus();}
 function detail(title,copy,to){detailFocus=document.activeElement;id("dialogTitle").textContent=title;id("dialogText").textContent=copy;id("dialogButtons").replaceChildren();id("codeForm").hidden=true;if(to){let b=document.createElement("button");b.type="button";b.textContent=/\.html/.test(to)?"Visit this part of Studio LaDuke":"Go there";b.addEventListener("click",function(){go(to);});id("dialogButtons").append(b);}id("dialogShade").hidden=false;id("dialog").hidden=false;id("closeDialog").focus();}
 function hideDetail(focus){id("dialogShade").hidden=true;id("dialog").hidden=true;if(focus!==false&&detailFocus&&detailFocus.focus)detailFocus.focus();}
@@ -350,6 +424,7 @@ id("codeForm").addEventListener("submit",function(e){e.preventDefault();if(id("c
 id("mapOpen").addEventListener("click",showMap);id("closeMap").addEventListener("click",function(){hideMap(true);});id("shade").addEventListener("click",function(){hideMap(true);});
 id("closeDialog").addEventListener("click",function(){hideDetail(true);});id("dialogShade").addEventListener("click",function(){hideDetail(true);});
 id("turnWalk").addEventListener("click",function(){
+ if(crossing)return;
  saveView();
  facing=facing==="forward"?"reverse":"forward";
  history.replaceState({room:here,facing},"",location.href);
@@ -357,7 +432,7 @@ id("turnWalk").addEventListener("click",function(){
 });
 id("left").addEventListener("click",function(){setPan(pan+Math.max(180,innerWidth*.66));});id("right").addEventListener("click",function(){setPan(pan-Math.max(180,innerWidth*.66));});
 camera.addEventListener("pointerdown",function(e){
- if(!e.isPrimary||e.button!==0||!id("dialog").hidden||!id("map").hidden)return;
+ if(crossing||!e.isPrimary||e.button!==0||!id("dialog").hidden||!id("map").hidden)return;
  suppress=false;stopPan();panTarget=pan;
  drag={x:e.clientX,y:e.clientY,p:pan,m:false,lastX:e.clientX,lastT:performance.now(),velocity:0,pointerId:e.pointerId,
   door:e.pointerType==="touch"?e.target.closest(".door"):null};
@@ -389,8 +464,8 @@ camera.addEventListener("click",function(e){
  }
 },true);
 window.addEventListener("resize",resize);
-window.addEventListener("popstate",function(event){saveView();facing=event.state?.facing==="reverse"?"reverse":"forward";let q=new URLSearchParams(location.search).get("room");here=R[q]&&(q!=="vault"||sessionStorage.getItem("laduke-movie-gauntlet-done")==="1")?q:"escape";draw();});
-document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(!id("dialog").hidden)hideDetail(true);else if(!id("map").hidden)hideMap(true);return;}if(!id("dialog").hidden||!id("map").hidden||(window.StudioHouseAdventure&&window.StudioHouseAdventure.isOpen))return;if(e.key==="ArrowLeft"){e.preventDefault();setPan(pan+180);}if(e.key==="ArrowRight"){e.preventDefault();setPan(pan-180);}if(e.key.toLowerCase()==="m"&&!e.metaKey&&!e.ctrlKey)showMap();});
+window.addEventListener("popstate",function(event){clearCrossing();saveView();facing=event.state?.facing==="reverse"?"reverse":"forward";let q=new URLSearchParams(location.search).get("room");here=R[q]&&(q!=="vault"||sessionStorage.getItem("laduke-movie-gauntlet-done")==="1")?q:"escape";draw();});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(!id("dialog").hidden)hideDetail(true);else if(!id("map").hidden)hideMap(true);return;}if(!id("dialog").hidden||!id("map").hidden||(window.StudioHouseAdventure&&window.StudioHouseAdventure.isOpen))return;if(crossing)return;if(e.key==="ArrowLeft"){e.preventDefault();setPan(pan+180);}if(e.key==="ArrowRight"){e.preventDefault();setPan(pan-180);}if(e.key.toLowerCase()==="m"&&!e.metaKey&&!e.ctrlKey)showMap();});
 facing=history.state?.facing==="reverse"?"reverse":"forward";
 const initial=new URLSearchParams(location.search).get("room");here=R[initial]&&(initial!=="vault"||sessionStorage.getItem("laduke-movie-gauntlet-done")==="1")?initial:"escape";if(!R[initial]||here!==initial)history.replaceState({room:here},"","house.html?room="+here);draw();
 try{if(!sessionStorage.getItem("laduke-house-seen")){sessionStorage.setItem("laduke-house-seen","1");}}catch(e){}

@@ -36,6 +36,13 @@
         <path d="M0 33H180" stroke="#1f1710" stroke-opacity=".48" stroke-width="2"/>
         <path d="M5 9Q65 3 172 9M29 22Q115 28 175 18" fill="none" stroke="#f8d49a" stroke-opacity=".16"/>
       </pattern>
+      <linearGradient id="stair-wood" x2="0" y2="1">
+        <stop stop-color="#745137"/><stop offset=".45" stop-color="#ba8b58"/><stop offset="1" stop-color="#513323"/>
+      </linearGradient>
+      <linearGradient id="window-light" x2="0" y2="1">
+        <stop stop-color="#c9d7cc"/><stop offset="1" stop-color="#66786c"/>
+      </linearGradient>
+      <clipPath id="walk-window"><rect x="668" y="249" width="264" height="259"/></clipPath>
       <filter id="texture"><feTurbulence type="fractalNoise" baseFrequency=".28 .58" numOctaves="3" seed="17"/>
         <feColorMatrix type="saturate" values="0"/></filter>
     </defs>`;
@@ -58,7 +65,7 @@
     const steps = Array.from({length: 13}, (_, i) => {
       const y = 727 - i * 18;
       const half = 247 - i * 12;
-      return `<path d="M${800-half} ${y}H${800+half}l-8 -14H${808-half}Z" fill="#a6754b"/>
+      return `<path d="M${800-half} ${y}H${800+half}l-8 -14H${808-half}Z" fill="url(#stair-wood)"/>
         <path d="M${800-half} ${y}H${800+half}v5H${800-half}Z" fill="#573923"/>
         <path d="M${800-half+4} ${y-3}H${800+half-4}" stroke="#c39261" opacity=".7"/>`;
     }).reverse().join("");
@@ -74,7 +81,13 @@
       <path d="M699 482V379H901V482Z" fill="#81644a" stroke="#4c3829" stroke-width="9"/>
       <path d="M708 463H892V491H708Z" fill="#754932"/>
       <path d="M708 468H892M731 465V487M759 465V487M785 465V487M814 465V487M843 465V487M872 465V487" stroke="#c6916d" opacity=".75"/>
-      ${steps}${rails}
+      ${steps}
+      <path d="M548 724L700 506H721L566 730ZM1052 724L900 506H879L1034 730Z" fill="#2b1b13" opacity=".48"/>
+      ${rails}
+      <path d="M542 550V745M1058 550V745" stroke="#795234" stroke-width="25"/>
+      <path d="M537 559V745M1053 559V745" stroke="#a7774f" stroke-width="5"/>
+      <ellipse cx="542" cy="550" rx="19" ry="9" fill="#a8754c"/>
+      <ellipse cx="1058" cy="550" rx="19" ry="9" fill="#a8754c"/>
       <path d="M527 746H1073" stroke="#3a291e" stroke-width="15"/>
       <path d="M527 741H1073" stroke="#bc8b5d" stroke-width="4"/>`;
   }
@@ -87,11 +100,19 @@
     if (view.art === "down") {
       feature = stairFlight();
     } else {
+      const rain = Array.from({length: 42}, (_, i) => {
+        const x = 670 + (i * 43 % 262);
+        const y = 158 + (i * 59 % 355);
+        return `<path d="M${x} ${y}l-3 21" stroke="#e5efdf" opacity="${.10 + (i % 4) * .045}"/>`;
+      }).join("");
       feature = `<path d="M604 650V213H996V650" fill="#463429" stroke="#654632" stroke-width="18"/>
-        <rect x="663" y="244" width="274" height="269" fill="#8a9890" stroke="#3c2c24" stroke-width="18"/>
+        <rect x="663" y="244" width="274" height="269" fill="url(#window-light)" stroke="#3c2c24" stroke-width="18"/>
         <path d="M669 477L711 310L736 481L780 272L824 481L877 297L929 472V505H669Z" fill="#425a50"/>
+        <g clip-path="url(#walk-window)"><g class="walk-rain">${rain}</g></g>
         <path d="M800 244V513M663 386H937" stroke="#675444" stroke-width="12"/>
-        <path d="M641 520H960" stroke="#9e7652" stroke-width="14"/>`;
+        <path d="M651 523H949L1080 761H520Z" fill="#d4d8b3" opacity=".08"/>
+        <path d="M641 520H960" stroke="#9e7652" stroke-width="14"/>
+        <path d="M641 527H960" stroke="#3b291d" stroke-width="5"/>`;
     }
     return `<svg class="walk-view" viewBox="0 0 1600 900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
       ${materials}${shell()}${feature}

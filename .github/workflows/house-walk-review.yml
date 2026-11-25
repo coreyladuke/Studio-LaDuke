@@ -15,22 +15,28 @@ jobs:
         with:
           node-version: 22
       - run: npm install --no-save --no-package-lock playwright
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium webkit
       - name: Test the round trip and capture the thresholds
         run: |
           python3 -m http.server 4173 --bind 127.0.0.1 &
           node --input-type=module <<'JS'
           import assert from 'node:assert/strict';
           import { mkdir } from 'node:fs/promises';
-          import { chromium, devices } from 'playwright';
+          import { chromium, webkit, devices } from 'playwright';
 
           await mkdir('walk-screenshots');
-          const browser = await chromium.launch();
-          try {
-            for (const mobile of [false, true]) {
+          for (const [label, engine, device] of [
+            ['desktop', chromium, { viewport: { width: 1440, height: 900 } }],
+            ['phone', chromium, devices['Pixel 7']],
+            ['iphone-webkit', webkit, devices['iPhone 13']]
+          ]) {
+            const browser = await engine.launch();
+            const mobile = label !== 'desktop';
+            const swipe = label === 'phone';
+            try {
               const context = await browser.newContext({
-                ...(mobile ? devices['Pixel 7'] : { viewport: { width: 1440, height: 900 } }),
-                reducedMotion: 'reduce'
+                ...device,
+                reducedMotion: swipe ? 'reduce' : 'no-preference'
               });
               const page = await context.newPage();
               page.setDefaultTimeout(8000);
@@ -38,7 +44,7 @@ jobs:
               page.on('pageerror', error => errors.push(error.message));
               const base = 'http://127.0.0.1:4173';
               await page.goto(base + '/house.html?room=foyer');
-              if (mobile) {
+              if (swipe) {
                 await page.evaluate(() => {
                   window.walkInput = [];
                   for (const type of ['pointerdown', 'pointerup', 'pointercancel', 'click']) {
@@ -51,18 +57,25 @@ jobs:
               }
               const button = name => page.getByRole('button', { name, exact: true });
               const shot = name => page.screenshot({
-                path: 'walk-screenshots/' + (mobile ? 'phone-' : 'desktop-') + name + '.png'
+                path: 'walk-screenshots/' + (label + '-') + name + '.png'
               });
               const use = target => mobile ? target.tap() : target.click();
               const room = name => page.waitForFunction(
-                name => document.querySelector('#floorName')?.textContent === name, name
+                name => document.querySelector('#floorName')?.textContent === name &&
+                  !document.querySelector('#camera').hasAttribute('data-crossing'), name
               );
               const opening = 'Main Hall Opening';
               const stairs = 'Main Stairs';
 
               await room('Front Hall');
               await shot('01-front-hall-toward-main-hall');
-              if (mobile) {
+              if (!mobile) {
+                const rain = button('Rain sound');
+                assert.equal(await rain.getAttribute('aria-pressed'), 'false');
+                await use(rain);
+                await page.waitForFunction(() => !document.querySelector('#walkRainAudio').paused);
+              }
+              if (swipe) {
                 const box = await button(opening).boundingBox();
                 assert.ok(box);
                 const x = Math.round(box.x + box.width / 2);
@@ -86,7 +99,7 @@ jobs:
                 await use(button(opening));
                 await room('Main Hall');
               } catch (error) {
-                if (mobile) console.log('Doorway input', await page.evaluate(() => window.walkInput));
+                if (swipe) console.log('Doorway input', await page.evaluate(() => window.walkInput));
                 throw error;
               }
               const hallImage = page.locator('#painting img');
@@ -95,6 +108,11 @@ jobs:
                 await image.decode();
                 return image.naturalWidth;
               }), 1600);
+              if (!mobile) {
+                assert.equal(await page.locator('#walkRainAudio').evaluate(audio => audio.paused), false);
+                await use(button('Rain sound'));
+                await page.waitForFunction(() => document.querySelector('#walkRainAudio').paused);
+              }
               await shot('02-main-hall-up-main-stairs');
               await use(button(stairs));
               await room('Upstairs Landing');
@@ -113,23 +131,29 @@ jobs:
               await shot('04-main-hall-toward-front-hall');
               await use(button(opening));
               await room('Front Hall');
+              if (!mobile) {
+                await button(opening).focus();
+                await page.keyboard.press('Enter');
+                await room('Main Hall');
+                assert.equal(await page.evaluate(() => document.activeElement.id), 'floorName');
+              }
               assert.deepEqual(errors, []);
               await page.goto(base + '/index.html');
               await use(button('Turn around'));
               await use(page.getByRole('link', { name: opening, exact: true }));
               await room('Main Hall');
-              console.log(mobile ? 'Phone touch round trip and doorway-origin swipe passed' : 'Desktop mouse round trip passed');
+              console.log(label + ' round trip passed' + (swipe ? ' with doorway-origin swipe' : ''));
               await context.close();
+            } finally {
+              await browser.close();
             }
-          } finally {
-            await browser.close();
           }
           JS
           cat > walk-screenshots/index.html <<'HTML'
           <!doctype html><html lang="en"><meta charset="utf-8"><title>Studio LaDuke threshold review</title>
           <style>
           body{font:16px system-ui;background:#211b17;color:#fff3de;margin:24px}
-          section{display:grid;grid-template-columns:3fr 1fr;gap:14px;align-items:start}
+          section{display:grid;grid-template-columns:3fr 1fr 1fr;gap:14px;align-items:start}
           h2{grid-column:1/-1}figure{margin:0}img{display:block;width:100%;height:auto}figcaption{margin:6px 0 20px}
           </style>
           <h1>Studio LaDuke threshold review</h1>
@@ -143,7 +167,7 @@ jobs:
             ['05-map-upstairs-landing', 'House map on Upstairs Landing']
           ]) {
             document.querySelector('#walk').insertAdjacentHTML('beforeend',
-              '<h2>' + title + '</h2>' + ['desktop', 'phone'].map(device =>
+              '<h2>' + title + '</h2>' + ['desktop', 'phone', 'iphone-webkit'].map(device =>
                 '<figure><img src="' + device + '-' + file + '.png" alt="' + title +
                 ' on ' + device + '"><figcaption>' + device + '</figcaption></figure>').join(''));
           }
