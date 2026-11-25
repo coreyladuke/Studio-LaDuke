@@ -71,6 +71,15 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
 body.lights-out #plate{filter:brightness(.65)}
 @media(max-width:650px){#lookbar{gap:6px}#lookbar button{width:43px;height:43px}#floorTag{padding:8px;min-width:120px}.room-sign{min-width:275px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+/* Keep pointer feedback on the object and reserve outlines for keyboard focus. */
+body.directed-house #plate .door:hover,
+body.directed-house #plate .prop:hover{background:transparent;box-shadow:none;outline:none}
+body.directed-house #plate .door:hover::before{border-color:transparent;background:none;box-shadow:none}
+body.directed-house #plate :is(.door,.prop):focus-visible{outline:3px solid #ffe0a0;outline-offset:-3px}
+body.directed-house #plate .door[data-aligned]::after{display:none}
+body.directed-house #plate .door[data-aligned] .plaque{display:block}
+body.directed-house #plate .prop .hint{pointer-events:none}
+#camera.dragging :is(.hint,.plaque){visibility:hidden}
 </style>
 </head>
 <body>
@@ -195,12 +204,30 @@ function setPan(p,immediate){
  }
  panFrame=requestAnimationFrame(frame);
 }
+// Bounds are measured against the 1600 × 900 room art. Other exits are available on the map.
+const photographedExits={
+ foyer:{living:[145,195,272,483],"workshop.html":[646,195,306,490]},
+ living:{foyer:[0,168,112,565]}
+};
+const livingProps={
+ sofa:[836,478,207,210],
+ tv:[786,302,231,100],
+ pick:[1049,365,174,280],
+ lamp:[879,95,157,157]
+};
+function placeOnPlate(button,bounds){
+ const [left,top,width,height]=bounds;
+ Object.assign(button.style,{
+  left:left+"px",top:top+"px",width:width+"px",height:height+"px",transform:"none"
+ });
+ button.dataset.aligned="";
+}
 function draw(){
  const r=R[here];if(!r)return;document.body.classList.remove("scene-living","scene-foyer","scene-coat");plate.classList.remove("pocket-open","star-awake","tv-playing","pick-found","lamp-dim","yellow-spot","pink-spot","discovered","mirror-fog","drawer-open","steam-on","light-on","spark-on");if(["living","foyer","coat"].includes(here))document.body.classList.add("scene-"+here);painting.innerHTML=(window.StudioHouseDirector&&window.StudioHouseDirector.scene(here))||(window.StudioHouseV2&&window.StudioHouseV2.scene(here))||(r.photo?'<img src="'+r.photo+'" alt=""><div class="wash"></div>':lightPanel(r));
  id("roomName").textContent=r.n;id("roomDescription").textContent=r.d;id("floorName").textContent=r.n;id("floorTag").querySelector("small").textContent=floors[r.f]+" · Swipe to look";doorBox.replaceChildren();objectBox.replaceChildren();
  let pos=r.e.length===1?[800]:r.e.length===2?[440,1150]:r.e.length===3?[300,805,1300]:[170,560,1035,1430];if(here==="foyer")pos=[190,1340,490,805];if(here==="coat")pos=[186];if(!["living","foyer","coat"].includes(here))pos=r.e.length===1?[800]:r.e.length===2?[420,1180]:r.e.length===3?[250,800,1350]:[170,560,1040,1430];
- r.e.forEach(function(d,i){let b=document.createElement("button");b.className="door";b.type="button";b.style.left=pos[i]+"px";b.dataset.way=d[2]||"";b.setAttribute("aria-label","Go to "+d[0]);b.innerHTML='<span class="doorface"></span><span class="plaque">'+escapeHtml(d[0])+'</span>';b.addEventListener("click",function(){go(d[1]);});doorBox.append(b);});
- (r.p||[]).forEach(function(p){let b=document.createElement("button");b.className="prop";b.type="button";b.style.left=p[1]+"px";b.style.top=p[2]+"px";b.setAttribute("aria-label",p[3]);b.innerHTML=propArt(p[0])+'<span class="hint">'+escapeHtml(p[3])+'</span>';b.addEventListener("click",function(){if(window.StudioHouseAdventure)window.StudioHouseAdventure.collect(here,p[0]);if(p[5]==="code"){code();return;}if(p[5]==="night"){document.body.classList.toggle("lights-out");if(window.StudioHouseDirector)window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast});return;}if(p[5]){go(p[5]);return;}if(window.StudioHouseDirector&&window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast}))return;if(window.StudioHouseV2&&window.StudioHouseV2.activate(here,p[0],{plate:plate,toast:toast}))return;detail(p[3],p[4],p[5]);});objectBox.append(b);});
+ r.e.forEach(function(d,i){const bounds=photographedExits[here]?.[d[1]];if(photographedExits[here]&&!bounds)return;let b=document.createElement("button");b.className="door";b.type="button";b.style.left=pos[i]+"px";if(bounds)placeOnPlate(b,bounds);b.dataset.way=d[2]||"";b.setAttribute("aria-label","Go to "+d[0]);b.innerHTML='<span class="doorface"></span><span class="plaque">'+escapeHtml(d[0])+'</span>';b.addEventListener("click",function(){go(d[1]);});doorBox.append(b);});
+ (r.p||[]).forEach(function(p){let b=document.createElement("button");b.className="prop";b.type="button";b.style.left=p[1]+"px";b.style.top=p[2]+"px";if(here==="living"&&livingProps[p[0]])placeOnPlate(b,livingProps[p[0]]);b.setAttribute("aria-label",p[3]);b.innerHTML=propArt(p[0])+'<span class="hint">'+escapeHtml(p[3])+'</span>';b.addEventListener("click",function(){if(window.StudioHouseAdventure)window.StudioHouseAdventure.collect(here,p[0]);if(p[5]==="code"){code();return;}if(p[5]==="night"){document.body.classList.toggle("lights-out");if(window.StudioHouseDirector)window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast});return;}if(p[5]){go(p[5]);return;}if(window.StudioHouseDirector&&window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast}))return;if(window.StudioHouseV2&&window.StudioHouseV2.activate(here,p[0],{plate:plate,toast:toast}))return;detail(p[3],p[4],p[5]);});objectBox.append(b);});
  stopPan();resize();setPan(restoreView(here),true);makeMap();document.title=r.n+" · Studio LaDuke House";
 }
 function go(to,replace){if(/\.html/.test(to)){location.href=to;return;}if(!R[to]){toast("That door isn't ready.");return;}if(to==="vault"&&sessionStorage.getItem("laduke-movie-gauntlet-done")!=="1"){toast("The vault awaits the end of the movie maze.");return;}saveView();hideDetail(false);hideMap(false);here=to;document.body.classList.remove("lights-out");if(replace)history.replaceState({room:to},"","house.html?room="+to);else history.pushState({room:to},"","house.html?room="+to);draw();}
@@ -222,14 +249,14 @@ id("mapOpen").addEventListener("click",showMap);id("closeMap").addEventListener(
 id("closeDialog").addEventListener("click",function(){hideDetail(true);});id("dialogShade").addEventListener("click",function(){hideDetail(true);});
 id("left").addEventListener("click",function(){setPan(pan+Math.max(180,innerWidth*.66));});id("right").addEventListener("click",function(){setPan(pan-Math.max(180,innerWidth*.66));});
 camera.addEventListener("pointerdown",function(e){
- if(e.button!==0||!id("dialog").hidden||!id("map").hidden)return;
- stopPan();panTarget=pan;
+ if(!e.isPrimary||e.button!==0||!id("dialog").hidden||!id("map").hidden)return;
+ suppress=false;stopPan();panTarget=pan;
  drag={x:e.clientX,p:pan,m:false,lastX:e.clientX,lastT:performance.now(),velocity:0,pointerId:e.pointerId};
 });
 camera.addEventListener("pointermove",function(e){
  if(!drag||e.pointerId!==drag.pointerId)return;
  const dx=e.clientX-drag.x,now=performance.now(),dt=Math.max(8,now-drag.lastT);
- if(Math.abs(dx)>9){
+ if(drag.m||Math.abs(dx)>9){
   if(!drag.m){drag.m=true;try{camera.setPointerCapture(e.pointerId);}catch(error){}}
   camera.classList.add("dragging");
   drag.velocity=Math.max(-2.6,Math.min(2.6,(e.clientX-drag.lastX)/dt));
@@ -237,14 +264,14 @@ camera.addEventListener("pointermove",function(e){
   setPan(drag.p+dx,true);
  }
 });
-function finish(){
- if(!drag)return;
- const wasDragging=drag.m,speed=drag.velocity;
+function finish(e){
+ if(!drag||e.pointerId!==drag.pointerId)return;
+ const wasDragging=drag.m,speed=e.type==="pointerup"&&performance.now()-drag.lastT<90?drag.velocity:0;
  suppress=wasDragging;drag=null;camera.classList.remove("dragging");
  if(wasDragging&&!reduceMotion.matches&&Math.abs(speed)>.18)setPan(pan+speed*115);
 }
 camera.addEventListener("pointerup",finish);camera.addEventListener("pointercancel",finish);window.addEventListener("pointerup",finish);
-camera.addEventListener("click",function(e){if(suppress){suppress=false;e.preventDefault();e.stopImmediatePropagation();}},true);
+camera.addEventListener("click",function(e){if(suppress&&e.detail>0){suppress=false;e.preventDefault();e.stopImmediatePropagation();}},true);
 window.addEventListener("resize",resize);
 window.addEventListener("popstate",function(){saveView();let q=new URLSearchParams(location.search).get("room");here=R[q]&&(q!=="vault"||sessionStorage.getItem("laduke-movie-gauntlet-done")==="1")?q:"escape";draw();});
 document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(!id("dialog").hidden)hideDetail(true);else if(!id("map").hidden)hideMap(true);return;}if(!id("dialog").hidden||!id("map").hidden||(window.StudioHouseAdventure&&window.StudioHouseAdventure.isOpen))return;if(e.key==="ArrowLeft"){e.preventDefault();setPan(pan+180);}if(e.key==="ArrowRight"){e.preventDefault();setPan(pan-180);}if(e.key.toLowerCase()==="m"&&!e.metaKey&&!e.ctrlKey)showMap();});
