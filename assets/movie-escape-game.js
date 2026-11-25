@@ -13,22 +13,22 @@ const stages=[
   success:"The containment grid glows green. A door clicks open in the dark."},
  {id:"shining",film:"THE SHINING",subtitle:"The Overlook Corridor",name:"The Shining · Corridor",goal:"The room number is missing. Count the motifs on the wall panels in the order above the door.",
   clue:"FIRST: red diamonds. SECOND: cream circles. THIRD: gold bars.",
-  type:"code",code:"237",props:[["diamonds","Count the red diamonds"],["circles","Count the cream circles"],["bars","Count the gold carpet bars"],["door","Inspect the numbered door"]],
+  type:"code",code:"237",props:[["diamonds","Count the red diamonds"],["circles","Count the cream circles"],["bars","Count the gold carpet bars"],["door","Inspect the numbered door"],["phone","Lift the house phone"]],
   hints:["The wall panels give you the digits. The sign above the door gives their order.","There are two red diamonds, three cream circles, and seven gold bars.","Enter 237 on the door keypad."],
   success:"The old hotel lock turns. The corridor grows strangely quiet."},
  {id:"beetle",film:"BEETLEJUICE",subtitle:"The Waiting Room",name:"Beetlejuice · Waiting Room",goal:"The exit clerk is absent. Find the order of the three things on the waiting-room notice, then wake the peculiar doorway.",
   clue:"ANNOUNCEMENT → NUMBER → ODDITY.",
-  type:"sequence",order:["bell","ticket","sculpture"],props:[["bell","Ring the desk bell"],["ticket","Take a waiting ticket"],["sculpture","Turn the odd sculpture"],["door","Inspect the strange green door"]],
+  type:"sequence",order:["bell","ticket","sculpture"],props:[["bell","Ring the desk bell"],["ticket","Take a waiting ticket"],["sculpture","Turn the odd sculpture"],["door","Inspect the strange green door"],["drawer","Open the file drawer"]],
   hints:["The notice uses three words for three physical objects.","The bell announces you; the ticket gives your number; the sculpture is the oddity.","Ring BELL, take TICKET, turn SCULPTURE."],
   success:"The crooked door turns green. The waiting line has finally moved."},
  {id:"wayne",film:"WAYNE'S WORLD",subtitle:"The Basement Broadcast",name:"Wayne's World · Basement",goal:"Get the basement broadcast running. Trace the signal from the instrument through the sound gear to the video.",
   clue:"STRING → SOUND → SCREEN. CRUCIAL TAUNT plays here.",
-  type:"sequence",order:["guitar","amp","camera"],props:[["guitar","Pick up the guitar"],["amp","Switch on the amplifier"],["camera","Start the video camera"],["poster","Read the Crucial Taunt poster"]],
+  type:"sequence",order:["guitar","amp","camera"],props:[["guitar","Pick up the guitar"],["amp","Switch on the amplifier"],["camera","Start the video camera"],["poster","Read the Crucial Taunt poster"],["vcr","Eject the tape"]],
   hints:["A signal must begin somewhere. The camera cannot hear an unplugged guitar.","Instrument first, amplifier second, recording equipment last.","Touch GUITAR, then AMP, then CAMERA."],
   success:"A red recording light shines. The basement show is on."},
  {id:"stand",film:"STAND BY ME",subtitle:"The Pie-Eating Contest",name:"Stand by Me · Contest",goal:"The trophy sits beside three pies. Serve the final round in the order written on the judges' note, then lift the trophy.",
   clue:"RED FIRST. GOLD SECOND. BLUE LAST. THEN THE TROPHY.",
-  type:"sequence",order:["cherry","apple","blueberry","trophy"],props:[["cherry","Serve cherry pie"],["apple","Serve apple pie"],["blueberry","Serve blueberry pie"],["trophy","Inspect the pie-contest trophy"]],
+  type:"sequence",order:["cherry","apple","blueberry","trophy"],props:[["cherry","Serve cherry pie"],["apple","Serve apple pie"],["blueberry","Serve blueberry pie"],["trophy","Inspect the pie-contest trophy"],["pitcher","Look in the water pitcher"]],
   hints:["Match the note's colors to the pie fillings, then remember what is awarded at the end.","Cherry is red, apple golden, blueberry blue. The trophy must be last.","CHERRY → APPLE → BLUEBERRY → TROPHY."],
   success:"The contest trophy rattles. Behind it, the Curiosity Vault opens."}
 ];
@@ -41,7 +41,15 @@ try{const raw=JSON.parse(localStorage.getItem(PROGRESS_KEY)||"null");if(raw&&typ
  saved.hints=saved.hints&&typeof saved.hints==="object"?saved.hints:{};
 }}catch(_){}
 let stageIndex=saved.stage,renderStage=()=>{},messageTimer=0,frameLast=performance.now(),lastSaved=0;
-let soundOn=false,audioCtx=null,hum=null,humGain=null,fanRunning=false;
+let soundOn=false,audioCtx=null,hum=null,humGain=null;
+const propStates=new Set();
+const spareProps={
+ ghost:{fan:["The fan rattles against its loose guard.","The fan winds down."]},
+ shining:{phone:["The receiver gives a dull click. The line is dead.","The receiver settles into its cradle."]},
+ beetle:{drawer:["A file marked STILL WAITING. The rest are blank.","The drawer slides shut."]},
+ wayne:{vcr:["The tape is a home recording of last week's show.","The tape clicks back into place."]},
+ stand:{pitcher:["Melted ice and an upside-down paper cup.","You set the pitcher back on the table."]}
+};
 function soundCue(success=false){
  if(!soundOn||!audioCtx)return;
  const now=audioCtx.currentTime,notes=success?[392,523.25,659.25]:[330];
@@ -98,7 +106,7 @@ function updateHint(){
  else{b.disabled=true;b.textContent="Hint in "+timeText(remain);}
 }
 function enter(index){
- fanRunning=false;
+ propStates.clear();
  stageIndex=Math.max(0,Math.min(4,index));saved.stage=stageIndex;save();
  const c=chapter(),letters=["I","II","III","IV","V"];
  $("theater").dataset.film=c.id;$("act").textContent="ACT "+letters[stageIndex]+" / V";
@@ -117,6 +125,7 @@ function enter(index){
   propBox.append(btn);
  }
  updateHint();
+ if($("theater").dataset.fallback==="true")revealFallback();
  renderStage(stageIndex);
  frameLast=performance.now();
 }
@@ -124,10 +133,12 @@ function closeProps(){$("propDrawer").hidden=true;$("inspect").setAttribute("ari
 function interact(action){
  if(!syncGate())return;
  const c=chapter();
- if(c.id==="ghost"&&action==="fan"){
-  fanRunning=!fanRunning;
+ const spare=spareProps[c.id]?.[action];
+ if(spare){
+  const opened=!propStates.has(action);
+  if(opened)propStates.add(action);else propStates.delete(action);
   soundCue(false);
-  toast(fanRunning?"The fan rattles against its loose guard.":"The fan winds down.");
+  toast(spare[opened?0:1]);
   return;
  }
  if(isSolved())return;
@@ -219,9 +230,15 @@ function tick(now){
 document.addEventListener("visibilitychange",()=>frameLast=performance.now());
 addEventListener("pagehide",save);
 function attachRenderer(draw){renderStage=typeof draw==="function"?draw:()=>{};renderStage(stageIndex)}
-function revealFallback(){const a=$("filmFallback");a.hidden=false;$("loading").hidden=true;}
+function revealFallback(){
+ $("filmFallback").hidden=false;
+ $("loading").hidden=true;
+ $("theater").dataset.fallback="true";
+ $("propDrawer").hidden=isSolved()||!syncGate();
+ $("inspect").setAttribute("aria-expanded",String(!$("propDrawer").hidden));
+}
 function reset(){saved={stage:0,solved:[],steps:{},elapsed:{},hints:{}};save();enter(0)}
-window.StudioMovieMaze={stages,get fanRunning(){return fanRunning},get stageIndex(){return stageIndex},get stage(){return chapter()},get solved(){return isSolved()},get step(){return step()},get elapsed(){return elapsed()},get hintCount(){return hintCount()},interact,submitCode,attachRenderer,revealFallback,toast,enter,next,reset};
+window.StudioMovieMaze={stages,get fanRunning(){return propStates.has("fan")},propIsOpen:action=>propStates.has(action),get stageIndex(){return stageIndex},get stage(){return chapter()},get solved(){return isSolved()},get step(){return step()},get elapsed(){return elapsed()},get hintCount(){return hintCount()},interact,submitCode,attachRenderer,revealFallback,toast,enter,next,reset};
 if(!syncGate()){$("loading").hidden=true;$("filmFallback").hidden=true;}
 enter(stageIndex);
 requestAnimationFrame(tick);

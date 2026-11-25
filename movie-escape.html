@@ -7,12 +7,12 @@
 <title>The Movie Maze · Studio LaDuke</title>
 <meta name="description" content="A five-room cinematic escape-room adventure inside Studio LaDuke, with interactive 3D movie-inspired sets and progressive hints.">
 <link rel="icon" href="favicon.png">
-<link rel="stylesheet" href="assets/movie-escape.css?v=20261124d">
+<link rel="stylesheet" href="assets/movie-escape.css?v=20261124e">
 </head>
 <body>
 <main id="theater" data-film="ghost" aria-label="Studio LaDuke movie-inspired escape-room experience">
  <canvas id="cinema3d" tabindex="0" aria-label="3D movie-themed escape room. Drag to look around, then tap objects or use Inspect Objects to solve each puzzle."></canvas>
- <div id="filmFallback" hidden><p>The three-dimensional scenery isn't available here. The puzzle objects below still work, so you can play without 3D graphics.</p></div>
+ <div id="filmFallback" hidden><p>Use Inspect objects to play with the room controls.</p></div>
  <div id="loading" role="status" aria-live="polite"><span>✳</span>Opening the screening room</div>
  <header class="top">
   <a href="house.html?room=escape" id="returnHouse" title="Return to the House escape room">↶ <span>Return to the House</span></a>
@@ -51,9 +51,9 @@
   <a href="house.html?room=escape">Return to the brass keypad</a></div>
  </div>
 </main>
-<script src="assets/movie-escape-game.js?v=20261124d"></script>
+<script src="assets/movie-escape-game.js?v=20261124e"></script>
 <script type="module">
-import("./assets/movie-escape-3d.js?v=20261124d").catch(()=>{
+import("./assets/movie-escape-3d.js?v=20261124e").catch(()=>{
  window.StudioMovieMaze?.revealFallback();
 });
 </script>

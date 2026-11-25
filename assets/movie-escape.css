@@ -83,3 +83,12 @@ button,a,input{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-v
 .door-reveal #nextRoom{font-size:14px;min-height:43px;padding:10px 15px}
 @media(max-width:650px){.door-reveal{bottom:clamp(181px,27vh,228px);max-width:85vw}}
 
+
+#theater[data-film="stand"]:before{
+ background:linear-gradient(180deg,#17100fbb,transparent 23%,transparent 63%,#201915e8),
+ radial-gradient(ellipse at center,transparent 49%,#20130d73)
+}
+@media(max-width:650px){
+ .objective{bottom:calc(104px + env(safe-area-inset-bottom))}
+ #theater[data-fallback="true"] .objective{bottom:auto;top:190px}
+}

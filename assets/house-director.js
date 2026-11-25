@@ -6,7 +6,7 @@ const V2=window.StudioHouseV2;
 if(!V2)return;
 const pex=(id)=>"assets/house-plates/pexels-"+id+".jpg";
 const rooms={
- hall:{image:pex(35695313),warm:[890,380],fallback:"assets/front-room-doors.webp"},
+ hall:{image:"assets/house-plates/main-hall-cedar.webp",warm:[532,473]},
  dining:{image:pex(7163611),warm:[950,300],fallback:"assets/front-room-wide.webp"},
  kitchen:{image:pex(37084525),warm:[1100,370],fallback:"assets/workshop-in-use.webp"},
  pantry:{image:"assets/forgotten-works.webp",warm:[1200,220]},

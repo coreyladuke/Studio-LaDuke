@@ -80,6 +80,7 @@ body.directed-house #plate .door[data-aligned]::after{display:none}
 body.directed-house #plate .door[data-aligned] .plaque{display:block}
 body.directed-house #plate .prop .hint{pointer-events:none}
 #camera.dragging :is(.hint,.plaque){visibility:hidden}
+#mapOpen,#map button,#lookbar button{touch-action:manipulation}
 .entry-plan{position:relative;aspect-ratio:360/220;margin:0 0 20px}
 .entry-plan svg{position:absolute;inset:0;width:100%;height:100%;color:#7d583b}
 .entry-plan button{position:absolute;transform:translate(-50%,-50%);width:29%;min-height:44px;padding:3px;background:#ebd6b2;border:1px solid #8b6849;color:#362419;font:bold 13px Georgia,serif}
@@ -105,7 +106,7 @@ body.directed-house #plate .prop .hint{pointer-events:none}
 <div id="dialogShade" hidden></div>
 <section id="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle" hidden><button id="closeDialog" aria-label="Close" type="button">×</button><h2 id="dialogTitle"></h2><p id="dialogText"></p><form id="codeForm" hidden><label for="codeInput">Three-digit code</label><input id="codeInput" required inputmode="numeric" pattern="[0-9]{3}" maxlength="3" autocomplete="off"><button type="submit">Unlock</button></form><div id="dialogButtons" class="buttons"></div></section>
 <script src="assets/house-v2.js"></script>
-<script src="assets/house-director.js?v=20261124-entry"></script>
+<script src="assets/house-director.js?v=20261124-cedar"></script>
 <script src="assets/house-adventure.js"></script>
 <script>
 "use strict";
@@ -114,7 +115,7 @@ const R={
  foyer:{n:"Front Hall",f:0,d:"A place to hang your coat and come inside.",e:[["Front door","index.html"],["Living room","living"],["Coat closet","coat"],["Workshop","workshop.html"],["Main hall","hall"]],p:[["star",1123,479,"The star","Five music notes arranged into the Studio LaDuke star."]]},
  coat:{n:"Coat Closet",f:0,d:"Boots, coats and a suspicious umbrella.",e:[["Front hall","foyer"]],p:[["chest",795,580,"A forgotten pocket","Old ticket stubs, guitar picks and useful little things."]]},
  living:{n:"Living Room",f:0,d:"Come in. Sit down. Stay a while.",e:[["Front hall","foyer"],["Dining room","dining"],["Back porch","porch","outside"]],p:[["sofa",951,718,"The record crate","Look through the old records."],["tv",808,469,"The stereo","Try the vintage stereo."],["pick",827,763,"A guitar pick","A little lucky find."],["lamp",1250,320,"The table lamp","A softer light."]]},
- hall:{n:"Main Hall",f:0,d:"A book-lined passage leads deeper into the house.",photo:"assets/house-plates/pexels-35695313.jpg",e:[["Front hall","foyer"],["Art studio","art"],["Stairs upstairs","landing","up"],["Basement stairs","basement","down"]]},
+ hall:{n:"Main Hall",f:0,d:"A book-lined passage leads deeper into the house.",photo:"assets/house-plates/main-hall-cedar.webp",e:[["Front hall","foyer"],["Art studio","art"],["Stairs upstairs","landing","up"],["Basement stairs","basement","down"]]},
  dining:{n:"Dining Nook",f:0,d:"A table for dinner and original board games.",e:[["Living room","living"],["Kitchen","kitchen"],["Pantry","pantry"]],p:[["board",790,685,"The board game","This table is ready for the first original Studio LaDuke board game."]]},
  kitchen:{n:"Kitchen",f:0,d:"Rain on the glass. Something on the stove.",e:[["Dining nook","dining"],["Laundry","laundry"],["Back porch","porch","outside"]],p:[["cup",785,670,"Put the kettle on","A good evening for pasta and a movie."]]},
  pantry:{n:"Pantry",f:0,d:"Food, snacks and things in jars.",e:[["Dining nook","dining"]],p:[["chest",770,600,"Look through the pantry","Popcorn. Pasta. A packet of something mysterious."]]},
@@ -213,7 +214,11 @@ function setPan(p,immediate){
 // Bounds are measured against the 1600 × 900 room art. Other exits are available on the map.
 const photographedExits={
  foyer:{living:[145,195,272,483],"workshop.html":[646,195,306,490],hall:[1184,195,288,486]},
- hall:{landing:[635,135,393,580]},
+ hall:{
+  foyer:[48,55,188,824,"polygon(0 0,100% 16%,100% 80%,0 100%)"],
+  landing:[678,161,286,521],
+  art:[1286,103,257,740,"polygon(0 17%,100% 0,100% 100%,0 75%)"]
+ },
  living:{foyer:[0,168,112,565]}
 };
 const livingProps={
@@ -223,9 +228,9 @@ const livingProps={
  lamp:[879,95,157,157]
 };
 function placeOnPlate(button,bounds){
- const [left,top,width,height]=bounds;
+ const [left,top,width,height,shape]=bounds;
  Object.assign(button.style,{
-  left:left+"px",top:top+"px",width:width+"px",height:height+"px",transform:"none"
+  left:left+"px",top:top+"px",width:width+"px",height:height+"px",transform:"none",clipPath:shape||""
  });
  button.dataset.aligned="";
 }

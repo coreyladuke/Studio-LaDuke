@@ -7,6 +7,8 @@ const canvas=document.getElementById("cinema3d"),loading=document.getElementById
 const reduced=matchMedia("(prefers-reduced-motion: reduce)");
 let renderer,scene,camera,roomRoot,roomLights=[],clocks=[],clickables=[],vivid=[],frame=0,lastTime=performance.now(),yaw=0,pitch=0,yawAim=0,pitchAim=0,entryTime=0,qualityTuned=false,exitHinge=null,exitLight=null,exitThreshold=null,renderStarted=0;
 const roomMaterials=new Set(),roomTextures=new Set();
+let exteriorTexture,activePointer;
+const stageYaw={ghost:.64,shining:.66,beetle:.73,wayne:.72,stand:.73};
 const raycaster=new THREE.Raycaster(),cursor=new THREE.Vector2(),touch={down:false,drag:false,x:0,y:0,startX:0,startY:0};
 const C={wood:"#764a31",gold:"#dbad68",cream:"#eddfc5",ink:"#191b1f",red:"#ac3c3a",purple:"#713d8b"};
 function mat(color,roughness=.7,metalness=0,extras={}){return new THREE.MeshStandardMaterial({color,roughness,metalness,...extras});}
@@ -18,7 +20,8 @@ const M={
  blue:mat("#3c7fbd",.33,.24),orange:mat("#c97634",.45,.12),grey:mat("#73787e",.47,.5),
  velvet:mat("#532e55",.91),cloth:mat("#d5bb90",.86)
 };
-const sharedMaterials=new Set(Object.values(M));
+const fairBackdrop=new THREE.MeshBasicMaterial({color:"#9e8064",toneMapped:false});
+const sharedMaterials=new Set([...Object.values(M),fairBackdrop]);
 function mesh(geo,material,x=0,y=0,z=0,parent=roomRoot){
  if(material&&!sharedMaterials.has(material)){roomMaterials.add(material);if(material.map)roomTextures.add(material.map);}
  const obj=new THREE.Mesh(geo,material);obj.position.set(x,y,z);obj.castShadow=true;obj.receiveShadow=true;parent.add(obj);return obj;
@@ -83,9 +86,10 @@ function stageFloorTexture(type){
   }
   for(let j=0;j<200;j++){g.fillStyle="#d2ad8b2a";g.fillRect((j*121)%1024,(j*57)%1024,2,12);}
  }else{
-  const size=96;for(let y=0;y<11;y++)for(let x=0;x<11;x++){
-   g.fillStyle=(x+y)%2?"#c65d43":"#eddab9";g.fillRect(x*size,y*size,size,size);
-   g.strokeStyle="#f2dfb2";g.lineWidth=4;g.strokeRect(x*size,y*size,size,size);
+  g.fillStyle="#c9b08e";g.fillRect(0,0,1024,1024);
+  for(let i=0;i<9000;i++){
+   g.fillStyle=i%3?"#91663a2a":"#efe1bf3a";
+   g.fillRect((i*439)%1024,(i*i*19+i*71)%1024,1+i%4,1+i%2);
   }
  }
  const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;
@@ -123,37 +127,48 @@ function createRoom(stage){
  const theme=lights[stage.id],id=stage.id;
  scene.background=new THREE.Color(id==="ghost"?"#111d21":id==="shining"?"#351d19":id==="beetle"?"#1d1d20":id==="wayne"?"#231a2e":"#33231c");
  scene.fog=new THREE.Fog(scene.background,22,48);
- const floor=mesh(new THREE.PlaneGeometry(17,25),mat("#ffffff",.49,.03,{map:stageFloorTexture(id)}),0,-.014,-2);
+ const fair=id==="stand";
+ const floor=mesh(new THREE.PlaneGeometry(fair?40:17,25),mat(fair?"#967451":"#ffffff",fair?.95:.49,.03,{map:stageFloorTexture(id)}),0,-.014,-2);
  floor.rotation.x=-Math.PI/2;floor.castShadow=false;
  const walls=id==="beetle"?mat("#8c8287",.82):id==="shining"?mat("#713c35",.74):id==="ghost"?mat("#d1b7a1",.94,0,{map:masonryTexture()}):id==="wayne"?M.wood:M.oak;
- box(.7,6.65,23,-7.85,3.32,-2.4,walls);box(.7,6.65,23,7.85,3.32,-2.4,walls);
+ if(!fair){
+  box(.7,6.65,23,-7.85,3.32,-2.4,walls);box(.7,6.65,23,7.85,3.32,-2.4,walls);
+ }
  // Architectural exit opening at x≈6, 2m wide. Never fake a hinged door in front of solid masonry.
- box(13,6.66,.7,-1.5,3.32,-11.48,walls);
- box(1,6.66,.7,7.5,3.32,-11.48,walls);
- box(2,2.55,.7,6,5.38,-11.48,walls);
+ if(fair){
+  const backdrop=mesh(new THREE.PlaneGeometry(37,20.8125),fairBackdrop,0,3.1,-15.4);
+  backdrop.castShadow=false;backdrop.receiveShadow=false;
+  // Give the freestanding exit a short rail-side booth as a frame.
+  for(const x of [4.73,7.26])box(.24,3.92,.54,x,1.96,-10.49,M.wood);
+  box(2.82,.42,.61,5.99,4.11,-10.49,M.woodDark);
+ }else{
+  box(13,6.66,.7,-1.5,3.32,-11.48,walls);
+  box(1,6.66,.7,7.5,3.32,-11.48,walls);
+  box(2,2.55,.7,6,5.38,-11.48,walls);
+ }
  const beyond=mesh(new THREE.PlaneGeometry(2.0,3.86),new THREE.MeshBasicMaterial({color:"#a89570",transparent:true,opacity:.24,side:THREE.DoubleSide}),6,1.96,-12.8);
  beyond.castShadow=false;
  box(.16,3.7,2.2,5.02,1.92,-12.45,M.woodDark);
  box(.16,3.7,2.2,6.99,1.92,-12.45,M.woodDark);
  box(1.95,.12,2.2,6,.06,-12.45,M.wood);
  
- box(16,.46,22,0,6.66,-2.4,id==="beetle"||id==="ghost"?M.iron:M.wood);
+ if(!fair)box(16,.46,22,0,6.66,-2.4,id==="beetle"||id==="ghost"?M.iron:M.wood);
  // intricate trim is spatial, with cast shadows
- if(id!=="ghost")for(const y of [.13,1.21,1.42,5.42,6.17]){
+ if(id!=="ghost"&&!fair)for(const y of [.13,1.21,1.42,5.42,6.17]){
   for(const x of [-7.43,7.43])box(.14,.13,23,x,y,-2.4,y===1.21?M.brass:M.oak);
   if(y>=4)box(15.2,.16,.18,0,y,-11.05,M.oak);
   else box(12.45,.16,.18,-1.25,y,-11.05,y===1.21?M.brass:M.oak);
  }
- if(id!=="ghost")for(const z of [-9.4,-6.1,-2.7,.6,4.1,7.6])for(const x of [-7.4,7.4]){
+ if(id!=="ghost"&&!fair)for(const z of [-9.4,-6.1,-2.7,.6,4.1,7.6])for(const x of [-7.4,7.4]){
   box(.22,6.2,.24,x,3.1,z,M.woodDark);
   box(.31,.2,.31,x,1.42,z,M.brass);
  }
- if(id!=="ghost")for(const x of [-6.8,-2.6,2.6]){
+ if(id!=="ghost"&&!fair)for(const x of [-6.8,-2.6,2.6]){
   box(.2,5.6,.3,x,3.2,-11.0,M.woodDark);
   box(.35,.28,.38,x,5.85,-10.89,M.brass);
  }
  // vintage projector-inspired ceiling fixtures with physically colored light
- if(id!=="ghost")for(const x of [-5.5,0,5.5]){
+ if(id!=="ghost"&&!fair)for(const x of [-5.5,0,5.5]){
   cyl(.03,.03,.9,x,6.08,-4.3,M.brass);
   cyl(.32,.55,.4,x,5.42,-4.3,M.woodDark,20);
   cyl(.35,.35,.04,x,5.18,-4.3,M.brass);
@@ -320,6 +335,12 @@ function buildShining(){
  cyl(.075,.075,.1,.74,1.93,.3,M.brass,16,door).rotation.x=Math.PI/2;
  const tag=labelTexture("ROOM ? ? ?",{size:86,background:"#512f21"});
  mesh(new THREE.PlaneGeometry(1.6,.5),new THREE.MeshBasicMaterial({map:tag}),0,3.49,.29,door);
+ const phone=addProp("phone","Hotel house phone",-5.1,1.12,-6.35,1.05,1.14,1.04);
+ box(.88,.15,.85,0,-.02,0,M.woodDark,phone);
+ box(.52,.17,.48,0,.13,0,M.iron,phone);
+ const receiver=box(.67,.13,.105,0,.35,.08,M.black,phone);
+ for(const x of [-.27,.27])box(.14,.19,.21,x,.31,.08,M.black,phone);
+ vivid.push({kind:"spare",action:"phone",change:open=>{receiver.position.y=open?.55:.35;receiver.rotation.z=open?.29:0;}});
  return group;
 }
 function buildBeetle(){
@@ -356,6 +377,11 @@ function buildBeetle(){
  for(let i=0;i<33;i++){let t=i/32*3.9*Math.PI;shape.push(new THREE.Vector3(Math.sin(t)*(.31+i/96),.42+i/32*2.4,Math.cos(t)*(.27+i/120)));}
  const twisted=tube(shape,.12,M.purple,sculpture);vivid.push({kind:"sculpt",mesh:twisted});
  sphere(.31,.1,2.95,.1,M.green,sculpture).scale.set(1.5,.7,1);
+ const drawer=addProp("drawer","Clerk's file drawer",-5.19,.51,-7.08,1.43,1.21,1.28);
+ box(1.4,1.58,1.0,0,.32,0,M.grey,drawer);
+ const file=box(1.23,.30,.81,0,.48,.19,M.iron,drawer);
+ const pull=box(.28,.08,.125,0,.49,.62,M.brass,drawer);
+ vivid.push({kind:"spare",action:"drawer",change:open=>{file.position.z=open?.57:.19;pull.position.z=open?1:.62;}});
  const door=addProp("door","The crooked green door",0,0,-9.55,2.7,4.0,.8);
  const glowMat=mat("#328744",.3,.22,{emissive:"#3ec74f",emissiveIntensity:.45});
  const d=box(2.35,3.62,.19,0,2.2,0,glowMat,door);d.rotation.z=.055;
@@ -394,6 +420,19 @@ function buildWayne(){
  box(3.7,.47,1.48,0,.52,0,M.velvet,couch);
  box(3.42,.92,.42,0,1.01,-.52,M.velvet,couch);
  for(const x of [-1.71,1.71])box(.42,.53,1.34,x,.81,0,M.velvet,couch);
+ const vcr=addProp("vcr","VCR tape deck",5.3,.53,-6.03,1.34,1.1,1.24);
+ box(1.43,.94,.82,0,-.03,0,M.woodDark,vcr);
+ box(1.24,.24,.67,0,.61,.04,M.black,vcr);
+ const tape=box(.58,.059,.34,0,.62,.41,M.grey,vcr);
+ vivid.push({kind:"spare",action:"vcr",change:open=>{tape.position.z=open?.57:.41;}});
+ const crt=mat("#252e40",.22,.25,{emissive:"#7fade8",emissiveIntensity:.04});
+ box(1.09,.81,.67,0,1.15,0,M.woodDark,vcr);
+ box(.78,.51,.041,-.065,1.17,.347,crt,vcr);
+ vivid.push({kind:"relay",material:crt,step:3});
+ for(const points of [
+  [[-3.22,.12,-4.87],[-2.35,.07,-4.4],[-.72,.08,-4.65],[0,.16,-4.76]],
+  [[0,.15,-5.65],[.89,.08,-6.26],[2.34,.07,-5.98],[3.26,.13,-5.58]]
+ ])tube(points.map(point=>new THREE.Vector3(...point)),.033,M.iron,group);
  const poster=addProp("poster","Band poster",4.5,2.96,-10.55,2.5,1.25,.2);
  plaque("CRUCIAL TAUNT\nTONIGHT",0,.34,0,2.4,1.12,{background:"#4d265d",size:77},poster);
  return group;
@@ -417,10 +456,13 @@ function buildStand(){
   flag.rotation.z=Math.PI;
  }
 
- for(let i=0;i<11;i++)box(15,.075,.10,0,.9+i*.44,-10.7,i%2?M.oak:M.woodDark);
- const cloth=new THREE.MeshStandardMaterial({map:stageFloorTexture("stand"),roughness:.93});
+ const cloth=mat("#b75341",.94);
  box(11.4,.18,2.4,0,.95,-5.75,cloth);
  for(let i=0;i<6;i++)box(.14,1.0,1.1,-5.1+i*2.05,.52,-5.75,M.wood);
+ const pitcher=addProp("pitcher","Water pitcher",-5.05,.97,-5.54,.82,1.31,1.0);
+ cyl(.33,.29,.72,0,.37,0,M.ivory,24,pitcher);
+ ring(.246,.049,-.27,.34,0,M.ivory,pitcher);
+ vivid.push({kind:"spare",action:"pitcher",change:open=>{pitcher.rotation.z=open?.17:0;}});
  const pies=[["cherry",-3.25,"#a73b3c"],["apple",0,"#d8a24f"],["blueberry",3.25,"#404f88"]];
  for(const [action,x,color]of pies){
   const p=addProp(action,action+" pie",x,.45,-5.55,2.2,1.6,2.1);
@@ -463,8 +505,16 @@ function initialize(){
  dir.position.set(-4,8,3);dir.castShadow=true;dir.shadow.mapSize.set(768,768);
  dir.shadow.camera.left=-12;dir.shadow.camera.right=12;dir.shadow.camera.top=12;dir.shadow.camera.bottom=-12;dir.shadow.normalBias=.05;scene.add(dir);
  const loader=new THREE.TextureLoader();
+ const loadExterior=()=>{
+  if(exteriorTexture)return;
+  exteriorTexture=loader.load("assets/movie-maze/county-fair.webp",texture=>{
+   texture.colorSpace=THREE.SRGBColorSpace;
+   fairBackdrop.map=texture;fairBackdrop.color.set("#ffffff");fairBackdrop.needsUpdate=true;
+  });
+ };
  loader.load("assets/pbr/wood-floor-diff.webp",t=>{t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(2,2);t.colorSpace=THREE.SRGBColorSpace;M.wood.map=t;M.wood.needsUpdate=true;},undefined,()=>{});
  game.attachRenderer(i=>{
+  if(game.stages[i].id==="stand")loadExterior();
   createRoom(game.stages[i]);
   yaw=yawAim=0;pitch=pitchAim=0;entryTime=performance.now();
   
@@ -474,21 +524,25 @@ function initialize(){
   renderer.setSize(w,h,false);
  }
  addEventListener("resize",resize);resize();
+ const boundedYaw=value=>THREE.MathUtils.clamp(value,-stageYaw[game.stage.id],stageYaw[game.stage.id]);
  const onPoint={down:false,moved:false,startX:0,startY:0,x:0,y:0};
  canvas.addEventListener("pointerdown",e=>{
-  if(!e.isPrimary||e.button!==0)return;onPoint.down=true;onPoint.moved=false;onPoint.startX=onPoint.x=e.clientX;onPoint.startY=onPoint.y=e.clientY;
+  if(!e.isPrimary||e.button!==0)return;activePointer=e.pointerId;onPoint.down=true;onPoint.moved=false;onPoint.startX=onPoint.x=e.clientX;onPoint.startY=onPoint.y=e.clientY;
   try{canvas.setPointerCapture(e.pointerId)}catch(_){}
  });
  canvas.addEventListener("pointermove",e=>{
-  if(!e.isPrimary||!onPoint.down)return;
-  if(Math.abs(e.clientX-onPoint.startX)+Math.abs(e.clientY-onPoint.startY)>8)onPoint.moved=true;
+  if(e.pointerId!==activePointer||!onPoint.down)return;
+  if(!onPoint.moved){
+   if(Math.hypot(e.clientX-onPoint.startX,e.clientY-onPoint.startY)<=8)return;
+   onPoint.moved=true;
+  }
   const dx=e.clientX-onPoint.x,dy=e.clientY-onPoint.y;
   onPoint.x=e.clientX;onPoint.y=e.clientY;
-  yawAim=Math.max(-.76,Math.min(.76,yawAim-dx*.004));
+  yawAim=boundedYaw(yawAim-dx*.0027);
   pitchAim=Math.max(-.33,Math.min(.36,pitchAim+dy*.003));
  });
  canvas.addEventListener("pointerup",e=>{
-  if(!e.isPrimary||!onPoint.down)return;onPoint.down=false;if(onPoint.moved)return;
+  if(e.pointerId!==activePointer||!onPoint.down)return;onPoint.down=false;if(onPoint.moved)return;
   const r=canvas.getBoundingClientRect();
   cursor.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);
   raycaster.setFromCamera(cursor,camera);
@@ -498,13 +552,15 @@ function initialize(){
    if(m&&m.userData.action){if(m.userData.action==="next"){if(game.solved)game.next();else game.toast("Finish this movie puzzle before opening the next door.");}else game.interact(m.userData.action);}
   }else displayMessage("Drag to explore. Touch the props, or use Inspect objects.");
  });
- canvas.addEventListener("pointercancel",()=>onPoint.down=false);
- document.getElementById("left").addEventListener("click",()=>yawAim=Math.min(.76,yawAim+.17));
- document.getElementById("right").addEventListener("click",()=>yawAim=Math.max(-.76,yawAim-.17));
+ const releasePointer=e=>{if(e.pointerId===activePointer){onPoint.down=false;activePointer=undefined;}};
+ canvas.addEventListener("pointercancel",releasePointer);
+ canvas.addEventListener("lostpointercapture",releasePointer);
+ document.getElementById("left").addEventListener("click",()=>yawAim=boundedYaw(yawAim+.19));
+ document.getElementById("right").addEventListener("click",()=>yawAim=boundedYaw(yawAim-.19));
  addEventListener("keydown",e=>{
   if(e.target?.closest("button,input,textarea,a"))return;
-  if(e.key==="ArrowLeft"){e.preventDefault();yawAim=Math.min(.76,yawAim+.14);}
-  if(e.key==="ArrowRight"){e.preventDefault();yawAim=Math.max(-.76,yawAim-.14);}
+  if(e.key==="ArrowLeft"){e.preventDefault();yawAim=boundedYaw(yawAim+.16);}
+  if(e.key==="ArrowRight"){e.preventDefault();yawAim=boundedYaw(yawAim-.16);}
  });
  loading.hidden=true;
  lastTime=performance.now();renderStarted=lastTime;requestAnimationFrame(render);
@@ -521,8 +577,9 @@ function render(now){
  yaw+=(yawAim-yaw)*pace;pitch+=(pitchAim-pitch)*pace;
  let ease=1;if(!reduced.matches)ease=Math.min(1,(now-entryTime)/1200);
  camera.position.set(0,2.25,(game.stage.id==="ghost"?4.85:7.1)+(1-ease)*1.4);
- camera.lookAt(Math.sin(yaw)*6,2.22+Math.sin(pitch)*4,-5.1);
+ camera.rotation.set(pitch*.53,yaw,0,"YXZ");
  for(const a of vivid){
+  if(a.kind==="spare")a.change(game.propIsOpen(a.action));
   if(a.kind==="relay"){
    const active=game.solved||game.step>=a.step;
    a.material.emissiveIntensity=active?1.65:.22;
