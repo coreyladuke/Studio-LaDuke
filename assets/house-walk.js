@@ -4,15 +4,19 @@
 
   const opening = {name: "Main Hall Opening", rooms: ["foyer", "hall"]};
   const stairs = {name: "Main Stairs", rooms: ["hall", "landing"]};
-  const frame = [620, 165, 360, 530];
+  const hallBounds = {
+    foyer: [48, 55, 188, 824, "polygon(0 0,100% 16%,100% 80%,0 100%)"],
+    landing: [678, 161, 286, 521],
+    art: [1286, 103, 257, 740, "polygon(0 17%,100% 0,100% 100%,0 75%)"]
+  };
   const views = {
     hall: {
-      forward: {edge: stairs, bounds: frame, art: "up"},
-      reverse: {edge: opening, bounds: frame, art: "opening"}
+      forward: {bounds: hallBounds.landing},
+      reverse: {bounds: hallBounds.foyer}
     },
     landing: {
-      forward: {art: "landing"},
-      reverse: {edge: stairs, bounds: [525, 180, 550, 565], art: "down"}
+      forward: {art: "landing", provisional: true},
+      reverse: {bounds: [525, 190, 550, 545], art: "down", provisional: true}
     }
   };
 
@@ -34,7 +38,6 @@
       </pattern>
       <filter id="texture"><feTurbulence type="fractalNoise" baseFrequency=".28 .58" numOctaves="3" seed="17"/>
         <feColorMatrix type="saturate" values="0"/></filter>
-      <clipPath id="threshold"><rect x="639" y="185" width="322" height="501"/></clipPath>
     </defs>`;
 
   function shell() {
@@ -51,42 +54,38 @@
       <path d="M0 733L500 635H1100L1600 733" fill="none" stroke="#ad7c52" stroke-width="3"/>`;
   }
 
-  function stairFlight(down) {
+  function stairFlight() {
     const steps = Array.from({length: 13}, (_, i) => {
-      const y = 675 - i * (down ? 16 : 31);
-      const half = (down ? 250 : 151) - i * (down ? 12 : 4.6);
-      return `<path d="M${800-half} ${y}H${800+half}l-8 -12H${808-half}Z" fill="#a6754b"/>
-        <path d="M${800-half} ${y}H${800+half}v8H${800-half}Z" fill="#573923"/>
+      const y = 727 - i * 18;
+      const half = 247 - i * 12;
+      return `<path d="M${800-half} ${y}H${800+half}l-8 -14H${808-half}Z" fill="#a6754b"/>
+        <path d="M${800-half} ${y}H${800+half}v5H${800-half}Z" fill="#573923"/>
         <path d="M${800-half+4} ${y-3}H${800+half-4}" stroke="#c39261" opacity=".7"/>`;
     }).reverse().join("");
-    const left = down ? 543 : 642;
-    const right = 1600 - left;
-    const end = down ? 392 : 235;
-    const rail = [left, right].map((x) => {
-      const inner = x < 800 ? 709 : 891;
-      return `<path d="M${x} 675V480L${inner} ${end}v102M${(x+inner)/2} ${(480+end)/2}v133"
-        fill="none" stroke="#473023" stroke-width="12"/>
-        <path d="M${x-3} 478L${inner} ${end-2}" stroke="#b38250" stroke-width="5"/>`;
+    const rails = [543, 1057].map((x) => {
+      const inner = x < 800 ? 706 : 894;
+      return `<path d="M${x} 742V393L${inner} 429v83M${(x+inner)/2} 411v207"
+        fill="none" stroke="#473023" stroke-width="14"/>
+        <path d="M${x} 389L${inner} 425" stroke="#ba8959" stroke-width="8"/>`;
     }).join("");
-    return `<path d="M${left-19} 693V178H${right+19}V693Z" fill="#38291e" stroke="#342319" stroke-width="14"/>
-      <path d="M${left} 681V195H${right}V681Z" fill="url(#well)" stroke="#916441" stroke-width="7"/>
-      <path d="M${left} 681L708 425V254L${left} 195M${right} 681L892 425V254L${right} 195" fill="#231b16" opacity=".45"/>
-      <path d="M722 235H878V${down ? 482 : 307}H722Z" fill="${down ? "#977052" : "#9a9e88"}" opacity=".75"/>
-      ${steps}${rail}`;
+    return `<path d="M528 738V201H1072V738Z" fill="#38291e" stroke="#342319" stroke-width="14"/>
+      <path d="M543 729V217H1057V729Z" fill="url(#well)" stroke="#916441" stroke-width="7"/>
+      <path d="M543 729L699 507V374L543 217M1057 729L901 507V374L1057 217" fill="#231b16" opacity=".55"/>
+      <path d="M699 482V379H901V482Z" fill="#81644a" stroke="#4c3829" stroke-width="9"/>
+      <path d="M708 463H892V491H708Z" fill="#754932"/>
+      <path d="M708 468H892M731 465V487M759 465V487M785 465V487M814 465V487M843 465V487M872 465V487" stroke="#c6916d" opacity=".75"/>
+      ${steps}${rails}
+      <path d="M527 746H1073" stroke="#3a291e" stroke-width="15"/>
+      <path d="M527 741H1073" stroke="#bc8b5d" stroke-width="4"/>`;
   }
 
   function scene(room, facing) {
+    if (room === "hall") return '<img src="assets/house-plates/main-hall-cedar.webp" alt="">';
     const view = views[room]?.[facing];
     if (!view) return "";
     let feature;
-    if (view.art === "up" || view.art === "down") {
-      feature = stairFlight(view.art === "down");
-    } else if (view.art === "opening") {
-      feature = `<rect x="619" y="166" width="362" height="525" fill="#251a13" stroke="#39281e" stroke-width="20"/>
-        <image href="assets/front-room-wide.webp" x="639" y="185" width="322" height="501"
-          preserveAspectRatio="xMidYMid slice" clip-path="url(#threshold)"/>
-        <path d="M637 687V184H963V687" fill="none" stroke="#90613d" stroke-width="13"/>
-        <path d="M621 695H980" stroke="#38271e" stroke-width="14"/>`;
+    if (view.art === "down") {
+      feature = stairFlight();
     } else {
       feature = `<path d="M604 650V213H996V650" fill="#463429" stroke="#654632" stroke-width="18"/>
         <rect x="663" y="244" width="274" height="269" fill="#8a9890" stroke="#3c2c24" stroke-width="18"/>
@@ -101,5 +100,5 @@
     </svg>`;
   }
 
-  window.StudioHouseWalk = {opening, stairs, views, scene};
+  window.StudioHouseWalk = {opening, stairs, hallBounds, views, scene};
 })();

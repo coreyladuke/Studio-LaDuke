@@ -86,9 +86,10 @@ body.directed-house #plate .prop .hint{pointer-events:none}
 .entry-plan button[aria-current="location"]{background:#49311f;color:#ffedc8}
 #roomPassages{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 14px}
 #roomPassages button{min-height:44px;color:#452b1c;border:1px solid #8b6849;background:#ecdbbe;padding:6px 9px}
-body.walk-room .room-sign{display:none}
-#turnWalk{position:fixed;top:max(76px,calc(env(safe-area-inset-top) + 60px));right:max(16px,env(safe-area-inset-right));z-index:21;min-height:44px;padding:8px 13px;color:#f7e4bf;background:#19231dec;border:1px solid #a98a58;border-radius:4px}
-body.directed-house #plate .door[data-walk] .plaque{display:grid;top:auto;bottom:10px;width:max-content;max-width:100%;min-width:142px;font-size:19px;opacity:1;transform:translateX(-50%);background:#241a13ef;border:1px solid #c7a374;pointer-events:none}
+#provisionalView{position:fixed;z-index:20;bottom:max(78px,calc(env(safe-area-inset-bottom) + 63px));left:50%;transform:translateX(-50%);padding:6px 10px;background:#19231dec;border:1px solid #a98a58;color:#f7e4bf;white-space:nowrap;font-size:13px;pointer-events:none}
+#turnWalk{position:fixed;top:max(76px,calc(env(safe-area-inset-top) + 60px));left:max(15px,env(safe-area-inset-left));z-index:21;min-height:44px;padding:8px 13px;color:#f7e4bf;background:#19231dec;border:1px solid #a98a58;border-radius:4px}
+body.directed-house #plate .door[data-walk] .plaque{display:grid;top:auto;bottom:10px;width:max-content;max-width:100%;min-width:142px;white-space:normal;font-size:19px;opacity:1;transform:translateX(-50%);background:#241a13ef;border:1px solid #c7a374;pointer-events:none}
+body.directed-house #plate .door[data-walk="opening"] .plaque{bottom:20%}
 #walkPlan{display:grid;justify-items:center;gap:0;margin-bottom:18px}
 #walkPlan button{min-height:44px;padding:7px 15px;background:#ecdbbe;color:#452b1c;border:1px solid #8b6849}
 #walkPlan button[aria-current]{background:#49311f;color:#ffedc8}
@@ -108,6 +109,7 @@ body.directed-house #plate .door[data-walk] .plaque{display:grid;top:auto;bottom
  </div>
 </main>
 <div id="lookbar"><button id="left" type="button" aria-label="Look left">‹</button><div id="floorTag"><strong id="floorName"></strong><small>Swipe · Touch · Explore</small></div><button id="right" type="button" aria-label="Look right">›</button></div>
+<div id="provisionalView" hidden>Provisional view</div>
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="shade" hidden></div>
 <aside id="map" hidden aria-label="House floor plan"><button id="closeMap" aria-label="Close map" type="button">×</button><h2>The House</h2><div id="floorContents"></div></aside>
@@ -211,7 +213,7 @@ function propArt(type){
  return '<svg viewBox="0 0 100 120" aria-hidden="true">'+(pics[type]||pics.book)+'</svg>';
 }
 function toast(t){clearTimeout(toastTimer);id("toast").textContent=t;id("toast").classList.add("show");toastTimer=setTimeout(function(){id("toast").classList.remove("show");},4000);}
-function resize(){scale=Math.max(innerWidth/1600,innerHeight/900);maxPan=Math.max(0,(1600*scale-innerWidth)/2);plate.style.setProperty("--scale",scale);setPan(pan,true);}
+function resize(){scale=Math.max(innerWidth/1600,innerHeight/900);if(here==="hall"&&facing==="reverse"&&innerWidth>=900)scale*=1.17;maxPan=Math.max(0,(1600*scale-innerWidth)/2);plate.style.setProperty("--scale",scale);setPan(pan,true);}
 function setPan(p,immediate){
  panTarget=clampPan(p);
  if(immediate||reduceMotion.matches){stopPan();pan=panTarget;paintPan();return;}
@@ -237,24 +239,25 @@ const livingProps={
  lamp:[879,95,157,157]
 };
 function placeOnPlate(button,bounds){
- const [left,top,width,height]=bounds;
+ const [left,top,width,height,shape]=bounds;
  Object.assign(button.style,{
   left:left+"px",top:top+"px",width:width+"px",height:height+"px",transform:"none"
  });
+ if(shape)button.style.clipPath=shape;
  button.dataset.aligned="";
 }
 function draw(){
  const r=R[here];if(!r)return;
  const view=walk.views[here]?.[facing];
- const viewTarget=view?.edge?.rooms.find(room=>room!==here);
+ const aligned=here==="hall"?walk.hallBounds:here==="landing"?{hall:view?.bounds}:photographedExits[here];
  const defaultBounds=here==="foyer"?photographedExits.foyer.hall:view?.bounds;
- document.body.classList.toggle("walk-room",Boolean(view));
- id("turnWalk").hidden=!view;
+ id("provisionalView").hidden=!view?.provisional;
+ id("turnWalk").hidden=here!=="landing";
  id("turnWalk").setAttribute("aria-pressed",String(facing==="reverse"));
- document.body.classList.remove("scene-living","scene-foyer","scene-coat");plate.classList.remove("pocket-open","star-awake","tv-playing","pick-found","lamp-dim","yellow-spot","pink-spot","discovered","mirror-fog","drawer-open","steam-on","light-on","spark-on");if(["living","foyer","coat"].includes(here))document.body.classList.add("scene-"+here);painting.innerHTML=walk.scene(here,facing)||(window.StudioHouseDirector&&window.StudioHouseDirector.scene(here))||(window.StudioHouseV2&&window.StudioHouseV2.scene(here))||(r.photo?'<img src="'+r.photo+'" alt=""><div class="wash"></div>':lightPanel(r));
+ document.body.classList.remove("scene-living","scene-foyer","scene-coat");plate.classList.remove("pocket-open","star-awake","tv-playing","pick-found","lamp-dim","yellow-spot","pink-spot","discovered","mirror-fog","drawer-open","steam-on","light-on","spark-on");if(["living","foyer","coat"].includes(here))document.body.classList.add("scene-"+here);const directed=window.StudioHouseDirector?.scene(here);painting.innerHTML=walk.scene(here,facing)||directed||(window.StudioHouseV2&&window.StudioHouseV2.scene(here))||(r.photo?'<img src="'+r.photo+'" alt=""><div class="wash"></div>':lightPanel(r));
  id("roomName").textContent=r.n;id("roomDescription").textContent=r.d;id("floorName").textContent=r.n;id("floorTag").querySelector("small").textContent=floors[r.f]+" · Swipe to look";doorBox.replaceChildren();objectBox.replaceChildren();
  let pos=r.e.length===1?[800]:r.e.length===2?[440,1150]:r.e.length===3?[300,805,1300]:[170,560,1035,1430];if(here==="coat")pos=[186];if(!["living","foyer","coat"].includes(here))pos=r.e.length===1?[800]:r.e.length===2?[420,1180]:r.e.length===3?[250,800,1350]:[170,560,1040,1430];
- r.e.forEach(function(d,i){const bounds=view?(d[1]===viewTarget?view.bounds:null):photographedExits[here]?.[d[1]];if((view||photographedExits[here])&&!bounds)return;let b=document.createElement("button");b.className="door";b.type="button";b.style.left=pos[i]+"px";if(bounds)placeOnPlate(b,bounds);b.dataset.way=d[2]||"";if(d[0]===walk.opening.name||d[0]===walk.stairs.name)b.dataset.walk="";b.setAttribute("aria-label",b.hasAttribute("data-walk")?d[0]:"Go to "+d[0]);b.innerHTML='<span class="doorface"></span><span class="plaque">'+escapeHtml(d[0])+'</span>';b.addEventListener("click",function(){go(d[1]);});doorBox.append(b);});
+ r.e.forEach(function(d,i){const bounds=aligned?.[d[1]];if(aligned&&!bounds)return;let b=document.createElement("button");b.className="door";b.type="button";b.style.left=pos[i]+"px";if(bounds)placeOnPlate(b,bounds);b.dataset.way=d[2]||"";if(d[0]===walk.opening.name)b.dataset.walk="opening";else if(d[0]===walk.stairs.name)b.dataset.walk="stairs";b.setAttribute("aria-label",b.hasAttribute("data-walk")?d[0]:"Go to "+d[0]);b.innerHTML='<span class="doorface"></span><span class="plaque">'+escapeHtml(d[0])+'</span>';b.addEventListener("click",function(){go(d[1]);});doorBox.append(b);});
  (r.p||[]).forEach(function(p){let b=document.createElement("button");b.className="prop";b.type="button";b.style.left=p[1]+"px";b.style.top=p[2]+"px";if(here==="living"&&livingProps[p[0]])placeOnPlate(b,livingProps[p[0]]);b.setAttribute("aria-label",p[3]);b.innerHTML=propArt(p[0])+'<span class="hint">'+escapeHtml(p[3])+'</span>';b.addEventListener("click",function(){if(window.StudioHouseAdventure)window.StudioHouseAdventure.collect(here,p[0]);if(p[5]==="code"){code();return;}if(p[5]==="night"){document.body.classList.toggle("lights-out");if(window.StudioHouseDirector)window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast});return;}if(p[5]){go(p[5]);return;}if(window.StudioHouseDirector&&window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast}))return;if(window.StudioHouseV2&&window.StudioHouseV2.activate(here,p[0],{plate:plate,toast:toast}))return;detail(p[3],p[4],p[5]);});objectBox.append(b);});
  stopPan();resize();setPan(restoreView(defaultBounds),true);makeMap();document.title=r.n+" · Studio LaDuke House";
 }
@@ -311,8 +314,8 @@ function appendWalkPlan(box){
 function makeMap(){
  const box=id("floorContents");
  box.replaceChildren();
- appendEntryPlan(box);
  appendWalkPlan(box);
+ appendEntryPlan(box);
  const passages=R[here].e;
  if(passages.length){
   const title=document.createElement("h3");title.className="floorhead";title.textContent="From "+R[here].n;

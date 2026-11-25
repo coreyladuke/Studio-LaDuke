@@ -33,6 +33,7 @@ jobs:
                 reducedMotion: 'reduce'
               });
               const page = await context.newPage();
+              page.setDefaultTimeout(8000);
               const errors = [];
               page.on('pageerror', error => errors.push(error.message));
               const base = 'http://127.0.0.1:4173';
@@ -69,9 +70,17 @@ jobs:
               }
               await use(button(opening));
               await room('Main Hall');
+              const hallImage = page.locator('#painting img');
+              assert.match(await hallImage.getAttribute('src'), /main-hall-cedar[.]webp$/);
+              assert.equal(await hallImage.evaluate(async image => {
+                await image.decode();
+                return image.naturalWidth;
+              }), 1600);
               await shot('02-main-hall-up-main-stairs');
               await use(button(stairs));
               await room('Upstairs Landing');
+              assert.equal(await page.locator('#provisionalView').isVisible(), true);
+              assert.equal(await button(stairs).count(), 0);
               await use(button('Turn around'));
               await shot('03-upstairs-landing-down-main-stairs');
               await use(button('Open house floor plan'));
@@ -86,12 +95,41 @@ jobs:
               await use(button(opening));
               await room('Front Hall');
               assert.deepEqual(errors, []);
+              await page.goto(base + '/index.html');
+              await use(button('Turn around'));
+              await use(page.getByRole('link', { name: opening, exact: true }));
+              await room('Main Hall');
+              console.log(mobile ? 'Phone touch round trip and doorway-origin swipe passed' : 'Desktop mouse round trip passed');
               await context.close();
             }
           } finally {
             await browser.close();
           }
           JS
+          cat > walk-screenshots/index.html <<'HTML'
+          <!doctype html><html lang="en"><meta charset="utf-8"><title>Studio LaDuke threshold review</title>
+          <style>
+          body{font:16px system-ui;background:#211b17;color:#fff3de;margin:24px}
+          section{display:grid;grid-template-columns:3fr 1fr;gap:14px;align-items:start}
+          h2{grid-column:1/-1}figure{margin:0}img{display:block;width:100%;height:auto}figcaption{margin:6px 0 20px}
+          </style>
+          <h1>Studio LaDuke threshold review</h1>
+          <section id="walk"></section>
+          <script>
+          for (const [file, title] of [
+            ['01-front-hall-toward-main-hall', 'Main Hall Opening from Front Hall'],
+            ['04-main-hall-toward-front-hall', 'Main Hall Opening from Main Hall'],
+            ['02-main-hall-up-main-stairs', 'Main Stairs from Main Hall'],
+            ['03-upstairs-landing-down-main-stairs', 'Main Stairs from Upstairs Landing'],
+            ['05-map-upstairs-landing', 'House map on Upstairs Landing']
+          ]) {
+            document.querySelector('#walk').insertAdjacentHTML('beforeend',
+              '<h2>' + title + '</h2>' + ['desktop', 'phone'].map(device =>
+                '<figure><img src="' + device + '-' + file + '.png" alt="' + title +
+                ' on ' + device + '"><figcaption>' + device + '</figcaption></figure>').join(''));
+          }
+          </script></html>
+          HTML
       - uses: actions/upload-artifact@v4
         if: always()
         with:
