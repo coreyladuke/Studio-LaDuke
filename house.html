@@ -359,7 +359,8 @@ id("left").addEventListener("click",function(){setPan(pan+Math.max(180,innerWidt
 camera.addEventListener("pointerdown",function(e){
  if(!e.isPrimary||e.button!==0||!id("dialog").hidden||!id("map").hidden)return;
  suppress=false;stopPan();panTarget=pan;
- drag={x:e.clientX,y:e.clientY,p:pan,m:false,lastX:e.clientX,lastT:performance.now(),velocity:0,pointerId:e.pointerId};
+ drag={x:e.clientX,y:e.clientY,p:pan,m:false,lastX:e.clientX,lastT:performance.now(),velocity:0,pointerId:e.pointerId,
+  door:e.pointerType==="touch"?e.target.closest(".door"):null};
 });
 camera.addEventListener("pointermove",function(e){
  if(!drag||e.pointerId!==drag.pointerId)return;
@@ -375,11 +376,18 @@ camera.addEventListener("pointermove",function(e){
 function finish(e){
  if(!drag||e.pointerId!==drag.pointerId)return;
  const wasDragging=drag.m,speed=e.type==="pointerup"&&performance.now()-drag.lastT<90?drag.velocity:0;
+ const tapDoor=e.type==="pointerup"&&!wasDragging&&drag.door===e.target.closest(".door")?drag.door:null;
  suppress=wasDragging;drag=null;camera.classList.remove("dragging");
+ if(tapDoor)tapDoor.click();
  if(wasDragging&&!reduceMotion.matches&&Math.abs(speed)>.18)setPan(pan+speed*115);
 }
 camera.addEventListener("pointerup",finish);camera.addEventListener("pointercancel",finish);camera.addEventListener("lostpointercapture",finish);window.addEventListener("pointerup",finish);
-camera.addEventListener("click",function(e){if(suppress&&e.detail>0){suppress=false;e.preventDefault();e.stopImmediatePropagation();}},true);
+camera.addEventListener("click",function(e){
+ const isTouchDoor=e.target.closest(".door")&&(e.pointerType==="touch"||e.sourceCapabilities?.firesTouchEvents);
+ if(e.detail>0&&(suppress||isTouchDoor)){
+  suppress=false;e.preventDefault();e.stopImmediatePropagation();
+ }
+},true);
 window.addEventListener("resize",resize);
 window.addEventListener("popstate",function(event){saveView();facing=event.state?.facing==="reverse"?"reverse":"forward";let q=new URLSearchParams(location.search).get("room");here=R[q]&&(q!=="vault"||sessionStorage.getItem("laduke-movie-gauntlet-done")==="1")?q:"escape";draw();});
 document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(!id("dialog").hidden)hideDetail(true);else if(!id("map").hidden)hideMap(true);return;}if(!id("dialog").hidden||!id("map").hidden||(window.StudioHouseAdventure&&window.StudioHouseAdventure.isOpen))return;if(e.key==="ArrowLeft"){e.preventDefault();setPan(pan+180);}if(e.key==="ArrowRight"){e.preventDefault();setPan(pan-180);}if(e.key.toLowerCase()==="m"&&!e.metaKey&&!e.ctrlKey)showMap();});

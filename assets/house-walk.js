@@ -11,8 +11,8 @@
   };
   const views = {
     hall: {
-      forward: {bounds: hallBounds.landing},
-      reverse: {bounds: hallBounds.foyer}
+      forward: {bounds: hallBounds.landing, provisional: true},
+      reverse: {bounds: hallBounds.foyer, provisional: true}
     },
     landing: {
       forward: {art: "landing", provisional: true},

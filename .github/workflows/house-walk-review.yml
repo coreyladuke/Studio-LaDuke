@@ -76,6 +76,7 @@ jobs:
                   await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x + offset, y }] });
                 }
                 await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+                await cdp.detach();
                 await page.evaluate(() => new Promise(resolve =>
                   requestAnimationFrame(() => requestAnimationFrame(resolve))));
                 assert.equal(await page.locator('#floorName').textContent(), 'Front Hall');
