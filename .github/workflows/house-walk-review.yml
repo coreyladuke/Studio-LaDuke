@@ -38,13 +38,24 @@ jobs:
               page.on('pageerror', error => errors.push(error.message));
               const base = 'http://127.0.0.1:4173';
               await page.goto(base + '/house.html?room=foyer');
+              if (mobile) {
+                await page.evaluate(() => {
+                  window.walkInput = [];
+                  for (const type of ['pointerdown', 'pointerup', 'pointercancel', 'click']) {
+                    document.addEventListener(type, event => window.walkInput.push([
+                      type, event.pointerType, event.target.closest('button')?.getAttribute('aria-label'),
+                      event.clientX, event.clientY
+                    ]), true);
+                  }
+                });
+              }
               const button = name => page.getByRole('button', { name, exact: true });
               const shot = name => page.screenshot({
                 path: 'walk-screenshots/' + (mobile ? 'phone-' : 'desktop-') + name + '.png'
               });
               const use = target => mobile ? target.tap() : target.click();
-              const room = name => page.locator('#floorName').textContent().then(
-                actual => assert.equal(actual, name)
+              const room = name => page.waitForFunction(
+                name => document.querySelector('#floorName')?.textContent === name, name
               );
               const opening = 'Main Hall Opening';
               const stairs = 'Main Stairs';
@@ -65,11 +76,18 @@ jobs:
                   await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x + offset, y }] });
                 }
                 await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-                await room('Front Hall');
+                await page.evaluate(() => new Promise(resolve =>
+                  requestAnimationFrame(() => requestAnimationFrame(resolve))));
+                assert.equal(await page.locator('#floorName').textContent(), 'Front Hall');
                 assert.notEqual(await page.locator('#plate').evaluate(el => el.style.getPropertyValue('--pan')), before);
               }
-              await use(button(opening));
-              await room('Main Hall');
+              try {
+                await use(button(opening));
+                await room('Main Hall');
+              } catch (error) {
+                if (mobile) console.log('Doorway input', await page.evaluate(() => window.walkInput));
+                throw error;
+              }
               const hallImage = page.locator('#painting img');
               assert.match(await hallImage.getAttribute('src'), /main-hall-cedar[.]webp$/);
               assert.equal(await hallImage.evaluate(async image => {
