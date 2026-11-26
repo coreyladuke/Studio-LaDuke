@@ -26,7 +26,7 @@ const areas=['front-stoop','front-hall','main-hall','main-stairs','upstairs-land
 const photos=['entrance','living-room-entry','approved-front-hall','approved-main-hall','photographic-landing-arrival','photographic-landing-return','photographic-return'];
 const getGit=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trimEnd();
 const snapshot={branch:getGit('branch','--show-current'),commit:getGit('rev-parse','HEAD'),changes:getGit('status','--short','--untracked-files=normal')};
-const protectedUrl=process.env.STUDIO_PROTECTED_PREVIEW||'https://studio-laduke-house-walk-review-6t8x7rwhv-coreyladuke-5408.vercel.app/house-visit.html?entry=stoop';
+const protectedUrl=process.env.STUDIO_PROTECTED_PREVIEW||'https://studio-laduke-house-walk-review-o6fdd5kv6-coreyladuke-5408.vercel.app/house-visit.html?entry=stoop';
 const appRoot=process.env.STUDIO_LOCAL_PREVIEW||'http://localhost:8780/house-visit.html?entry=stoop';
 function publicUrl(raw){
  const url=new URL(raw);
