@@ -328,6 +328,29 @@
       font-style: normal;
     }
 
+    .drawer-object-copy .pond-map {
+      position: relative;
+      display: inline-grid;
+      justify-items: start;
+      gap: 2px;
+      min-height: 54px;
+      margin: 0 0 16px 3px;
+      padding: 9px 24px 10px 13px;
+      border: 1px solid #b69b68;
+      background:
+        linear-gradient(102deg, transparent 63%, #72644245 64%, #f4deb26b 65%, transparent 66%),
+        radial-gradient(ellipse at 95% 20%, #93784e82, transparent 36%),
+        #e2cda3;
+      box-shadow: 2px 4px 6px #160f0a90;
+      color: #2e3429;
+      line-height: 1.15;
+      text-decoration: none;
+      transform: rotate(-2deg);
+    }
+
+    .pond-map small { font-size: .875rem; font-style: italic; }
+    .pond-map strong { text-decoration: underline; text-underline-offset: 3px; }
+
     .drawer-object-copy .drawer-back { margin-top: 3px; }
     .drawer-object-copy h3:focus { outline: none; }
 
@@ -1854,6 +1877,10 @@
         <div class="drawer-object-copy">
           <h3 tabindex="-1">Folded receipt</h3>
           <p>Birdseed. One flashlight.<br>A rain-smeared trail map: $0.<br>Someone wrote <em>Overpaid</em> in pencil.</p>
+          <a class="pond-map" href="reflection-pond.html">
+            <small>Penciled on the map</small>
+            <strong>Reflection Pond</strong>
+          </a>
           <p><a href="forest-path.html">Step out into The Woods</a></p>
           <p class="drawer-receipt-note">On the back, in green ink: “Complaints accepted. Satisfaction is outside our remit.”<br><a href="bob-bureau/">File a case with Bob’s Bureau</a></p>
           <button class="drawer-back" type="button">Put it back</button>
