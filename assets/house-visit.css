@@ -19,3 +19,6 @@ dialog{width:min(520px,calc(100% - 36px));max-height:84svh;background:#282017;co
 dialog::backdrop{background:#130d08c4}dialog form{float:right}dialog form button{background:#403427;border:1px solid #8d775c;min-height:44px;min-width:44px}dialog h2{font:1.6rem Georgia,serif;margin:8px 0 18px}dialog img{max-width:100%;max-height:58svh;display:block;margin-bottom:13px}
 @media(max-width:650px){.visit-heading h1{font-size:1.45rem}.visit-links{flex-direction:column;align-items:flex-end;gap:5px;font-size:.74rem}.visit-help{display:none}#objects{max-width:calc(100% - 30px)}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.book-spread{display:grid;grid-template-columns:1fr 1fr;min-height:170px;background:linear-gradient(90deg,#d2ba8d 0,#efe2be 48%,#a88b60 50%,#eee0bd 53%,#d7be92 100%);border:5px solid #3e3525;color:#2e271c;font:1rem/1.42 Georgia,serif}
+.book-spread>*{padding:14px;margin:0}.book-spread>span{display:grid;place-items:center;text-align:center}

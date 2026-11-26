@@ -50,7 +50,11 @@ function showInspection(object){
   const p=document.createElement('p');
   p.textContent=object.kind==='book'?'House notebook, November. Rain in the yard again. Leave the lamp on if someone is still upstairs.':
    'A folded note, tucked in the cedar drawer. “The rain sounds different on the upstairs glass.”';
-  content.append(p);
+  if(object.kind==='book'){
+   const spread=document.createElement('div');spread.className='book-spread';
+   const previous=document.createElement('span');previous.textContent='Studio LaDuke';
+   spread.append(previous,p);content.append(spread);
+  }else content.append(p);
  }
  if(!dialog.open)dialog.showModal();
 }
@@ -58,7 +62,7 @@ function interact(object){
  if(!object||!visible(camera,object)||dialog.open||document.hidden)return;
  const result=objectAction(state,object);
  switch(result.type){
- case 'door':message(result.on?'Front door opened.':'Front door closed.');break;
+ case 'door':audio.volume=Math.min(1,(config.rainVolume??.15)*(result.on?1.55:1));message(result.on?'Front door opened.':'Front door closed.');break;
  case 'light':message(result.on?'Lamp off.':'Lamp on.');break;
  case 'drawer':message(result.on?'Drawer opened.':'Drawer closed.');break;
  case 'window':message(result.on?'Window ajar.':'Window closed.');break;
@@ -126,7 +130,7 @@ hold('advance',value=>move=value,1);hold('recede',value=>move=value,-1);
 hold('left-look',value=>turn=value,-1);hold('right-look',value=>turn=value,1);
 $('rain').onclick=async()=>{
  if(!audio.paused)audio.pause();
- else try{audio.volume=config.rainVolume??.15;await audio.play();}catch{message('Rain audio is unavailable.');}
+ else try{audio.volume=Math.min(1,(config.rainVolume??.15)*(state['entry-door']?1.55:1));await audio.play();}catch{message('Rain audio is unavailable.');}
  $('rain').setAttribute('aria-pressed',String(!audio.paused));
 };
 window.addEventListener('pagehide',()=>{audio.pause();stopMusic();state['record-player']=false;});
@@ -153,7 +157,7 @@ function frame(time){
    photo.hidden=!(point&&point.r<140&&point.x>0&&point.x<canvas.clientWidth&&camera.z<1.5&&camera.x>-3.4&&camera.x<-2.3);
    if(!photo.hidden){photo.style.width=point.r*1.64+'px';photo.style.height=point.r*1.32+'px';photo.style.left=point.x-point.r*.82+'px';photo.style.top=point.y-point.r*.66+'px';}
    updateObjects();
-   canvas.dataset.room=hallLocation(camera.x);canvas.dataset.coords=[camera.x,camera.z].map(n=>n.toFixed(3)).join(',');
+   canvas.dataset.bearing=camera.yaw.toFixed(3);canvas.dataset.room=hallLocation(camera.x);canvas.dataset.coords=[camera.x,camera.z].map(n=>n.toFixed(3)).join(',');
   }
  }
  requestAnimationFrame(frame);

@@ -44,6 +44,14 @@ jobs:
            const nearby=name=>page.locator('#nearby').getByRole('button',{name,exact:true});
            await nearby('Front door').click();
            await page.waitForFunction(()=>document.querySelector('#visit-status').textContent==='Front door opened.');
+           await canvas.focus();
+           await page.keyboard.down('ArrowRight');
+           await page.waitForFunction(()=>Number(document.querySelector('#world').dataset.bearing)>4.66);
+           await page.keyboard.up('ArrowRight');
+           await page.screenshot({path:'birthday-evidence/open-door.png'});
+           await page.keyboard.down('ArrowLeft');
+           await page.waitForFunction(()=>Number(document.querySelector('#world').dataset.bearing)<1.59);
+           await page.keyboard.up('ArrowLeft');
            await nearby('Console lamp').click();
            await page.waitForFunction(()=>document.querySelector('#visit-status').textContent==='Lamp off.');
            await nearby('Console lamp').click();
@@ -102,6 +110,22 @@ jobs:
            assert.equal(await p.locator('#world').getAttribute('data-coords'),beforeTouch);
            assert.equal(await p.locator('dialog').evaluate(el=>el.open),false);
            await p.screenshot({path:'birthday-evidence/phone.png'});
+           await cdp.send('Emulation.setCPUThrottlingRate',{rate:4});
+           const profile=await p.evaluate(()=>new Promise(resolve=>{
+            let last=performance.now();
+            const times=[];
+            function frame(t){
+             if(times.length)times.push(t-last);else times.push(0);
+             last=t;
+             if(times.length<61)requestAnimationFrame(frame);
+             else{
+              const sorted=times.slice(1).sort((a,b)=>a-b);
+              resolve({samples:sorted.length,medianMs:sorted[30],p95Ms:sorted[56]});
+             }
+            }
+            requestAnimationFrame(frame);
+           }));
+           console.log('Dimensional preview mobile RAF samples at 4x CPU: '+JSON.stringify(profile));
            await phone.close();
           }finally{await browser.close();}
           const safari=await webkit.launch();

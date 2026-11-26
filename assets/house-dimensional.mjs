@@ -1,4 +1,4 @@
-export const start={x:-2.98,y:1.58,z:-.54,yaw:1.58,pitch:0};
+export const start={x:-2.98,y:1.58,z:-.74,yaw:1.58,pitch:0};
 const radius=.16,wall=-1.4,portal=-.8,half=.51;
 export const objects=[
  {id:'entry-door',name:'Front door',kind:'door',x:-3.99,y:1.12,z:-.7,radius:.53},
@@ -73,7 +73,18 @@ function mesh(state,time,placements){
  box(-4.1,-.08,-1.6,5.5,.08,3.2,'floor');
  box(-4.1,2.55,-1.6,5.5,.07,3.2,'ceiling');
  box(-4.1,0,-1.64,5.5,2.55,.04,'wall');
- box(-4.14,0,-1.6,.04,2.55,3.2,'wall');
+ box(-4.14,0,-1.6,.04,2.55,.39,'wall');
+ box(-4.14,0,-.22,.04,2.55,1.82,'wall');
+ box(-4.14,2.13,-1.21,.04,.42,.99,'wall');
+ box(-5.55,-.09,-1.65,1.45,.05,1.9,'floor');
+ box(-5.57,-.04,-1.65,.04,2.45,1.9,'glass');
+ for(const [i,z] of [-1.43,-1.16,-.88,-.61,-.37,-.13,.08].entries()){
+  box(-5.46,0,z,.05,1.6+(i%3)*.21,.035,'trees');
+  for(let level=0;level<3;level++){
+   const width=.38-level*.075;
+   box(-5.46,.84+level*.28,z-width/2,.035,.13,width,'trees');
+  }
+ }
  box(-4.1,0,1.60,2.70,2.55,.04,'wall');
  box(1.40,0,-1.60,.04,2.55,1.60,'wall');
  box(-1.42,0,-1.6,.04,2.55,.29,'wall');
@@ -85,7 +96,9 @@ function mesh(state,time,placements){
  box(-1.4,0,0,1.13,2.55,.05,'wall');
  box(.64,0,0,.76,2.55,.05,'wall');
  for(let i=0;i<5;i++)box(-.27,i*.12,.02+i*.14,.91,.12,(5-i)*.14,'wood');
- box(-4.07,.03,-1.24,.048,2.06,1.05,'trim');
+ box(-4.09,.03,-1.26,.075,2.13,.075,'trim');
+ box(-4.09,.03,-.24,.075,2.13,.075,'trim');
+ box(-4.09,2.04,-1.26,.075,.12,1.095,'trim');
  // A hinged leaf with its pivot anchored to the jamb.
  const hinge=-4.03,doorAngle=-(state['entry-door']||0)*1.12;
  const leafX=hinge;
