@@ -84,3 +84,29 @@ test('missing service and expired or forged cookies fail closed',async()=>{
  assert.equal((await future(request('status',{cookie}))).status,401);
  assert.equal((await createWorldHandler(handlers)(request('status',{cookie:cookie+'0'}))).status,401);
 });
+
+test('shared room settings survive fresh sessions and reject unauthorized or outdated changes',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'world-config-test-'));
+ const params={room:'ENT-01'};
+ const original={warmth:.82,rainVolume:.22,objects:{'house-book':{x:-2.75,y:1,z:1.2,radius:.12}}};
+ const updated={...original,warmth:.93};
+ try{
+  let handler=createWorldHandler({store:filesystem(root),secret});
+  assert.equal((await handler(request('config',{params}))).status,401);
+  const first=await login(handler);
+  const write=(value,etag,cookie)=>handler(request('config',{
+   method:'POST',params,cookie,body:JSON.stringify({value,etag})
+  }));
+  assert.equal((await write({warmth:12},null,first)).status,400);
+  assert.equal((await write(original,null,first)).status,200);
+  const snapshot=await (await handler(request('config',{cookie:first,params}))).json();
+  assert.deepEqual(snapshot.value,original);
+  handler=createWorldHandler({store:filesystem(root),secret});
+  const second=await login(handler);
+  assert.deepEqual(await (await handler(request('config',{cookie:second,params}))).json(),snapshot);
+  assert.equal((await write(updated,snapshot.etag,second)).status,200);
+  assert.equal((await write(original,snapshot.etag,first)).status,409);
+  assert.equal((await handler(request('config',{cookie:second,params:{room:'../ENT-01'}}))).status,400);
+  assert.deepEqual((await (await handler(request('config',{cookie:second,params}))).json()).value,updated);
+ }finally{await rm(root,{recursive:true,force:true});}
+});

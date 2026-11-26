@@ -1,17 +1,19 @@
 import {objects} from './house-dimensional.mjs';
+import {validateConfig} from './world-room-config.mjs';
 import {initialize,onStatus,signIn,signOut} from './world-sync.mjs';
-import {exportRoom,importRoom,downloadRoom,validateConfig} from './world-room-package.mjs';
+import {exportRoom,importRoom,downloadRoom} from './world-room-package.mjs';
 import {rooms,exits,viewpoints} from './house-layout.mjs';
-import {slots,assetKey,baseline,record,change,active,defaults,boundsDefault,source,readRoomConfig,batchLocal} from './house-assets.mjs';
+import {slots,assetKey,baseline,record,change,active,defaults,boundsDefault,source,roomConfigSnapshot,saveRoomConfig,batchLocal} from './house-assets.mjs';
 import {renderScene} from './house-scene.mjs';
 const $=id=>document.getElementById(id);
 const fill=(element,items)=>element.replaceChildren(...items.map(([value,label])=>new Option(label,value)));
 const status=message=>$('status').textContent=message;
 const room=$('room'),view=$('view'),slot=$('slot'),variant=$('variant'),history=$('history'),portal=$('portal');
 let state,key,draft,selected,epoch=0,dispose=()=>{},audioURL;
-let undo=[],redo=[],drag,roomConfig;
+let undo=[],redo=[],drag,roomConfig,configSnapshot,placementDraft={};
 const layerDefaults=['background','primary','reverse','object-textures','environment','lighting','foreground'];
 fill(room,Object.values(rooms).map(r=>[r.id,r.name]));
+room.value='UP-LAN';
 fill(slot,slots.map(s=>[s,s.charAt(0).toUpperCase()+s.slice(1).replaceAll('-',' ')]));
 function fields(id,values,ranges,update){
  const group=$(id);
@@ -82,18 +84,19 @@ function historyList(){
 }
 async function load(){
  const token=++epoch;
- const next=assetKey(room.value,view.value,slot.value);
+ const roomId=room.value,next=assetKey(roomId,view.value,slot.value);
  status('');
- const result=await record(next);
+ const [result,snapshot]=await Promise.all([record(next),roomConfigSnapshot(roomId)]);
  if(token!==epoch)return;
- roomConfig=await readRoomConfig(room.value);
- if(token!==epoch)return;
+ configSnapshot=snapshot;
+ roomConfig=snapshot.value;
+ placementDraft={...roomConfig.objects};
  key=next;state=result;draft=null;selected=state.active;undo=[];redo=[];
  for(const button of $('floor-plan').querySelectorAll('button'))button.setAttribute('aria-pressed',String(button.dataset.room===room.value));
  $('file').value='';
  $('file').accept=slot.value==='ambient'?'audio/mpeg,audio/wav,audio/ogg,audio/mp4':'image/jpeg,image/png,image/webp,image/avif';
  $('see-walk').href='house-layout.html?room='+encodeURIComponent(room.value)+'&view='+encodeURIComponent(view.value);
- historyList();refreshFields();paint();configFields();
+ historyList();refreshFields();paint();configFields(true);
 }
 function roomChanged(){
  fill(view,viewpoints(room.value).map(v=>[v.id,v.name]));
@@ -227,29 +230,32 @@ for(const [height,label] of [[0,'Ground'],[2.72,'Upstairs'],[5.2,'Attic'],[-2.72
 }
 const editableObjects=objects.filter(o=>['salmon-picture','house-book','record-player'].includes(o.id));
 fill($('placement-object'),editableObjects.map(o=>[o.id,o.name]));
-function configFields(){
+function configFields(resetSettings=false){
  $('front-room-config').hidden=room.value!=='ENT-01';
  if(room.value!=='ENT-01')return;
  const picked=editableObjects.find(o=>o.id===$('placement-object').value);
- const {x,y,z,radius}={...picked,...roomConfig.objects?.[picked.id]};
+ const {x,y,z,radius}={...picked,...placementDraft[picked.id]};
  const group=$('placement-fields');
  group.replaceChildren(...Object.entries({x,y,z,radius}).map(([name,value])=>{
   const label=document.createElement('label'),input=document.createElement('input');
   label.textContent=name;input.type='number';input.step='.01';input.value=value;
+  input.addEventListener('input',()=>{
+   placementDraft[picked.id] = {...picked,...placementDraft[picked.id],[name]:input.valueAsNumber};
+  });
   label.append(input);return label;
  }));
+ if(!resetSettings)return;
  $('room-warmth').value=roomConfig.warmth??.75;
  $('room-rain-volume').value=roomConfig.rainVolume??.15;
  $('room-layers').value=(roomConfig.layerOrder||layerDefaults).join(', ');
 }
-$('placement-object').onchange=configFields;
+$('placement-object').onchange=()=>configFields();
 $('save-room-config').onclick=safe(async()=>{
- const id=$('placement-object').value;
- const [x,y,z,radius]=Array.from($('placement-fields').querySelectorAll('input'),input=>input.valueAsNumber);
  const next=validateConfig({warmth:$('room-warmth').valueAsNumber,rainVolume:$('room-rain-volume').valueAsNumber,
-  objects:{...roomConfig.objects,[id]:{x,y,z,radius}},layerOrder:$('room-layers').value.split(',').map(value=>value.trim())});
- await batchLocal([],{room:'ENT-01',value:next});
- roomConfig=next;status('Front Hall settings saved.');
+  objects:placementDraft,layerOrder:$('room-layers').value.split(',').map(value=>value.trim())});
+ configSnapshot=await saveRoomConfig('ENT-01',next,configSnapshot);
+ roomConfig=configSnapshot.value;placementDraft={...roomConfig.objects};
+ status(configSnapshot.mode==='shared'?'Front Hall settings saved to shared storage.':'Front Hall settings saved in this browser.');
 });
 $('bulk-art').onchange=safe(async()=>{
  const files=Array.from($('bulk-art').files);
@@ -294,4 +300,4 @@ $('owner-login').onsubmit=safe(async event=>{
  await signIn(value);await roomChanged();await inventory();
 });
 $('owner-logout').onclick=safe(async()=>{await signOut();await roomChanged();await inventory();});
-await safe(async()=>{await initialize();room.value='UP-LAN';await roomChanged();await inventory();})();
+await safe(async()=>{await initialize();await roomChanged();await inventory();})();

@@ -11,11 +11,11 @@ async function request(op,{params,method='GET',body,raw=false}={}){
  }
  return raw?new Uint8Array(await response.arrayBuffer()):response.json();
 }
-export async function initialize(){
+export async function initialize({catalog=true}={}){
  let status;
  try{
   await request('status');
-  keys=new Set((await request('index')).keys);
+  keys=new Set(catalog?(await request('index')).keys:[]);
   ready=true;status='connected';
  }catch(error){ready=false;status=error.status===401?'locked':'unconfigured';}
  subscriber?.(status);
@@ -58,3 +58,8 @@ export async function sharedSave(key,state,etag){
  keys.add(key);
  return state;
 }
+
+export const sharedRoomConfig=room=>request('config',{params:{room}});
+export const saveSharedRoomConfig=(room,value,etag)=>request('config',{
+ params:{room},method:'POST',body:JSON.stringify({value,etag})
+});

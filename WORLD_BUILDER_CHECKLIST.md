@@ -6,7 +6,8 @@
 - [x] Portable room JSON includes revisions, master and variant media, alignment, thresholds, provisional camera notes, connection IDs, filenames, layer needs, placeholder SVG and production prompts.
 - [x] Restore an exported room on a fresh browser profile without changing navigation.
 - [x] Authenticated shared repository contract with signed, HttpOnly owner sessions, origin checks, private storage adapter, content-addressed upload chunks and ETag conflict protection.
-- [x] Restart the repository against the same storage, sign in with a fresh session and verify revision restoration using the filesystem test adapter.
+- [x] Verify artwork assignments and room settings from fresh authenticated browser sessions on two local server instances using one filesystem store. Reject stale room settings writes.
+- [x] Retain pending placement edits while switching objects. Save the current room configuration in the active local or shared storage mode.
 - [x] Review editor has floor-grouped room selection, file drop, separate master import with generated desktop/phone variants, numeric scale and perspective, drag positioning, portal bounds, and undo/redo for alignment drafts.
 - [x] Draft, approved, rejected and published-to-review states. No operation publishes to the production website.
 

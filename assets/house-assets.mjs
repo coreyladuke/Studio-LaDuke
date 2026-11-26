@@ -1,4 +1,4 @@
-import {shared,sharedRecord,sharedSave} from './world-sync.mjs';
+import {shared,sharedRecord,sharedSave,sharedRoomConfig,saveSharedRoomConfig} from './world-sync.mjs';
 import { rooms, viewpoints } from './house-layout.mjs';
 
 export const slots = ['primary','reverse','foreground','background','depth','occlusion','environment','lighting','object-textures','ambient'];
@@ -69,13 +69,30 @@ export function source(asset,mobile) {
  return {url:value,release:false};
 }
 
-export async function readRoomConfig(room){
+async function localRoomConfig(room){
  const db=await connect();
  return new Promise((resolve,reject)=>{
   const request=db.transaction('assets').objectStore('assets').get('@config/'+room);
   request.onsuccess=()=>resolve(request.result||{});
   request.onerror=()=>reject(request.error);
  });
+}
+export async function roomConfigSnapshot(room){
+ if(!shared())return {value:await localRoomConfig(room),etag:null,mode:'local'};
+ const {value,etag}=await sharedRoomConfig(room);
+ return {value:value??await localRoomConfig(room),etag,mode:'shared'};
+}
+export async function readRoomConfig(room){
+ return (await roomConfigSnapshot(room)).value;
+}
+export async function saveRoomConfig(room,value,snapshot){
+ if((shared()?'shared':'local')!==snapshot.mode)throw new Error('Storage mode changed. Reload these room settings before saving.');
+ if(snapshot.mode==='local'){
+  await batchLocal([],{room,value});
+  return {value,etag:null,mode:'local'};
+ }
+ await saveSharedRoomConfig(room,value,snapshot.etag);
+ return roomConfigSnapshot(room);
 }
 export async function batchLocal(entries,config){
  if(shared())throw new Error('Batch changes require browser-local mode until shared room transactions are available.');
