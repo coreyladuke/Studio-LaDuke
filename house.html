@@ -426,6 +426,9 @@ function makeMap(){
  const box=id("floorContents");
  box.replaceChildren();
  appendWalkPlan(box);
+ const layoutLink=document.createElement("a");
+ layoutLink.href="house-layout.html";layoutLink.textContent="Walk the full house layout";
+ box.append(layoutLink);
  appendEntryPlan(box);
  const passages=R[here].e;
  if(passages.length){

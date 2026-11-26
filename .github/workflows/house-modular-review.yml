@@ -1,0 +1,128 @@
+name: Modular house and asset studio
+on:
+  push:
+    branches: [dev/house-guide-walk]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-save --no-package-lock playwright
+      - run: npx playwright install --with-deps chromium webkit
+      - run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 &
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import {mkdir,readFile} from 'node:fs/promises';
+          import {chromium,webkit,devices} from 'playwright';
+          import {rooms,connections,exits,viewpoints} from './assets/house-layout.mjs';
+          import {slots,assetKey} from './assets/house-assets.mjs';
+          const connected=new Set(['ENT-01']);
+          for (const room of connected) for (const edge of exits(room)) connected.add(edge.destination);
+          assert.equal(connected.size,33);
+          assert.equal(connections.length,32);
+          assert.equal(new Set(connections.map(edge=>edge.id)).size,32);
+          const keys=Object.keys(rooms).flatMap(room=>viewpoints(room).flatMap(view=>slots.map(slot=>assetKey(room,view.id,slot))));
+          assert.equal(new Set(keys).size,keys.length);
+          await mkdir('modular-evidence');
+          const base='http://127.0.0.1:4173/';
+          const image=await readFile('assets/house-plates/main-hall-cedar.webp');
+          async function text(page,selector,value){
+           await page.waitForFunction(({selector,value})=>document.querySelector(selector)?.textContent.includes(value),{selector,value});
+          }
+          const chromiumBrowser=await chromium.launch();
+          try{
+           const context=await chromiumBrowser.newContext({reducedMotion:'reduce'});
+           const page=await context.newPage();
+           const errors=[];
+           page.on('pageerror',e=>errors.push(e.message));
+           await page.goto(base+'house-studio.html');
+           await text(page,'#missing-count','scenery slots');
+           await page.screenshot({path:'modular-evidence/studio-before.png'});
+           const input=page.locator('#file');
+           await input.setInputFiles({name:'test-only-replacement.webp',mimeType:'image/webp',buffer:image});
+           await text(page,'#status','Replacement ready');
+           await page.locator('#alignment input').nth(2).fill('110');
+           await page.locator('#boundaries input').first().fill('35');
+           await page.getByRole('button',{name:'Save draft'}).click();
+           await text(page,'#status','Draft saved');
+           await page.getByRole('button',{name:'Approve',exact:true}).click();
+           await text(page,'#status','Approved');
+           await page.screenshot({path:'modular-evidence/studio-approved.png'});
+           await page.getByRole('link',{name:'Inspect in walk'}).click();
+           await text(page,'#room-name','Upstairs Landing');
+           const photo=page.locator('.stage img.primary');
+           assert.equal(await photo.evaluate(async image=>{await image.decode();return image.naturalWidth;}),1600);
+           assert.match(await photo.getAttribute('style'),/scale\(1.1\)/);
+           const stair=page.locator('[data-portal="main-stairs"]');
+           assert.match(await stair.getAttribute('style'),/left: 35%/);
+           await stair.focus();
+           await page.keyboard.press('Enter');
+           await text(page,'#room-name','Main Hall');
+           await page.getByRole('button',{name:'Main Stairs to Upstairs Landing'}).click();
+           await text(page,'#room-name','Upstairs Landing');
+           await page.goto(base+'house-studio.html');
+           await text(page,'#missing-count','scenery slots');
+           await page.locator('#history').selectOption('baseline');
+           await page.getByRole('button',{name:'Restore selected'}).click();
+           await text(page,'#status','restored');
+           await page.getByRole('link',{name:'Inspect in walk'}).click();
+           await text(page,'.scene-status','Dimensional placeholder');
+           for(const edge of connections){
+            await page.goto(base+'house-layout.html?room='+edge.from+'&view='+edge.id);
+            const portal=page.locator('[data-portal="'+edge.id+'"]');
+            await portal.click();
+            await text(page,'#room-name',rooms[edge.to].name);
+            await portal.click();
+            await text(page,'#room-name',rooms[edge.from].name);
+           }
+           assert.deepEqual(errors,[]);
+           await context.close();
+           const phone=await chromiumBrowser.newContext({...devices['Pixel 7'],reducedMotion:'reduce'});
+           const p=await phone.newPage();
+           await p.goto(base+'house-layout.html?room=ENT-01&view=main-hall-opening');
+           const door=p.locator('[data-portal="main-hall-opening"]');
+           const box=await door.boundingBox();
+           const x=Math.round(box.x+box.width/2),y=Math.round(box.y+box.height/2);
+           const cdp=await phone.newCDPSession(p);
+           await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y}]});
+           for(const offset of [20,40,60,75])await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x-offset,y}]});
+           await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+           assert.equal(await p.locator('#room-name').textContent(),'Front Hall');
+           await p.locator('#view').selectOption('main-hall-opening');
+           await door.tap();
+           await text(p,'#room-name','Main Hall');
+           await phone.close();
+          } finally {await chromiumBrowser.close();}
+          const safari=await webkit.launch();
+          try{
+           const context=await safari.newContext({...devices['iPhone 13'],reducedMotion:'reduce'});
+           const page=await context.newPage();
+           await page.goto(base+'house-layout.html?room=BS-LAN&view=arcade-door');
+           const door=page.locator('[data-portal="arcade-door"]');
+           await door.waitFor({state:'visible',timeout:20000});
+           for(const room of ['Arcade','Basement Landing']){
+            const box=await door.boundingBox();
+            assert.ok(box);
+            const x=box.x+box.width/2,y=box.y+box.height/2;
+            assert.equal(await page.evaluate(({x,y})=>document.elementFromPoint(x,y)?.closest('button')?.dataset.portal,{x,y}),'arcade-door');
+            await page.touchscreen.tap(x,y);
+            await text(page,'#room-name',room);
+           }
+           await page.screenshot({path:'modular-evidence/iphone-basement.png'});
+           await context.close();
+          } finally {await safari.close();}
+          console.log('Verified 33 nodes, 32 paired connections, '+keys.length+' distinct asset slots, local approval and restore, Chromium swipe and WebKit tap.');
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: modular-house-evidence
+          path: modular-evidence/

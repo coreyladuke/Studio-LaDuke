@@ -1,0 +1,7 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Studio LaDuke House Layout</title><link rel="stylesheet" href="assets/house-development.css"></head>
+<body><header><strong>Studio LaDuke</strong><span><a href="house.html?room=foyer">Photographic walk</a> · <a href="house-studio.html">Asset Studio</a></span></header>
+<main><h1 id="room-name" tabindex="-1"></h1><p id="elevation" class="compact"></p>
+<div id="walk-stage" class="stage walk-stage" aria-label="Room view"></div>
+<div class="navigator"><button id="turn" type="button">Turn around</button><label>Look toward<select id="view"></select></label><button id="sound" type="button" aria-pressed="false">Ambient sound</button><label>Room directory<select id="room"></select></label></div>
+<p id="message" class="status" role="status"></p><audio id="ambient" loop preload="none"></audio>
+</main><script type="module" src="assets/house-layout-walk.mjs"></script></body></html>

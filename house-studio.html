@@ -1,0 +1,18 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>House Asset Studio</title><link rel="stylesheet" href="assets/house-development.css"></head>
+<body><header><strong>Studio LaDuke</strong><a href="house-layout.html">Walk the house</a></header>
+<main><h1>House Asset Studio</h1><p class="compact">Artwork and version history are saved in this browser. Approving a version updates the modular walk here.</p>
+<div class="layout"><aside aria-label="Asset controls">
+<label>Room<select id="room"></select></label><label>Viewpoint<select id="view"></select></label>
+<label>Asset slot<select id="slot"></select></label><label>Asset variant<select id="variant"><option value="desktop">Desktop</option><option value="mobile">Mobile</option></select></label>
+<label>Replacement file<input type="file" id="file" accept="image/jpeg,image/png,image/webp,image/avif"></label>
+<fieldset><legend>Alignment</legend><div class="fields" id="alignment"></div></fieldset>
+<fieldset><legend>Portal boundary</legend><label>Portal<select id="portal"></select></label><div class="fields" id="boundaries"></div></fieldset>
+<div class="actions"><button id="save">Save draft</button><button id="approve">Approve</button><button id="reject">Reject</button></div>
+<label>Version history<select id="history"></select></label>
+<div class="actions"><button id="restore">Restore selected</button><a id="see-walk" href="house-layout.html">Inspect in walk</a></div>
+<p id="status" class="status" role="status" aria-live="polite"></p>
+</aside><section aria-label="Artwork preview">
+<div class="compare"><div><h2>Current</h2><div id="current" class="stage"></div></div><div><h2 id="comparison-label">Replacement</h2><div id="candidate" class="stage"></div></div></div>
+<audio id="audio-preview" controls hidden></audio>
+<details><summary id="missing-count">Artwork needed</summary><ul id="missing"></ul></details>
+</section></div></main><script type="module" src="assets/house-studio.mjs"></script></body></html>
