@@ -8,12 +8,19 @@
 <div class="actions"><button id="export-room" type="button">Export room package</button><a href="samples/UP-LAN.world-room.json" download>Sample production brief</a></div><label>Restore room package<input id="import-room" type="file" accept=".json,application/json"></label>
 <label>Room<select id="room"></select></label><label>Viewpoint<select id="view"></select></label>
 <label>Asset slot<select id="slot"></select></label><label>Asset variant<select id="variant"><option value="desktop">Desktop</option><option value="master">Master and generated variants</option><option value="mobile">Mobile</option></select></label>
+<label>Bulk artwork by filename<input id="bulk-art" type="file" multiple accept="image/jpeg,image/png,image/webp,image/avif"></label>
 <label>Replacement file<input type="file" id="file" accept="image/jpeg,image/png,image/webp,image/avif"></label>
 <fieldset><legend>Alignment</legend><div class="fields" id="alignment"></div></fieldset>
 <fieldset><legend>Portal boundary</legend><label>Portal<select id="portal"></select></label><div class="fields" id="boundaries"></div></fieldset>
 <div class="actions"><button id="save">Save draft</button><button id="approve">Approve</button><button id="reject">Reject</button><button id="publish">Publish to review</button></div>
 <label>Version history<select id="history"></select></label>
 <div class="actions"><button id="restore">Restore selected</button><a id="see-walk" href="house-layout.html">Inspect in walk</a></div>
+<details id="front-room-config"><summary>Front Hall objects and ambience</summary>
+<label>Object<select id="placement-object"></select></label><div id="placement-fields" class="fields"></div>
+<label>Interior light<input id="room-warmth" type="number" min=".35" max="1.2" step=".05"></label>
+<label>Rain volume<input id="room-rain-volume" type="number" min="0" max="1" step=".05"></label>
+<label>Layer order, back to front<input id="room-layers" type="text"></label>
+<div class="actions"><button id="save-room-config" type="button">Save room settings</button><a href="house-visit.html">Inspect dimensional halls</a></div></details>
 <p id="status" class="status" role="status" aria-live="polite"></p>
 </aside><section aria-label="Artwork preview">
 <div id="floor-plan" class="floor-plan" aria-label="Schematic room plan"></div><div class="compare"><div><h2>Current</h2><div id="current" class="stage"></div></div><div><h2 id="comparison-label">Replacement</h2><div id="candidate" class="stage" aria-label="Replacement preview and file drop area"></div><div class="actions"><button id="undo-art" type="button">Undo alignment</button><button id="redo-art" type="button">Redo alignment</button></div></div></div>

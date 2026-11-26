@@ -1,14 +1,16 @@
+import {objects} from './house-dimensional.mjs';
 import {initialize,onStatus,signIn,signOut} from './world-sync.mjs';
-import {exportRoom,importRoom,downloadRoom} from './world-room-package.mjs';
+import {exportRoom,importRoom,downloadRoom,validateConfig} from './world-room-package.mjs';
 import {rooms,exits,viewpoints} from './house-layout.mjs';
-import {slots,assetKey,baseline,record,change,active,defaults,boundsDefault,source} from './house-assets.mjs';
+import {slots,assetKey,baseline,record,change,active,defaults,boundsDefault,source,readRoomConfig,batchLocal} from './house-assets.mjs';
 import {renderScene} from './house-scene.mjs';
 const $=id=>document.getElementById(id);
 const fill=(element,items)=>element.replaceChildren(...items.map(([value,label])=>new Option(label,value)));
 const status=message=>$('status').textContent=message;
 const room=$('room'),view=$('view'),slot=$('slot'),variant=$('variant'),history=$('history'),portal=$('portal');
 let state,key,draft,selected,epoch=0,dispose=()=>{},audioURL;
-let undo=[],redo=[],drag;
+let undo=[],redo=[],drag,roomConfig;
+const layerDefaults=['background','primary','reverse','object-textures','environment','lighting','foreground'];
 fill(room,Object.values(rooms).map(r=>[r.id,r.name]));
 fill(slot,slots.map(s=>[s,s.charAt(0).toUpperCase()+s.slice(1).replaceAll('-',' ')]));
 function fields(id,values,ranges,update){
@@ -84,12 +86,14 @@ async function load(){
  status('');
  const result=await record(next);
  if(token!==epoch)return;
+ roomConfig=await readRoomConfig(room.value);
+ if(token!==epoch)return;
  key=next;state=result;draft=null;selected=state.active;undo=[];redo=[];
  for(const button of $('floor-plan').querySelectorAll('button'))button.setAttribute('aria-pressed',String(button.dataset.room===room.value));
  $('file').value='';
  $('file').accept=slot.value==='ambient'?'audio/mpeg,audio/wav,audio/ogg,audio/mp4':'image/jpeg,image/png,image/webp,image/avif';
  $('see-walk').href='house-layout.html?room='+encodeURIComponent(room.value)+'&view='+encodeURIComponent(view.value);
- historyList();refreshFields();paint();
+ historyList();refreshFields();paint();configFields();
 }
 function roomChanged(){
  fill(view,viewpoints(room.value).map(v=>[v.id,v.name]));
@@ -221,6 +225,62 @@ for(const [height,label] of [[0,'Ground'],[2.72,'Upstairs'],[5.2,'Attic'],[-2.72
  }
  $('floor-plan').append(section);
 }
+const editableObjects=objects.filter(o=>['salmon-picture','house-book','record-player'].includes(o.id));
+fill($('placement-object'),editableObjects.map(o=>[o.id,o.name]));
+function configFields(){
+ $('front-room-config').hidden=room.value!=='ENT-01';
+ if(room.value!=='ENT-01')return;
+ const picked=editableObjects.find(o=>o.id===$('placement-object').value);
+ const {x,y,z,radius}={...picked,...roomConfig.objects?.[picked.id]};
+ const group=$('placement-fields');
+ group.replaceChildren(...Object.entries({x,y,z,radius}).map(([name,value])=>{
+  const label=document.createElement('label'),input=document.createElement('input');
+  label.textContent=name;input.type='number';input.step='.01';input.value=value;
+  label.append(input);return label;
+ }));
+ $('room-warmth').value=roomConfig.warmth??.75;
+ $('room-rain-volume').value=roomConfig.rainVolume??.15;
+ $('room-layers').value=(roomConfig.layerOrder||layerDefaults).join(', ');
+}
+$('placement-object').onchange=configFields;
+$('save-room-config').onclick=safe(async()=>{
+ const id=$('placement-object').value;
+ const [x,y,z,radius]=Array.from($('placement-fields').querySelectorAll('input'),input=>input.valueAsNumber);
+ const next=validateConfig({warmth:$('room-warmth').valueAsNumber,rainVolume:$('room-rain-volume').valueAsNumber,
+  objects:{...roomConfig.objects,[id]:{x,y,z,radius}},layerOrder:$('room-layers').value.split(',').map(value=>value.trim())});
+ await batchLocal([],{room:'ENT-01',value:next});
+ roomConfig=next;status('Front Hall settings saved.');
+});
+$('bulk-art').onchange=safe(async()=>{
+ const files=Array.from($('bulk-art').files);
+ if(!files.length)return;
+ if(files.length>24)throw new Error('Choose up to 24 images per batch.');
+ const names=new Map();
+ for(const room of Object.keys(rooms))for(const view of viewpoints(room))for(const slot of slots.filter(x=>x!=='ambient')){
+  const key=assetKey(room,view.id,slot),name=[room,view.id,slot].join('-').toLowerCase();
+  for(const device of ['desktop','mobile']){
+   names.set(name+'-'+device,{key,device});
+   if(device==='desktop')names.set(name,{key,device});
+  }
+ }
+ const grouped=new Map();
+ for(const file of files){
+  if(!/^image\/(jpeg|png|webp|avif)$/.test(file.type)||file.size>24*1024*1024)throw new Error('Unsupported or oversized file: '+file.name);
+  const route=names.get(file.name.replace(/\.[^.]+$/,'').toLowerCase());
+  if(!route)throw new Error('Filename does not match a room, viewpoint and slot: '+file.name);
+  const entry=grouped.get(route.key)||{};
+  if(entry[route.device])throw new Error('Duplicate variant: '+file.name);
+  const url=URL.createObjectURL(file);
+  try{const image=new Image();image.src=url;await image.decode();}finally{URL.revokeObjectURL(url);}
+  entry[route.device]=file;entry.name=file.name;grouped.set(route.key,entry);
+ }
+ await batchLocal([...grouped].map(([key,assets])=>({key,apply(record){
+  const previous=active(key,record);
+  record.versions.push({...previous,...assets,id:crypto.randomUUID(),created:Date.now(),status:'draft'});
+ }})));
+ $('bulk-art').value='';
+ await load();status(files.length+' artwork files routed into '+grouped.size+' draft slots.');
+});
 onStatus(value=>{
  $('storage-status').textContent=value==='connected'?'Shared storage connected. Changes are available across devices.':
   value==='locked'?'Shared storage is locked. Unlock it to load shared revisions.':

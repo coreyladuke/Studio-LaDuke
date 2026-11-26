@@ -68,3 +68,29 @@ export function source(asset,mobile) {
  if(value instanceof Blob) return {url:URL.createObjectURL(value),release:true};
  return {url:value,release:false};
 }
+
+export async function readRoomConfig(room){
+ const db=await connect();
+ return new Promise((resolve,reject)=>{
+  const request=db.transaction('assets').objectStore('assets').get('@config/'+room);
+  request.onsuccess=()=>resolve(request.result||{});
+  request.onerror=()=>reject(request.error);
+ });
+}
+export async function batchLocal(entries,config){
+ if(shared())throw new Error('Batch changes require browser-local mode until shared room transactions are available.');
+ const db=await connect();
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction('assets','readwrite'),store=tx.objectStore('assets');
+  for(const {key,apply} of entries){
+   const request=store.get(key);
+   request.onsuccess=()=>{
+    try{const state=request.result||empty();apply(state);store.put(state,key);}
+    catch{tx.abort();}
+   };
+  }
+  if(config)store.put(config.value,'@config/'+config.room);
+  tx.oncomplete=resolve;
+  tx.onabort=()=>reject(tx.error||new Error('Room transaction was cancelled.'));
+ });
+}

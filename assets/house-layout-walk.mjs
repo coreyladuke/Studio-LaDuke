@@ -1,6 +1,7 @@
+import {venues} from './house-venues.mjs';
 import {initialize} from './world-sync.mjs';
 import {rooms,exits,viewpoints} from './house-layout.mjs';
-import {assetKey,active,record,baseline,source} from './house-assets.mjs';
+import {assetKey,active,record,baseline,source,readRoomConfig} from './house-assets.mjs';
 import {renderScene} from './house-scene.mjs';
 const $=id=>document.getElementById(id);
 const fill=(element,items)=>element.replaceChildren(...items.map(([value,label])=>new Option(label,value)));
@@ -43,6 +44,7 @@ async function draw(focus=false){
  if(!options.some(item=>item.id===view))view='primary';
  const slots=['primary','reverse','background','foreground','environment','lighting','object-textures','ambient'];
  const assets=await Promise.all(slots.map(slot=>getAsset(room,view,slot)));
+ const config=await readRoomConfig(room).catch(()=>({}));
  if(token!==drawId)return;
  const layers=Object.fromEntries(slots.map((slot,i)=>[slot,assets[i]]));
  if(view==='reverse'&&layers.reverse)layers.primary=null;
@@ -52,11 +54,14 @@ async function draw(focus=false){
  const roomSettings=settings.get(room)||{};
  stage.classList.toggle('dimmed',Boolean(roomSettings.dimmed));
  stage.classList.toggle('window-open',Boolean(roomSettings.window));
- dispose=renderScene(stage,{room,view,layers,boundaries:art?.boundaries,onCross:cross,onObject:interact,
+ dispose=renderScene(stage,{room,view,layers,boundaries:art?.boundaries,layerOrder:config.layerOrder,onCross:cross,onObject:interact,
   mark:art?'Artwork · approved':'Dimensional placeholder'});
  stage.querySelector('.fixture.light')?.setAttribute('aria-pressed',String(Boolean(roomSettings.dimmed)));
  stage.querySelector('.fixture.window')?.setAttribute('aria-pressed',String(Boolean(roomSettings.window)));
  $('room-name').textContent=spec.name;
+ $('venues').replaceChildren(...(venues[room]||[]).map(entry=>{
+  const link=document.createElement('a');link.href=entry.url;link.textContent=entry.label;return link;
+ }));
  $('elevation').textContent='Elevation '+spec.elevation.toFixed(2)+' m · provisional layout';
  $('room').value=room;fill($('view'),options.map(item=>[item.id,item.name]));$('view').value=view;
  $('turn').textContent=view==='reverse'?'Face forward':'Turn around';

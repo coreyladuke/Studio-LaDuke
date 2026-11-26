@@ -1,0 +1,128 @@
+name: Birthday dimensional preview
+on:
+  push:
+    branches: [dev/house-guide-walk]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-save --no-package-lock playwright
+      - run: npx playwright install --with-deps chromium webkit
+      - run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 &
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import {mkdir,readFile} from 'node:fs/promises';
+          import {chromium,webkit,devices} from 'playwright';
+          import {allowed,moveCamera,start,objects,objectAction} from './assets/house-dimensional.mjs';
+          assert.equal(allowed(-1.4,-.8),true);
+          assert.equal(allowed(-1.4,.1),false);
+          assert.equal(allowed(-2.9,.9),false);
+          assert.ok(moveCamera({...start,z:-.8},8,0).x<=1.24);
+          assert.ok(moveCamera({...start,z:.2},8,0).x<-1.4);
+          assert.equal(objectAction({},objects.find(o=>o.kind==='discovery')).type,'none');
+          await mkdir('birthday-evidence');
+          const base='http://127.0.0.1:4173/';
+          const browser=await chromium.launch({args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+          try{
+           const context=await browser.newContext({viewport:{width:1280,height:800},recordVideo:{dir:'birthday-evidence/video'}});
+           const page=await context.newPage(),errors=[];
+           page.on('pageerror',e=>errors.push(e.message));
+           await page.goto(base+'house-visit.html');
+           const canvas=page.locator('#world');
+           await page.waitForFunction(()=>document.querySelector('#world').dataset.room==='Front Hall');
+           await page.screenshot({path:'birthday-evidence/front-hall.png'});
+           await page.getByText('Nearby objects',{exact:true}).click();
+           const nearby=name=>page.locator('#nearby').getByRole('button',{name,exact:true});
+           await nearby('Front door').click();
+           await page.waitForFunction(()=>document.querySelector('#visit-status').textContent==='Front door opened.');
+           await nearby('Console lamp').click();
+           await page.waitForFunction(()=>document.querySelector('#visit-status').textContent==='Lamp off.');
+           await nearby('Console lamp').click();
+           assert.equal(await nearby('Folded note').count(),0);
+           await nearby('Cedar drawer').click();
+           await nearby('Folded note').click();
+           await page.getByRole('dialog').getByRole('heading',{name:'Folded note'}).waitFor();
+           await page.getByRole('button',{name:'Close inspection'}).click();
+           await nearby('House notebook').click();
+           await page.getByRole('dialog').getByText(/Rain in the yard/).waitFor();
+           await page.getByRole('button',{name:'Close inspection'}).click();
+           await nearby('King salmon painting').click();
+           await page.getByRole('dialog').getByRole('img').waitFor();
+           await page.screenshot({path:'birthday-evidence/art-inspection.png'});
+           await page.getByRole('button',{name:'Close inspection'}).click();
+           await nearby('Record player').click();
+           await page.waitForFunction(()=>document.querySelector('#visit-status').textContent==='Record player on.');
+           await nearby('Record player').click();
+           await page.getByText('Nearby objects',{exact:true}).click();
+           await canvas.focus();
+           await page.keyboard.down('w');
+           await page.waitForFunction(()=>document.querySelector('#world').dataset.room==='Main Hall');
+           await page.waitForFunction(()=>Number(document.querySelector('#world').dataset.coords.split(',')[0])>1.15);
+           const before=await canvas.getAttribute('data-coords');
+           await page.evaluate(()=>new Promise(resolve=>setTimeout(resolve,200)));
+           const after=await canvas.getAttribute('data-coords');
+           await page.keyboard.up('w');
+           assert.ok(Math.abs(Number(after.split(',')[0])-Number(before.split(',')[0]))<.09);
+           assert.ok(Number(after.split(',')[0])<=1.24);
+           await page.screenshot({path:'birthday-evidence/main-hall.png'});
+           await page.goto(base+'house-studio.html');
+           await page.locator('#room').selectOption('ENT-01');
+           await page.locator('#front-room-config summary').click();
+           await page.locator('#room-warmth').fill('.85');
+           await page.getByRole('button',{name:'Save room settings'}).click();
+           await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('settings saved'));
+           const sample=await readFile('assets/house-plates/main-hall-cedar.webp');
+           await page.locator('#bulk-art').setInputFiles([
+            {name:'UP-LAN-primary-primary.webp',mimeType:'image/webp',buffer:sample},
+            {name:'UP-LAN-primary-primary-mobile.webp',mimeType:'image/webp',buffer:sample}
+           ]);
+           await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('2 artwork files'));
+           await page.locator('#room').selectOption('UP-LAN');
+           await page.waitForFunction(()=>[...document.querySelector('#history').options].some(o=>o.text.includes('draft')));
+           assert.deepEqual(errors,[]);
+           await context.close();
+           const phone=await browser.newContext({...devices['Pixel 7'],reducedMotion:'reduce'});
+           const p=await phone.newPage();
+           await p.goto(base+'house-visit.html');
+           await p.waitForFunction(()=>document.querySelector('#world').dataset.room==='Front Hall');
+           const beforeTouch=await p.locator('#world').getAttribute('data-coords');
+           const cdp=await phone.newCDPSession(p);
+           await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:180,y:300}]});
+           for(const x of [200,225,245])await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x,y:300}]});
+           await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+           assert.equal(await p.locator('#world').getAttribute('data-coords'),beforeTouch);
+           assert.equal(await p.locator('dialog').evaluate(el=>el.open),false);
+           await p.screenshot({path:'birthday-evidence/phone.png'});
+           await phone.close();
+          }finally{await browser.close();}
+          const safari=await webkit.launch();
+          try{
+           const context=await safari.newContext(devices['iPhone 13']);
+           await context.addInitScript(()=>{
+            const original=HTMLCanvasElement.prototype.getContext;
+            HTMLCanvasElement.prototype.getContext=function(kind,...args){
+             if(kind==='webgl')return null;
+             return original.call(this,kind,...args);
+            };
+           });
+           const page=await context.newPage();await page.goto(base+'house-visit.html');
+           await page.getByRole('link',{name:'Enter the photographic walk'}).waitFor();
+           await page.screenshot({path:'birthday-evidence/iphone-fallback.png'});
+           await context.close();
+          }finally{await safari.close();}
+          console.log('Verified WebGL traversal and collision, seven object behaviors, bulk routing, room settings, Chromium touch and WebKit photographic fallback.');
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: birthday-preview-evidence
+          path: birthday-evidence/

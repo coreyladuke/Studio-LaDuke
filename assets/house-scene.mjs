@@ -29,7 +29,7 @@ function model(room){
 function boxStyle(element,bounds){
  Object.assign(element.style,{left:bounds.x+'%',top:bounds.y+'%',width:bounds.width+'%',height:bounds.height+'%'});
 }
-export function renderScene(stage,{room,view,layers={},boundaries={},onCross,onObject,mark}){
+export function renderScene(stage,{room,view,layers={},boundaries={},onCross,onObject,mark,layerOrder}){
  const urls=[];
  const modelLayer=model(rooms[room]);
  const available=exits(room);
@@ -37,7 +37,7 @@ export function renderScene(stage,{room,view,layers={},boundaries={},onCross,onO
   view==='reverse'?[available[0]].filter(Boolean):available.filter(edge=>edge.id===view);
  stage.replaceChildren(modelLayer);
  const mobile=matchMedia('(max-width: 650px)').matches;
- for(const slot of ['background','primary','reverse','object-textures','environment','lighting','foreground']){
+ for(const slot of layerOrder||['background','primary','reverse','object-textures','environment','lighting','foreground']){
   const asset=layers[slot];
   if(!asset)continue;
   const resource=source(asset,mobile);

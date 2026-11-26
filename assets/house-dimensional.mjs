@@ -1,0 +1,196 @@
+export const start={x:-2.98,y:1.58,z:-.54,yaw:1.58,pitch:0};
+const radius=.16,wall=-1.4,portal=-.8,half=.51;
+export const objects=[
+ {id:'entry-door',name:'Front door',kind:'door',x:-3.99,y:1.12,z:-.7,radius:.53},
+ {id:'console-switch',name:'Console lamp',kind:'light',x:-2.35,y:1.19,z:.93,radius:.19},
+ {id:'console-drawer',name:'Cedar drawer',kind:'drawer',x:-2.86,y:.68,z:.85,radius:.29},
+ {id:'salmon-picture',name:'King salmon painting',kind:'art',x:-2.87,y:1.68,z:1.52,radius:.35,src:'assets/front-art/salmon.webp'},
+ {id:'house-book',name:'House notebook',kind:'book',x:-2.72,y:.93,z:1.02,radius:.15},
+ {id:'record-player',name:'Record player',kind:'music',x:-3.34,y:.97,z:1.04,radius:.21},
+ {id:'drawer-discovery',name:'Folded note',kind:'discovery',x:-2.85,y:.74,z:.62,radius:.13,requires:'console-drawer'},
+ {id:'rain-window',name:'Rain window',kind:'window',x:-3.65,y:1.64,z:1.53,radius:.33},
+ {id:'stair-threshold',name:'Main Stairs',kind:'stairs',x:.18,y:1.04,z:-.10,radius:.37}
+];
+export const hallLocation=(x)=>x>wall?'Main Hall':'Front Hall';
+export function allowed(x,z){
+ const foyer=x>=-4.1+radius&&x<=wall-radius&&z>=-1.6+radius&&z<=1.6-radius;
+ const hall=x>=wall+radius&&x<=1.4-radius&&z>=-1.6+radius&&z<=-radius;
+ const doorway=Math.abs(x-wall)<=radius+.0001&&Math.abs(z-portal)<=half-radius;
+ const furniture=x>-3.66-radius&&x<-2.13+radius&&z>.79-radius;
+ return (foyer||hall||doorway)&&!furniture;
+}
+export function moveCamera(camera,dx,dz){
+ const steps=Math.max(1,Math.ceil(Math.hypot(dx,dz)/.06));
+ let {x,z}=camera;
+ for(let i=0;i<steps;i++){
+  if(allowed(x+dx/steps,z))x+=dx/steps;
+  if(allowed(x,z+dz/steps))z+=dz/steps;
+ }
+ return {...camera,x,z};
+}
+export function visible(camera,object){
+ const distance=Math.hypot(object.x-camera.x,object.z-camera.z);
+ if(distance>2.75)return false;
+ if((camera.x<wall)!==(object.x<wall)){
+  const t=(wall-camera.x)/(object.x-camera.x);
+  return Math.abs(camera.z+(object.z-camera.z)*t-portal)<half;
+ }
+ return true;
+}
+export function objectAction(state,object){
+ if(object.requires&&!state[object.requires])return {type:'none'};
+ if(['door','light','drawer','music','window'].includes(object.kind)){
+  state[object.id]=!state[object.id];
+  return {type:object.kind,on:state[object.id]};
+ }
+ if(object.kind==='discovery')state[object.id]=true;
+ return {type:object.kind};
+}
+const rgba={
+ wall:[.48,.29,.16,1], floor:[.50,.33,.20,2], wood:[.31,.17,.095,1],
+ trim:[.24,.13,.08,1], ceiling:[.30,.21,.14,1], glass:[.20,.34,.35,3],
+ frame:[.44,.29,.12,1], canvas:[.56,.38,.22,0], black:[.13,.13,.10,0],
+ cream:[.72,.61,.41,0], brass:[.63,.44,.19,0], green:[.20,.29,.20,0],
+ rug:[.28,.25,.18,4], light:[.88,.64,.33,5], trees:[.09,.20,.17,6]
+};
+function mesh(state,time,placements){
+ let offset=[0,0,0];
+ function place(id,draw){
+  const object=objects.find(item=>item.id===id),next=placements[id];
+  if(next)offset=[next.x-object.x,next.y-object.y,next.z-object.z];
+  draw();offset=[0,0,0];
+ }
+ const v=[];
+ function box(x,y,z,w,h,d,key,angle=0,pivot=x){
+  x+=offset[0];y+=offset[1];z+=offset[2];pivot+=offset[0];
+  const color=rgba[key];
+  const corners=[[x,y,z],[x+w,y,z],[x+w,y+h,z],[x,y+h,z],[x,y,z+d],[x+w,y,z+d],[x+w,y+h,z+d],[x,y+h,z+d]];
+  if(angle)for(const p of corners){const a=p[0]-pivot,b=p[2]-z;p[0]=pivot+a*Math.cos(angle)-b*Math.sin(angle);p[2]=z+a*Math.sin(angle)+b*Math.cos(angle);}
+  for(const [indices,shade] of [[[0,3,2,1],.84],[[4,5,6,7],.92],[[0,4,7,3],.70],[[1,2,6,5],.78],[[3,7,6,2],1],[[0,1,5,4],.57]]){
+   for(const i of [0,1,2,0,2,3])v.push(...corners[indices[i]],...color,shade);
+  }
+ }
+ box(-4.1,-.08,-1.6,5.5,.08,3.2,'floor');
+ box(-4.1,2.55,-1.6,5.5,.07,3.2,'ceiling');
+ box(-4.1,0,-1.64,5.5,2.55,.04,'wall');
+ box(-4.14,0,-1.6,.04,2.55,3.2,'wall');
+ box(-4.1,0,1.60,2.70,2.55,.04,'wall');
+ box(1.40,0,-1.60,.04,2.55,1.60,'wall');
+ box(-1.42,0,-1.6,.04,2.55,.29,'wall');
+ box(-1.42,0,-.29,.04,2.55,1.89,'wall');
+ box(-1.42,2.12,-1.31,.04,.43,1.02,'wall');
+ box(-1.49,0,-1.34,.18,2.14,.085,'trim');
+ box(-1.49,0,-.35,.18,2.14,.085,'trim');
+ box(-1.49,2.07,-1.34,.18,.12,1.08,'trim');
+ box(-1.4,0,0,1.13,2.55,.05,'wall');
+ box(.64,0,0,.76,2.55,.05,'wall');
+ for(let i=0;i<5;i++)box(-.27,i*.12,.02+i*.14,.91,.12,(5-i)*.14,'wood');
+ box(-4.07,.03,-1.24,.048,2.06,1.05,'trim');
+ // A hinged leaf with its pivot anchored to the jamb.
+ const hinge=-4.03,doorAngle=-(state['entry-door']||0)*1.12;
+ const leafX=hinge;
+ box(leafX,.045,-1.19,.047,2, .95,'wood',doorAngle,hinge);
+ if(!state['entry-door'])box(-3.97,1,-.35,.065,.08,.065,'brass');
+ box(-3.66,.0,.79,1.53,.84,.53,'wood');
+ box(-3.70,.84,.76,1.62,.075,.62,'trim');
+ const pull=(state['console-drawer']||0)*.31;
+ box(-3.19,.58,.76-pull,.58,.20,.10+pull,'wood');
+ box(-2.96,.655,.735-pull,.14,.035,.035,'brass');
+ if(pull>.16)box(-2.94,.785,.73-pull,.17,.009,.11,'cream');
+ box(-2.41,.91,.93,.17,.06,.16,'brass');
+ box(-2.35,.97,.99,.044,.25,.042,'brass');
+ box(-2.47,1.19,.87,.28,.18,.28,state['console-switch']?'black':'light');
+ place('house-book',()=>box(-2.84,.915,.96,.24,.042,.16,'green'));
+ place('record-player',()=>{box(-3.61,.915,.93,.48,.075,.34,'black');
+ box(-3.53,.993,.96,.29,.01,.23,'black');
+ box(-3.48,1.003,1.02,.19,.014,.13,'brass');});
+ place('salmon-picture',()=>{box(-3.23,1.35,1.51,.72,.61,.065,'frame');
+ box(-3.17,1.41,1.502,.60,.49,.027,'canvas');});
+ box(-4.01,1.12,1.52,.53,1.04,.07,'trim');
+ box(-3.96,1.18,1.49,.43,.90,.027,'glass');
+ box(-3.97,1.60,1.475,.45,.026,.044,'trim');
+ box(-3.78,1.17,1.475,.029,.93,.044,'trim');
+ box(-3.86,.008,-.11,1.96,.012,.62,'rug');
+ for(const x of [-3.92,-3.86,-3.80,-3.72,-3.64])box(x+Math.sin(time*.001+x)*.009,1.24,1.481,.026,.34+(x+4)*.28,.008,'trees');
+ return new Float32Array(v);
+}
+const vertex=`
+ precision mediump float;
+ attribute vec3 a; attribute vec4 c; attribute float s;
+ uniform vec3 eye; uniform vec2 turn; uniform vec2 viewport;
+ varying vec3 world; varying vec4 material; varying float shade;
+ void main(){
+  vec3 p=a-eye;float sy=sin(turn.x),cy=cos(turn.x);
+  float x=p.x*cy-p.z*sy,z=p.x*sy+p.z*cy;
+  float sp=sin(turn.y),cp=cos(turn.y);
+  float y=p.y*cp-z*sp;z=z*cp+p.y*sp;
+  gl_Position=vec4(x*viewport.x,y*viewport.y,(200.05/199.95)*z-.100025,z);
+  world=a; material=c;shade=s;
+ }`;
+const fragment=`
+ precision mediump float;
+ varying vec3 world; varying vec4 material; varying float shade;
+ uniform float time; uniform float dimmed; uniform float rain; uniform float warmth;
+ void main(){
+  vec3 p=world; float mode=material.a;vec3 color=material.rgb;float light=shade;
+  if(mode==1.0||mode==2.0){
+   float grain=sin(p.x*21.0+p.z*31.0+p.y*193.0+sin(p.x*7.0+p.z*9.0)*2.0);
+   float line=mode==2.0?fract(p.z*5.8):fract(p.y*8.0);
+   color*=.92+.075*grain+.085*sin(p.x*7.0+p.z*11.0);
+   if(line<.035)color*=.74;
+  }
+  if(mode==3.0){
+   float streak=step(.965,fract(p.x*147.0+sin(p.x*34.0)*1.3));
+   float bead=step(.75,fract(p.y*8.0+time*.17+p.x*37.0));
+   color+=vec3(.17,.22,.24)*streak*bead*rain;
+   color+=.09*vec3(.8,1.,1.)*(1.0-fract(p.y));
+  }
+  if(mode==4.0)color*=.8+.21*sin(p.x*175.0)*sin(p.z*145.0);
+  float lamp=1.0/(1.0+7.0*distance(p,vec3(-2.33,1.26,1.01)));
+  color*=light*(warmth+lamp*(1.0-dimmed)*1.9-dimmed*.24);
+  if(mode==5.0)color+=vec3(.20,.10,.02);
+  gl_FragColor=vec4(pow(max(color,0.0),vec3(.84)),1.);
+ }`;
+export function renderer(canvas){
+ const gl=canvas.getContext('webgl',{antialias:false,alpha:false,powerPreference:'low-power'});
+ if(!gl)return null;
+ function shader(type,code){
+  const item=gl.createShader(type);gl.shaderSource(item,code);gl.compileShader(item);
+  if(!gl.getShaderParameter(item,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(item));
+  return item;
+ }
+ const program=gl.createProgram();
+ gl.attachShader(program,shader(gl.VERTEX_SHADER,vertex));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,fragment));
+ gl.linkProgram(program);
+ if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));
+ gl.useProgram(program);gl.enable(gl.DEPTH_TEST);
+ const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+ for(const [name,size,offset] of [['a',3,0],['c',4,3],['s',1,7]]){
+  const index=gl.getAttribLocation(program,name);
+  gl.enableVertexAttribArray(index);gl.vertexAttribPointer(index,size,gl.FLOAT,false,32,offset*4);
+ }
+ const uniforms=Object.fromEntries(['eye','turn','viewport','time','dimmed','rain','warmth'].map(name=>[name,gl.getUniformLocation(program,name)]));
+ return {
+  render(camera,state,time,config={}){
+   const density=Math.min(devicePixelRatio||1,1.2,1100/Math.max(canvas.clientWidth,canvas.clientHeight));
+   const width=Math.max(1,Math.round(canvas.clientWidth*density)),height=Math.max(1,Math.round(canvas.clientHeight*density));
+   if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
+   gl.viewport(0,0,width,height); gl.clearColor(.075,.067,.054,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+   const vertices=mesh(state,time,config.objects||{});
+   gl.bufferData(gl.ARRAY_BUFFER,vertices,gl.DYNAMIC_DRAW);
+   gl.uniform3f(uniforms.eye,camera.x,camera.y,camera.z);gl.uniform2f(uniforms.turn,camera.yaw,camera.pitch);
+   gl.uniform2f(uniforms.viewport,1.68*height/width,1.68);gl.uniform1f(uniforms.time,time/1000);
+   gl.uniform1f(uniforms.dimmed,state['console-switch']?1:0);gl.uniform1f(uniforms.rain,state['rain-window']?.5:1);
+   gl.uniform1f(uniforms.warmth,config.warmth??.75);
+   gl.drawArrays(gl.TRIANGLES,0,vertices.length/8);
+  }
+ };
+}
+export function project(camera,object,width,height){
+ const dx=object.x-camera.x,dz=object.z-camera.z,dy=object.y-camera.y;
+ const sy=Math.sin(camera.yaw),cy=Math.cos(camera.yaw),sp=Math.sin(camera.pitch),cp=Math.cos(camera.pitch);
+ const x=dx*cy-dz*sy,z0=dx*sy+dz*cy;
+ const y=dy*cp-z0*sp,z=z0*cp+dy*sp;
+ if(z<.10)return null;
+ return {x:width/2+.84*height*x/z,y:height/2-.84*height*y/z,r:.84*height*object.radius/z,z};
+}
