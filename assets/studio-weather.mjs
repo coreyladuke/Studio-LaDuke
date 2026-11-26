@@ -103,5 +103,8 @@ export function ambientSound(control, audio, scene, { inside = false } = {}) {
   window.addEventListener("pagehide", () => audio.pause());
   window.addEventListener("pageshow", event => { if (event.persisted) sync(); });
   sync();
-  return () => !audio.paused;
+  return (fromGesture = false) => {
+    if (fromGesture && enabled && audio.paused) sync();
+    return !audio.paused;
+  };
 }
