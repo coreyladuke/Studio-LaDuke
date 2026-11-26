@@ -474,9 +474,10 @@ id("turnWalk").addEventListener("click",function(){
  },"50% 52%",0);
 });
 id("left").addEventListener("click",function(){setPan(pan+Math.max(180,innerWidth*.66));});id("right").addEventListener("click",function(){setPan(pan-Math.max(180,innerWidth*.66));});
+let activatedTouchDoor=false;
 camera.addEventListener("pointerdown",function(e){
  if(crossing||!e.isPrimary||e.button!==0||!id("dialog").hidden||!id("map").hidden)return;
- suppress=false;stopPan();panTarget=pan;
+ activatedTouchDoor=false;suppress=false;stopPan();panTarget=pan;
  drag={x:e.clientX,y:e.clientY,p:pan,m:false,lastX:e.clientX,lastT:performance.now(),velocity:0,pointerId:e.pointerId,
   door:e.pointerType==="touch"?e.target.closest(".door"):null};
 });
@@ -502,13 +503,13 @@ function finish(e){
  const tapDoor=e.type==="pointerup"&&!wasDragging&&drag.door===e.target.closest(".door")?drag.door:null;
  if(drag.m)setPan(panTarget,true);
  suppress=wasDragging;drag=null;camera.classList.remove("dragging");
- if(tapDoor)tapDoor.click();
+ if(tapDoor){activatedTouchDoor=true;tapDoor.click();}
  if(wasDragging&&!reduceMotion.matches&&Math.abs(speed)>.18)setPan(pan+speed*115);
 }
 camera.addEventListener("pointerup",finish);camera.addEventListener("pointercancel",finish);camera.addEventListener("lostpointercapture",finish);window.addEventListener("pointerup",finish);
 camera.addEventListener("click",function(e){
  const isTouchDoor=e.target.closest(".door")&&(e.pointerType==="touch"||e.sourceCapabilities?.firesTouchEvents);
- if(e.detail>0&&(suppress||isTouchDoor)){
+ if(e.detail>0&&(suppress||activatedTouchDoor&&isTouchDoor)){
   suppress=false;e.preventDefault();e.stopImmediatePropagation();
  }
 },true);

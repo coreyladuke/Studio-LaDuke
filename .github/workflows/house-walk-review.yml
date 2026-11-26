@@ -41,7 +41,7 @@ jobs:
               const context = await browser.newContext({
                 ...device,
                 ...(label === 'desktop' ? { recordVideo: { dir: 'walk-screenshots/video', size: { width: 1280, height: 800 } } } : {}),
-                reducedMotion: swipe ? 'reduce' : 'no-preference'
+                reducedMotion: mobile ? 'reduce' : 'no-preference'
               });
               const page = await context.newPage();
               page.setDefaultTimeout(8000);
@@ -65,7 +65,7 @@ jobs:
                 await before.close();
               }
               await page.goto(base + '/house.html?room=foyer');
-              if (swipe) {
+              if (mobile) {
                 await page.evaluate(() => {
                   window.walkInput = [];
                   for (const type of ['pointerdown', 'pointerup', 'pointercancel', 'click']) {
@@ -137,7 +137,7 @@ jobs:
                 await use(button(opening));
                 await room('Main Hall');
               } catch (error) {
-                if (swipe) console.log('Doorway input', await page.evaluate(() => window.walkInput));
+                if (mobile) console.log('Doorway input', await page.evaluate(() => window.walkInput));
                 throw error;
               }
               const hallImage = page.locator('#painting img');
