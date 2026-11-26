@@ -13,7 +13,7 @@
 ## Provisioning and follow-up
 
 - [ ] Confirm a private Vercel Blob store with an acceptable no-cost plan or provide an existing private store connection. GitHub remains the code and portable-schema history. The current public source repository is unsuitable for private artwork.
-- [ ] Connect the private store to the isolated preview. The adapter accepts `BLOB_STORE_ID` with Vercel OIDC or server-only `BLOB_READ_WRITE_TOKEN`. Set a unique owner passphrase of at least 32 characters in `WORLD_BUILDER_OWNER_PASSPHRASE` for Preview. The review project must keep Vercel Authentication on every deployment. Never paste a credential into chat or commit it.
+- [ ] Connect the private store to the isolated preview. The pinned adapter uses the server-only `BLOB_READ_WRITE_TOKEN` for a private store. Set a unique owner passphrase of at least 32 characters in `WORLD_BUILDER_OWNER_PASSPHRASE` for Preview. The review project must keep Vercel Authentication on every deployment. Never paste a credential into chat or commit it.
 - [ ] Repeat the shared storage tests against live Blob from two clean browser sessions and two deployments. The current review clearly reports browser-local mode when storage is unconfigured.
 - [ ] Add a room-level transaction for backup imports, bulk artwork routing, layer ordering and full object editing. Import currently commits one slot at a time. The editor imports one artwork file at a time.
 - [ ] Establish persistent editable room/camera, lighting, animation and audio settings beyond the existing static geometry and per-view asset slots. Add a measured floor-plan overlay when the dimensional source is available.

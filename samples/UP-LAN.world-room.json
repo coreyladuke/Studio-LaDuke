@@ -83,7 +83,7 @@
           "calibration": "Provisional"
         },
         "artwork": {
-          "master": 2440,
+          "master": [2440, 1464],
           "desktop": [
             1600,
             960
@@ -131,7 +131,7 @@
           "calibration": "Provisional"
         },
         "artwork": {
-          "master": 2440,
+          "master": [2440, 1464],
           "desktop": [
             1600,
             960
@@ -179,7 +179,7 @@
           "calibration": "Provisional"
         },
         "artwork": {
-          "master": 2440,
+          "master": [2440, 1464],
           "desktop": [
             1600,
             960
@@ -227,7 +227,7 @@
           "calibration": "Provisional"
         },
         "artwork": {
-          "master": 2440,
+          "master": [2440, 1464],
           "desktop": [
             1600,
             960
@@ -275,7 +275,7 @@
           "calibration": "Provisional"
         },
         "artwork": {
-          "master": 2440,
+          "master": [2440, 1464],
           "desktop": [
             1600,
             960
@@ -323,7 +323,7 @@
           "calibration": "Provisional"
         },
         "artwork": {
-          "master": 2440,
+          "master": [2440, 1464],
           "desktop": [
             1600,
             960
@@ -371,7 +371,7 @@
           "calibration": "Provisional"
         },
         "artwork": {
-          "master": 2440,
+          "master": [2440, 1464],
           "desktop": [
             1600,
             960
@@ -419,7 +419,7 @@
           "calibration": "Provisional"
         },
         "artwork": {
-          "master": 2440,
+          "master": [2440, 1464],
           "desktop": [
             1600,
             960

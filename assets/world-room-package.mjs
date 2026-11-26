@@ -10,7 +10,7 @@ export function productionBrief(room){
    id:view.id,name:view.name,
    camera:{position:[0,spec.elevation+1.58,-spec.depth*.30],target:edge?rooms[edge.destination].name:view.name,
     yawDegrees:view.id==='reverse'?180:view.id==='primary'?0:null,verticalFovDegrees:65,calibration:'Provisional'},
-   artwork:{master:2440,desktop:[1600,960],mobile:[900,1200],
+   artwork:{master:[2440,1464],desktop:[1600,960],mobile:[900,1200],
     filenames:slots.map(slot=>room+'-'+view.id+'-'+slot+(slot==='ambient'?'.mp3':'.webp'))},
    approved:slots.flatMap(slot=>{const item=baseline(assetKey(room,view.id,slot));return item&&slot!=='ambient'?[item.desktop]:[];}),
    layers:['Foreground cutout','Background','Grayscale depth','Occlusion mask','Window or weather layer','Light overlay'],

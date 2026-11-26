@@ -11,7 +11,7 @@ const sound = {desktop:'audio/front-room-rain.mp3'};
 export const defaults = {x:0,y:0,scale:100,perspective:0};
 export const boundsDefault = {x:39,y:26,width:22,height:54};
 export function assetKey(room,view,slot) {
- if(!rooms[room] || !viewpoints(room).some(camera=>camera.id===view) || !slots.includes(slot))
+ if(!Object.hasOwn(rooms,room) || !viewpoints(room).some(camera=>camera.id===view) || !slots.includes(slot))
   throw new Error('Unknown room, viewpoint, or slot.');
  return [room,view,slot].join('/');
 }
