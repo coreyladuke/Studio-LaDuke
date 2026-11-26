@@ -80,7 +80,24 @@ jobs:
               const shot = name => page.screenshot({
                 path: 'walk-screenshots/' + (label + '-') + name + '.png'
               });
-              const use = target => mobile ? target.tap() : target.click();
+              const use = async target => {
+                if (label !== 'iphone-webkit') return mobile ? target.tap() : target.click();
+                // WebKit can stall while Playwright waits for stability on a transformed
+                // portal. Hit-test the visible target and send a real touchscreen tap.
+                await target.waitFor({state:'visible',timeout:16000});
+                const point=await target.evaluate(el=>{
+                  const box=el.getBoundingClientRect();
+                  const left=Math.max(0,box.left),right=Math.min(innerWidth,box.right);
+                  const top=Math.max(0,box.top),bottom=Math.min(innerHeight,box.bottom);
+                  for(const fraction of [.50,.35,.65]){
+                    const x=left+(right-left)*fraction,y=top+(bottom-top)*.5;
+                    if(el.contains(document.elementFromPoint(x,y)))return {x,y};
+                  }
+                  return null;
+                });
+                assert.ok(point,'WebKit tap must hit its visible target');
+                return page.touchscreen.tap(point.x,point.y);
+              };
               const room = name => page.waitForFunction(
                 name => document.querySelector('#floorName')?.textContent === name &&
                   !document.querySelector('#camera').hasAttribute('data-crossing'), name
