@@ -23,8 +23,8 @@
 
 ## Unfinished
 
-- The stoop and halls use provisional geometry. A physically continuous stair mesh is pending. The current Main Stairs action leads into the existing photographic and modeled stair route.
-- Perspective and occlusion use geometry and the GPU depth buffer. Authored photographic depth maps, texture calibration, physically based lighting, fireplace effects and directional audio are pending.
+- The dimensional preview supports continuous walking from the stoop through the two halls and up to the Upstairs Landing. The stairway uses one mesh and one collision corridor in both directions. The landing, rails and architectural dimensions are provisional. The photographic route remains available.
+- Perspective and occlusion use geometry and the GPU depth buffer. The original salmon image is rendered into its three-dimensional frame and the cedar surfaces use the existing wood texture. Calibrated material maps, photographed stairs and landing, realistic reflection and shadow passes, and directional audio remain pending.
 - More placed objects and room configuration outside the two prototype halls remain future milestones. Showcases and games remain on their existing pages.
 
 ## Blocked

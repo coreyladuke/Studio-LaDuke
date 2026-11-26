@@ -22,3 +22,24 @@ test('the handle position follows the same swing as the collision leaf',()=>{
  assert.ok(open.z<closed.z-.8);
  assert.equal(open.y,closed.y);
 });
+
+test('the same stairway permits ascent and descent with a consistent eye height',async()=>{
+ const {defaultFlight,floorHeight}=await import('../assets/house-dimensional.mjs');
+ const approach={x:0,y:1.58,z:-.75,yaw:0,pitch:0};
+ const mid=moveCamera(approach,0,2.5);
+ assert.equal(hallLocation(mid.x,mid.z),'Main Stairs');
+ assert.ok(Math.abs(mid.y-(1.58+floorHeight(mid.z)))<.0001);
+ const landing=moveCamera(mid,0,4);
+ assert.equal(hallLocation(landing.x,landing.z),'Upstairs Landing');
+ assert.ok(landing.z<=defaultFlight.run+defaultFlight.landing);
+ assert.ok(Math.abs(landing.y-4.3)<.0001);
+ const wall=moveCamera(mid,2,0);
+ assert.ok(wall.x<defaultFlight.width/2);
+ const returned=moveCamera(landing,0,-5.5);
+ assert.equal(hallLocation(returned.x,returned.z),'Main Hall');
+ assert.equal(returned.y,1.58);
+ assert.equal(returned.yaw,approach.yaw);
+ assert.equal(moveCamera({...approach,x:-3,z:.5},0,.3).y,1.58);
+ const edited={width:.9,run:3.8,rise:2.8,landing:1.4};
+ assert.ok(Math.abs(moveCamera(approach,0,6,0,edited).y-4.38)<.0001);
+});

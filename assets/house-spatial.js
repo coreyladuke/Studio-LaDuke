@@ -27,5 +27,5 @@
     return {x:sway,y:height+travel.eye,z,direction:descending?-1:1};
   }
 
-  window.StudioHouseSpatial = {rooms, opening, stairs, photos, travel, stairDuration, stairCamera};
+  globalThis.StudioHouseSpatial = {rooms, opening, stairs, photos, travel, stairDuration, stairCamera};
 })();

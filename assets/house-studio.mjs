@@ -1,5 +1,5 @@
-import {objects} from './house-dimensional.mjs';
-import {validateConfig} from './world-room-config.mjs';
+import {defaultFlight,objects} from './house-dimensional.mjs';
+import {flightLimits,validateConfig} from './world-room-config.mjs';
 import {initialize,onStatus,signIn,signOut} from './world-sync.mjs';
 import {exportRoom,importRoom,downloadRoom} from './world-room-package.mjs';
 import {rooms,exits,viewpoints} from './house-layout.mjs';
@@ -234,9 +234,9 @@ function configFields(resetSettings=false){
  $('front-room-config').hidden=room.value!=='ENT-01';
  if(room.value!=='ENT-01')return;
  const picked=editableObjects.find(o=>o.id===$('placement-object').value);
- const {x,y,z,radius}={...picked,...placementDraft[picked.id]};
+ const {x,y,z,radius,rotation=0,scale=1}={...picked,...placementDraft[picked.id]};
  const group=$('placement-fields');
- group.replaceChildren(...Object.entries({x,y,z,radius}).map(([name,value])=>{
+ group.replaceChildren(...Object.entries({x,y,z,radius,rotation,scale}).map(([name,value])=>{
   const label=document.createElement('label'),input=document.createElement('input');
   label.textContent=name;input.type='number';input.step='.01';input.value=value;
   input.addEventListener('input',()=>{
@@ -245,13 +245,18 @@ function configFields(resetSettings=false){
   label.append(input);return label;
  }));
  if(!resetSettings)return;
+ const stairs=roomConfig.stairs||defaultFlight;
+ fields('flight-fields',stairs,flightLimits,()=>{});
+ for(const input of $('flight-fields').querySelectorAll('input'))input.step='.01';
  $('room-warmth').value=roomConfig.warmth??.75;
  $('room-rain-volume').value=roomConfig.rainVolume??.15;
  $('room-layers').value=(roomConfig.layerOrder||layerDefaults).join(', ');
 }
 $('placement-object').onchange=()=>configFields();
 $('save-room-config').onclick=safe(async()=>{
- const next=validateConfig({warmth:$('room-warmth').valueAsNumber,rainVolume:$('room-rain-volume').valueAsNumber,
+ const dimensions=Array.from($('flight-fields').querySelectorAll('input'),element=>element.valueAsNumber);
+ const stairs=Object.fromEntries(Object.keys(defaultFlight).map((key,index)=>[key,dimensions[index]]));
+ const next=validateConfig({stairs,warmth:$('room-warmth').valueAsNumber,rainVolume:$('room-rain-volume').valueAsNumber,
   objects:placementDraft,layerOrder:$('room-layers').value.split(',').map(value=>value.trim())});
  configSnapshot=await saveRoomConfig('ENT-01',next,configSnapshot);
  roomConfig=configSnapshot.value;placementDraft={...roomConfig.objects};

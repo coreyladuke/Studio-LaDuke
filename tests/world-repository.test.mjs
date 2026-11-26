@@ -88,7 +88,8 @@ test('missing service and expired or forged cookies fail closed',async()=>{
 test('shared room settings survive fresh sessions and reject unauthorized or outdated changes',async()=>{
  const root=await mkdtemp(join(tmpdir(),'world-config-test-'));
  const params={room:'ENT-01'};
- const original={warmth:.82,rainVolume:.22,objects:{'house-book':{x:-2.75,y:1,z:1.2,radius:.12}}};
+ const original={warmth:.82,rainVolume:.22,stairs:{width:1.1,run:3.5,rise:2.8,landing:1.6},
+  objects:{'house-book':{x:-2.75,y:1,z:1.2,radius:.12,rotation:17,scale:.9}}};
  const updated={...original,warmth:.93};
  try{
   let handler=createWorldHandler({store:filesystem(root),secret});
