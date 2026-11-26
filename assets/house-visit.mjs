@@ -1,11 +1,14 @@
+import {initialize} from './world-sync.mjs';
 import {readRoomConfig} from './house-assets.mjs';
-import {start,objects,hallLocation,allowed,moveCamera,visible,objectAction,renderer,project} from './house-dimensional.mjs';
+import {start,objects,hallLocation,entryOccupied,moveCamera,visible,objectPose,objectAction,renderer,project} from './house-dimensional.mjs';
 const $=id=>document.getElementById(id);
 const canvas=$('world'),dialog=$('visit-inspect'),audio=$('ambient-rain'),status=$('visit-status');
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const state={},animated={},keys=new Set();
+await initialize({catalog:false});
 const config=await readRoomConfig("ENT-01").catch(()=>({}));
 const placed=objects.map(object=>({...object,...config.objects?.[object.id]}));
+const entryFraction=()=>animated['entry-door']||0;
 let camera={...start}, graphics,gesture,move=0,turn=0,selected,last=0,active=true,nearbyKey='',lastDraw=0,audioContext,melody=[];
 function fallback(){
  active=false;canvas.hidden=true;$('fallback').hidden=false;
@@ -16,6 +19,10 @@ try{graphics=renderer(canvas);}catch(error){console.error(error);}
 if(!graphics)fallback();
 canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();fallback();});
 function message(value){status.textContent=value;}
+function rainLevel(){
+ const multiplier=hallLocation(camera.x)==='Front Stoop'?2.05:1+.55*entryFraction();
+ return Math.min(1,(config.rainVolume??.15)*multiplier);
+}
 function startMusic(){
  if(melody.length)return;
  audioContext ||= new (window.AudioContext||window.webkitAudioContext)();
@@ -59,10 +66,13 @@ function showInspection(object){
  if(!dialog.open)dialog.showModal();
 }
 function interact(object){
- if(!object||!visible(camera,object)||dialog.open||document.hidden)return;
+ if(!object||!visible(camera,objectPose(object,entryFraction()),entryFraction())||dialog.open||document.hidden)return;
+ if(object.id==='entry-door'&&state['entry-door']&&entryOccupied(camera.x)){
+  message('Step clear of the doorway before closing it.');return;
+ }
  const result=objectAction(state,object);
  switch(result.type){
- case 'door':audio.volume=Math.min(1,(config.rainVolume??.15)*(result.on?1.55:1));message(result.on?'Front door opened.':'Front door closed.');break;
+ case 'door':message(result.on?'Front door opened.':'Front door closed.');break;
  case 'light':message(result.on?'Lamp off.':'Lamp on.');break;
  case 'drawer':message(result.on?'Drawer opened.':'Drawer closed.');break;
  case 'window':message(result.on?'Window ajar.':'Window closed.');break;
@@ -72,14 +82,15 @@ function interact(object){
  }
 }
 function targetAt(x,y){
- return placed.filter(o=>(!o.requires||state[o.requires])&&visible(camera,o)).map(o=>[o,project(camera,o,canvas.clientWidth,canvas.clientHeight)])
+ return placed.filter(o=>!o.requires||state[o.requires]).map(o=>[o,objectPose(o,entryFraction())])
+ .filter(([,pose])=>visible(camera,pose,entryFraction())).map(([o,pose])=>[o,project(camera,pose,canvas.clientWidth,canvas.clientHeight)])
  .filter(([,point])=>point&&Math.hypot(point.x-x,point.y-y)<Math.max(19,Math.min(110,point.r)))
  .sort((a,b)=>a[1].z-b[1].z)[0]?.[0];
 }
 function updateObjects(){
  const next=targetAt(canvas.clientWidth/2,canvas.clientHeight/2);
  if(next!==selected){selected=next;$('interact').hidden=!next;$('interact').textContent=next?.name||'';}
- const candidates=placed.filter(o=>(!o.requires||state[o.requires])&&visible(camera,o));
+ const candidates=placed.filter(o=>(!o.requires||state[o.requires])&&visible(camera,objectPose(o,entryFraction()),entryFraction()));
  const key=candidates.map(o=>o.id).join();
  if(nearbyKey!==key){nearbyKey=key;$('nearby').replaceChildren(...candidates.map(o=>{
   const button=document.createElement('button');button.type='button';button.textContent=o.name;
@@ -122,7 +133,7 @@ function hold(id,set,value){
  button.onclick=event=>{
   if(event.detail===0){
    if(id.includes('look'))camera.yaw+=value*.18;
-   else camera=moveCamera(camera,Math.sin(camera.yaw)*value*.23,Math.cos(camera.yaw)*value*.23);
+   else camera=moveCamera(camera,Math.sin(camera.yaw)*value*.23,Math.cos(camera.yaw)*value*.23,entryFraction());
   }
  };
 }
@@ -130,7 +141,7 @@ hold('advance',value=>move=value,1);hold('recede',value=>move=value,-1);
 hold('left-look',value=>turn=value,-1);hold('right-look',value=>turn=value,1);
 $('rain').onclick=async()=>{
  if(!audio.paused)audio.pause();
- else try{audio.volume=Math.min(1,(config.rainVolume??.15)*(state['entry-door']?1.55:1));await audio.play();}catch{message('Rain audio is unavailable.');}
+ else try{audio.volume=rainLevel();await audio.play();}catch{message('Rain audio is unavailable.');}
  $('rain').setAttribute('aria-pressed',String(!audio.paused));
 };
 window.addEventListener('pagehide',()=>{audio.pause();stopMusic();state['record-player']=false;});
@@ -143,16 +154,19 @@ function frame(time){
   camera.pitch=Math.max(-.75,Math.min(.75,camera.pitch+(Number(keys.has('arrowup'))-Number(keys.has('arrowdown')))*dt*.7));
   const speed=1.12*dt/Math.max(1,Math.hypot(forward,side));
   if(forward||side)camera=moveCamera(camera,(Math.sin(camera.yaw)*forward+Math.cos(camera.yaw)*side)*speed,
-   (Math.cos(camera.yaw)*forward-Math.sin(camera.yaw)*side)*speed);
+   (Math.cos(camera.yaw)*forward-Math.sin(camera.yaw)*side)*speed,entryFraction());
   for(const key of ['entry-door','console-drawer']){
    const value=state[key]?1:0;
-   animated[key]=reduced.matches?value:(animated[key]||0)+(value-(animated[key]||0))*Math.min(1,dt*9);
+   const previous=animated[key]||0;
+   animated[key]=reduced.matches||Math.abs(value-previous)<.001?value:previous+(value-previous)*Math.min(1,dt*9);
   }
   if(time-lastDraw>=27){
    lastDraw=time;
    graphics.render(camera,{...state,...animated},reduced.matches?0:time,config);
-   $('room-title').textContent=hallLocation(camera.x);
-   const picture=placed.find(o=>o.kind==='art'),point=visible(camera,picture)?project(camera,picture,canvas.clientWidth,canvas.clientHeight):null;
+   const room=hallLocation(camera.x);
+   if($('room-title').textContent!==room)$('room-title').textContent=room;
+   if(!audio.paused)audio.volume+=(rainLevel()-audio.volume)*.18;
+   const picture=placed.find(o=>o.kind==='art'),point=visible(camera,picture,entryFraction())?project(camera,picture,canvas.clientWidth,canvas.clientHeight):null;
    const photo=$('mounted-photo');
    photo.hidden=!(point&&point.r<140&&point.x>0&&point.x<canvas.clientWidth&&camera.z<1.5&&camera.x>-3.4&&camera.x<-2.3);
    if(!photo.hidden){photo.style.width=point.r*1.64+'px';photo.style.height=point.r*1.32+'px';photo.style.left=point.x-point.r*.82+'px';photo.style.top=point.y-point.r*.66+'px';}

@@ -1,5 +1,11 @@
 export const start={x:-2.98,y:1.58,z:-.74,yaw:1.58,pitch:0};
 const radius=.16,wall=-1.4,portal=-.8,half=.51;
+const entry={wall:-4.1,hingeX:-4.03,hingeZ:-1.19,width:.95,angle:1.63,center:-.715};
+const doorPose=fraction=>{
+ const angle=-entry.angle*fraction;
+ return {angle,x:-Math.sin(angle),z:Math.cos(angle)};
+};
+export const entryOccupied=x=>Math.abs(x-entry.wall)<radius+.07;
 export const objects=[
  {id:'entry-door',name:'Front door',kind:'door',x:-3.99,y:1.12,z:-.7,radius:.53},
  {id:'console-switch',name:'Console lamp',kind:'light',x:-2.35,y:1.19,z:.93,radius:.19},
@@ -11,26 +17,41 @@ export const objects=[
  {id:'rain-window',name:'Rain window',kind:'window',x:-3.65,y:1.64,z:1.53,radius:.33},
  {id:'stair-threshold',name:'Main Stairs',kind:'stairs',x:.18,y:1.04,z:-.10,radius:.37}
 ];
-export const hallLocation=(x)=>x>wall?'Main Hall':'Front Hall';
-export function allowed(x,z){
+export const hallLocation=x=>x>wall?'Main Hall':x<entry.wall?'Front Stoop':'Front Hall';
+export function allowed(x,z,door=0){
  const foyer=x>=-4.1+radius&&x<=wall-radius&&z>=-1.6+radius&&z<=1.6-radius;
  const hall=x>=wall+radius&&x<=1.4-radius&&z>=-1.6+radius&&z<=-radius;
  const doorway=Math.abs(x-wall)<=radius+.0001&&Math.abs(z-portal)<=half-radius;
+ const stoop=x>=-5.55+radius&&x<=entry.wall-radius&&z>=-1.65+radius&&z<=.25-radius;
+ const entryway=door>.70&&Math.abs(x-entry.wall)<=radius+.0001&&Math.abs(z-entry.center)<=entry.width/2-radius;
  const furniture=x>-3.66-radius&&x<-2.13+radius&&z>.79-radius;
- return (foyer||hall||doorway)&&!furniture;
+ if(!(foyer||hall||doorway||stoop||entryway)||furniture)return false;
+ const leaf=doorPose(door);
+ const dx=x-entry.hingeX,dz=z-entry.hingeZ;
+ const along=Math.max(0,Math.min(entry.width,dx*leaf.x+dz*leaf.z));
+ return Math.hypot(dx-along*leaf.x,dz-along*leaf.z)>=radius+.025;
 }
-export function moveCamera(camera,dx,dz){
+export function moveCamera(camera,dx,dz,door=0){
  const steps=Math.max(1,Math.ceil(Math.hypot(dx,dz)/.06));
  let {x,z}=camera;
  for(let i=0;i<steps;i++){
-  if(allowed(x+dx/steps,z))x+=dx/steps;
-  if(allowed(x,z+dz/steps))z+=dz/steps;
+  if(allowed(x+dx/steps,z,door))x+=dx/steps;
+  if(allowed(x,z+dz/steps,door))z+=dz/steps;
  }
  return {...camera,x,z};
 }
-export function visible(camera,object){
+export function objectPose(object,door){
+ if(object.id!=='entry-door')return object;
+ const leaf=doorPose(door);
+ return {...object,x:entry.hingeX+.82*leaf.x,z:entry.hingeZ+.82*leaf.z,y:1.04,radius:.125};
+}
+export function visible(camera,object,door=0){
  const distance=Math.hypot(object.x-camera.x,object.z-camera.z);
  if(distance>2.75)return false;
+ if((camera.x<entry.wall)!==(object.x<entry.wall)&&object.id!=='entry-door'){
+  const t=(entry.wall-camera.x)/(object.x-camera.x);
+  if(door<.72||Math.abs(camera.z+(object.z-camera.z)*t-entry.center)>entry.width/2)return false;
+ }
  if((camera.x<wall)!==(object.x<wall)){
   const t=(wall-camera.x)/(object.x-camera.x);
   return Math.abs(camera.z+(object.z-camera.z)*t-portal)<half;
@@ -51,9 +72,9 @@ const rgba={
  trim:[.24,.13,.08,1], ceiling:[.30,.21,.14,1], glass:[.20,.34,.35,3],
  frame:[.44,.29,.12,1], canvas:[.56,.38,.22,0], black:[.13,.13,.10,0],
  cream:[.72,.61,.41,0], brass:[.63,.44,.19,0], green:[.20,.29,.20,0],
- rug:[.28,.25,.18,4], light:[.88,.64,.33,5], trees:[.09,.20,.17,6]
+ rug:[.28,.25,.18,4], light:[.88,.64,.33,5], trees:[.09,.20,.17,6], woods:[.08,.14,.10,7]
 };
-function mesh(state,time,placements){
+function mesh(state,placements){
  let offset=[0,0,0];
  function place(id,draw){
   const object=objects.find(item=>item.id===id),next=placements[id];
@@ -76,15 +97,14 @@ function mesh(state,time,placements){
  box(-4.14,0,-1.6,.04,2.55,.39,'wall');
  box(-4.14,0,-.22,.04,2.55,1.82,'wall');
  box(-4.14,2.13,-1.21,.04,.42,.99,'wall');
- box(-5.55,-.09,-1.65,1.45,.05,1.9,'floor');
- box(-5.57,-.04,-1.65,.04,2.45,1.9,'glass');
- for(const [i,z] of [-1.43,-1.16,-.88,-.61,-.37,-.13,.08].entries()){
-  box(-5.46,0,z,.05,1.6+(i%3)*.21,.035,'trees');
-  for(let level=0;level<3;level++){
-   const width=.38-level*.075;
-   box(-5.46,.84+level*.28,z-width/2,.035,.13,width,'trees');
-  }
+ box(-5.55,-.09,-1.65,1.45,.09,1.90,'floor');
+ box(-8.42,-2.8,-8.0,.02,9.5,14.4,'woods');
+ for(const z of [-1.62,.20]){
+  for(const x of [-5.47,-4.22])box(x,0,z,.078,.88,.078,'wood');
+  box(-5.47,.64,z,1.33,.085,.078,'trim');
  }
+ box(-5.55,0,-1.65,.07,.10,.27,'trim');
+ box(-5.55,0,-.04,.07,.10,.29,'trim');
  box(-4.1,0,1.60,2.70,2.55,.04,'wall');
  box(1.40,0,-1.60,.04,2.55,1.60,'wall');
  box(-1.42,0,-1.6,.04,2.55,.29,'wall');
@@ -100,10 +120,11 @@ function mesh(state,time,placements){
  box(-4.09,.03,-.24,.075,2.13,.075,'trim');
  box(-4.09,2.04,-1.26,.075,.12,1.095,'trim');
  // A hinged leaf with its pivot anchored to the jamb.
- const hinge=-4.03,doorAngle=-(state['entry-door']||0)*1.12;
- const leafX=hinge;
- box(leafX,.045,-1.19,.047,2, .95,'wood',doorAngle,hinge);
- if(!state['entry-door'])box(-3.97,1,-.35,.065,.08,.065,'brass');
+ const doorFraction=state['entry-door']||0;
+ const {angle}=doorPose(doorFraction);
+ box(entry.hingeX,.045,entry.hingeZ,.047,2,entry.width,'wood',angle,entry.hingeX);
+ const knob=objectPose(objects[0],doorFraction);
+ box(knob.x-.035,knob.y-.035,knob.z-.035,.11,.07,.07,'brass');
  box(-3.66,.0,.79,1.53,.84,.53,'wood');
  box(-3.70,.84,.76,1.62,.075,.62,'trim');
  const pull=(state['console-drawer']||0)*.31;
@@ -124,16 +145,19 @@ function mesh(state,time,placements){
  box(-3.97,1.60,1.475,.45,.026,.044,'trim');
  box(-3.78,1.17,1.475,.029,.93,.044,'trim');
  box(-3.86,.008,-.11,1.96,.012,.62,'rug');
- for(const x of [-3.92,-3.86,-3.80,-3.72,-3.64])box(x+Math.sin(time*.001+x)*.009,1.24,1.481,.026,.34+(x+4)*.28,.008,'trees');
+ for(const x of [-3.92,-3.86,-3.80,-3.72,-3.64])box(x,1.24,1.481,.026,.34+(x+4)*.28,.008,'trees');
  return new Float32Array(v);
 }
 const vertex=`
  precision mediump float;
  attribute vec3 a; attribute vec4 c; attribute float s;
  uniform vec3 eye; uniform vec2 turn; uniform vec2 viewport;
+ uniform float time;
  varying vec3 world; varying vec4 material; varying float shade;
  void main(){
-  vec3 p=a-eye;float sy=sin(turn.x),cy=cos(turn.x);
+  vec3 vertex=a;
+  if(c.a==6.0)vertex.x+=.008*sin(time*.83+a.x*6.0+a.z*3.1)*clamp(a.y*.65,0.0,1.0);
+  vec3 p=vertex-eye;float sy=sin(turn.x),cy=cos(turn.x);
   float x=p.x*cy-p.z*sy,z=p.x*sy+p.z*cy;
   float sp=sin(turn.y),cp=cos(turn.y);
   float y=p.y*cp-z*sp;z=z*cp+p.y*sp;
@@ -144,8 +168,9 @@ const fragment=`
  precision mediump float;
  varying vec3 world; varying vec4 material; varying float shade;
  uniform float time; uniform float dimmed; uniform float rain; uniform float warmth;
+ uniform sampler2D woods;
  void main(){
-  vec3 p=world; float mode=material.a;vec3 color=material.rgb;float light=shade;
+  vec3 p=world; float mode=floor(material.a+.5);vec3 color=material.rgb;float light=shade;
   if(mode==1.0||mode==2.0){
    float grain=sin(p.x*21.0+p.z*31.0+p.y*193.0+sin(p.x*7.0+p.z*9.0)*2.0);
    float line=mode==2.0?fract(p.z*5.8):fract(p.y*8.0);
@@ -157,6 +182,16 @@ const fragment=`
    float bead=step(.75,fract(p.y*8.0+time*.17+p.x*37.0));
    color+=vec3(.17,.22,.24)*streak*bead*rain;
    color+=.09*vec3(.8,1.,1.)*(1.0-fract(p.y));
+  }
+  if(mode==7.0){
+   vec2 uv=vec2((p.z+5.95)/10.4,(4.45-p.y)/6.5);
+   vec3 forest=texture2D(woods,uv).rgb;
+   vec2 edge=smoothstep(vec2(0.),vec2(.08),min(uv,1.-uv));
+   forest=mix(vec3(.059,.073,.059),forest,edge.x*edge.y);
+   float rainLine=step(.984,fract(uv.x*195.0+sin(uv.x*38.0)*1.9));
+   float running=step(.82,fract(uv.y*8.8-time*1.25));
+   gl_FragColor=vec4(forest+vec3(.024,.032,.030)*rainLine*running,1.0);
+   return;
   }
   if(mode==4.0)color*=.8+.21*sin(p.x*175.0)*sin(p.z*145.0);
   float lamp=1.0/(1.0+7.0*distance(p,vec3(-2.33,1.26,1.01)));
@@ -177,25 +212,44 @@ export function renderer(canvas){
  gl.linkProgram(program);
  if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));
  gl.useProgram(program);gl.enable(gl.DEPTH_TEST);
+ const woods=gl.createTexture();
+ gl.bindTexture(gl.TEXTURE_2D,woods);
+ gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([19,29,24,255]));
+ gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+ gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+ gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+ const plate=new Image();
+ plate.onload=()=>{
+  if(gl.isContextLost())return;
+  gl.bindTexture(gl.TEXTURE_2D,woods);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,plate);
+ };
+ plate.src=new URL('house-plates/entry-woods.webp',import.meta.url);
  const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
  for(const [name,size,offset] of [['a',3,0],['c',4,3],['s',1,7]]){
   const index=gl.getAttribLocation(program,name);
   gl.enableVertexAttribArray(index);gl.vertexAttribPointer(index,size,gl.FLOAT,false,32,offset*4);
  }
  const uniforms=Object.fromEntries(['eye','turn','viewport','time','dimmed','rain','warmth'].map(name=>[name,gl.getUniformLocation(program,name)]));
+ let lastDoor,lastDrawer,lastLamp,lastPlacements,vertexCount=0;
  return {
   render(camera,state,time,config={}){
    const density=Math.min(devicePixelRatio||1,1.2,1100/Math.max(canvas.clientWidth,canvas.clientHeight));
    const width=Math.max(1,Math.round(canvas.clientWidth*density)),height=Math.max(1,Math.round(canvas.clientHeight*density));
    if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
    gl.viewport(0,0,width,height); gl.clearColor(.075,.067,.054,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
-   const vertices=mesh(state,time,config.objects||{});
-   gl.bufferData(gl.ARRAY_BUFFER,vertices,gl.DYNAMIC_DRAW);
+   const door=state['entry-door'],drawer=state['console-drawer'],lamp=state['console-switch'];
+   if(!vertexCount||door!==lastDoor||drawer!==lastDrawer||lamp!==lastLamp||config.objects!==lastPlacements){
+    const vertices=mesh(state,config.objects||{});
+    gl.bufferData(gl.ARRAY_BUFFER,vertices,gl.DYNAMIC_DRAW);
+    vertexCount=vertices.length/8;
+    lastDoor=door;lastDrawer=drawer;lastLamp=lamp;lastPlacements=config.objects;
+   }
    gl.uniform3f(uniforms.eye,camera.x,camera.y,camera.z);gl.uniform2f(uniforms.turn,camera.yaw,camera.pitch);
    gl.uniform2f(uniforms.viewport,1.68*height/width,1.68);gl.uniform1f(uniforms.time,time/1000);
    gl.uniform1f(uniforms.dimmed,state['console-switch']?1:0);gl.uniform1f(uniforms.rain,state['rain-window']?.5:1);
    gl.uniform1f(uniforms.warmth,config.warmth??.75);
-   gl.drawArrays(gl.TRIANGLES,0,vertices.length/8);
+   gl.drawArrays(gl.TRIANGLES,0,vertexCount);
   }
  };
 }

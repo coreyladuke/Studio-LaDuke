@@ -90,6 +90,7 @@ body.directed-house #plate :is(.door,.prop):focus-visible{outline:3px solid #ffe
 body.directed-house #plate .door[data-aligned]::after{display:none}
 body.directed-house #plate .door[data-aligned] .plaque{display:block}
 body.directed-house #plate .prop .hint{pointer-events:none}
+body.scene-art #plate .prop[data-aligned]{filter:none}
 #camera.dragging :is(.hint,.plaque){visibility:hidden}
 .entry-plan{position:relative;aspect-ratio:360/220;margin:0 0 20px}
 .entry-plan svg{position:absolute;inset:0;width:100%;height:100%;color:#7d583b}
@@ -286,6 +287,7 @@ const livingProps={
  pick:[1049,365,174,280],
  lamp:[879,95,157,157]
 };
+const artProps={brush:[5,350,149,413],book:[1183,624,392,186]};
 function placeOnPlate(button,bounds){
  const [left,top,width,height,shape]=bounds;
  Object.assign(button.style,{
@@ -304,7 +306,7 @@ function draw(){
  if(rainButton.hidden)rain.pause();
  id("turnWalk").hidden=here!=="landing";
  id("turnWalk").setAttribute("aria-pressed",String(facing==="reverse"));
- document.body.classList.remove("scene-living","scene-foyer","scene-coat");plate.classList.remove("pocket-open","star-awake","tv-playing","pick-found","lamp-dim","yellow-spot","pink-spot","discovered","mirror-fog","drawer-open","steam-on","light-on","spark-on");if(["living","foyer","coat"].includes(here))document.body.classList.add("scene-"+here);const directed=window.StudioHouseDirector?.scene(here);painting.innerHTML=walk.scene(here,facing)||directed||(window.StudioHouseV2&&window.StudioHouseV2.scene(here))||(r.photo?'<img src="'+r.photo+'" alt=""><div class="wash"></div>':lightPanel(r));
+ document.body.classList.remove("scene-living","scene-foyer","scene-coat","scene-art");plate.classList.remove("pocket-open","star-awake","tv-playing","pick-found","lamp-dim","yellow-spot","pink-spot","discovered","mirror-fog","drawer-open","steam-on","light-on","spark-on");if(["living","foyer","coat","art"].includes(here))document.body.classList.add("scene-"+here);const directed=window.StudioHouseDirector?.scene(here);painting.innerHTML=walk.scene(here,facing)||directed||(window.StudioHouseV2&&window.StudioHouseV2.scene(here))||(r.photo?'<img src="'+r.photo+'" alt=""><div class="wash"></div>':lightPanel(r));
  id("roomName").textContent=r.n;id("roomDescription").textContent=r.d;id("floorName").textContent=r.n;id("floorTag").querySelector("small").textContent=floors[r.f]+" · Swipe to look";doorBox.replaceChildren();objectBox.replaceChildren();
  let pos=r.e.length===1?[800]:r.e.length===2?[440,1150]:r.e.length===3?[300,805,1300]:[170,560,1035,1430];if(here==="coat")pos=[186];if(!["living","foyer","coat"].includes(here))pos=r.e.length===1?[800]:r.e.length===2?[420,1180]:r.e.length===3?[250,800,1350]:[170,560,1040,1430];
  r.e.forEach(function(d,i){const bounds=aligned?.[d[1]];if(aligned&&!bounds)return;let b=document.createElement("button");b.className="door";b.type="button";b.style.left=pos[i]+"px";if(bounds)placeOnPlate(b,bounds);b.dataset.way=d[2]||"";if(d[0]===walk.opening.name)b.dataset.walk="opening";else if(d[0]===walk.stairs.name)b.dataset.walk="stairs";b.setAttribute("aria-label",b.hasAttribute("data-walk")?d[0]:"Go to "+d[0]);b.innerHTML='<span class="doorface"></span><span class="plaque">'+escapeHtml(d[0])+'</span>';b.addEventListener("click",function(event){
@@ -312,7 +314,7 @@ function draw(){
   if(b.dataset.walk)crossThreshold(d[1],b,keyboard);
   else go(d[1]);
  });doorBox.append(b);});
- (r.p||[]).forEach(function(p){let b=document.createElement("button");b.className="prop";b.type="button";b.style.left=p[1]+"px";b.style.top=p[2]+"px";if(here==="living"&&livingProps[p[0]])placeOnPlate(b,livingProps[p[0]]);b.setAttribute("aria-label",p[3]);b.innerHTML=propArt(p[0])+'<span class="hint">'+escapeHtml(p[3])+'</span>';b.addEventListener("click",function(){if(window.StudioHouseAdventure)window.StudioHouseAdventure.collect(here,p[0]);if(p[5]==="code"){code();return;}if(p[5]==="night"){document.body.classList.toggle("lights-out");if(window.StudioHouseDirector)window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast});return;}if(p[5]){go(p[5]);return;}if(window.StudioHouseDirector&&window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast}))return;if(window.StudioHouseV2&&window.StudioHouseV2.activate(here,p[0],{plate:plate,toast:toast}))return;detail(p[3],p[4],p[5]);});objectBox.append(b);});
+ (r.p||[]).forEach(function(p){let b=document.createElement("button");b.className="prop";b.type="button";b.style.left=p[1]+"px";b.style.top=p[2]+"px";if(here==="living"&&livingProps[p[0]])placeOnPlate(b,livingProps[p[0]]);b.setAttribute("aria-label",p[3]);const artBounds=here==="art"?artProps[p[0]]:null;if(artBounds)placeOnPlate(b,artBounds);b.innerHTML=(artBounds?"":propArt(p[0]))+'<span class="hint">' +escapeHtml(p[3])+'</span>';b.addEventListener("click",function(){if(window.StudioHouseAdventure)window.StudioHouseAdventure.collect(here,p[0]);if(p[5]==="code"){code();return;}if(p[5]==="night"){document.body.classList.toggle("lights-out");if(window.StudioHouseDirector)window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast});return;}if(p[5]){go(p[5]);return;}if(window.StudioHouseDirector&&window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast}))return;if(window.StudioHouseV2&&window.StudioHouseV2.activate(here,p[0],{plate:plate,toast:toast}))return;detail(p[3],p[4],p[5]);});objectBox.append(b);});
  stopPan();resize();setPan(restoreView(defaultBounds),true);makeMap();warmAdjacentPhotos();document.title=r.n+" · Studio LaDuke House";
 }
 function go(to,replace){if(/\.html/.test(to)){location.href=to;return;}if(!R[to]){toast("That door isn't ready.");return;}if(to==="vault"&&sessionStorage.getItem("laduke-movie-gauntlet-done")!=="1"){toast("The vault awaits the end of the movie maze.");return;}saveView();hideDetail(false);hideMap(false);facing=here==="landing"&&to==="hall"?"reverse":"forward";here=to;document.body.classList.remove("lights-out");if(replace)history.replaceState({room:to,facing},"","house.html?room="+to);else history.pushState({room:to,facing},"","house.html?room="+to);draw();}
@@ -473,7 +475,7 @@ id("turnWalk").addEventListener("click",function(){
   draw();
  },"50% 52%",0);
 });
-id("left").addEventListener("click",function(){setPan(pan+Math.max(180,innerWidth*.66));});id("right").addEventListener("click",function(){setPan(pan-Math.max(180,innerWidth*.66));});
+id("left").addEventListener("click",function(){setPan(panTarget+Math.max(180,innerWidth*.66));});id("right").addEventListener("click",function(){setPan(panTarget-Math.max(180,innerWidth*.66));});
 let activatedTouchDoor=false;
 camera.addEventListener("pointerdown",function(e){
  if(crossing||!e.isPrimary||e.button!==0||!id("dialog").hidden||!id("map").hidden)return;

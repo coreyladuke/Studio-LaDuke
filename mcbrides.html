@@ -44,15 +44,28 @@
     .cabinet::after {
       content: "";
       position: absolute;
-      inset: 20% 16% 61%;
+      inset: 21% 14% 59%;
       border-radius: 13%;
-      background: radial-gradient(ellipse, color-mix(in srgb, var(--light) 50%, transparent), transparent 78%);
+      background:
+        repeating-linear-gradient(transparent 0 4px, #39302528 5px 6px),
+        radial-gradient(ellipse, color-mix(in srgb, var(--light) 40%, transparent), transparent 78%);
       mix-blend-mode: screen;
-      opacity: .26;
+      opacity: .23;
+      animation: screen-idle 13s ease-in-out infinite alternate;
+      animation-delay: var(--lag, 0s);
       transition: opacity .25s ease;
       pointer-events: none;
     }
-    .cabinet:is(:hover, :focus-visible, :active)::after { opacity: 1 }
+    @keyframes screen-idle {
+      0%, 34% { opacity: .17 }
+      49% { opacity: .29 }
+      58%, 100% { opacity: .22 }
+    }
+    .cabinet:is(:hover, :focus-visible, :active)::after { animation: none; opacity: .82 }
+    .cabinet:nth-of-type(2) { --lag: -3.9s }
+    .cabinet:nth-of-type(3) { --lag: -8.3s }
+    .cabinet:nth-of-type(4) { --lag: -5.1s }
+    .cabinet:nth-of-type(5) { --lag: -11.5s }
     .cabinet:focus-visible { outline: 2px solid currentColor; outline-offset: -3px; }
     .walk-note { display: none; margin: 0; text-align: center; padding: 12px; font: 14px system-ui, sans-serif; }
     @media (max-width: 800px), (max-height: 620px) {
@@ -69,13 +82,13 @@
       .arcade { width: 100% }
       .sign { padding-block: 0 }
     }
-    @media (prefers-reduced-motion: reduce) { .cabinet::after { transition: none } }
+    @media (prefers-reduced-motion: reduce) { .cabinet::after { transition: none; animation: none } }
   </style>
 </head>
 <body>
   <main class="arcade">
     <header class="sign">
-      <a href="workshop.html">← Workshop</a>
+      <a id="arcade-return" href="workshop.html">← Workshop</a>
       <h1>McBride’s Arcade</h1>
     </header>
     <nav class="walkway" aria-label="Playable arcade cabinets">
@@ -90,5 +103,12 @@
     </nav>
     <p class="walk-note">Swipe along the cabinets</p>
   </main>
+  <script>
+    if (new URLSearchParams(location.search).get('from') === 'house') {
+      const link = document.getElementById('arcade-return');
+      link.href = 'house-layout.html?room=BS-ARC';
+      link.textContent = '← Back to the house';
+    }
+  </script>
 </body>
 </html>

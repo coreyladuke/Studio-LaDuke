@@ -10,7 +10,7 @@ const root=process.cwd(),html=fs.readFileSync("house.html","utf8");
 const raw=html.split("const R={")[1].split("};\nconst floors")[0];
 const rooms=[...raw.matchAll(/^\s*(\w+):\{n:"([^"]+)",f:(\d+)/gm)].map(x=>({id:x[1],name:x[2],floor:+x[3]}));
 const pages=fs.readdirSync(root).filter(x=>x.endsWith(".html")).sort();
-const out="/tmp/studio-laduke-house-qa",base="http://127.0.0.1:8765/";
+const out="/tmp/studio-laduke-house-qa",base=process.env.STUDIO_AUDIT_BASE||"http://127.0.0.1:8765/";
 fs.mkdirSync(out,{recursive:true});
 async function main(){
  const browser=await chromium.launch({headless:true,args:["--no-sandbox"]});
@@ -26,7 +26,7 @@ async function main(){
    await page.waitForTimeout(270);
    const details=await page.evaluate(()=>({
     heading:document.querySelector("#roomName")?.textContent||"",
-    photo:!!document.querySelector("#painting svg.house-photo"),
+    photo:!!document.querySelector("#painting svg.house-photo, #painting > img"),
     generic:!!document.querySelector("#painting svg:not(.house-photo):not(.house-scene)"),
     imageSrcs:[...document.querySelectorAll("#painting image")].map(e=>e.getAttribute("href")),
     doors:[...document.querySelectorAll(".door")].map(e=>e.getAttribute("aria-label")),
@@ -46,6 +46,15 @@ async function main(){
       else if(rect.x+rect.width>390){const right=page.locator("#right");if(await right.isDisabled())break;await right.click({force:true});}
       else break;
      }
+     await btn.evaluate(element=>new Promise(resolve=>{
+      const started=performance.now();
+      const check=()=>{
+       const box=element.getBoundingClientRect(),x=box.x+box.width/2;
+       if((x>=0&&x<innerWidth)||performance.now()-started>1200)resolve();
+       else requestAnimationFrame(check);
+      };
+      check();
+     }));
      await btn.click({force:true,timeout:2200});
      interactions++;
      if(await page.locator("#dialog").isVisible()){
@@ -65,7 +74,11 @@ async function main(){
   const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
   const errors=[],badAssets=[];
   page.on("pageerror",e=>errors.push(e.message.slice(0,180)));
-  page.on("response",r=>{if(r.status()>=400)badAssets.push(r.status()+" "+r.url().slice(0,100))});
+  page.on("response",r=>{
+   const url=new URL(r.url());
+   const localStorageUnavailable=r.status()===503&&url.pathname==="/api/world"&&url.searchParams.get("op")==="status";
+   if(r.status()>=400&&!localStorageUnavailable)badAssets.push(r.status()+" "+r.url().slice(0,100));
+  });
   try{
    const response=await page.goto(base+file,{waitUntil:"domcontentloaded",timeout:22000});
    await page.waitForTimeout(170);
