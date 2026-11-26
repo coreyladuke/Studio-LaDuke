@@ -11,6 +11,8 @@ jobs:
     timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -18,6 +20,8 @@ jobs:
       - run: npx playwright install --with-deps chromium webkit
       - name: Test the round trip and capture the thresholds
         run: |
+          mkdir -p walk-before
+          git archive 2f7b7975ce4c016f1fec2aa20d961e1723df3182 house.html assets audio | tar -x -C walk-before
           python3 -m http.server 4173 --bind 127.0.0.1 &
           node --input-type=module <<'JS'
           import assert from 'node:assert/strict';
@@ -36,6 +40,7 @@ jobs:
             try {
               const context = await browser.newContext({
                 ...device,
+                ...(label === 'desktop' ? { recordVideo: { dir: 'walk-screenshots/video', size: { width: 1280, height: 800 } } } : {}),
                 reducedMotion: swipe ? 'reduce' : 'no-preference'
               });
               const page = await context.newPage();
@@ -43,6 +48,22 @@ jobs:
               const errors = [];
               page.on('pageerror', error => errors.push(error.message));
               const base = 'http://127.0.0.1:4173';
+              if (label === 'desktop') {
+                const before = await browser.newContext({ ...device, reducedMotion: 'reduce' });
+                const prior = await before.newPage();
+                const click = name => prior.getByRole('button', { name, exact: true }).click();
+                const capture = name => prior.screenshot({ path: 'walk-screenshots/before-' + name + '.png' });
+                await prior.goto(base + '/walk-before/house.html?room=foyer');
+                await capture('01-front-hall-toward-main-hall');
+                await click('Main Hall Opening');
+                await capture('02-main-hall-up-main-stairs');
+                await click('Main Stairs');
+                await click('Turn around');
+                await capture('03-upstairs-landing-down-main-stairs');
+                await click('Main Stairs');
+                await capture('04-main-hall-toward-front-hall');
+                await before.close();
+              }
               await page.goto(base + '/house.html?room=foyer');
               if (swipe) {
                 await page.evaluate(() => {
@@ -113,7 +134,27 @@ jobs:
 
               }
               await shot('02-main-hall-up-main-stairs');
+              if (!mobile) {
+                const model = await page.evaluate(() => {
+                  const {stairs, stairCamera} = window.StudioHouseSpatial;
+                  return [stairs.to, stairCamera(0,false), stairCamera(1,true), stairCamera(1,false)];
+                });
+                assert.deepEqual(model[0], [0,2.72,3.5]);
+                assert.equal(model[1].z, model[2].z);
+                assert.ok(model[3].y > model[1].y);
+                await button(stairs).focus();
+                await page.keyboard.press('Enter');
+                await page.locator('#stairFlight').waitFor({state:'visible'});
+                await page.keyboard.press('Escape');
+                await room('Main Hall');
+                assert.equal(await page.locator('#stairFlight').isVisible(), false);
+              }
               await use(button(stairs));
+              if (!mobile) {
+                await page.locator('#stairFlight').waitFor({state:'visible'});
+                await page.waitForFunction(() => Number(document.querySelector('#stairFlight').style.opacity) >= .95);
+                await shot('06-mid-flight-ascending');
+              }
               await room('Upstairs Landing');
               assert.equal(await page.locator('#provisionalView').isVisible(), true);
               assert.equal(await button(stairs).count(), 0);
@@ -127,6 +168,10 @@ jobs:
               await shot('05-map-upstairs-landing');
               await use(button('Close map'));
               await use(button(stairs));
+              if (!mobile) {
+                await page.waitForFunction(() => Number(document.querySelector('#stairFlight').style.opacity) >= .95);
+                await shot('07-mid-flight-descending');
+              }
               await room('Main Hall');
               await shot('04-main-hall-toward-front-hall');
               await use(button(opening));
@@ -157,6 +202,7 @@ jobs:
             const context = await profileBrowser.newContext(devices['Pixel 7']);
             const page = await context.newPage();
             const cdp = await context.newCDPSession(page);
+            await cdp.send('Performance.enable');
             await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
             await page.goto('http://127.0.0.1:4173/house.html?room=foyer');
             await page.evaluate(() => {
@@ -171,6 +217,7 @@ jobs:
               }
               requestAnimationFrame(sample);
             });
+            const beforeHeap = (await cdp.send('Performance.getMetrics')).metrics.find(m => m.name === 'JSHeapUsedSize').value;
             const start = await page.getByRole('button', { name: 'Main Hall Opening', exact: true }).boundingBox();
             const x = Math.round(start.x + start.width / 2);
             const y = Math.round(start.y + start.height / 2);
@@ -180,7 +227,7 @@ jobs:
             }
             await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
             assert.equal(await page.locator('#floorName').textContent(), 'Front Hall');
-            for (const [control, room, facing] of [
+            for (let lap = 0; lap < 3; lap++) for (const [control, room, facing] of [
               ['Main Hall Opening', 'Main Hall'], ['Main Stairs', 'Upstairs Landing'],
               ['Turn around', 'Upstairs Landing', true], ['Main Stairs', 'Main Hall'],
               ['Main Hall Opening', 'Front Hall']
@@ -203,6 +250,10 @@ jobs:
                   entry.name.startsWith(location.origin)).reduce((total, entry) => total + entry.encodedBodySize, 0)
               };
             });
+            profile.heapBeforeBytes = beforeHeap;
+            profile.heapAfterBytes = (await cdp.send('Performance.getMetrics')).metrics.find(m => m.name === 'JSHeapUsedSize').value;
+            assert.equal(await page.locator('#stairFlight').count(), 1);
+            assert.equal(await page.locator('#stairFlight').isVisible(), false);
             console.log('Mobile walk profile (Chromium, Pixel 7 viewport, 4x CPU throttle): ' + JSON.stringify(profile));
             await (await import('node:fs/promises')).writeFile('walk-screenshots/mobile-profile.json', JSON.stringify(profile, null, 2));
           } finally {
@@ -213,7 +264,7 @@ jobs:
           <!doctype html><html lang="en"><meta charset="utf-8"><title>Studio LaDuke threshold review</title>
           <style>
           body{font:16px system-ui;background:#211b17;color:#fff3de;margin:24px}
-          section{display:grid;grid-template-columns:3fr 1fr 1fr;gap:14px;align-items:start}
+          section{display:grid;grid-template-columns:3fr 3fr 1fr 1fr;gap:14px;align-items:start}
           h2{grid-column:1/-1}figure{margin:0}img{display:block;width:100%;height:auto}figcaption{margin:6px 0 20px}
           </style>
           <h1>Studio LaDuke threshold review</h1>
@@ -227,7 +278,7 @@ jobs:
             ['05-map-upstairs-landing', 'House map on Upstairs Landing']
           ]) {
             document.querySelector('#walk').insertAdjacentHTML('beforeend',
-              '<h2>' + title + '</h2>' + ['desktop', 'phone', 'iphone-webkit'].map(device =>
+              '<h2>' + title + '</h2>' + (file.startsWith('05') ? ['desktop', 'phone', 'iphone-webkit'] : ['before', 'desktop', 'phone', 'iphone-webkit']).map(device =>
                 '<figure><img src="' + device + '-' + file + '.png" alt="' + title +
                 ' on ' + device + '"><figcaption>' + device + '</figcaption></figure>').join(''));
           }

@@ -2,8 +2,7 @@
 (function () {
   "use strict";
 
-  const opening = {name: "Main Hall Opening", rooms: ["foyer", "hall"]};
-  const stairs = {name: "Main Stairs", rooms: ["hall", "landing"]};
+  const {opening, stairs} = window.StudioHouseSpatial;
   const hallBounds = {
     foyer: [48, 55, 188, 824, "polygon(0 0,100% 16%,100% 80%,0 100%)"],
     landing: [678, 161, 286, 521],
@@ -61,7 +60,7 @@
   }
 
   function stairFlight() {
-    const steps = Array.from({length: 13}, (_, i) => {
+    const steps = Array.from({length: stairs.treads}, (_, i) => {
       const y = 727 - i * 18;
       const half = 247 - i * 12;
       return `<path d="M${800-half} ${y}H${800+half}l-8 -14H${808-half}Z" fill="url(#stair-wood)"/>
@@ -106,7 +105,7 @@
       }).join("");
       feature = `<path d="M604 650V213H996V650" fill="#463429" stroke="#654632" stroke-width="18"/>
         <rect x="663" y="244" width="274" height="269" fill="url(#window-light)" stroke="#3c2c24" stroke-width="18"/>
-        <path d="M669 477L711 310L736 481L780 272L824 481L877 297L929 472V505H669Z" fill="#425a50"/>
+        <path class="walk-trees" d="M669 477L711 310L736 481L780 272L824 481L877 297L929 472V505H669Z" fill="#425a50"/>
         <g clip-path="url(#walk-window)"><g class="walk-rain">${rain}</g></g>
         <path d="M800 244V513M663 386H937" stroke="#675444" stroke-width="12"/>
         <path d="M651 523H949L1080 761H520Z" fill="#d4d8b3" opacity=".08"/>

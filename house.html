@@ -18,6 +18,9 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
 #camera.dragging{cursor:grabbing}
 #walkLens{position:absolute;inset:0}
 #camera[data-crossing] #doors{visibility:hidden}
+#stairFlight{position:absolute;inset:0;width:100%;height:100%;z-index:15;pointer-events:none}
+.walk-trees{transform-origin:800px 503px;animation:tree-sway 9s ease-in-out infinite alternate}
+@keyframes tree-sway{to{transform:skewX(.65deg)}}
 #walkShade{position:absolute;inset:0;z-index:16;pointer-events:none;background:#17110d;opacity:0}
 #rainWalk{position:fixed;top:max(126px,calc(env(safe-area-inset-top) + 110px));left:max(15px,env(safe-area-inset-left));z-index:21;min-height:44px;padding:8px 13px;color:#f7e4bf;background:#19231dec;border:1px solid #a98a58;border-radius:4px}
 #rainWalk[aria-pressed="true"]{background:#483925}
@@ -117,6 +120,7 @@ body.directed-house #plate .door[data-walk="opening"] .plaque{bottom:20%}
   <div class="room-sign"><h1 id="roomName"></h1><p id="roomDescription"></p></div>
   <div id="doors" aria-label="Doors in this room"></div><div id="objects" aria-label="Objects to explore"></div>
  </div></div>
+ <canvas id="stairFlight" hidden aria-hidden="true"></canvas>
  <div id="walkShade" aria-hidden="true"></div>
 </main>
 <div id="lookbar"><button id="left" type="button" aria-label="Look left">‹</button><div id="floorTag"><strong id="floorName" tabindex="-1"></strong><small>Swipe · Touch · Explore</small></div><button id="right" type="button" aria-label="Look right">›</button></div>
@@ -129,6 +133,8 @@ body.directed-house #plate .door[data-walk="opening"] .plaque{bottom:20%}
 <script src="assets/house-v2.js"></script>
 <script src="assets/house-director.js?v=20261124-entry"></script>
 <script src="assets/house-adventure.js"></script>
+<script src="assets/house-spatial.js"></script>
+<script src="assets/house-stair-render.js"></script>
 <script src="assets/house-walk.js"></script>
 <script>
 "use strict";
@@ -171,10 +177,8 @@ const roomViews=new Map();
 const lens=id("walkLens"),shade=id("walkShade"),rain=id("walkRainAudio");
 const rainButton=id("rainWalk");
 let crossing=null;
-const walkPhotos={
- foyer:"assets/front-room-doors.webp",
- hall:"assets/house-plates/main-hall-cedar.webp"
-};
+const walkPhotos=window.StudioHouseSpatial.photos;
+let cancelStair=null;
 const preparedPhotos=new Map();
 function preparePhoto(room){
  if(!walkPhotos[room])return Promise.resolve();
@@ -313,6 +317,7 @@ function draw(){
 }
 function go(to,replace){if(/\.html/.test(to)){location.href=to;return;}if(!R[to]){toast("That door isn't ready.");return;}if(to==="vault"&&sessionStorage.getItem("laduke-movie-gauntlet-done")!=="1"){toast("The vault awaits the end of the movie maze.");return;}saveView();hideDetail(false);hideMap(false);facing=here==="landing"&&to==="hall"?"reverse":"forward";here=to;document.body.classList.remove("lights-out");if(replace)history.replaceState({room:to,facing},"","house.html?room="+to);else history.pushState({room:to,facing},"","house.html?room="+to);draw();}
 function clearCrossing(){
+ if(cancelStair){cancelStair();cancelStair=null;}
  if(!crossing)return;
  crossing.forEach(animation=>animation.cancel());
  crossing=null;
@@ -324,6 +329,16 @@ function crossThreshold(to,door,keyboard){
   go(to);
   if(keyboard)id("floorName").focus({preventScroll:true});
  };
+ if(door.dataset.walk==="stairs"&&!reduceMotion.matches&&window.StudioHouseStair){
+  preparePhoto(to);
+  cancelStair=window.StudioHouseStair.play(id("stairFlight"),door.dataset.way==="down",arrive,clearCrossing);
+  if(cancelStair){
+   stopPan();
+   crossing=[];
+   camera.dataset.crossing="";
+   return;
+  }
+ }
  const box=door.getBoundingClientRect();
  const x=Math.min(innerWidth,Math.max(0,box.left+box.width/2));
  const y=Math.min(innerHeight,Math.max(0,box.top+box.height*.52));
@@ -495,7 +510,7 @@ camera.addEventListener("click",function(e){
 },true);
 window.addEventListener("resize",resize);
 window.addEventListener("popstate",function(event){clearCrossing();saveView();facing=event.state?.facing==="reverse"?"reverse":"forward";let q=new URLSearchParams(location.search).get("room");here=R[q]&&(q!=="vault"||sessionStorage.getItem("laduke-movie-gauntlet-done")==="1")?q:"escape";draw();});
-document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(!id("dialog").hidden)hideDetail(true);else if(!id("map").hidden)hideMap(true);return;}if(!id("dialog").hidden||!id("map").hidden||(window.StudioHouseAdventure&&window.StudioHouseAdventure.isOpen))return;if(crossing)return;if(e.key==="ArrowLeft"){e.preventDefault();setPan(pan+180);}if(e.key==="ArrowRight"){e.preventDefault();setPan(pan-180);}if(e.key.toLowerCase()==="m"&&!e.metaKey&&!e.ctrlKey)showMap();});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(crossing){clearCrossing();return;}if(!id("dialog").hidden)hideDetail(true);else if(!id("map").hidden)hideMap(true);return;}if(!id("dialog").hidden||!id("map").hidden||(window.StudioHouseAdventure&&window.StudioHouseAdventure.isOpen))return;if(crossing)return;if(e.key==="ArrowLeft"){e.preventDefault();setPan(pan+180);}if(e.key==="ArrowRight"){e.preventDefault();setPan(pan-180);}if(e.key.toLowerCase()==="m"&&!e.metaKey&&!e.ctrlKey)showMap();});
 facing=history.state?.facing==="reverse"?"reverse":"forward";
 const initial=new URLSearchParams(location.search).get("room");here=R[initial]&&(initial!=="vault"||sessionStorage.getItem("laduke-movie-gauntlet-done")==="1")?initial:"escape";if(!R[initial]||here!==initial)history.replaceState({room:here},"","house.html?room="+here);draw();
 try{if(!sessionStorage.getItem("laduke-house-seen")){sessionStorage.setItem("laduke-house-seen","1");}}catch(e){}
