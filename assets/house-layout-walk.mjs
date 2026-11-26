@@ -8,7 +8,7 @@ const fill=(element,items)=>element.replaceChildren(...items.map(([value,label])
 const stage=$('walk-stage'),ambient=$('ambient'),pending=new Map();
 const params=new URLSearchParams(location.search);
 let room=rooms[params.get('room')]?.id||'ENT-01',view=params.get('view')||'primary';
-let dispose=()=>{},drawId=0,lastAudio,audioURL,soundOn=false,gesture,ignoreClick=false,moving=false,animation;
+let dispose=()=>{},drawId=0,lastAudio,audioURL,soundOn=false,gesture,ignoreClick=false,activatedTouchDoor=false,moving=false,animation;
 const settings=new Map();
 const motion=matchMedia('(prefers-reduced-motion: reduce)');
 const mobile=matchMedia('(max-width: 650px)');
@@ -107,7 +107,7 @@ $('sound').onclick=async()=>{
 };
 stage.addEventListener('pointerdown',event=>{
  if(!event.isPrimary||event.button!==0||moving)return;
- ignoreClick=false;
+ ignoreClick=false;activatedTouchDoor=false;
  gesture={id:event.pointerId,x:event.clientX,y:event.clientY,door:event.pointerType==="touch"?event.target.closest("[data-portal]"):null};
 });
 stage.addEventListener('pointerup',event=>{
@@ -118,12 +118,11 @@ stage.addEventListener('pointerup',event=>{
  if(Math.abs(dx)>38&&Math.abs(dx)>Math.abs(dy)){
   const options=viewpoints(room),at=options.findIndex(item=>item.id===view);
   select(room,options[(at+options.length+(dx<0?1:-1))%options.length].id);
- }else if(!ignoreClick&&door&&door===event.target.closest("[data-portal]"))door.click();
+ }else if(!ignoreClick&&door&&door===event.target.closest("[data-portal]")){activatedTouchDoor=true;door.click();}
 });
 stage.addEventListener('pointercancel',()=>{gesture=null;ignoreClick=true;});
 stage.addEventListener('click',event=>{
- const nativeTouchDoor=event.target.closest("[data-portal]")&&(event.pointerType==="touch"||event.sourceCapabilities?.firesTouchEvents);
- if((ignoreClick||nativeTouchDoor)&&event.detail){event.stopImmediatePropagation();event.preventDefault();}
+ if((ignoreClick||activatedTouchDoor)&&event.detail){activatedTouchDoor=false;event.stopImmediatePropagation();event.preventDefault();}
  if(event.detail===0)ignoreClick=false;
 },true);
 document.addEventListener('keydown',event=>{

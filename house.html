@@ -508,9 +508,10 @@ function finish(e){
 }
 camera.addEventListener("pointerup",finish);camera.addEventListener("pointercancel",finish);camera.addEventListener("lostpointercapture",finish);window.addEventListener("pointerup",finish);
 camera.addEventListener("click",function(e){
- const isTouchDoor=e.target.closest(".door")&&(e.pointerType==="touch"||e.sourceCapabilities?.firesTouchEvents);
- if(e.detail>0&&(suppress||activatedTouchDoor&&isTouchDoor)){
-  suppress=false;e.preventDefault();e.stopImmediatePropagation();
+ // WebKit can emit a mouse compatibility click against the destination DOM
+ // after a touch release has already crossed the opening.
+ if(e.detail>0&&(suppress||activatedTouchDoor)){
+  activatedTouchDoor=false;suppress=false;e.preventDefault();e.stopImmediatePropagation();
  }
 },true);
 window.addEventListener("resize",resize);
