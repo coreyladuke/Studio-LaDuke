@@ -1,0 +1,19 @@
+# Studio LaDuke reconciliation — November 26, 2026
+
+The canonical repository is `coreyladuke/Studio-LaDuke` at `~/Studio-LaDuke-Development/Studio-LaDuke`. The worktree, local refs, stash, reflogs and duplicate checkout were inspected. Both website checkouts started at `a3379c7` with the same four uncommitted QA paths. Separate Soundbench, utilities and creative projects are outside the website Git history. The canonical starting tip is protected by the local `recovery/pre-reconciliation-2026-11-26` ref and a private local bundle, binary patch and untracked-file archive.
+
+| Work and provenance | Disposition |
+| --- | --- |
+| `dev/house-guide-walk` at `a3379c7` | Baseline. Retains dimensional stairs, door and room movement, photographic House Guide, World Builder storage/configuration and arcade fixes. |
+| Local visual QA and November 26 review package | Recovered the runnable Playwright audit, contact-sheet tooling and VS Code runbook in `28a98e5`. The generated ZIP remains local. |
+| Workshop Reflection Pond, `bb78a8c`, PR #54 | Recovered the page, public media, drawer receipt interaction and project link in `1e31e6c`. Existing workshop content remains in place. |
+| Woods gesture, `6164d74` and `71c990a`, PR #60 | Ported the intended first-fire/first-token behavior to the current shared ambient audio module in `43c2302`. A saved opt-in allows a gesture retry. An opt-out stays silent. |
+| Cedar Hall and Movie Maze candidate, `014edfa` | House uses the established cedar hall and newer `assets/house-walk.js` alignment/return logic. Candidate Maze includes an alternate fair plate, renderer and puzzle discovery behavior. Kept the candidate intact for separately scoped comparison of puzzle solvability and performance. |
+| Commission branches, including PR #52 at `2cd6f32` | Stacked workflow with quote and artist-inbox dependencies. Preserved on the original refs. Keep administrative workflows and records private and validate independently before any integration. |
+| HEIMR PRs #19–32 and #55–59 | Main's merged history contains launch, character, cabin, mobile control and interaction repairs. The older trail and Chapter One experiments `0ce0226` and `bb33cfc` change gameplay and art. Keep those on their dedicated refs to avoid reverting cabin repairs. |
+| Super Maverick's World PRs #1–8, #13–16 and #23 | GitHub reports merged platformer, iPhone controls, campaign saves and launch repairs. Current tree retains campaign and checkpoint code. Its original branches remain available. |
+| Standalone Greenhouse V3 and Front Stoop experiments | Greenhouse original package and local HTML/ZIP were located. Standalone yard and transition sources, captures, blockout outputs and the Front Stoop asset experiment were also backed up privately. V3 contains original/private source images. Keep those separate from GitHub and previews pending approved asset handling. |
+| Vercel house walkthrough previews | Latest READY historical preview maps to `a3379c7`. Prior READY reviews map to `621c7f1`, `31771e6`, `43c37d8`, `d23569f`, `d2b3136`, `a2824fb`, `1149688` and `2f7b797`. These are ancestor snapshots. |
+| Browser Codex drafts | No authenticated draft/task export was available in the connected tools. A task submitted elsewhere needs a reviewed patch, a development branch or an export for comparison if it never reached GitHub. |
+
+The isolated comparison fetched 62 GitHub branch tips and inspected open, closed and merged pull requests. Four remote tips dated November 20 onward. The earlier Workshop and game branches were checked by changed files, current behavior and PR relationships. The local clone has shallow history. GitHub PR merge state and current code supply evidence where a local common ancestor is unavailable. See `STATUS.md` for the verification state and `MILESTONES.md` for the next visual review.

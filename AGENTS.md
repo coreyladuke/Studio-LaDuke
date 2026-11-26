@@ -78,3 +78,7 @@ Only scale down the immersive standard when the project owner explicitly request
 ## 10. Scope in this repository
 
 These directives apply by default to any **user-facing visual, game, webpage, client portal or app experience** in this repo. For services, APIs, voice workers, build tools, automated jobs, data pipelines, or infrastructure-only code, apply the emphasis on thoughtful UX, quality, performance, accessibility, privacy and reliable functionality when relevant. **Do not add a 3D interface to a backend-only component.** If this repo includes multiple products, evaluate their visual experiences individually.
+
+## 11. Canonical checkout and milestone handoff
+
+Use `~/Studio-LaDuke-Development/Studio-LaDuke` for website development on the Chromebook and verify the origin is `coreyladuke/Studio-LaDuke` before editing. Read `MILESTONES.md`, `STATUS.md` and `RECOVERY.md`, then inspect the branch and working tree. Use isolated branches for experiments and small commits for verified changes. Preserve owner artwork in approved storage. Record scope, relevant commit hashes, browser evidence, visual gates and unresolved issues before handing off. Keep production gated on explicit owner approval.
