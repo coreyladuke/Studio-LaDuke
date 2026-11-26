@@ -1,2 +1,6 @@
 *.sqlite
 *.sqlite-*
+
+node_modules/
+/STUDIO_LADUKE_REVIEW/
+/STUDIO_LADUKE_REVIEW.zip
