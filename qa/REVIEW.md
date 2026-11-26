@@ -15,7 +15,7 @@ For an output in Linux files, run:
 STUDIO_REVIEW_OUTPUT="$HOME" npm run review:site
 ```
 
-Set `STUDIO_REVIEW_QUICK=1` for desktop screenshots only. Optional `STUDIO_LOCAL_PREVIEW` and `STUDIO_PROTECTED_PREVIEW` update the review URLs shown in the report. They are labels. The actual capture always uses the current checkout on loopback. Supply a current screenshot assessment with `STUDIO_REVIEW_NOTES=/absolute/path/assessment.md`. Use that only for observations from the evidence being packaged. The command exits with a failure code for route, browser exception or unexpected request failures after it writes any evidence it collected. Regeneration replaces a previously generated folder and ZIP. Move them elsewhere to keep a historical copy.
+Set `STUDIO_REVIEW_QUICK=1` for desktop screenshots only. Optional `STUDIO_LOCAL_PREVIEW` and `STUDIO_PROTECTED_PREVIEW` update the review URLs shown in the report. They are labels. The actual capture always uses the current checkout on loopback. Supply a current screenshot assessment with `STUDIO_REVIEW_NOTES=/absolute/path/assessment.md`. Use that only for observations from the evidence being packaged. Movement checkpoints allow up to 30 seconds under software rendering. The command exits with a failure code for route, browser exception or unexpected request failures after it writes any evidence it collected. Regeneration replaces a previously generated folder and ZIP. Move them elsewhere to keep a historical copy.
 
 ## Independent review
 

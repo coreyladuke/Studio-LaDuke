@@ -181,7 +181,7 @@ async function runJourney(browser,profile,base,{record=false,capture=true,thrott
   room:el.dataset.room, bearing:Number(el.dataset.bearing),
   eye:Number(el.dataset.eye), position:(el.dataset.coords||',').split(',').map(Number)
  }));
- const wait=criteria=>page.waitForFunction(criteria=> {
+ const wait=(criteria,timeout)=>page.waitForFunction(criteria=> {
   const el=document.querySelector('#world');
   if(!el?.dataset.coords)return false;
   const [x,z]=el.dataset.coords.split(',').map(Number);
@@ -190,7 +190,7 @@ async function runJourney(browser,profile,base,{record=false,capture=true,thrott
    (criteria.xMin===undefined||x>criteria.xMin)&&(criteria.xMax===undefined||x<criteria.xMax)&&
    (criteria.zMin===undefined||z>criteria.zMin)&&(criteria.zMax===undefined||z<criteria.zMax)&&
    (criteria.bearing===undefined||Math.abs(Number(bearing)-criteria.bearing)<.014);
- },criteria);
+ },criteria,{timeout});
  const desktopAction=profile.hasTouch?'tap':'click';
  const activate=locator=>locator[desktopAction]();
  const closeDetails=async()=>{
@@ -207,7 +207,7 @@ async function runJourney(browser,profile,base,{record=false,capture=true,thrott
   assert.ok(rect);
   const x=Math.round(rect.x+rect.width/2),y=Math.round(rect.y+rect.height/2);
   await touch('touchStart',x,y);
-  try{if(typeof criteria==='number')await delay(page,criteria);else await wait(criteria);}
+  try{if(typeof criteria==='number')await delay(page,criteria);else await wait(criteria,30000);}
   finally{await touch('touchEnd');}
   await delay(page,65);
  };
@@ -215,7 +215,7 @@ async function runJourney(browser,profile,base,{record=false,capture=true,thrott
   if(profile.hasTouch&&(key==='w'||key==='s'))return touchscreenMove(key,criteria);
   await world.focus();
   await page.keyboard.down(key);
-  try{if(typeof criteria==='number')await delay(page,criteria);else await wait(criteria);}
+  try{if(typeof criteria==='number')await delay(page,criteria);else await wait(criteria,30000);}
   finally{await page.keyboard.up(key);}
   await delay(page,65);
  };
