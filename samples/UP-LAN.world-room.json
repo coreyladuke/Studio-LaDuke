@@ -1,0 +1,462 @@
+{
+  "format": "studio-laduke-world-room",
+  "version": 1,
+  "room": "UP-LAN",
+  "brief": {
+    "room": {
+      "id": "UP-LAN",
+      "name": "Upstairs Landing",
+      "elevation": 2.72,
+      "width": 3,
+      "depth": 3,
+      "height": 2.55
+    },
+    "approvedAdjoiningReferences": [
+      {
+        "room": "Main Hall",
+        "path": "assets/house-plates/main-hall-cedar.webp"
+      }
+    ],
+    "connections": [
+      {
+        "id": "main-stairs",
+        "name": "Main Stairs",
+        "to": "Main Hall",
+        "kind": "stairs",
+        "width": 1.1,
+        "height": 2.12
+      },
+      {
+        "id": "main-bedroom-door",
+        "name": "Main Bedroom Door",
+        "to": "Main Bedroom",
+        "kind": "door",
+        "width": 0.84,
+        "height": 2.12
+      },
+      {
+        "id": "bedroom-two-door",
+        "name": "Bedroom Two Door",
+        "to": "Bedroom Two",
+        "kind": "door",
+        "width": 0.84,
+        "height": 2.12
+      },
+      {
+        "id": "library-door",
+        "name": "Library Door",
+        "to": "Library",
+        "kind": "door",
+        "width": 0.84,
+        "height": 2.12
+      },
+      {
+        "id": "computer-room-door",
+        "name": "Computer Room Door",
+        "to": "1984 Computer Room",
+        "kind": "door",
+        "width": 0.84,
+        "height": 2.12
+      },
+      {
+        "id": "attic-hatch",
+        "name": "Attic Hatch",
+        "to": "Maverick’s Fort",
+        "kind": "hatch",
+        "width": 0.84,
+        "height": 2.12
+      }
+    ],
+    "views": [
+      {
+        "id": "primary",
+        "name": "Primary",
+        "camera": {
+          "position": [
+            0,
+            4.300000000000001,
+            -0.8999999999999999
+          ],
+          "target": "Primary",
+          "yawDegrees": 0,
+          "verticalFovDegrees": 65,
+          "calibration": "Provisional"
+        },
+        "artwork": {
+          "master": 2440,
+          "desktop": [
+            1600,
+            960
+          ],
+          "mobile": [
+            900,
+            1200
+          ],
+          "filenames": [
+            "UP-LAN-primary-primary.webp",
+            "UP-LAN-primary-reverse.webp",
+            "UP-LAN-primary-foreground.webp",
+            "UP-LAN-primary-background.webp",
+            "UP-LAN-primary-depth.webp",
+            "UP-LAN-primary-occlusion.webp",
+            "UP-LAN-primary-environment.webp",
+            "UP-LAN-primary-lighting.webp",
+            "UP-LAN-primary-object-textures.webp",
+            "UP-LAN-primary-ambient.mp3"
+          ]
+        },
+        "approved": [],
+        "layers": [
+          "Foreground cutout",
+          "Background",
+          "Grayscale depth",
+          "Occlusion mask",
+          "Window or weather layer",
+          "Light overlay"
+        ],
+        "prompt": "Photographic interior of Upstairs Landing in a lived-in Southeast Alaska cedar house, primary viewpoint. Keep the documented openings and camera alignment. Match cool exterior daylight, warm wood and realistic perspective. Use the approved adjoining views as visual references."
+      },
+      {
+        "id": "reverse",
+        "name": "Reverse",
+        "camera": {
+          "position": [
+            0,
+            4.300000000000001,
+            -0.8999999999999999
+          ],
+          "target": "Reverse",
+          "yawDegrees": 180,
+          "verticalFovDegrees": 65,
+          "calibration": "Provisional"
+        },
+        "artwork": {
+          "master": 2440,
+          "desktop": [
+            1600,
+            960
+          ],
+          "mobile": [
+            900,
+            1200
+          ],
+          "filenames": [
+            "UP-LAN-reverse-primary.webp",
+            "UP-LAN-reverse-reverse.webp",
+            "UP-LAN-reverse-foreground.webp",
+            "UP-LAN-reverse-background.webp",
+            "UP-LAN-reverse-depth.webp",
+            "UP-LAN-reverse-occlusion.webp",
+            "UP-LAN-reverse-environment.webp",
+            "UP-LAN-reverse-lighting.webp",
+            "UP-LAN-reverse-object-textures.webp",
+            "UP-LAN-reverse-ambient.mp3"
+          ]
+        },
+        "approved": [],
+        "layers": [
+          "Foreground cutout",
+          "Background",
+          "Grayscale depth",
+          "Occlusion mask",
+          "Window or weather layer",
+          "Light overlay"
+        ],
+        "prompt": "Photographic interior of Upstairs Landing in a lived-in Southeast Alaska cedar house, reverse viewpoint. Keep the documented openings and camera alignment. Match cool exterior daylight, warm wood and realistic perspective. Use the approved adjoining views as visual references."
+      },
+      {
+        "id": "main-stairs",
+        "name": "Main Stairs",
+        "camera": {
+          "position": [
+            0,
+            4.300000000000001,
+            -0.8999999999999999
+          ],
+          "target": "Main Hall",
+          "yawDegrees": null,
+          "verticalFovDegrees": 65,
+          "calibration": "Provisional"
+        },
+        "artwork": {
+          "master": 2440,
+          "desktop": [
+            1600,
+            960
+          ],
+          "mobile": [
+            900,
+            1200
+          ],
+          "filenames": [
+            "UP-LAN-main-stairs-primary.webp",
+            "UP-LAN-main-stairs-reverse.webp",
+            "UP-LAN-main-stairs-foreground.webp",
+            "UP-LAN-main-stairs-background.webp",
+            "UP-LAN-main-stairs-depth.webp",
+            "UP-LAN-main-stairs-occlusion.webp",
+            "UP-LAN-main-stairs-environment.webp",
+            "UP-LAN-main-stairs-lighting.webp",
+            "UP-LAN-main-stairs-object-textures.webp",
+            "UP-LAN-main-stairs-ambient.mp3"
+          ]
+        },
+        "approved": [],
+        "layers": [
+          "Foreground cutout",
+          "Background",
+          "Grayscale depth",
+          "Occlusion mask",
+          "Window or weather layer",
+          "Light overlay"
+        ],
+        "prompt": "Photographic interior of Upstairs Landing in a lived-in Southeast Alaska cedar house, main stairs viewpoint. Keep the documented openings and camera alignment. Match cool exterior daylight, warm wood and realistic perspective. Use the approved adjoining views as visual references."
+      },
+      {
+        "id": "main-bedroom-door",
+        "name": "Main Bedroom Door",
+        "camera": {
+          "position": [
+            0,
+            4.300000000000001,
+            -0.8999999999999999
+          ],
+          "target": "Main Bedroom",
+          "yawDegrees": null,
+          "verticalFovDegrees": 65,
+          "calibration": "Provisional"
+        },
+        "artwork": {
+          "master": 2440,
+          "desktop": [
+            1600,
+            960
+          ],
+          "mobile": [
+            900,
+            1200
+          ],
+          "filenames": [
+            "UP-LAN-main-bedroom-door-primary.webp",
+            "UP-LAN-main-bedroom-door-reverse.webp",
+            "UP-LAN-main-bedroom-door-foreground.webp",
+            "UP-LAN-main-bedroom-door-background.webp",
+            "UP-LAN-main-bedroom-door-depth.webp",
+            "UP-LAN-main-bedroom-door-occlusion.webp",
+            "UP-LAN-main-bedroom-door-environment.webp",
+            "UP-LAN-main-bedroom-door-lighting.webp",
+            "UP-LAN-main-bedroom-door-object-textures.webp",
+            "UP-LAN-main-bedroom-door-ambient.mp3"
+          ]
+        },
+        "approved": [],
+        "layers": [
+          "Foreground cutout",
+          "Background",
+          "Grayscale depth",
+          "Occlusion mask",
+          "Window or weather layer",
+          "Light overlay"
+        ],
+        "prompt": "Photographic interior of Upstairs Landing in a lived-in Southeast Alaska cedar house, main bedroom door viewpoint. Keep the documented openings and camera alignment. Match cool exterior daylight, warm wood and realistic perspective. Use the approved adjoining views as visual references."
+      },
+      {
+        "id": "bedroom-two-door",
+        "name": "Bedroom Two Door",
+        "camera": {
+          "position": [
+            0,
+            4.300000000000001,
+            -0.8999999999999999
+          ],
+          "target": "Bedroom Two",
+          "yawDegrees": null,
+          "verticalFovDegrees": 65,
+          "calibration": "Provisional"
+        },
+        "artwork": {
+          "master": 2440,
+          "desktop": [
+            1600,
+            960
+          ],
+          "mobile": [
+            900,
+            1200
+          ],
+          "filenames": [
+            "UP-LAN-bedroom-two-door-primary.webp",
+            "UP-LAN-bedroom-two-door-reverse.webp",
+            "UP-LAN-bedroom-two-door-foreground.webp",
+            "UP-LAN-bedroom-two-door-background.webp",
+            "UP-LAN-bedroom-two-door-depth.webp",
+            "UP-LAN-bedroom-two-door-occlusion.webp",
+            "UP-LAN-bedroom-two-door-environment.webp",
+            "UP-LAN-bedroom-two-door-lighting.webp",
+            "UP-LAN-bedroom-two-door-object-textures.webp",
+            "UP-LAN-bedroom-two-door-ambient.mp3"
+          ]
+        },
+        "approved": [],
+        "layers": [
+          "Foreground cutout",
+          "Background",
+          "Grayscale depth",
+          "Occlusion mask",
+          "Window or weather layer",
+          "Light overlay"
+        ],
+        "prompt": "Photographic interior of Upstairs Landing in a lived-in Southeast Alaska cedar house, bedroom two door viewpoint. Keep the documented openings and camera alignment. Match cool exterior daylight, warm wood and realistic perspective. Use the approved adjoining views as visual references."
+      },
+      {
+        "id": "library-door",
+        "name": "Library Door",
+        "camera": {
+          "position": [
+            0,
+            4.300000000000001,
+            -0.8999999999999999
+          ],
+          "target": "Library",
+          "yawDegrees": null,
+          "verticalFovDegrees": 65,
+          "calibration": "Provisional"
+        },
+        "artwork": {
+          "master": 2440,
+          "desktop": [
+            1600,
+            960
+          ],
+          "mobile": [
+            900,
+            1200
+          ],
+          "filenames": [
+            "UP-LAN-library-door-primary.webp",
+            "UP-LAN-library-door-reverse.webp",
+            "UP-LAN-library-door-foreground.webp",
+            "UP-LAN-library-door-background.webp",
+            "UP-LAN-library-door-depth.webp",
+            "UP-LAN-library-door-occlusion.webp",
+            "UP-LAN-library-door-environment.webp",
+            "UP-LAN-library-door-lighting.webp",
+            "UP-LAN-library-door-object-textures.webp",
+            "UP-LAN-library-door-ambient.mp3"
+          ]
+        },
+        "approved": [],
+        "layers": [
+          "Foreground cutout",
+          "Background",
+          "Grayscale depth",
+          "Occlusion mask",
+          "Window or weather layer",
+          "Light overlay"
+        ],
+        "prompt": "Photographic interior of Upstairs Landing in a lived-in Southeast Alaska cedar house, library door viewpoint. Keep the documented openings and camera alignment. Match cool exterior daylight, warm wood and realistic perspective. Use the approved adjoining views as visual references."
+      },
+      {
+        "id": "computer-room-door",
+        "name": "Computer Room Door",
+        "camera": {
+          "position": [
+            0,
+            4.300000000000001,
+            -0.8999999999999999
+          ],
+          "target": "1984 Computer Room",
+          "yawDegrees": null,
+          "verticalFovDegrees": 65,
+          "calibration": "Provisional"
+        },
+        "artwork": {
+          "master": 2440,
+          "desktop": [
+            1600,
+            960
+          ],
+          "mobile": [
+            900,
+            1200
+          ],
+          "filenames": [
+            "UP-LAN-computer-room-door-primary.webp",
+            "UP-LAN-computer-room-door-reverse.webp",
+            "UP-LAN-computer-room-door-foreground.webp",
+            "UP-LAN-computer-room-door-background.webp",
+            "UP-LAN-computer-room-door-depth.webp",
+            "UP-LAN-computer-room-door-occlusion.webp",
+            "UP-LAN-computer-room-door-environment.webp",
+            "UP-LAN-computer-room-door-lighting.webp",
+            "UP-LAN-computer-room-door-object-textures.webp",
+            "UP-LAN-computer-room-door-ambient.mp3"
+          ]
+        },
+        "approved": [],
+        "layers": [
+          "Foreground cutout",
+          "Background",
+          "Grayscale depth",
+          "Occlusion mask",
+          "Window or weather layer",
+          "Light overlay"
+        ],
+        "prompt": "Photographic interior of Upstairs Landing in a lived-in Southeast Alaska cedar house, computer room door viewpoint. Keep the documented openings and camera alignment. Match cool exterior daylight, warm wood and realistic perspective. Use the approved adjoining views as visual references."
+      },
+      {
+        "id": "attic-hatch",
+        "name": "Attic Hatch",
+        "camera": {
+          "position": [
+            0,
+            4.300000000000001,
+            -0.8999999999999999
+          ],
+          "target": "Maverick’s Fort",
+          "yawDegrees": null,
+          "verticalFovDegrees": 65,
+          "calibration": "Provisional"
+        },
+        "artwork": {
+          "master": 2440,
+          "desktop": [
+            1600,
+            960
+          ],
+          "mobile": [
+            900,
+            1200
+          ],
+          "filenames": [
+            "UP-LAN-attic-hatch-primary.webp",
+            "UP-LAN-attic-hatch-reverse.webp",
+            "UP-LAN-attic-hatch-foreground.webp",
+            "UP-LAN-attic-hatch-background.webp",
+            "UP-LAN-attic-hatch-depth.webp",
+            "UP-LAN-attic-hatch-occlusion.webp",
+            "UP-LAN-attic-hatch-environment.webp",
+            "UP-LAN-attic-hatch-lighting.webp",
+            "UP-LAN-attic-hatch-object-textures.webp",
+            "UP-LAN-attic-hatch-ambient.mp3"
+          ]
+        },
+        "approved": [],
+        "layers": [
+          "Foreground cutout",
+          "Background",
+          "Grayscale depth",
+          "Occlusion mask",
+          "Window or weather layer",
+          "Light overlay"
+        ],
+        "prompt": "Photographic interior of Upstairs Landing in a lived-in Southeast Alaska cedar house, attic hatch viewpoint. Keep the documented openings and camera alignment. Match cool exterior daylight, warm wood and realistic perspective. Use the approved adjoining views as visual references."
+      }
+    ]
+  },
+  "placeholder": {
+    "filename": "UP-LAN-placeholder.svg",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1000 600\"><rect width=\"1000\" height=\"600\" fill=\"#504638\"/><path d=\"M0 0L305 148H695L1000 0M0 600L305 417H695L1000 600\" fill=\"none\" stroke=\"#c8b58c\" stroke-width=\"5\"/><rect x=\"305\" y=\"148\" width=\"390\" height=\"269\" fill=\"#7d765e\"/><path d=\"M455 417V245H545V417\" fill=\"#433b2b\"/><text x=\"500\" y=\"480\" text-anchor=\"middle\" fill=\"white\" font-size=\"24\">UP-LAN · Provisional landing reference</text></svg>"
+  },
+  "entries": []
+}

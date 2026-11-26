@@ -27,3 +27,7 @@ label{display:grid;gap:4px;margin:0 0 10px}fieldset{border:1px solid #565746;mar
 #missing{max-height:250px;overflow:auto}.retake{color:#ffdeb4}
 @media(max-width:800px){.layout{grid-template-columns:1fr}.compare{grid-template-columns:1fr}main{padding:12px}.walk-stage{min-height:310px}.portal{font-size:.72rem}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+[hidden]{display:none!important}
+.floor-plan{display:grid;gap:8px;margin:0 0 18px}.floor-plan section{display:flex;flex-wrap:wrap;gap:6px}.floor-plan h2{font-size:1rem;width:100%;margin:.3em 0}.floor-plan button{font-size:.8rem;min-height:44px}.floor-plan [aria-pressed=true]{background:#645133;border-color:#cfb27e}
+#candidate.editing{touch-action:none;cursor:move}#candidate.drag-over{outline:2px solid #edc67c}#owner-login{align-items:end}#owner-login label{margin:0}

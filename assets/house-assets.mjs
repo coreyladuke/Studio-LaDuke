@@ -1,3 +1,4 @@
+import {shared,sharedRecord,sharedSave} from './world-sync.mjs';
 import { rooms, viewpoints } from './house-layout.mjs';
 
 export const slots = ['primary','reverse','foreground','background','depth','occlusion','environment','lighting','object-textures','ambient'];
@@ -30,6 +31,7 @@ function connect() {
 }
 const empty=()=>({active:'baseline',versions:[]});
 export async function record(key) {
+ if(shared())return (await sharedRecord(key)).state;
  const db=await connect();
  return new Promise((resolve,reject)=>{
   const request=db.transaction('assets').objectStore('assets').get(key);
@@ -38,6 +40,11 @@ export async function record(key) {
  });
 }
 export async function change(key,apply) {
+ if(shared()){
+  const {state,etag}=await sharedRecord(key,true);
+  apply(state);
+  return sharedSave(key,state,etag);
+ }
  const db=await connect();
  return new Promise((resolve,reject)=>{
   const transaction=db.transaction('assets','readwrite');
@@ -54,7 +61,7 @@ export async function change(key,apply) {
  });
 }
 export function active(key,state) {
- return state.versions.find(item=>item.id===state.active&&item.status==='approved')||baseline(key);
+ return state.versions.find(item=>item.id===state.active&&['approved','published'].includes(item.status))||baseline(key);
 }
 export function source(asset,mobile) {
  const value=(mobile&&asset?.mobile)||asset?.desktop||asset?.mobile;

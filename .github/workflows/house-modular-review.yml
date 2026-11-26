@@ -14,6 +14,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - run: node --test tests/world-repository.test.mjs
       - run: npm install --no-save --no-package-lock playwright
       - run: npx playwright install --with-deps chromium webkit
       - run: |
@@ -56,6 +57,26 @@ jobs:
            await page.getByRole('button',{name:'Approve',exact:true}).click();
            await text(page,'#status','Approved');
            await page.screenshot({path:'modular-evidence/studio-approved.png'});
+           const exported=page.waitForEvent('download');
+           await page.getByRole('button',{name:'Export room package'}).click();
+           const download=await exported;
+           await download.saveAs('modular-evidence/UP-LAN-test-backup.world-room.json');
+           const fresh=await chromiumBrowser.newContext({reducedMotion:'reduce'});
+           const newDevice=await fresh.newPage();
+           await newDevice.goto(base+'house-layout.html?room=UP-LAN');
+           await text(newDevice,'.scene-status','Dimensional placeholder');
+           await newDevice.goto(base+'house-studio.html');
+           await text(newDevice,'#missing-count','scenery slots');
+           await newDevice.locator('#import-room').setInputFiles('modular-evidence/UP-LAN-test-backup.world-room.json');
+           await text(newDevice,'#status','1 asset slots restored');
+           await newDevice.getByRole('link',{name:'Inspect in walk'}).click();
+           await text(newDevice,'.scene-status','Artwork');
+           const restored=newDevice.locator('.stage img.primary');
+           assert.equal(await restored.evaluate(async image=>{await image.decode();return image.naturalWidth;}),1600);
+           await newDevice.reload();
+           await text(newDevice,'.scene-status','Artwork');
+           await fresh.close();
+           await page.screenshot({path:'modular-evidence/world-builder-portability.png'});
            await page.getByRole('link',{name:'Inspect in walk'}).click();
            await text(page,'#room-name','Upstairs Landing');
            const photo=page.locator('.stage img.primary');
@@ -119,7 +140,7 @@ jobs:
            await page.screenshot({path:'modular-evidence/iphone-basement.png'});
            await context.close();
           } finally {await safari.close();}
-          console.log('Verified 33 nodes, 32 paired connections, '+keys.length+' distinct asset slots, local approval and restore, Chromium swipe and WebKit tap.');
+          console.log('Verified 33 nodes, 32 paired connections, '+keys.length+' distinct asset slots, room backup restored in a fresh browser context, Chromium swipe and WebKit tap.');
           JS
       - uses: actions/upload-artifact@v4
         if: always()

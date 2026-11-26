@@ -1,3 +1,4 @@
+import {initialize} from './world-sync.mjs';
 import {rooms,exits,viewpoints} from './house-layout.mjs';
 import {assetKey,active,record,baseline,source} from './house-assets.mjs';
 import {renderScene} from './house-scene.mjs';
@@ -132,4 +133,5 @@ window.addEventListener('popstate',()=>{
 });
 mobile.addEventListener('change',()=>draw());
 window.addEventListener('pageshow',()=>draw());
+await initialize();
 await draw();
