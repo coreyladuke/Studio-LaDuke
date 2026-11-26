@@ -171,6 +171,24 @@ const roomViews=new Map();
 const lens=id("walkLens"),shade=id("walkShade"),rain=id("walkRainAudio");
 const rainButton=id("rainWalk");
 let crossing=null;
+const walkPhotos={
+ foyer:"assets/front-room-doors.webp",
+ hall:"assets/house-plates/main-hall-cedar.webp"
+};
+const preparedPhotos=new Map();
+function preparePhoto(room){
+ if(!walkPhotos[room])return Promise.resolve();
+ if(!preparedPhotos.has(room)){
+  const image=new Image();
+  image.src=walkPhotos[room];
+  preparedPhotos.set(room,image.decode().catch(()=>preparedPhotos.delete(room)));
+ }
+ return preparedPhotos.get(room);
+}
+function warmAdjacentPhotos(){
+ if(here==="foyer")preparePhoto("hall");
+ if(here==="hall")preparePhoto("foyer");
+}
 rainButton.addEventListener("click",async function(){
  if(!rain.paused){rain.pause();return;}
  try{rain.volume=.16;await rain.play();}
@@ -188,7 +206,10 @@ function restoreView(bounds){
 }
 const reduceMotion=window.matchMedia("(prefers-reduced-motion: reduce)");
 function clampPan(p){return Math.min(maxPan,Math.max(-maxPan,p));}
-function paintPan(){plate.style.setProperty("--pan",pan+"px");id("left").disabled=pan>=maxPan-2;id("right").disabled=pan<=-maxPan+2;}
+function paintPan(){plate.style.setProperty("--pan",pan+"px");const left=id("left"),right=id("right");
+ const atLeft=pan>=maxPan-2,atRight=pan<=-maxPan+2;
+ if(left.disabled!==atLeft)left.disabled=atLeft;
+ if(right.disabled!==atRight)right.disabled=atRight;}
 function stopPan(){if(panFrame)cancelAnimationFrame(panFrame);panFrame=0;}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
 function lightPanel(r){
@@ -288,7 +309,7 @@ function draw(){
   else go(d[1]);
  });doorBox.append(b);});
  (r.p||[]).forEach(function(p){let b=document.createElement("button");b.className="prop";b.type="button";b.style.left=p[1]+"px";b.style.top=p[2]+"px";if(here==="living"&&livingProps[p[0]])placeOnPlate(b,livingProps[p[0]]);b.setAttribute("aria-label",p[3]);b.innerHTML=propArt(p[0])+'<span class="hint">'+escapeHtml(p[3])+'</span>';b.addEventListener("click",function(){if(window.StudioHouseAdventure)window.StudioHouseAdventure.collect(here,p[0]);if(p[5]==="code"){code();return;}if(p[5]==="night"){document.body.classList.toggle("lights-out");if(window.StudioHouseDirector)window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast});return;}if(p[5]){go(p[5]);return;}if(window.StudioHouseDirector&&window.StudioHouseDirector.activate(here,p,{plate:plate,toast:toast}))return;if(window.StudioHouseV2&&window.StudioHouseV2.activate(here,p[0],{plate:plate,toast:toast}))return;detail(p[3],p[4],p[5]);});objectBox.append(b);});
- stopPan();resize();setPan(restoreView(defaultBounds),true);makeMap();document.title=r.n+" · Studio LaDuke House";
+ stopPan();resize();setPan(restoreView(defaultBounds),true);makeMap();warmAdjacentPhotos();document.title=r.n+" · Studio LaDuke House";
 }
 function go(to,replace){if(/\.html/.test(to)){location.href=to;return;}if(!R[to]){toast("That door isn't ready.");return;}if(to==="vault"&&sessionStorage.getItem("laduke-movie-gauntlet-done")!=="1"){toast("The vault awaits the end of the movie maze.");return;}saveView();hideDetail(false);hideMap(false);facing=here==="landing"&&to==="hall"?"reverse":"forward";here=to;document.body.classList.remove("lights-out");if(replace)history.replaceState({room:to,facing},"","house.html?room="+to);else history.pushState({room:to,facing},"","house.html?room="+to);draw();}
 function clearCrossing(){
@@ -303,24 +324,25 @@ function crossThreshold(to,door,keyboard){
   go(to);
   if(keyboard)id("floorName").focus({preventScroll:true});
  };
- if(reduceMotion.matches||!lens.animate){arrive();return;}
-
- stopPan();
  const box=door.getBoundingClientRect();
  const x=Math.min(innerWidth,Math.max(0,box.left+box.width/2));
  const y=Math.min(innerHeight,Math.max(0,box.top+box.height*.52));
- const rises=door.dataset.way==="up";
- const descends=door.dataset.way==="down";
- const elevation=rises?18:descends?-16:0;
- const base={transformOrigin:x+"px "+y+"px",transform:"translateY(0) scale(1)"};
+ const elevation=door.dataset.way==="up"?18:door.dataset.way==="down"?-16:0;
+ moveCamera(arrive,x+"px "+y+"px",elevation,preparePhoto(to));
+}
+function moveCamera(arrive,origin,elevation,ready=Promise.resolve()){
+ if(reduceMotion.matches||!lens.animate){arrive();return;}
+ stopPan();
+ const base={transformOrigin:origin,transform:"translateY(0) scale(1)"};
  const approach={...base,transform:"translateY("+elevation+"px) scale(1.16)"};
  camera.dataset.crossing="";
  const departure=[
   lens.animate([base,approach],{duration:190,easing:"cubic-bezier(.38,0,.64,1)",fill:"forwards"}),
-  shade.animate([{opacity:0},{opacity:.72}],{duration:190,fill:"forwards"})
+  shade.animate([{opacity:0},{opacity:.65}],{duration:190,fill:"forwards"})
  ];
  crossing=departure;
- Promise.all(departure.map(animation=>animation.finished)).then(()=>{
+ const photoDeadline=new Promise(resolve=>setTimeout(resolve,320));
+ Promise.all([...departure.map(animation=>animation.finished),Promise.race([ready,photoDeadline])]).then(()=>{
   if(crossing!==departure)return;
   arrive();
   departure.forEach(animation=>animation.cancel());
@@ -328,7 +350,7 @@ function crossThreshold(to,door,keyboard){
   const entry={...center,transform:"translateY("+(-elevation)+"px) scale(1.08)"};
   const arrival=[
    lens.animate([entry,center],{duration:245,easing:"ease-out"}),
-   shade.animate([{opacity:.72},{opacity:0}],{duration:245,easing:"ease-out"})
+   shade.animate([{opacity:.65},{opacity:0}],{duration:245,easing:"ease-out"})
   ];
   crossing=arrival;
   return Promise.all(arrival.map(animation=>animation.finished)).then(()=>{
@@ -425,10 +447,12 @@ id("mapOpen").addEventListener("click",showMap);id("closeMap").addEventListener(
 id("closeDialog").addEventListener("click",function(){hideDetail(true);});id("dialogShade").addEventListener("click",function(){hideDetail(true);});
 id("turnWalk").addEventListener("click",function(){
  if(crossing)return;
- saveView();
- facing=facing==="forward"?"reverse":"forward";
- history.replaceState({room:here,facing},"",location.href);
- draw();
+ moveCamera(()=>{
+  saveView();
+  facing=facing==="forward"?"reverse":"forward";
+  history.replaceState({room:here,facing},"",location.href);
+  draw();
+ },"50% 52%",0);
 });
 id("left").addEventListener("click",function(){setPan(pan+Math.max(180,innerWidth*.66));});id("right").addEventListener("click",function(){setPan(pan-Math.max(180,innerWidth*.66));});
 camera.addEventListener("pointerdown",function(e){
@@ -445,13 +469,19 @@ camera.addEventListener("pointermove",function(e){
   camera.classList.add("dragging");
   drag.velocity=Math.max(-2.6,Math.min(2.6,(e.clientX-drag.lastX)/dt));
   drag.lastX=e.clientX;drag.lastT=now;
-  setPan(drag.p+dx,true);
+  panTarget=clampPan(drag.p+dx);
+  if(!panFrame)panFrame=requestAnimationFrame(()=>{
+   panFrame=0;
+   pan=panTarget;
+   paintPan();
+  });
  }
 });
 function finish(e){
  if(!drag||e.pointerId!==drag.pointerId)return;
- const wasDragging=drag.m,speed=e.type==="pointerup"&&performance.now()-drag.lastT<90?drag.velocity:0;
+ const wasDragging=drag.m||Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>9,speed=e.type==="pointerup"&&performance.now()-drag.lastT<90?drag.velocity:0;
  const tapDoor=e.type==="pointerup"&&!wasDragging&&drag.door===e.target.closest(".door")?drag.door:null;
+ if(drag.m)setPan(panTarget,true);
  suppress=wasDragging;drag=null;camera.classList.remove("dragging");
  if(tapDoor)tapDoor.click();
  if(wasDragging&&!reduceMotion.matches&&Math.abs(speed)>.18)setPan(pan+speed*115);

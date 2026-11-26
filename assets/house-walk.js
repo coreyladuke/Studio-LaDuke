@@ -43,8 +43,7 @@
         <stop stop-color="#c9d7cc"/><stop offset="1" stop-color="#66786c"/>
       </linearGradient>
       <clipPath id="walk-window"><rect x="668" y="249" width="264" height="259"/></clipPath>
-      <filter id="texture"><feTurbulence type="fractalNoise" baseFrequency=".28 .58" numOctaves="3" seed="17"/>
-        <feColorMatrix type="saturate" values="0"/></filter>
+
     </defs>`;
 
   function shell() {
@@ -117,7 +116,7 @@
     return `<svg class="walk-view" viewBox="0 0 1600 900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
       ${materials}${shell()}${feature}
       <rect width="1600" height="900" fill="url(#light)" pointer-events="none"/>
-      <rect width="1600" height="900" fill="#fff" filter="url(#texture)" opacity=".14" style="mix-blend-mode:multiply" pointer-events="none"/>
+
     </svg>`;
   }
 

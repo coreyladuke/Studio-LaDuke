@@ -110,8 +110,7 @@ jobs:
               }), 1600);
               if (!mobile) {
                 assert.equal(await page.locator('#walkRainAudio').evaluate(audio => audio.paused), false);
-                await use(button('Rain sound'));
-                await page.waitForFunction(() => document.querySelector('#walkRainAudio').paused);
+
               }
               await shot('02-main-hall-up-main-stairs');
               await use(button(stairs));
@@ -119,6 +118,7 @@ jobs:
               assert.equal(await page.locator('#provisionalView').isVisible(), true);
               assert.equal(await button(stairs).count(), 0);
               await use(button('Turn around'));
+              await room('Upstairs Landing');
               await shot('03-upstairs-landing-down-main-stairs');
               await use(button('Open house floor plan'));
               const plan = page.locator('#walkPlan');
@@ -132,6 +132,10 @@ jobs:
               await use(button(opening));
               await room('Front Hall');
               if (!mobile) {
+                assert.equal(await page.locator('#walkRainAudio').evaluate(audio => audio.paused), false);
+                assert.equal(await page.locator('#walkRainAudio').evaluate(audio => audio.currentTime > 0), true);
+                await use(button('Rain sound'));
+                await page.waitForFunction(() => document.querySelector('#walkRainAudio').paused);
                 await button(opening).focus();
                 await page.keyboard.press('Enter');
                 await room('Main Hall');
@@ -147,6 +151,62 @@ jobs:
             } finally {
               await browser.close();
             }
+          }
+          const profileBrowser = await chromium.launch();
+          try {
+            const context = await profileBrowser.newContext(devices['Pixel 7']);
+            const page = await context.newPage();
+            const cdp = await context.newCDPSession(page);
+            await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
+            await page.goto('http://127.0.0.1:4173/house.html?room=foyer');
+            await page.evaluate(() => {
+              const frames = [];
+              let previous = performance.now();
+              window.walkProfile = { frames, running: true };
+              function sample(now) {
+                if (!window.walkProfile.running) return;
+                frames.push(now - previous);
+                previous = now;
+                requestAnimationFrame(sample);
+              }
+              requestAnimationFrame(sample);
+            });
+            const start = await page.getByRole('button', { name: 'Main Hall Opening', exact: true }).boundingBox();
+            const x = Math.round(start.x + start.width / 2);
+            const y = Math.round(start.y + start.height / 2);
+            await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{x, y}] });
+            for (const offset of [12, 24, 36, 48, 60, 72, 84]) {
+              await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{x: x + offset, y}] });
+            }
+            await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+            assert.equal(await page.locator('#floorName').textContent(), 'Front Hall');
+            for (const [control, room, facing] of [
+              ['Main Hall Opening', 'Main Hall'], ['Main Stairs', 'Upstairs Landing'],
+              ['Turn around', 'Upstairs Landing', true], ['Main Stairs', 'Main Hall'],
+              ['Main Hall Opening', 'Front Hall']
+            ]) {
+              await page.getByRole('button', { name: control, exact: true }).tap();
+              await page.waitForFunction(({room, facing}) => document.querySelector('#floorName').textContent === room &&
+                !document.querySelector('#camera').hasAttribute('data-crossing') &&
+                (!facing || document.querySelector('#turnWalk').getAttribute('aria-pressed') === 'true'), {room, facing});
+            }
+            const profile = await page.evaluate(() => {
+              const {frames} = window.walkProfile;
+              window.walkProfile.running = false;
+              const intervals = frames.slice(1).sort((a, b) => a - b);
+              return {
+                samples: intervals.length,
+                medianMs: Math.round(intervals[Math.floor(intervals.length / 2)] * 10) / 10,
+                p95Ms: Math.round(intervals[Math.floor(intervals.length * .95)] * 10) / 10,
+                intervalsOver50Ms: intervals.filter(ms => ms > 50).length,
+                sameOriginEncodedBytes: performance.getEntriesByType('resource').filter(entry =>
+                  entry.name.startsWith(location.origin)).reduce((total, entry) => total + entry.encodedBodySize, 0)
+              };
+            });
+            console.log('Mobile walk profile (Chromium, Pixel 7 viewport, 4x CPU throttle): ' + JSON.stringify(profile));
+            await (await import('node:fs/promises')).writeFile('walk-screenshots/mobile-profile.json', JSON.stringify(profile, null, 2));
+          } finally {
+            await profileBrowser.close();
           }
           JS
           cat > walk-screenshots/index.html <<'HTML'
