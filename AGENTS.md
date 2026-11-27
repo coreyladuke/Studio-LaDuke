@@ -3,6 +3,20 @@
 
 **Default rule:** Build an experience, not a collection of pages. Unless the project owner explicitly asks for a simpler build, treat immersive environmental quality, dimensional depth, motion, lighting, sound design where appropriate, and meaningful interaction as baseline design requirements, not optional upgrades.
 
+## 0. Operational safety gate (proposed November 26, 2026)
+
+These operational limits take precedence over the creative quality standard below and older broad build briefs. Do not interpret a creative ambition as authorization for unlimited implementation. Keep one bounded task active at a time.
+
+- Before editing, inspect Git status, branch, current baseline, relevant existing tests and task acceptance criteria. Never discard local changes, force-push, reset, or overwrite newer work. Stop if existing changes overlap unexpectedly.
+- Work on a task branch or isolated worktree, not directly on main. Keep production untouched until the specific change is reviewed, required checks pass and release is authorized. Do not enable automatic deployment from an experimental branch.
+- Use the smallest meaningful prototype; reuse working assets and code. No broad rewrites, new dependencies, paid tools, large asset batches, long render jobs, or unrelated feature work without explicit approval.
+- Default trial limits: one representative asset or scene, at most 720p for exploratory renders, 120 seconds per render attempt and two attempts per failed operation. Use actual tool-enforced timeouts when available; if a tool cannot enforce the limit, do not start the expensive operation without approval. These limits are experimental starting values, not evidence of runtime enforcement.
+- No parallel coding agents by default. Use a focused independent review only when the task warrants it. Prefer deterministic automated tests over repeated AI inspection. Do not start another task or widen scope to fix an unrelated failure.
+- Before work starts, state the one deliverable, allowed scope, verification commands and stop conditions. If the task cannot be completed in one bounded pass, save recoverable progress and report the blocker rather than escalating effort automatically.
+- Run the relevant existing checks and exercise the changed behavior on actual browser previews where applicable. Preserve unaffected behavior. Report exact commands, pass/fail, skipped checks, commit, preview and before/after evidence when meaningful. Never claim physical-device testing from emulation.
+- Use a GitHub issue as the task contract and a draft pull request as the evidence handoff. Refer to the issue from the PR and post a short results summary. Keep private data, credentials, unreleased creative assets and confidential project details out of public issues, branches and artifacts.
+- A successful check is evidence, not aesthetic approval. Owner decisions should be limited to meaningful visual/product choices and exceptions to scope or cost. Stop after a reviewable checkpoint. Do not claim these instructions alone constitute hard enforcement of token, time, deployment or permission limits.
+
 ## 1. What quality means
 
 The visitor should feel that they have entered a distinct, coherent place. The interface should have a recognizable visual identity, atmosphere, and sense of discovery. Aim for the reaction: *"I can't believe this is my website."*
